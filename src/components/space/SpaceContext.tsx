@@ -136,6 +136,7 @@ interface SpaceContextType {
   toggleHud: () => void;
   throttle: number; // 1 to 10
   setThrottle: (val: number) => void;
+  triggerWarp: () => void;
 }
 
 const SpaceContext = createContext<SpaceContextType | undefined>(undefined);
@@ -148,8 +149,20 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
   const [hudVisible, setHudVisible] = useState<boolean>(true);
   const [throttle, setThrottle] = useState<number>(1);
 
+  const triggerWarp = () => {
+    setIsWarping(true);
+    setWarpSpeed(1.0);
+    setTimeout(() => {
+      setWarpSpeed(0);
+      setIsWarping(false);
+    }, 2400);
+  };
+
   const setDestination = (id: DestinationId) => {
-    if (id === currentDestination.id && !isWarping) return;
+    if (id === currentDestination.id && !isWarping) {
+      triggerWarp();
+      return;
+    }
     setIsWarping(true);
     setWarpSpeed(1.0);
     setCurrentDest(DESTINATIONS[id]);
@@ -181,7 +194,8 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
         hudVisible,
         toggleHud,
         throttle,
-        setThrottle
+        setThrottle,
+        triggerWarp
       }}
     >
       {children}

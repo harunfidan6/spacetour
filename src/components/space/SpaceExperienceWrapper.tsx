@@ -3,6 +3,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { SpaceProvider } from './SpaceContext';
+import { DestinationTelemetryDrawer } from './DestinationTelemetryDrawer';
 
 // Dynamically import the 3D WebGL engine with SSR disabled for optimal Next.js performance
 const SpaceJourneyEngine = dynamic(
@@ -16,6 +17,9 @@ export function SpaceExperienceWrapper({ children }: { children: React.ReactNode
       <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-foreground">
         {/* 3D WebGL Universe Layer (Cinematic Deep Space Background) */}
         <SpaceJourneyEngine />
+
+        {/* Floating Destination Telemetry & Voyage Drawer */}
+        <DestinationTelemetryDrawer />
 
         {/* Clean, Modern Page Content Layer */}
         <div className="relative z-10">{children}</div>

@@ -20,6 +20,7 @@ import { IssTracker } from '@/components/space/IssTracker';
 import { NasaApodSection } from '@/components/space/NasaApodSection';
 import { SpaceWeatherWidget } from '@/components/space/SpaceWeatherWidget';
 import { InterstellarProbes } from '@/components/space/InterstellarProbes';
+import { SkyTonightWidget } from '@/components/space/SkyTonightWidget';
 
 export default function Home() {
   const { setDestination, currentDestination, isWarping } = useSpace();
@@ -143,6 +144,11 @@ export default function Home() {
             );
           })}
         </div>
+      </section>
+
+      {/* BU GECE GÖKYÜZÜ - SKY TONIGHT OBSERVATORY RADAR */}
+      <section className="relative z-10 mx-auto max-w-7xl px-4 pb-12">
+        <SkyTonightWidget />
       </section>
 
       {/* LIVE ORBIT & NASA APOD SECTION */}
@@ -277,7 +283,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-card-border bg-card-bg/40 py-6 text-center text-xs text-text-secondary backdrop-blur-md">
         <p>
-          © 2026 AstroTR — 3D WebGL Uzay Keşif & Simülasyon Sistemi • Samanyolu Sol Sektörü
+          © 2026 SpaceTour TR (spacetour.com.tr) — 3D WebGL Uzay Seyahati & Planetaryum Simülasyonu
         </p>
       </footer>
     </div>

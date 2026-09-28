@@ -31,18 +31,21 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl group-hover:animate-pulse">🔭</span>
-            <span className="text-xl font-bold tracking-tight">
-              <span className="text-primary group-hover:text-cyan-300 transition-colors">Astro</span>
-              <span className="text-foreground">TR</span>
-            </span>
+            <span className="text-2xl group-hover:scale-110 transition-transform">🚀</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tight leading-none">
+                <span className="text-primary group-hover:text-cyan-300 transition-colors">SpaceTour</span>
+                <span className="text-foreground ml-1">TR</span>
+              </span>
+              <span className="text-[9px] font-mono text-text-secondary tracking-widest mt-0.5">spacetour.com.tr</span>
+            </div>
           </Link>
           <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-[10px] font-mono tracking-widest text-primary shadow-[inset_0_0_10px_rgba(0,212,255,0.1)]">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            3D UZAY SİMÜLASYONU • CANLI
+            3D UZAY YOLCULUĞU • CANLI
           </div>
         </div>
 

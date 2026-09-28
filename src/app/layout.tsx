@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AstroTR — Sinematik Uzay Keşif Platformu",
+  title: "SpaceTour TR — 3D Sinematik Uzay Yolculuğu & Planetaryum",
   description:
-    "3D Güneş Sistemi yolculuğu, interaktif gökyüzü haritası ve astronomik olay takvimi",
+    "spacetour.com.tr — Gerçek zamanlı 3D Güneş Sistemi yolculuğu, 360° interaktif gökyüzü haritası, planetaryum ve derin uzay gözlemevi.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
