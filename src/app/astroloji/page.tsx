@@ -18,6 +18,8 @@ import {
   Sun,
   Shield,
   Zap,
+  Clock,
+  Shuffle,
   Info
 } from 'lucide-react';
 import {
@@ -26,6 +28,8 @@ import {
   ZodiacElement
 } from '@/data/zodiac';
 import { NatalChartCalculator } from '@/components/space/NatalChartCalculator';
+import { DailyCosmicTransitWidget } from '@/components/space/DailyCosmicTransitWidget';
+import { CosmicTarotDrawer } from '@/components/space/CosmicTarotDrawer';
 
 export default function AstrolojiPage() {
   const [selectedElement, setSelectedElement] = useState<string>('Tümü');
@@ -53,12 +57,12 @@ export default function AstrolojiPage() {
 
   const isHighlyCompatible = s1.loveCompatibility.includes(s2.id);
   const isSameElement = s1.element === s2.element;
-  const compatibilityScore = isHighlyCompatible ? 94 : isSameElement ? 88 : s1.element === 'Ateş' && s2.element === 'Hava' ? 90 : s1.element === 'Toprak' && s2.element === 'Su' ? 92 : 72;
+  const compatibilityScore = isHighlyCompatible ? 94 : isSameElement ? 88 : (s1.element === 'Ateş' && s2.element === 'Hava') || (s1.element === 'Hava' && s2.element === 'Ateş') ? 91 : (s1.element === 'Toprak' && s2.element === 'Su') || (s1.element === 'Su' && s2.element === 'Toprak') ? 93 : 74;
 
   return (
-    <div className="min-h-screen bg-black/40 text-foreground p-4 sm:p-8 lg:p-12 relative z-10 space-y-12 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black/40 text-foreground p-4 sm:p-8 lg:p-12 relative z-10 space-y-16 max-w-7xl mx-auto">
       {/* Page Header */}
-      <div className="flex flex-col items-center text-center space-y-4 pt-8">
+      <div className="flex flex-col items-center text-center space-y-4 pt-6">
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1.5 text-xs font-mono font-bold tracking-widest text-amber-300 backdrop-blur-xl">
           <Sparkles size={14} className="animate-pulse" />
           <span>GÖKYÜZÜ ARKETİPLERİ & KOZMİK REHBER</span>
@@ -72,8 +76,42 @@ export default function AstrolojiPage() {
         </h1>
 
         <p className="max-w-2xl text-sm sm:text-base text-neutral-300 leading-relaxed">
-          Kadim astronomi gözlemleriyle şekillenen 12 zodyak takımyıldızını, kişisel doğum haritanızı ve gökcisimlerinin arketipsel enerjilerini keşfedin.
+          Kadim astronomi gözlemleriyle şekillenen 12 zodyak takımyıldızını, kişisel doğum haritanızı, gezegenlerin ev dağılımını ve kozmik arketipleri keşfedin.
         </p>
+
+        {/* Quick Nav Anchor Bar */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs font-mono">
+          <a
+            href="#dogum-haritasi"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-amber-400 hover:bg-amber-400/10 hover:text-amber-300 transition-all"
+          >
+            ☉ Doğum Haritası & Numeroloji
+          </a>
+          <a
+            href="#gunluk-transitler"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-cyan-400 hover:bg-cyan-400/10 hover:text-cyan-300 transition-all"
+          >
+            ⏱️ Günlük Transitler & Burçlar
+          </a>
+          <a
+            href="#kozmik-tarot"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-purple-400 hover:bg-purple-400/10 hover:text-purple-300 transition-all"
+          >
+            🔮 Kozmik Tarot Arketipi
+          </a>
+          <a
+            href="#zodyak-atlasi"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-rose-400 hover:bg-rose-400/10 hover:text-rose-300 transition-all"
+          >
+            ♈ 12 Zodyak Rehberi
+          </a>
+          <a
+            href="#burc-uyumu"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-pink-400 hover:bg-pink-400/10 hover:text-pink-300 transition-all"
+          >
+            💖 Burç Uyumu & Kimya
+          </a>
+        </div>
       </div>
 
       {/* 1. Interactive Natal Chart Calculator Module */}
@@ -81,13 +119,23 @@ export default function AstrolojiPage() {
         <NatalChartCalculator />
       </section>
 
-      {/* 2. Zodiac Sign Directory */}
-      <section className="space-y-6 pt-6">
+      {/* 2. Daily Cosmic Transits & 12 Horoscopes Widget */}
+      <section>
+        <DailyCosmicTransitWidget />
+      </section>
+
+      {/* 3. Cosmic Tarot & Archetype Drawer */}
+      <section>
+        <CosmicTarotDrawer />
+      </section>
+
+      {/* 4. Zodiac Sign Directory */}
+      <section id="zodyak-atlasi" className="space-y-6 pt-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
           <div>
-            <h2 className="text-2xl font-black text-white">12 Zodyak Takımyıldızı & Burçlar</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">12 Zodyak Takımyıldızı & Burçlar</h2>
             <p className="text-xs text-neutral-400 mt-0.5">
-              Her burcun element, yönetici gezegen ve mitolojik derinlikleri.
+              Her burcun element, yönetici gezegen, mitolojik arketip ve tarot karşılıkları.
             </p>
           </div>
 
@@ -150,8 +198,8 @@ export default function AstrolojiPage() {
         </div>
       </section>
 
-      {/* 3. Zodiac Compatibility Matrix */}
-      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-6">
+      {/* 5. Zodiac Compatibility Matrix */}
+      <section id="burc-uyumu" className="rounded-3xl border border-white/10 bg-black/60 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-6">
         <div className="border-b border-white/10 pb-4">
           <div className="flex items-center gap-2 mb-1.5">
             <Heart className="h-5 w-5 text-rose-400 animate-pulse" />
@@ -159,7 +207,7 @@ export default function AstrolojiPage() {
               KOZMİK KİMYA & İLİŞKİ SİNERJİSİ
             </span>
           </div>
-          <h2 className="text-2xl font-black text-white">Burç Uyumu & Element Dinamiği</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">Burç Uyumu & Element Dinamiği</h2>
           <p className="text-xs text-neutral-400 mt-0.5">
             İki burç arasındaki çekim gücünü, iletişim ahengini ve element sinerjisini hesaplayın.
           </p>
@@ -227,10 +275,10 @@ export default function AstrolojiPage() {
       {/* Detailed Modal on Click */}
       {activeSignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 overflow-y-auto">
-          <div className="max-w-xl w-full rounded-3xl border border-white/15 bg-neutral-950 p-6 sm:p-8 space-y-6 text-white shadow-2xl relative">
+          <div className="max-w-2xl w-full rounded-3xl border border-white/15 bg-neutral-950 p-6 sm:p-8 space-y-6 text-white shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setActiveSignModal(null)}
-              className="absolute top-6 right-6 text-neutral-400 hover:text-white text-sm font-mono p-1"
+              className="absolute top-6 right-6 text-neutral-400 hover:text-white text-sm font-mono p-1 cursor-pointer"
             >
               ✕ Kapat
             </button>
@@ -249,7 +297,7 @@ export default function AstrolojiPage() {
               {activeSignModal.overview}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                 <span className="text-[10px] text-neutral-400 block">Element & Nitelik</span>
                 <span className="font-bold text-white">{activeSignModal.element} • {activeSignModal.modality}</span>
@@ -268,31 +316,59 @@ export default function AstrolojiPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase">Güçlü Yönler</h4>
-              <div className="flex flex-wrap gap-1.5">
-                {activeSignModal.traits.strengths.map((str) => (
-                  <span key={str} className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
-                    ✓ {str}
-                  </span>
-                ))}
+            {/* Tarot & Guidance Box */}
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 space-y-1 text-xs">
+              <div className="flex items-center gap-2 text-amber-300 font-mono font-bold uppercase">
+                <Sparkles size={14} />
+                <span>Tarot Arketipi: {activeSignModal.tarotCard.name} ({activeSignModal.tarotCard.number})</span>
+              </div>
+              <p className="text-neutral-300 leading-relaxed">
+                {activeSignModal.tarotCard.symbolism}
+              </p>
+              <p className="text-amber-200/90 italic pt-1">
+                Kozmik Rehberlik: {activeSignModal.tarotCard.guidance}
+              </p>
+            </div>
+
+            {/* Strengths & Shadows */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase">Güçlü Yönler</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {activeSignModal.traits.strengths.map((str) => (
+                    <span key={str} className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
+                      ✓ {str}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase">Gölge Yönler</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {activeSignModal.traits.shadows.map((shd) => (
+                    <span key={shd} className="px-2.5 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono">
+                      ⚠ {shd}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 flex justify-between items-center border-t border-white/10 text-xs font-mono">
+            <div className="pt-4 flex justify-between items-center border-t border-white/10 text-xs font-mono">
               <Link
                 href="/harita"
                 className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-white transition-colors"
               >
                 <Telescope size={14} />
-                <span>3D Haritada Takımyıldızı Bul</span>
+                <span>3D Haritada {activeSignModal.name} Takımyıldızını Gör</span>
               </Link>
 
               <button
                 onClick={() => setActiveSignModal(null)}
-                className="px-4 py-2 rounded-xl bg-white text-black font-bold hover:bg-neutral-200 transition-colors"
+                className="px-4 py-2 rounded-xl bg-white text-black font-bold hover:bg-neutral-200 transition-colors cursor-pointer"
               >
-                Tamam
+                Kapat
               </button>
             </div>
           </div>
