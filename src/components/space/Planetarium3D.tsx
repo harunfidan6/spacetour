@@ -785,6 +785,19 @@ export function Planetarium3D() {
           <h2 className="text-xl font-black mb-1">{selectedDso.name}</h2>
           <div className="text-xs text-secondary font-mono mb-3">{selectedDso.distanceLightYears}</div>
 
+          {selectedDso.image && (
+            <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-3 border border-white/10 group">
+              <img
+                src={selectedDso.image}
+                alt={selectedDso.name}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute bottom-1.5 right-2 px-2 py-0.5 rounded-full bg-black/70 text-[9px] font-mono text-white/80 backdrop-blur-xs">
+                Hubble / JWST Spektrumu
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-text-secondary leading-relaxed mb-3">
             {selectedDso.description}
           </p>

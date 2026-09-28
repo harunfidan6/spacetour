@@ -235,6 +235,7 @@ export interface DeepSkyObject {
   distanceLightYears: string;
   color: string;
   emoji: string;
+  image?: string;
 }
 
 export const deepSkyObjects: DeepSkyObject[] = [
@@ -249,7 +250,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'Samanyolu’na en yakın büyük komşu spiral galaksi. Yaklaşık 1 trilyon yıldız barındırır ve çıplak gözle görülebilen en uzak gökcismidir.',
     distanceLightYears: '2.54 milyon Işık Yılı',
     color: '#00d4ff',
-    emoji: '🌀'
+    emoji: '🌀',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop'
   },
   {
     id: 'm42',
@@ -262,7 +264,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'Gece göğünün en parlak ve en aktif yıldız doğumevlerinden biridir. Merkezindeki Trapezium yıldız kümesi gaz bulutunu aydınlatır.',
     distanceLightYears: '1,344 Işık Yılı',
     color: '#ff2a85',
-    emoji: '✨'
+    emoji: '✨',
+    image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=800&auto=format&fit=crop'
   },
   {
     id: 'm45',
@@ -275,7 +278,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'Boğa takımyıldızında yer alan parıltılı açık yıldız kümesi. Genç mavi dev yıldızlar ve etraflarındaki yansıma bulutsusuyla ünlüdür.',
     distanceLightYears: '444 Işık Yılı',
     color: '#70baff',
-    emoji: '💎'
+    emoji: '💎',
+    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop'
   },
   {
     id: 'm13',
@@ -288,7 +292,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'Kuzey yarıkürenin en görkemli küresel yıldız kümesi. Yaklaşık 300,000 yaşlı yıldız yerçekimiyle küresel bir top şeklinde kümelenmiştir.',
     distanceLightYears: '22,200 Işık Yılı',
     color: '#ffd700',
-    emoji: '🔮'
+    emoji: '🔮',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop'
   },
   {
     id: 'm57',
@@ -301,7 +306,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'Çalgı takımyıldızında ölen bir güneş benzeri yıldızın uzaya fırlattığı iyonize gaz kabuğundan oluşan gezegenimsi bulutsu halkası.',
     distanceLightYears: '2,570 Işık Yılı',
     color: '#00ffcc',
-    emoji: '💍'
+    emoji: '💍',
+    image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop'
   },
   {
     id: 'm1',
@@ -314,7 +320,8 @@ export const deepSkyObjects: DeepSkyObject[] = [
     description: 'MS 1054 yılında Çinli astronomlar tarafından gündüz bile görülen tarihi süpernova patlamasının kalıntısı ve merkezindeki dönen pulsar.',
     distanceLightYears: '6,500 Işık Yılı',
     color: '#ff6633',
-    emoji: '💥'
+    emoji: '💥',
+    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop'
   }
 ];
 
