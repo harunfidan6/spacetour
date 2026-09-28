@@ -1,20 +1,14 @@
 'use client';
 
-import React, { useRef, useMemo, useEffect } from 'react';
+import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSpace, DESTINATIONS, DestinationId } from './SpaceContext';
 import {
-  createSunTexture,
-  createEarthTexture,
-  createJupiterTexture,
-  createSaturnRingTexture,
-  createSaturnTexture,
-  createMarsTexture,
-  createAccretionDiskTexture,
-  createEarthNightTexture,
-  createNebulaDustTexture
-} from './textures';
+  NASA_TEXTURES,
+  loadNasaTexture,
+  AccretionDiskShader
+} from './nasaTextures';
 
 // -------------------------------------------------------------
 // 1. CINEMATIC FLIGHT CONTROLLER (Smooth Lerp + Dynamic Orbit Drift)
@@ -45,7 +39,7 @@ function FlightCameraController() {
     const timer = setInterval(() => {
       idx = (idx + 1) % destKeys.length;
       setDestination(destKeys[idx]);
-    }, 9000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [autoPilot, currentDestination.id, setDestination]);
 
@@ -55,25 +49,25 @@ function FlightCameraController() {
     const targetLook = new THREE.Vector3(...currentDestination.lookAt);
 
     // Natural subtle space float (orbital drift)
-    const driftX = Math.sin(timeRef.current * 0.15) * 0.6;
-    const driftY = Math.cos(timeRef.current * 0.12) * 0.4;
-    const driftZ = Math.sin(timeRef.current * 0.08) * 0.5;
+    const driftX = Math.sin(timeRef.current * 0.12) * 0.5;
+    const driftY = Math.cos(timeRef.current * 0.1) * 0.3;
+    const driftZ = Math.sin(timeRef.current * 0.08) * 0.4;
 
-    const lerpFactor = isWarping ? 3.0 * delta : 1.4 * delta;
+    const lerpFactor = isWarping ? 3.2 * delta : 1.2 * delta;
 
     if (!isWarping) {
-      target.x += mouse.current.x * 2.5 + driftX;
-      target.y -= mouse.current.y * 1.8 - driftY;
+      target.x += mouse.current.x * 2.0 + driftX;
+      target.y -= mouse.current.y * 1.5 - driftY;
       target.z += driftZ;
     } else {
       // Warp camera vibration
-      target.x += (Math.random() - 0.5) * 0.6;
-      target.y += (Math.random() - 0.5) * 0.6;
-      target.z += (Math.random() - 0.5) * 0.6;
+      target.x += (Math.random() - 0.5) * 0.5;
+      target.y += (Math.random() - 0.5) * 0.5;
+      target.z += (Math.random() - 0.5) * 0.5;
     }
 
     currentPos.current.lerp(target, Math.min(lerpFactor, 0.08));
-    lookAtTarget.current.lerp(targetLook, Math.min(lerpFactor * 1.3, 0.1));
+    lookAtTarget.current.lerp(targetLook, Math.min(lerpFactor * 1.2, 0.1));
 
     camera.position.copy(currentPos.current);
     camera.lookAt(lookAtTarget.current);
@@ -83,47 +77,58 @@ function FlightCameraController() {
 }
 
 // -------------------------------------------------------------
-// 2. HYPERSPACE & WARP SPEED STARFIELD
+// 2. REAL MILKY WAY SKYBOX & DEEP SPACE PANORAMA
+// -------------------------------------------------------------
+function DeepSpaceMilkyWay() {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    const tex = loadNasaTexture(NASA_TEXTURES.milkyWay);
+    if (tex) setTexture(tex);
+  }, []);
+
+  return (
+    <mesh scale={[-1, 1, 1]}>
+      <sphereGeometry args={[900, 32, 32]} />
+      {texture ? (
+        <meshBasicMaterial map={texture} side={THREE.BackSide} />
+      ) : (
+        <meshBasicMaterial color="#020206" side={THREE.BackSide} />
+      )}
+    </mesh>
+  );
+}
+
+// -------------------------------------------------------------
+// 3. WARP SPEED STARFIELD PARTICLES
 // -------------------------------------------------------------
 function WarpStars() {
   const { isWarping, throttle } = useSpace();
   const pointsRef = useRef<THREE.Points>(null);
-  const count = 4500;
+  const count = 3500;
 
-  const [positions, speeds, colors] = useMemo(() => {
+  const [positions, speeds] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const spd = new Float32Array(count);
-    const col = new Float32Array(count * 3);
-    const palette = [
-      [1.0, 1.0, 1.0],      // White
-      [0.6, 0.85, 1.0],     // Light Cyan
-      [1.0, 0.85, 0.6],     // Warm Gold
-      [0.8, 0.7, 1.0],      // Pale Violet
-    ];
 
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 400;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 400;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 400;
-      spd[i] = Math.random() * 0.6 + 0.2;
-
-      const c = palette[Math.floor(Math.random() * palette.length)];
-      col[i * 3] = c[0];
-      col[i * 3 + 1] = c[1];
-      col[i * 3 + 2] = c[2];
+      pos[i * 3] = (Math.random() - 0.5) * 350;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 350;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 350;
+      spd[i] = Math.random() * 0.5 + 0.2;
     }
-    return [pos, spd, col];
+    return [pos, spd];
   }, [count]);
 
   useFrame((_, delta) => {
     if (!pointsRef.current) return;
     const pos = pointsRef.current.geometry.attributes.position.array as Float32Array;
-    const speedMult = (isWarping ? 25.0 : 0.8) * throttle;
+    const speedMult = (isWarping ? 28.0 : 0.6) * throttle;
 
     for (let i = 0; i < count; i++) {
       pos[i * 3 + 2] += speeds[i] * speedMult * delta * 20;
-      if (pos[i * 3 + 2] > 200) {
-        pos[i * 3 + 2] = -200;
+      if (pos[i * 3 + 2] > 180) {
+        pos[i * 3 + 2] = -180;
       }
     }
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
@@ -133,13 +138,12 @@ function WarpStars() {
     <points ref={pointsRef}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={isWarping ? 2.2 : 1.1}
-        vertexColors
+        size={isWarping ? 2.0 : 0.8}
+        color={isWarping ? '#80dfff' : '#e6f0ff'}
         transparent
-        opacity={0.85}
+        opacity={isWarping ? 0.9 : 0.6}
         blending={THREE.AdditiveBlending}
       />
     </points>
@@ -147,215 +151,62 @@ function WarpStars() {
 }
 
 // -------------------------------------------------------------
-// 3. COSMIC DUST NEBULAE (Volumetric Clouds in Deep Space)
-// -------------------------------------------------------------
-function DeepSpaceNebulae() {
-  const purpleTex = useMemo(() => createNebulaDustTexture('#8a3ffc'), []);
-  const cyanTex = useMemo(() => createNebulaDustTexture('#00d4ff'), []);
-  const goldTex = useMemo(() => createNebulaDustTexture('#ffaa00'), []);
-
-  return (
-    <group>
-      {/* Distant Purple Nebula Cloud */}
-      <sprite position={[-90, 40, -120]} scale={[140, 140, 1]}>
-        <spriteMaterial map={purpleTex} transparent opacity={0.16} blending={THREE.AdditiveBlending} />
-      </sprite>
-
-      {/* Cyan Cosmic Dust Layer */}
-      <sprite position={[110, -30, -140]} scale={[180, 180, 1]}>
-        <spriteMaterial map={cyanTex} transparent opacity={0.14} blending={THREE.AdditiveBlending} />
-      </sprite>
-
-      {/* Golden Accretion Haze */}
-      <sprite position={[60, 60, -90]} scale={[120, 120, 1]}>
-        <spriteMaterial map={goldTex} transparent opacity={0.12} blending={THREE.AdditiveBlending} />
-      </sprite>
-
-      {/* Near Black Hole Cosmic Rift */}
-      <sprite position={[-60, 20, 150]} scale={[160, 160, 1]}>
-        <spriteMaterial map={purpleTex} transparent opacity={0.2} blending={THREE.AdditiveBlending} />
-      </sprite>
-    </group>
-  );
-}
-
-// -------------------------------------------------------------
-// 4. THE SUN: Multi-layer Plasma, Solar Prominences & Dynamic Corona
+// 4. THE SUN: NASA SDO Plasma Texture & Atmospheric Corona
 // -------------------------------------------------------------
 function Sun() {
   const sunMesh = useRef<THREE.Mesh>(null);
   const innerCoronaRef = useRef<THREE.Mesh>(null);
   const outerCoronaRef = useRef<THREE.Mesh>(null);
-  const prominenceRef = useRef<THREE.Group>(null);
-  const texture = useMemo(() => createSunTexture(), []);
+  const [sunTex, setSunTex] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    const tex = loadNasaTexture(NASA_TEXTURES.sun);
+    if (tex) setSunTex(tex);
+  }, []);
 
   useFrame((_, delta) => {
-    if (sunMesh.current) sunMesh.current.rotation.y += delta * 0.04;
+    if (sunMesh.current) sunMesh.current.rotation.y += delta * 0.02;
     if (innerCoronaRef.current) {
-      innerCoronaRef.current.rotation.z -= delta * 0.02;
-      const s = 1.12 + Math.sin(Date.now() * 0.002) * 0.03;
+      innerCoronaRef.current.rotation.z -= delta * 0.015;
+      const s = 1.08 + Math.sin(Date.now() * 0.0018) * 0.02;
       innerCoronaRef.current.scale.set(s, s, s);
     }
     if (outerCoronaRef.current) {
-      outerCoronaRef.current.rotation.z += delta * 0.015;
-      const s = 1.35 + Math.cos(Date.now() * 0.0015) * 0.05;
+      outerCoronaRef.current.rotation.z += delta * 0.01;
+      const s = 1.28 + Math.cos(Date.now() * 0.0012) * 0.03;
       outerCoronaRef.current.scale.set(s, s, s);
-    }
-    if (prominenceRef.current) {
-      prominenceRef.current.rotation.y += delta * 0.03;
     }
   });
 
   return (
     <group position={[0, 0, 0]}>
-      {/* 1. Photosphere Core */}
+      {/* 1. Photosphere Sphere */}
       <mesh ref={sunMesh}>
         <sphereGeometry args={[5, 64, 64]} />
-        <meshBasicMaterial map={texture} />
+        {sunTex ? (
+          <meshBasicMaterial map={sunTex} />
+        ) : (
+          <meshBasicMaterial color="#ffaa00" />
+        )}
       </mesh>
 
-      {/* 2. Inner White-Hot Corona */}
+      {/* 2. Inner Hot Coronal Atmosphere */}
       <mesh ref={innerCoronaRef}>
-        <sphereGeometry args={[5.5, 32, 32]} />
+        <sphereGeometry args={[5.4, 32, 32]} />
         <meshBasicMaterial
           color="#ffeedd"
           transparent
-          opacity={0.45}
+          opacity={0.35}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* 3. Outer Fiery Solar Atmosphere */}
+      {/* 3. Outer Solar Halo */}
       <mesh ref={outerCoronaRef}>
-        <sphereGeometry args={[6.8, 32, 32]} />
+        <sphereGeometry args={[6.5, 32, 32]} />
         <meshBasicMaterial
-          color="#ff6600"
-          transparent
-          opacity={0.25}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* 4. Solar Prominence Loops */}
-      <group ref={prominenceRef}>
-        <mesh position={[4.8, 1.2, 0]} rotation={[0, 0, 0.4]}>
-          <torusGeometry args={[1.2, 0.12, 16, 32, Math.PI]} />
-          <meshBasicMaterial color="#ff4400" transparent opacity={0.7} blending={THREE.AdditiveBlending} />
-        </mesh>
-        <mesh position={[-4.5, -1.8, 1.0]} rotation={[0.4, 0.2, -0.6]}>
-          <torusGeometry args={[0.9, 0.1, 16, 32, Math.PI]} />
-          <meshBasicMaterial color="#ffaa00" transparent opacity={0.65} blending={THREE.AdditiveBlending} />
-        </mesh>
-      </group>
-
-      {/* Dynamic Solar Illumination */}
-      <pointLight color="#fff8e7" intensity={5.0} distance={350} decay={1.1} />
-    </group>
-  );
-}
-
-// -------------------------------------------------------------
-// 5. EARTH: Continents, Oceans, Rotating Clouds, Night Lights & Moon
-// -------------------------------------------------------------
-function Earth() {
-  const earthRef = useRef<THREE.Mesh>(null);
-  const cloudsRef = useRef<THREE.Mesh>(null);
-  const nightRef = useRef<THREE.Mesh>(null);
-  const moonOrbitRef = useRef<THREE.Group>(null);
-  const textures = useMemo(() => createEarthTexture(), []);
-  const nightTexture = useMemo(() => createEarthNightTexture(), []);
-
-  useFrame((_, delta) => {
-    if (earthRef.current) earthRef.current.rotation.y += delta * 0.12;
-    if (cloudsRef.current) cloudsRef.current.rotation.y += delta * 0.16;
-    if (nightRef.current) nightRef.current.rotation.y += delta * 0.12;
-    if (moonOrbitRef.current) moonOrbitRef.current.rotation.y += delta * 0.05;
-  });
-
-  return (
-    <group position={DESTINATIONS.earth.coords}>
-      {/* 1. Earth Day Surface */}
-      <mesh ref={earthRef}>
-        <sphereGeometry args={[1.5, 64, 64]} />
-        <meshStandardMaterial
-          map={textures.map}
-          roughness={0.65}
-          metalness={0.15}
-        />
-      </mesh>
-
-      {/* 2. Earth Night Lights Overlay */}
-      <mesh ref={nightRef} scale={1.002}>
-        <sphereGeometry args={[1.5, 64, 64]} />
-        <meshBasicMaterial
-          map={nightTexture}
-          transparent
-          opacity={0.5}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* 3. Cloud Layer */}
-      <mesh ref={cloudsRef}>
-        <sphereGeometry args={[1.53, 64, 64]} />
-        <meshStandardMaterial
-          map={textures.clouds}
-          transparent
-          opacity={0.68}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* 4. Rayleigh Atmospheric Blue Halo */}
-      <mesh scale={1.12}>
-        <sphereGeometry args={[1.5, 32, 32]} />
-        <meshBasicMaterial
-          color="#00b4ff"
-          transparent
-          opacity={0.24}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* 5. Realistic Moon Orbit */}
-      <group ref={moonOrbitRef}>
-        <mesh position={[3.6, 0.4, 0]}>
-          <sphereGeometry args={[0.4, 32, 32]} />
-          <meshStandardMaterial color="#c2c7cd" roughness={0.92} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-// -------------------------------------------------------------
-// 6. MARS: Rust Basalt, Canyons, Polar Caps & Moons
-// -------------------------------------------------------------
-function Mars() {
-  const marsRef = useRef<THREE.Mesh>(null);
-  const moonsRef = useRef<THREE.Group>(null);
-  const texture = useMemo(() => createMarsTexture(), []);
-
-  useFrame((_, delta) => {
-    if (marsRef.current) marsRef.current.rotation.y += delta * 0.11;
-    if (moonsRef.current) moonsRef.current.rotation.y += delta * 0.08;
-  });
-
-  return (
-    <group position={DESTINATIONS.mars.coords}>
-      <mesh ref={marsRef}>
-        <sphereGeometry args={[1.0, 48, 48]} />
-        <meshStandardMaterial map={texture} roughness={0.78} />
-      </mesh>
-
-      {/* Thin Salmon Atmosphere Halo */}
-      <mesh scale={1.07}>
-        <sphereGeometry args={[1.0, 32, 32]} />
-        <meshBasicMaterial
-          color="#ff4422"
+          color="#ff7700"
           transparent
           opacity={0.2}
           side={THREE.BackSide}
@@ -363,15 +214,99 @@ function Mars() {
         />
       </mesh>
 
-      {/* Phobos & Deimos Moons */}
-      <group ref={moonsRef}>
-        <mesh position={[2.0, 0.2, 0]}>
-          <dodecahedronGeometry args={[0.07, 0]} />
-          <meshStandardMaterial color="#887766" roughness={0.9} />
-        </mesh>
-        <mesh position={[-2.8, -0.15, 0]}>
-          <dodecahedronGeometry args={[0.05, 0]} />
-          <meshStandardMaterial color="#776655" roughness={0.9} />
+      {/* Primary Solar Illuminator for the entire solar system */}
+      <pointLight color="#fff8ea" intensity={5.5} distance={400} decay={1.1} />
+    </group>
+  );
+}
+
+// -------------------------------------------------------------
+// 5. EARTH & MOON: NASA Blue Marble (Albedo + Specular + Normal + Clouds)
+// -------------------------------------------------------------
+function Earth() {
+  const earthRef = useRef<THREE.Mesh>(null);
+  const cloudsRef = useRef<THREE.Mesh>(null);
+  const moonOrbitRef = useRef<THREE.Group>(null);
+
+  const [textures, setTextures] = useState<{
+    map: THREE.Texture | null;
+    clouds: THREE.Texture | null;
+    specular: THREE.Texture | null;
+    normal: THREE.Texture | null;
+    moon: THREE.Texture | null;
+  }>({
+    map: null,
+    clouds: null,
+    specular: null,
+    normal: null,
+    moon: null
+  });
+
+  useEffect(() => {
+    setTextures({
+      map: loadNasaTexture(NASA_TEXTURES.earthMap),
+      clouds: loadNasaTexture(NASA_TEXTURES.earthClouds),
+      specular: loadNasaTexture(NASA_TEXTURES.earthSpecular),
+      normal: loadNasaTexture(NASA_TEXTURES.earthNormal),
+      moon: loadNasaTexture(NASA_TEXTURES.moon),
+    });
+  }, []);
+
+  useFrame((_, delta) => {
+    if (earthRef.current) earthRef.current.rotation.y += delta * 0.08;
+    if (cloudsRef.current) cloudsRef.current.rotation.y += delta * 0.1;
+    if (moonOrbitRef.current) moonOrbitRef.current.rotation.y += delta * 0.03;
+  });
+
+  return (
+    <group position={DESTINATIONS.earth.coords}>
+      {/* 1. Earth Globe with NASA PBR Maps */}
+      <mesh ref={earthRef}>
+        <sphereGeometry args={[1.5, 64, 64]} />
+        <meshStandardMaterial
+          map={textures.map || undefined}
+          roughnessMap={textures.specular || undefined}
+          roughness={0.55}
+          metalness={0.1}
+          normalMap={textures.normal || undefined}
+          normalScale={new THREE.Vector2(0.2, 0.2)}
+        />
+      </mesh>
+
+      {/* 2. Independent Real Cloud Layer */}
+      <mesh ref={cloudsRef}>
+        <sphereGeometry args={[1.53, 64, 64]} />
+        {textures.clouds && (
+          <meshStandardMaterial
+            map={textures.clouds}
+            transparent
+            opacity={0.75}
+            blending={THREE.AdditiveBlending}
+          />
+        )}
+      </mesh>
+
+      {/* 3. Atmospheric Rayleigh Scattering Blue Rim Glow */}
+      <mesh scale={1.08}>
+        <sphereGeometry args={[1.5, 32, 32]} />
+        <meshBasicMaterial
+          color="#0088ff"
+          transparent
+          opacity={0.22}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* 4. Realistic Moon with NASA LRO Texture */}
+      <group ref={moonOrbitRef}>
+        <mesh position={[3.8, 0.4, 0]}>
+          <sphereGeometry args={[0.38, 32, 32]} />
+          <meshStandardMaterial
+            map={textures.moon || undefined}
+            color={textures.moon ? '#ffffff' : '#b0b5bc'}
+            roughness={0.88}
+          />
         </mesh>
       </group>
     </group>
@@ -379,91 +314,134 @@ function Mars() {
 }
 
 // -------------------------------------------------------------
-// 7. JUPITER: Zonal Bands, Great Red Spot & Galilean Moons
+// 6. MARS: NASA Viking/MGS Texture & Topography
 // -------------------------------------------------------------
-function Jupiter() {
-  const jupiterRef = useRef<THREE.Mesh>(null);
-  const moonsRef = useRef<THREE.Group>(null);
-  const texture = useMemo(() => createJupiterTexture(), []);
+function Mars() {
+  const marsRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    const tex = loadNasaTexture(NASA_TEXTURES.mars);
+    if (tex) setTexture(tex);
+  }, []);
 
   useFrame((_, delta) => {
-    if (jupiterRef.current) jupiterRef.current.rotation.y += delta * 0.26;
-    if (moonsRef.current) moonsRef.current.rotation.y += delta * 0.06;
+    if (marsRef.current) marsRef.current.rotation.y += delta * 0.07;
   });
 
   return (
-    <group position={DESTINATIONS.jupiter.coords}>
-      <mesh ref={jupiterRef}>
-        <sphereGeometry args={[3.2, 64, 64]} />
-        <meshStandardMaterial map={texture} roughness={0.55} />
+    <group position={DESTINATIONS.mars.coords}>
+      <mesh ref={marsRef}>
+        <sphereGeometry args={[1.0, 64, 64]} />
+        <meshStandardMaterial
+          map={texture || undefined}
+          color={texture ? '#ffffff' : '#b74418'}
+          roughness={0.75}
+        />
       </mesh>
 
-      {/* Warm Jovian Haze Halo */}
+      {/* Thin Salmon Atmospheric Rim */}
       <mesh scale={1.05}>
-        <sphereGeometry args={[3.2, 32, 32]} />
+        <sphereGeometry args={[1.0, 32, 32]} />
         <meshBasicMaterial
-          color="#d7a050"
+          color="#ff4422"
           transparent
           opacity={0.16}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-
-      {/* Galilean Moons (Io, Europa, Ganymede, Callisto) */}
-      <group ref={moonsRef}>
-        <mesh position={[5.2, 0.1, 0]}>
-          <sphereGeometry args={[0.15, 16, 16]} />
-          <meshStandardMaterial color="#e5c158" /> {/* Io */}
-        </mesh>
-        <mesh position={[6.6, -0.1, 1.2]}>
-          <sphereGeometry args={[0.13, 16, 16]} />
-          <meshStandardMaterial color="#cadbe8" /> {/* Europa */}
-        </mesh>
-        <mesh position={[8.4, 0.2, -1.5]}>
-          <sphereGeometry args={[0.22, 16, 16]} />
-          <meshStandardMaterial color="#8e8275" /> {/* Ganymede */}
-        </mesh>
-        <mesh position={[10.5, -0.2, 0.5]}>
-          <sphereGeometry args={[0.2, 16, 16]} />
-          <meshStandardMaterial color="#554d46" /> {/* Callisto */}
-        </mesh>
-      </group>
     </group>
   );
 }
 
 // -------------------------------------------------------------
-// 8. SATURN: Creamy Bands, Icy Rings with Cassini Division & Shadow
+// 7. JUPITER: NASA Cassini 2K Zonal Bands
+// -------------------------------------------------------------
+function Jupiter() {
+  const jupiterRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    const tex = loadNasaTexture(NASA_TEXTURES.jupiter);
+    if (tex) setTexture(tex);
+  }, []);
+
+  useFrame((_, delta) => {
+    if (jupiterRef.current) jupiterRef.current.rotation.y += delta * 0.16;
+  });
+
+  return (
+    <group position={DESTINATIONS.jupiter.coords}>
+      <mesh ref={jupiterRef}>
+        <sphereGeometry args={[3.2, 64, 64]} />
+        <meshStandardMaterial
+          map={texture || undefined}
+          color={texture ? '#ffffff' : '#c88b3a'}
+          roughness={0.5}
+        />
+      </mesh>
+
+      {/* Soft Jovian Atmosphere Haze */}
+      <mesh scale={1.03}>
+        <sphereGeometry args={[3.2, 32, 32]} />
+        <meshBasicMaterial
+          color="#dca565"
+          transparent
+          opacity={0.12}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// -------------------------------------------------------------
+// 8. SATURN: NASA Cassini Globe & Translucent Rings
 // -------------------------------------------------------------
 function Saturn() {
   const saturnRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
-  const titanRef = useRef<THREE.Mesh>(null);
-  const planetTexture = useMemo(() => createSaturnTexture(), []);
-  const ringTexture = useMemo(() => createSaturnRingTexture(), []);
+  const [textures, setTextures] = useState<{
+    planet: THREE.Texture | null;
+    ring: THREE.Texture | null;
+  }>({
+    planet: null,
+    ring: null
+  });
+
+  useEffect(() => {
+    setTextures({
+      planet: loadNasaTexture(NASA_TEXTURES.saturn),
+      ring: loadNasaTexture(NASA_TEXTURES.saturnRing)
+    });
+  }, []);
 
   useFrame((_, delta) => {
-    if (saturnRef.current) saturnRef.current.rotation.y += delta * 0.18;
-    if (ringRef.current) ringRef.current.rotation.z += delta * 0.04;
-    if (titanRef.current) titanRef.current.rotation.y += delta * 0.07;
+    if (saturnRef.current) saturnRef.current.rotation.y += delta * 0.12;
+    if (ringRef.current) ringRef.current.rotation.z += delta * 0.02;
   });
 
   return (
     <group position={DESTINATIONS.saturn.coords} rotation={[0.42, 0.18, 0]}>
-      {/* 1. Saturn Globe */}
+      {/* 1. Saturn Sphere */}
       <mesh ref={saturnRef}>
         <sphereGeometry args={[2.5, 64, 64]} />
-        <meshStandardMaterial map={planetTexture} roughness={0.62} />
+        <meshStandardMaterial
+          map={textures.planet || undefined}
+          color={textures.planet ? '#ffffff' : '#e8dbb7'}
+          roughness={0.6}
+        />
       </mesh>
 
-      {/* 2. Saturn Atmospheric Haze */}
-      <mesh scale={1.06}>
+      {/* 2. Saturn Haze */}
+      <mesh scale={1.04}>
         <sphereGeometry args={[2.5, 32, 32]} />
         <meshBasicMaterial
           color="#ebd59b"
           transparent
-          opacity={0.18}
+          opacity={0.15}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -471,89 +449,82 @@ function Saturn() {
 
       {/* 3. The Majestic Rings */}
       <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[3.3, 6.8, 128]} />
+        <ringGeometry args={[3.2, 6.8, 128]} />
         <meshStandardMaterial
-          map={ringTexture}
+          map={textures.ring || undefined}
+          color={textures.ring ? '#ffffff' : '#c7b48a'}
           side={THREE.DoubleSide}
           transparent
-          opacity={0.92}
+          opacity={0.88}
           roughness={0.4}
         />
       </mesh>
-
-      {/* 4. Giant Moon Titan with Orange Smog */}
-      <group rotation={[0.1, 0, 0]}>
-        <mesh ref={titanRef} position={[7.8, 0.5, 0]}>
-          <sphereGeometry args={[0.26, 24, 24]} />
-          <meshStandardMaterial color="#e89838" roughness={0.8} />
-        </mesh>
-      </group>
     </group>
   );
 }
 
 // -------------------------------------------------------------
-// 9. BLACK HOLE (GARGANTUA): Gravitational Lensing & Relativistic Accretion Disk
+// 9. GARGANTUA: Relativistic Doppler Accretion Disk Shader
 // -------------------------------------------------------------
 function BlackHole() {
   const diskRef = useRef<THREE.Mesh>(null);
-  const lensRingRef = useRef<THREE.Mesh>(null);
-  const accretionTexture = useMemo(() => createAccretionDiskTexture(), []);
+  const lensRef = useRef<THREE.Mesh>(null);
+  const diskShaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        innerRadius: { value: 3.2 },
+        outerRadius: { value: 9.5 }
+      },
+      vertexShader: AccretionDiskShader.vertexShader,
+      fragmentShader: AccretionDiskShader.fragmentShader,
+      side: THREE.DoubleSide,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    });
+  }, []);
 
   useFrame((_, delta) => {
-    if (diskRef.current) diskRef.current.rotation.z += delta * 0.9;
-    if (lensRingRef.current) lensRingRef.current.rotation.z -= delta * 0.6;
+    diskShaderMaterial.uniforms.time.value += delta;
+    if (diskRef.current) diskRef.current.rotation.z += delta * 0.5;
+    if (lensRef.current) lensRef.current.rotation.z -= delta * 0.3;
   });
 
   return (
     <group position={DESTINATIONS.blackhole.coords} rotation={[0.55, 0.35, 0]}>
-      {/* 1. The Event Horizon: Pure Inky Blackness */}
+      {/* 1. Pitch Black Event Horizon */}
       <mesh>
         <sphereGeometry args={[3.2, 64, 64]} />
         <meshBasicMaterial color="#000000" />
       </mesh>
 
-      {/* 2. Gravitational Photon Ring (Ultra-sharp incandescent boundary) */}
-      <mesh scale={1.04}>
+      {/* 2. Razor Sharp Photon Sphere */}
+      <mesh scale={1.03}>
         <sphereGeometry args={[3.2, 32, 32]} />
         <meshBasicMaterial
           color="#fff5cc"
           transparent
-          opacity={0.5}
+          opacity={0.65}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* 3. Equatorial Accretion Disk */}
-      <mesh ref={diskRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[3.7, 10.5, 96]} />
-        <meshBasicMaterial
-          map={accretionTexture}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.9}
-          blending={THREE.AdditiveBlending}
-        />
+      {/* 3. Relativistic Accretion Disk (Equatorial) */}
+      <mesh ref={diskRef} rotation={[-Math.PI / 2, 0, 0]} material={diskShaderMaterial}>
+        <ringGeometry args={[3.5, 9.8, 96]} />
       </mesh>
 
-      {/* 4. Kip Thorne Gravitational Lensing Vertical Arch (Interstellar visual hallmark) */}
-      <mesh ref={lensRingRef} rotation={[0, 0, 0]}>
-        <ringGeometry args={[3.8, 7.8, 96]} />
-        <meshBasicMaterial
-          map={accretionTexture}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.55}
-          blending={THREE.AdditiveBlending}
-        />
+      {/* 4. Gravitational Lensing Vertical Arch (Interstellar Hallmark) */}
+      <mesh ref={lensRef} rotation={[0, 0, 0]} material={diskShaderMaterial}>
+        <ringGeometry args={[3.6, 7.2, 96]} />
       </mesh>
     </group>
   );
 }
 
 // -------------------------------------------------------------
-// 10. ORBIT TRAILS & ASTEROID BELT
+// 10. SUBTLE CELESTIAL ORBIT PATHS
 // -------------------------------------------------------------
 function OrbitLines() {
   const radii = [24, 34, 50, 70]; // Earth, Mars, Jupiter, Saturn
@@ -573,55 +544,15 @@ function OrbitLines() {
     <group>
       {lineObjects.map((geom, idx) => (
         <lineLoop key={idx} geometry={geom}>
-          <lineBasicMaterial color="#00d4ff" transparent opacity={0.14} />
+          <lineBasicMaterial color="#4080bf" transparent opacity={0.12} />
         </lineLoop>
       ))}
     </group>
   );
 }
 
-function AsteroidBelt() {
-  const count = 750;
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-
-  useEffect(() => {
-    if (!meshRef.current) return;
-    const dummy = new THREE.Object3D();
-    const minR = 39;
-    const maxR = 45;
-
-    for (let i = 0; i < count; i++) {
-      const radius = minR + Math.random() * (maxR - minR);
-      const angle = Math.random() * Math.PI * 2;
-      const y = (Math.random() - 0.5) * 3.5;
-      const scale = Math.random() * 0.22 + 0.06;
-
-      dummy.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
-      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-      dummy.scale.set(scale, scale, scale);
-      dummy.updateMatrix();
-
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  }, [count]);
-
-  useFrame((_, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.02;
-    }
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <dodecahedronGeometry args={[1, 0]} />
-      <meshStandardMaterial color="#6a6258" roughness={0.9} />
-    </instancedMesh>
-  );
-}
-
 // -------------------------------------------------------------
-// 11. MINIMALIST FLOATING CELESTIAL TRAVEL BAR (Clean & Modern Glass UI)
+// 11. MODERN ELEGANT GLASS VOYAGE PILL (NASA Eyes Style)
 // -------------------------------------------------------------
 export function SpaceTravelNav() {
   const { currentDestination, setDestination, autoPilot, toggleAutoPilot } = useSpace();
@@ -637,43 +568,43 @@ export function SpaceTravelNav() {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-1.5 rounded-full border border-primary/20 bg-background/80 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
       {destinations.map((d) => {
         const isActive = currentDestination.id === d.id;
         return (
           <button
             key={d.id}
             onClick={() => setDestination(d.id)}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-300 ${
+            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-300 ${
               isActive
-                ? 'bg-gradient-to-r from-primary/30 to-secondary/30 text-white border border-primary/40 shadow-[0_0_15px_rgba(0,212,255,0.35)] scale-105'
-                : 'text-text-secondary hover:text-white hover:bg-white/5'
+                ? 'bg-white/15 text-white border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-105'
+                : 'text-neutral-400 hover:text-white hover:bg-white/5'
             }`}
           >
             <span className="text-sm">{d.icon}</span>
-            <span className="hidden sm:inline">{d.name}</span>
+            <span className="hidden sm:inline tracking-wide">{d.name}</span>
           </button>
         );
       })}
 
-      <div className="h-4 w-px bg-card-border/60 mx-1 hidden sm:block" />
+      <div className="h-4 w-px bg-white/10 mx-1 hidden sm:block" />
 
       <button
         onClick={toggleAutoPilot}
-        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
           autoPilot
-            ? 'bg-secondary text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]'
-            : 'border border-card-border/60 bg-card-bg/50 text-text-secondary hover:text-white'
+            ? 'bg-primary/30 text-primary border border-primary/40 shadow-[0_0_15px_rgba(0,212,255,0.3)]'
+            : 'border border-white/10 bg-white/5 text-neutral-400 hover:text-white'
         }`}
-        title="Otomatik Tur Modu"
+        title="Otomatik Sinematik Tur"
       >
         <span className="relative flex h-2 w-2">
           {autoPilot && (
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
           )}
-          <span className={`relative inline-flex rounded-full h-2 w-2 ${autoPilot ? 'bg-white' : 'bg-text-secondary'}`} />
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${autoPilot ? 'bg-primary' : 'bg-neutral-500'}`} />
         </span>
-        <span className="hidden sm:inline">Otomatik Tur</span>
+        <span className="hidden sm:inline">Sinematik Tur</span>
       </button>
     </div>
   );
@@ -684,20 +615,26 @@ export function SpaceTravelNav() {
 // -------------------------------------------------------------
 export function SpaceJourneyEngine() {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-auto w-full h-full overflow-hidden bg-[#03030a]">
+    <div className="fixed inset-0 z-0 pointer-events-auto w-full h-full overflow-hidden bg-[#000003]">
       <Canvas
-        camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 1200 }}
-        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
+        camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 2000 }}
+        gl={{
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.05
+        }}
       >
-        <color attach="background" args={['#030309']} />
+        <color attach="background" args={['#000003']} />
 
-        {/* Ambient Cosmic Illumination */}
-        <ambientLight intensity={0.28} />
+        {/* Realistic subtle ambient light for shadow sides */}
+        <ambientLight intensity={0.12} />
 
-        {/* Deep Space Background Nebulae */}
-        <DeepSpaceNebulae />
+        {/* Real Milky Way 360 Skybox */}
+        <DeepSpaceMilkyWay />
 
-        {/* Core Celestial Bodies */}
+        {/* Core Celestial Bodies with Real NASA Maps */}
         <Sun />
         <Earth />
         <Mars />
@@ -705,18 +642,17 @@ export function SpaceJourneyEngine() {
         <Saturn />
         <BlackHole />
 
-        {/* Orbits & Asteroids */}
+        {/* Subtle Orbit Guides */}
         <OrbitLines />
-        <AsteroidBelt />
 
-        {/* Dynamic Hyperspace Field */}
+        {/* Relativistic Starfield */}
         <WarpStars />
 
-        {/* Smooth Cinematic Camera Movement */}
+        {/* Smooth Cinematic Orbit Controller */}
         <FlightCameraController />
       </Canvas>
 
-      {/* Floating Modern Space Travel Navigation Pill */}
+      {/* VisionOS Minimalist Voyage Pill */}
       <SpaceTravelNav />
     </div>
   );
