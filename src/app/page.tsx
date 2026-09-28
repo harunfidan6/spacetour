@@ -176,7 +176,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <Link
             href="/harita"
             className="group rounded-3xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06] hover:-translate-y-1"
@@ -185,7 +185,7 @@ export default function Home() {
               <Telescope size={24} />
             </div>
             <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between">
-              3D Gökyüzü Haritası
+              3D Gök Haritası
               <ChevronRight className="opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" size={16} />
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-neutral-400">
@@ -217,11 +217,27 @@ export default function Home() {
               <BookOpen size={24} />
             </div>
             <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors flex items-center justify-between">
-              Uzay Ansiklopedisi & Orrery
+              Ansiklopedi & Orrery
               <ChevronRight className="opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" size={16} />
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-neutral-400">
-              3D Keplerian Güneş Sistemi çarkı, gezegen boyut karşılaştırma laboratuvarı ve bilimsel raporlar.
+              3D Keplerian Güneş Sistemi çarkı, gezegen boyut karşılaştırma ve bilimsel raporlar.
+            </p>
+          </Link>
+
+          <Link
+            href="/astroloji"
+            className="group rounded-3xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06] hover:-translate-y-1"
+          >
+            <div className="mb-4 inline-flex rounded-2xl bg-white/5 p-3.5 text-rose-300 border border-white/10 group-hover:scale-105 transition-transform">
+              <Sparkles size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-white group-hover:text-rose-300 transition-colors flex items-center justify-between">
+              Astroloji & Zodyak
+              <ChevronRight className="opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" size={16} />
+            </h3>
+            <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+              Doğum haritası çarkı, yükselen burç hesaplayıcı ve burç uyumu analizi.
             </p>
           </Link>
 
@@ -233,11 +249,11 @@ export default function Home() {
               <Layers size={24} />
             </div>
             <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors flex items-center justify-between">
-              Multispektral Gözlemevi
+              Gözlemevi
               <ChevronRight className="opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" size={16} />
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-neutral-400">
-              James Webb kızılötesi, Chandra X-Ray ve radyo dalgaları ile evrenin görünmeyen yüzünü keşfedin.
+              James Webb kızılötesi, Chandra X-Ray ve radyo dalgalarıyla derin uzay.
             </p>
           </Link>
         </div>

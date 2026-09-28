@@ -10,6 +10,7 @@ import {
   X,
   Sparkles,
   Layers,
+  Moon,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,6 +19,7 @@ const navLinks = [
   { href: "/harita", label: "Gökyüzü Haritası", icon: Telescope },
   { href: "/takvim", label: "Olay Takvimi", icon: Calendar },
   { href: "/ansiklopedi", label: "Ansiklopedi", icon: BookOpen },
+  { href: "/astroloji", label: "Astroloji", icon: Moon },
   { href: "/gozlemevi", label: "Gözlemevi", icon: Layers },
 ];
 
