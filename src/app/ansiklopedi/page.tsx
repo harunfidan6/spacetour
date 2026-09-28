@@ -10,6 +10,7 @@ import { GravityCalculator } from "@/components/space/GravityCalculator";
 import { CosmicTimeMachine } from "@/components/space/CosmicTimeMachine";
 import { ExoplanetExplorer } from "@/components/space/ExoplanetExplorer";
 import { AsteroidImpactSimulator } from "@/components/space/AsteroidImpactSimulator";
+import { SolarSystemOrrery } from "@/components/space/SolarSystemOrrery";
 
 export default function AnsiklopediPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,6 +133,10 @@ export default function AnsiklopediPage() {
 
         {/* Interactive Lab Modules */}
         <div className="space-y-16 pt-12 border-t border-primary/20">
+          <section>
+            <SolarSystemOrrery />
+          </section>
+
           <section>
             <PlanetScaleComparator />
           </section>
