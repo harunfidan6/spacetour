@@ -495,3 +495,241 @@ export function createNebulaDustTexture(color: string = '#8a3ffc'): THREE.Canvas
   return new THREE.CanvasTexture(canvas);
 }
 
+// 10. MERCURY: Heavily cratered silicate crust with Caloris Basin & impact rays
+export function createMercuryTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  // Grey rocky regolith base
+  ctx.fillStyle = '#6e6f73';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Surface tonal variation
+  for (let i = 0; i < 400; i++) {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const r = Math.random() * 40 + 10;
+    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(60,60,65,0.4)' : 'rgba(150,150,155,0.3)';
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Craters & ray systems
+  for (let c = 0; c < 120; c++) {
+    const cx = Math.random() * canvas.width;
+    const cy = Math.random() * canvas.height;
+    const rad = Math.random() * 25 + 5;
+
+    // Rim highlight
+    ctx.strokeStyle = 'rgba(210, 210, 215, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Dark crater bowl
+    ctx.fillStyle = 'rgba(40, 40, 45, 0.7)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad * 0.85, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Central peak
+    if (rad > 12) {
+      ctx.fillStyle = 'rgba(200, 200, 205, 0.8)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// 11. VENUS: Dense, turbulent sulfuric acid atmosphere with golden-cream vortex clouds
+export function createVenusTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, '#a57e3f');
+  grad.addColorStop(0.2, '#c99f57');
+  grad.addColorStop(0.4, '#e6be79');
+  grad.addColorStop(0.5, '#f4d89e');
+  grad.addColorStop(0.6, '#e6be79');
+  grad.addColorStop(0.8, '#c99f57');
+  grad.addColorStop(1, '#a57e3f');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Chevron-shaped atmospheric cloud waves
+  for (let i = 0; i < 60; i++) {
+    const y = Math.random() * canvas.height;
+    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 245, 220, 0.25)' : 'rgba(150, 100, 40, 0.2)';
+    ctx.beginPath();
+    ctx.ellipse(Math.random() * canvas.width, y, 140, 18, (Math.random() - 0.5) * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// 12. MOON: Lunar Maria (dark basalt plains) and bright cratered anorthosite highlands
+export function createMoonTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  // Highlands bright base
+  ctx.fillStyle = '#b0b3b8';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Dark Lunar Maria (Sea of Tranquility, Oceanus Procellarum, Sea of Serenity)
+  ctx.fillStyle = '#484b50';
+  const maria = [
+    { x: 380, y: 220, rx: 110, ry: 70 },
+    { x: 490, y: 260, rx: 80, ry: 60 },
+    { x: 620, y: 190, rx: 90, ry: 80 },
+    { x: 320, y: 310, rx: 140, ry: 100 },
+    { x: 550, y: 340, rx: 70, ry: 50 }
+  ];
+  maria.forEach((m) => {
+    ctx.beginPath();
+    ctx.ellipse(m.x, m.y, m.rx, m.ry, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Thousands of impact craters & Tycho-like ray systems
+  for (let i = 0; i < 180; i++) {
+    const cx = Math.random() * canvas.width;
+    const cy = Math.random() * canvas.height;
+    const rad = Math.random() * 20 + 3;
+
+    ctx.fillStyle = 'rgba(35, 38, 42, 0.7)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(240, 242, 245, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Tycho bright crater rays
+  const tychoX = 480;
+  const tychoY = 380;
+  for (let r = 0; r < 24; r++) {
+    const angle = (r * Math.PI * 2) / 24;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tychoX, tychoY);
+    ctx.lineTo(tychoX + Math.cos(angle) * 160, tychoY + Math.sin(angle) * 160);
+    ctx.stroke();
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// 13. URANUS: Aquamarine cyan atmosphere with subtle methane bands & polar collar
+export function createUranusTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, '#5ab4c5');
+  grad.addColorStop(0.3, '#76cedd');
+  grad.addColorStop(0.5, '#8be4f0');
+  grad.addColorStop(0.7, '#76cedd');
+  grad.addColorStop(1, '#5ab4c5');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle zonal hazes
+  for (let i = 0; i < 30; i++) {
+    const y = Math.random() * canvas.height;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.fillRect(0, y, canvas.width, Math.random() * 10 + 2);
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// 14. NEPTUNE: Deep cobalt-azure storm bands & Great Dark Spot with white methane cirrus
+export function createNeptuneTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, '#1c3066');
+  grad.addColorStop(0.3, '#26458c');
+  grad.addColorStop(0.5, '#3b62ba');
+  grad.addColorStop(0.7, '#26458c');
+  grad.addColorStop(1, '#1c3066');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Great Dark Spot vortex
+  ctx.fillStyle = '#0d1838';
+  ctx.beginPath();
+  ctx.ellipse(canvas.width * 0.4, canvas.height * 0.58, 80, 45, 0.1, 0, Math.PI * 2);
+  ctx.fill();
+
+  // White high-altitude methane cirrus streaks ("Scooter")
+  for (let c = 0; c < 25; c++) {
+    const sx = Math.random() * canvas.width;
+    const sy = canvas.height * 0.35 + Math.random() * (canvas.height * 0.4);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.beginPath();
+    ctx.ellipse(sx, sy, Math.random() * 50 + 20, 3, (Math.random() - 0.5) * 0.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+// 15. PLUTO: Brownish tholin plains with the bright nitrogen ice heart (Tombaugh Regio)
+export function createPlutoTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.CanvasTexture(canvas);
+
+  // Reddish-brown organic tholin crust
+  ctx.fillStyle = '#7a5135';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Dark equatorial belt (Cthulhu Macula)
+  ctx.fillStyle = '#3a2012';
+  ctx.fillRect(0, canvas.height * 0.55, canvas.width, 90);
+
+  // Tombaugh Regio: Bright nitrogen ice heart
+  ctx.fillStyle = '#eedec5';
+  const hx = canvas.width * 0.5;
+  const hy = canvas.height * 0.45;
+  ctx.beginPath();
+  ctx.ellipse(hx - 35, hy, 45, 55, -0.2, 0, Math.PI * 2);
+  ctx.ellipse(hx + 35, hy, 45, 55, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+

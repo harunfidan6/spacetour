@@ -30,6 +30,7 @@ import {
 import { NatalChartCalculator } from '@/components/space/NatalChartCalculator';
 import { DailyCosmicTransitWidget } from '@/components/space/DailyCosmicTransitWidget';
 import { CosmicTarotDrawer } from '@/components/space/CosmicTarotDrawer';
+import { SynastryChartCalculator } from '@/components/space/SynastryChartCalculator';
 
 export default function AstrolojiPage() {
   const [selectedElement, setSelectedElement] = useState<string>('Tümü');
@@ -104,6 +105,12 @@ export default function AstrolojiPage() {
             className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-rose-400 hover:bg-rose-400/10 hover:text-rose-300 transition-all"
           >
             ♈ 12 Zodyak Rehberi
+          </a>
+          <a
+            href="#sinastri-analizi"
+            className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-rose-400 hover:bg-rose-400/10 hover:text-rose-300 transition-all"
+          >
+            💞 Sinastri & İkili İlişki
           </a>
           <a
             href="#burc-uyumu"
@@ -270,6 +277,11 @@ export default function AstrolojiPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* 6. Advanced Synastry & Dual Birth Chart Synergy */}
+      <section>
+        <SynastryChartCalculator />
       </section>
 
       {/* Detailed Modal on Click */}
