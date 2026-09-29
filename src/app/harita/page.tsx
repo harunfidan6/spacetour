@@ -7,6 +7,7 @@ import { LiveClock, RotatingBadge, Ticks } from '@/components/motion/primitives'
 import { BrightStarsRadar } from '@/components/space/BrightStarsRadar';
 import { BortleScaleSimulator } from '@/components/space/BortleScaleSimulator';
 import { MessierDeepSkyRadar } from '@/components/space/MessierDeepSkyRadar';
+import { PolarisPrecessionHop } from '@/components/space/PolarisPrecessionHop';
 import { HaritaGraphic } from '@/components/home/ModuleGraphics';
 
 const Planetarium3D = dynamic(() => import('@/components/space/Planetarium3D').then((mod) => mod.Planetarium3D), {
@@ -112,6 +113,21 @@ export default function HaritaPage() {
             lede="Charles Messier’in 110 nesnelik kataloğundan kuzey göğünün en görkemli 6 derin uzay hedefi: galaksiler, gaz bulutsuları ve yıldız kümeleri."
           />
           <MessierDeepSkyRadar />
+        </section>
+
+        {/* 01.5 - Polaris Navigation & Axial Precession */}
+        <section>
+          <SectionHead
+            index="01.5"
+            kicker="Gök kutbu & zamansal yalpalama"
+            title={
+              <>
+                Kutup yıldızı & <Em>presesyon çemberi</Em>
+              </>
+            }
+            lede="Büyük Ayı üzerinden 5x yıldız atlama (star-hopping) kılavuzu ve Dünyanın 25.772 yıllık presesyon döngüsünde kutup yıldızlarının değişimi."
+          />
+          <PolarisPrecessionHop />
         </section>
       </div>
     </div>

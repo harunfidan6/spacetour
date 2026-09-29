@@ -10,6 +10,7 @@ import { WebbHubbleCompareSlider } from '@/components/space/WebbHubbleCompareSli
 import { CosmicRadioSpectrograph } from '@/components/space/CosmicRadioSpectrograph';
 import { MegaObservatoriesRegistry } from '@/components/space/MegaObservatoriesRegistry';
 import { StellarSpectroscopyLab } from '@/components/space/StellarSpectroscopyLab';
+import { ExoplanetTransitLab } from '@/components/space/ExoplanetTransitLab';
 import { CosmicAcademyQuiz } from '@/components/space/CosmicAcademyQuiz';
 
 /* Long → short wavelength, left to right, like a real EM spectrum chart. */
@@ -246,10 +247,25 @@ export default function GozlemeviPage() {
           <StellarSpectroscopyLab />
         </section>
 
-        {/* 05.6 - Cosmic Academy & Astrophysics Certification */}
+        {/* 05.6 - Exoplanet Transit Photometry & Kepler Light Curves */}
         <section className="pt-16">
           <SectionHead
             index="05.6"
+            kicker="Ötegezegen avı & fotometrik eğriler"
+            title={
+              <>
+                Transit ışık eğrisi & <Em>ötegezegen fotometrisi</Em>
+              </>
+            }
+            lede="Kepler ve TESS yöntemleriyle bir gezegen yıldızının önünden geçerken ışık akısındaki düşüşü (ΔF/F) ve yaşanabilir kuşağı hesapla."
+          />
+          <ExoplanetTransitLab />
+        </section>
+
+        {/* 05.7 - Cosmic Academy & Astrophysics Certification */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.7"
             kicker="AstroTR Gözlemevi Değerlendirmesi"
             title={
               <>
