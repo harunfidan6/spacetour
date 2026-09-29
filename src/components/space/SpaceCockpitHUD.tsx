@@ -65,7 +65,7 @@ export function SpaceCockpitHUD() {
           <div className="flex flex-col items-center gap-4">
             <div className="sci-fi-box rounded-full px-8 py-3 flex items-center gap-3 shadow-neon-cyan">
               <Zap className="h-6 w-6 animate-bounce text-primary" />
-              <span className="font-mono text-base font-black tracking-[0.3em] text-primary uppercase drop-shadow-[0_0_10px_rgba(0,212,255,0.8)]">
+              <span className="font-mono text-base font-black tracking-[0.3em] text-primary uppercase drop-shadow-[0_0_10px_rgba(255,91,34,0.8)]">
                 WARP ATLAMASI AKTİF • {currentDestination.name}
               </span>
             </div>
@@ -150,7 +150,7 @@ export function SpaceCockpitHUD() {
                  {/* Rotating Radar Rings */}
                  <div className="absolute inset-0 rounded-full border border-primary/30 border-dashed animate-[spin_10s_linear_infinite]" />
                  <div className="absolute inset-2 rounded-full border-2 border-primary/10 border-t-primary/60 border-l-primary/60 animate-[spin_4s_linear_infinite_reverse]" />
-                 <Target className="absolute h-8 w-8 text-primary opacity-60 drop-shadow-[0_0_10px_rgba(0,212,255,0.8)]" />
+                 <Target className="absolute h-8 w-8 text-primary opacity-60 drop-shadow-[0_0_10px_rgba(255,91,34,0.8)]" />
                  
                  {/* Scanning Line */}
                  <div className="absolute top-1/2 left-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent to-primary origin-left animate-[spin_3s_linear_infinite]" />
@@ -245,7 +245,7 @@ export function SpaceCockpitHUD() {
                   </div>
 
                   <div className="flex items-center gap-3 bg-primary/5 p-2 border border-primary/20">
-                    <Weight size={16} className="text-secondary drop-shadow-[0_0_5px_rgba(168,85,247,0.8)]" />
+                    <Weight size={16} className="text-secondary drop-shadow-[0_0_5px_rgba(122,92,255,0.8)]" />
                     <div>
                       <div className="text-[9px] text-primary/60 tracking-widest">YERÇEKİMİ</div>
                       <div className="font-bold text-foreground truncate">{currentDestination.gravity}</div>
@@ -311,14 +311,14 @@ export function SpaceCockpitHUD() {
                       onClick={() => setDestination(destId)}
                       className={`relative flex-shrink-0 flex items-center justify-center min-w-[120px] border px-4 py-3 text-xs tracking-widest uppercase font-bold transition-all duration-300 snap-start
                         ${isActive
-                          ? 'border-primary bg-primary/20 text-white shadow-neon-cyan scale-105'
+                          ? 'border-primary bg-primary/20 text-paper shadow-neon-cyan scale-105'
                           : 'border-primary/30 bg-primary/5 text-primary/60 hover:border-primary/80 hover:text-primary hover:bg-primary/10'
                       }`}
                     >
                       {isActive && (
                         <>
-                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white"></div>
-                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white"></div>
+                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-paper"></div>
+                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-paper"></div>
                         </>
                       )}
                       <span className="relative z-10">{dest.name}</span>

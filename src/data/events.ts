@@ -24,16 +24,17 @@ export const eventTypeLabels: Record<EventType, string> = {
   'solstis': 'Gündönümü'
 };
 
-export const eventTypeColors: Record<EventType, string> = {
-  'ay-tutulmasi': 'bg-red-500 text-white',
-  'gunes-tutulmasi': 'bg-star-gold text-black',
-  'meteor-yagmuru': 'bg-accent text-white',
-  'gezegen-kavusumu': 'bg-primary text-black',
-  'super-ay': 'bg-blue-300 text-black',
-  'yeni-ay': 'bg-gray-800 text-white',
-  'dolunay': 'bg-gray-200 text-black',
-  'equinoks': 'bg-secondary text-white',
-  'solstis': 'bg-orange-500 text-white'
+/** Signal colour per event type (CSS colour values from the design tokens). */
+export const eventTypeTones: Record<EventType, string> = {
+  'ay-tutulmasi': 'var(--rose)',
+  'gunes-tutulmasi': 'var(--gold)',
+  'meteor-yagmuru': 'var(--solar)',
+  'gezegen-kavusumu': 'var(--violet)',
+  'super-ay': '#8fd3ff',
+  'yeni-ay': 'var(--muted)',
+  'dolunay': 'var(--paper)',
+  'equinoks': 'var(--lime)',
+  'solstis': '#ff9f43'
 };
 
 export const events: AstronomicalEvent[] = [

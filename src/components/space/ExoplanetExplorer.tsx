@@ -104,8 +104,8 @@ export function ExoplanetExplorer() {
               onClick={() => setSelectedPlanet(planet)}
               className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-primary text-background font-bold shadow-[0_0_20px_rgba(0,212,255,0.4)] scale-102'
-                  : 'bg-background/60 text-text-secondary border border-card-border/60 hover:text-white'
+                  ? 'bg-primary text-background font-bold shadow-[0_0_20px_rgba(255,91,34,0.4)] scale-102'
+                  : 'bg-background/60 text-text-secondary border border-card-border/60 hover:text-paper'
               }`}
             >
               <span className="mr-1">{planet.emoji}</span> {planet.name}
@@ -119,8 +119,8 @@ export function ExoplanetExplorer() {
         {/* Left: Orbit & Goldilocks Zone Canvas */}
         <div className="lg:col-span-6 rounded-2xl overflow-hidden border border-card-border/60 relative">
           <canvas ref={canvasRef} className="w-full h-[240px] block" />
-          <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2 text-[10px] font-mono text-white/70 bg-black/60 px-2.5 py-1 rounded backdrop-blur-xs">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2 text-[10px] font-mono text-paper/70 bg-ink/60 px-2.5 py-1 rounded backdrop-blur-xs">
+            <span className="h-2 w-2 rounded-full bg-lime" />
             <span>Yeşil Kuşak: Yaşanabilir Bölge (Sıvı Su Olasılığı)</span>
           </div>
         </div>
@@ -135,7 +135,7 @@ export function ExoplanetExplorer() {
             <span
               className={`px-3 py-1 rounded-full text-xs font-mono font-bold border ${
                 selectedPlanet.habitableZone
-                  ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30'
+                  ? 'text-lime bg-lime/10 border-lime/30'
                   : 'text-accent bg-accent/10 border-accent/30'
               }`}
             >

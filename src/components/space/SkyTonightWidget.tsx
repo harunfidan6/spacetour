@@ -94,8 +94,8 @@ export function SkyTonightWidget() {
             onClick={() => setSelectedTab('planets')}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
               selectedTab === 'planets'
-                ? 'bg-primary text-background shadow-[0_0_15px_rgba(0,212,255,0.4)]'
-                : 'text-text-secondary hover:text-white'
+                ? 'bg-primary text-background shadow-[0_0_15px_rgba(255,91,34,0.4)]'
+                : 'text-text-secondary hover:text-paper'
             }`}
           >
             Gezegenler
@@ -104,8 +104,8 @@ export function SkyTonightWidget() {
             onClick={() => setSelectedTab('moon')}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
               selectedTab === 'moon'
-                ? 'bg-primary text-background shadow-[0_0_15px_rgba(0,212,255,0.4)]'
-                : 'text-text-secondary hover:text-white'
+                ? 'bg-primary text-background shadow-[0_0_15px_rgba(255,91,34,0.4)]'
+                : 'text-text-secondary hover:text-paper'
             }`}
           >
             Ay Evresi
@@ -114,8 +114,8 @@ export function SkyTonightWidget() {
             onClick={() => setSelectedTab('quality')}
             className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
               selectedTab === 'quality'
-                ? 'bg-primary text-background shadow-[0_0_15px_rgba(0,212,255,0.4)]'
-                : 'text-text-secondary hover:text-white'
+                ? 'bg-primary text-background shadow-[0_0_15px_rgba(255,91,34,0.4)]'
+                : 'text-text-secondary hover:text-paper'
             }`}
           >
             Gözlem Kalitesi
@@ -137,10 +137,10 @@ export function SkyTonightWidget() {
                   <span
                     className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border ${
                       planet.visibility === 'Mükemmel'
-                        ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+                        ? 'border-lime/40 bg-lime/10 text-lime'
                         : planet.visibility === 'İyi'
                         ? 'border-primary/40 bg-primary/10 text-primary'
-                        : 'border-amber-500/40 bg-amber-500/10 text-amber-400'
+                        : 'border-gold/40 bg-gold/10 text-gold'
                     }`}
                   >
                     {planet.visibility}
@@ -172,7 +172,7 @@ export function SkyTonightWidget() {
             </div>
             <Link
               href="/harita"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-cyan-300 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary transition-colors"
             >
               <span>3D Planetaryum'u Aç</span>
               <ArrowRight size={14} />
@@ -186,7 +186,7 @@ export function SkyTonightWidget() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <div className="md:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-background/50 border border-card-border/80 text-center">
             <div className="relative mb-3">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-slate-300 via-amber-100 to-slate-200 shadow-[0_0_40px_rgba(255,230,170,0.5)] border-2 border-amber-200/50 flex items-center justify-center text-4xl">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-slate-300 via-gold to-slate-200 shadow-[0_0_40px_rgba(255,230,170,0.5)] border-2 border-gold/50 flex items-center justify-center text-4xl">
                 🌔
               </div>
             </div>
@@ -223,10 +223,10 @@ export function SkyTonightWidget() {
           <div className="p-4 rounded-2xl bg-background/50 border border-card-border/80 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-text-secondary">Işık Kirliliği</span>
-              <span className="text-xs font-mono font-bold text-emerald-400">Bortle Sınıfı 4</span>
+              <span className="text-xs font-mono font-bold text-lime">Bortle Sınıfı 4</span>
             </div>
             <div className="w-full bg-card-bg rounded-full h-2 overflow-hidden">
-              <div className="bg-emerald-400 h-2 rounded-full w-2/3" />
+              <div className="bg-lime h-2 rounded-full w-2/3" />
             </div>
             <p className="text-[11px] text-text-secondary leading-snug">
               Kırsal/banliyö geçiş göğü. Samanyolu çıplak gözle ufkun üstünde seçilebilir.
@@ -249,10 +249,10 @@ export function SkyTonightWidget() {
           <div className="p-4 rounded-2xl bg-background/50 border border-card-border/80 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-text-secondary">Bulut Örtüsü</span>
-              <span className="text-xs font-mono font-bold text-emerald-400">%10 (Açık)</span>
+              <span className="text-xs font-mono font-bold text-lime">%10 (Açık)</span>
             </div>
             <div className="w-full bg-card-bg rounded-full h-2 overflow-hidden">
-              <div className="bg-emerald-400 h-2 rounded-full w-[10%]" />
+              <div className="bg-lime h-2 rounded-full w-[10%]" />
             </div>
             <p className="text-[11px] text-text-secondary leading-snug">
               Gözlem pencereleri gece boyu kristal netliğinde açık kalacak.

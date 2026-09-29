@@ -39,7 +39,7 @@ export function SpaceWeatherWidget() {
   }, []);
 
   const getKpColor = (kp: number) => {
-    if (kp < 4) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
+    if (kp < 4) return 'text-lime bg-lime/10 border-lime/30';
     if (kp < 6) return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
     return 'text-red-400 bg-red-400/10 border-red-400/30';
   };
@@ -49,7 +49,7 @@ export function SpaceWeatherWidget() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-card-border pb-3">
         <div className="flex items-center gap-2">
-          <Sun className="h-5 w-5 text-orange-400 animate-spin" style={{ animationDuration: '15s' }} />
+          <Sun className="h-5 w-5 text-primary animate-spin" style={{ animationDuration: '15s' }} />
           <div>
             <h3 className="font-bold text-foreground text-sm uppercase tracking-wider font-mono">
               Güneş & Uzay Hava Durumu

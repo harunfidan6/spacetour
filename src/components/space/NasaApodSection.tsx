@@ -45,7 +45,7 @@ export function NasaApodSection() {
           </div>
 
           {apod.copyright && (
-            <div className="absolute bottom-3 left-4 text-[10px] font-mono text-white/70 bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+            <div className="absolute bottom-3 left-4 text-[10px] font-mono text-paper/70 bg-ink/60 px-2 py-0.5 rounded backdrop-blur-xs">
               © {apod.copyright}
             </div>
           )}
@@ -69,7 +69,7 @@ export function NasaApodSection() {
 
             <button
               onClick={() => setExpanded(!expanded)}
-              className="mt-3 text-xs font-bold text-secondary hover:text-white transition-colors"
+              className="mt-3 text-xs font-bold text-secondary hover:text-paper transition-colors"
             >
               {expanded ? 'Daha Az Göster ↑' : 'Tamamını Oku ↓'}
             </button>

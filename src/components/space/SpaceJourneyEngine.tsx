@@ -552,71 +552,14 @@ function OrbitLines() {
 }
 
 // -------------------------------------------------------------
-// 11. MODERN ELEGANT GLASS VOYAGE PILL (NASA Eyes Style)
-// -------------------------------------------------------------
-export function SpaceTravelNav() {
-  const { currentDestination, setDestination, autoPilot, toggleAutoPilot } = useSpace();
-
-  const destinations: { id: DestinationId; name: string; icon: string }[] = [
-    { id: 'sun', name: 'Güneş', icon: '☀️' },
-    { id: 'earth', name: 'Dünya', icon: '🌍' },
-    { id: 'mars', name: 'Mars', icon: '🔴' },
-    { id: 'jupiter', name: 'Jüpiter', icon: '🪐' },
-    { id: 'saturn', name: 'Satürn', icon: '🪐' },
-    { id: 'blackhole', name: 'Gargantua', icon: '🕳️' },
-    { id: 'solar-overview', name: 'Güneş Sistemi', icon: '🌌' },
-  ];
-
-  return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-2xl">
-      {destinations.map((d) => {
-        const isActive = currentDestination.id === d.id;
-        return (
-          <button
-            key={d.id}
-            onClick={() => setDestination(d.id)}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-300 ${
-              isActive
-                ? 'bg-white/15 text-white border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.15)] scale-105'
-                : 'text-neutral-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <span className="text-sm">{d.icon}</span>
-            <span className="hidden sm:inline tracking-wide">{d.name}</span>
-          </button>
-        );
-      })}
-
-      <div className="h-4 w-px bg-white/10 mx-1 hidden sm:block" />
-
-      <button
-        onClick={toggleAutoPilot}
-        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-          autoPilot
-            ? 'bg-primary/30 text-primary border border-primary/40 shadow-[0_0_15px_rgba(0,212,255,0.3)]'
-            : 'border border-white/10 bg-white/5 text-neutral-400 hover:text-white'
-        }`}
-        title="Otomatik Sinematik Tur"
-      >
-        <span className="relative flex h-2 w-2">
-          {autoPilot && (
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-          )}
-          <span className={`relative inline-flex rounded-full h-2 w-2 ${autoPilot ? 'bg-primary' : 'bg-neutral-500'}`} />
-        </span>
-        <span className="hidden sm:inline">Sinematik Tur</span>
-      </button>
-    </div>
-  );
-}
-
-// -------------------------------------------------------------
 // MAIN 3D UNIVERSE CANVAS
 // -------------------------------------------------------------
-export function SpaceJourneyEngine() {
+export function SpaceJourneyEngine({ active = true, className = '' }: { active?: boolean; className?: string }) {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-auto w-full h-full overflow-hidden bg-[#000003]">
+    <div className={`absolute inset-0 h-full w-full overflow-hidden bg-[#000003] ${className}`}>
       <Canvas
+        frameloop={active ? 'always' : 'never'}
+        dpr={[1, 1.75]}
         camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 2000 }}
         gl={{
           antialias: true,
@@ -651,9 +594,6 @@ export function SpaceJourneyEngine() {
         {/* Smooth Cinematic Orbit Controller */}
         <FlightCameraController />
       </Canvas>
-
-      {/* VisionOS Minimalist Voyage Pill */}
-      <SpaceTravelNav />
     </div>
   );
 }

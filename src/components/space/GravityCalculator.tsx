@@ -14,10 +14,10 @@ interface GravityBody {
 }
 
 const BODIES: GravityBody[] = [
-  { id: 'moon', name: 'Ay', gravityRatio: 0.166, emoji: '🌕', jumpMultiplier: 6.0, funFact: 'Apollo astronotlarının kanguru gibi zıplamasının nedeni budur.', color: 'text-gray-300' },
-  { id: 'mercury', name: 'Merkür', gravityRatio: 0.38, emoji: '🪨', jumpMultiplier: 2.6, funFact: 'Kütlesi küçük olmasına rağmen demir çekirdeği çok yoğundur.', color: 'text-amber-400' },
+  { id: 'moon', name: 'Ay', gravityRatio: 0.166, emoji: '🌕', jumpMultiplier: 6.0, funFact: 'Apollo astronotlarının kanguru gibi zıplamasının nedeni budur.', color: 'text-paper/75' },
+  { id: 'mercury', name: 'Merkür', gravityRatio: 0.38, emoji: '🪨', jumpMultiplier: 2.6, funFact: 'Kütlesi küçük olmasına rağmen demir çekirdeği çok yoğundur.', color: 'text-gold' },
   { id: 'venus', name: 'Venüs', gravityRatio: 0.91, emoji: '✨', jumpMultiplier: 1.1, funFact: 'Dünya’ya yerçekimi olarak en çok benzeyen ikiz gezegendir.', color: 'text-yellow-400' },
-  { id: 'earth', name: 'Dünya', gravityRatio: 1.0, emoji: '🌍', jumpMultiplier: 1.0, funFact: 'Alıştığınız 1g (9.81 m/s²) standart yerçekimi.', color: 'text-[#00d4ff]' },
+  { id: 'earth', name: 'Dünya', gravityRatio: 1.0, emoji: '🌍', jumpMultiplier: 1.0, funFact: 'Alıştığınız 1g (9.81 m/s²) standart yerçekimi.', color: 'text-primary' },
   { id: 'mars', name: 'Mars', gravityRatio: 0.38, emoji: '🔴', jumpMultiplier: 2.6, funFact: 'Olimpos Dağı gibi devasa yanardağlar düşük yerçekimi sayesinde yükseldi.', color: 'text-[#ff5722]' },
   { id: 'jupiter', name: 'Jüpiter', gravityRatio: 2.53, emoji: '🟠', jumpMultiplier: 0.39, funFact: 'Vücudunuz 2.5 kat ağırlaşır, ayakta durmak dahi muazzam efor gerektirir.', color: 'text-[#ff9800]' },
   { id: 'saturn', name: 'Satürn', gravityRatio: 1.06, emoji: '🪐', jumpMultiplier: 0.94, funFact: 'Devasa boyutuna rağmen gaz yoğunluğu sudan az olduğu için yerçekimi Dünya’ya yakındır.', color: 'text-yellow-200' },
@@ -37,7 +37,7 @@ export function GravityCalculator() {
             <Target className="h-6 w-6 text-secondary animate-spin" style={{ animationDuration: '6s' }} />
           </div>
           <div>
-            <h3 className="font-bold text-white text-lg tracking-widest font-mono uppercase">
+            <h3 className="font-bold text-paper text-lg tracking-widest font-mono uppercase">
               Yerçekimi Alan Odası
             </h3>
             <span className="text-xs text-secondary font-mono tracking-widest flex items-center gap-2">
@@ -51,7 +51,7 @@ export function GravityCalculator() {
           <div className="p-2 bg-secondary/10 rounded-xl">
             <Fingerprint className="text-secondary h-4 w-4" />
           </div>
-          <span className="text-xs text-gray-400">REFERANS KÜTLE:</span>
+          <span className="text-xs text-muted">REFERANS KÜTLE:</span>
           <div className="relative group">
             <input
               type="number"
@@ -59,7 +59,7 @@ export function GravityCalculator() {
               max="250"
               value={earthWeight}
               onChange={(e) => setEarthWeight(Math.max(1, Number(e.target.value)))}
-              className="w-24 rounded-lg bg-card-bg border border-secondary/50 px-3 py-1.5 text-center text-lg font-black text-white focus:outline-none focus:border-secondary transition-all"
+              className="w-24 rounded-lg bg-card-bg border border-secondary/50 px-3 py-1.5 text-center text-lg font-black text-paper focus:outline-none focus:border-secondary transition-all"
             />
             <span className="absolute right-2 top-2 text-xs text-secondary font-bold">kg</span>
           </div>
@@ -76,13 +76,13 @@ export function GravityCalculator() {
           return (
             <div
               key={body.id}
-              className="group p-5 rounded-2xl bg-background/50 border border-secondary/20 hover:border-secondary hover:bg-card-bg/90 transition-all duration-300 flex flex-col space-y-4 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:-translate-y-1"
+              className="group p-5 rounded-2xl bg-background/50 border border-secondary/20 hover:border-secondary hover:bg-card-bg/90 transition-all duration-300 flex flex-col space-y-4 hover:shadow-[0_0_20px_rgba(122,92,255,0.2)] hover:-translate-y-1"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl drop-shadow-lg group-hover:scale-110 transition-transform">{body.emoji}</span>
                   <div>
-                    <h4 className="font-bold text-white text-base tracking-wide">{body.name}</h4>
+                    <h4 className="font-bold text-paper text-base tracking-wide">{body.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="text-[10px] font-mono bg-secondary/20 text-secondary px-1.5 py-0.5 rounded border border-secondary/30">
                         {body.gravityRatio}G
@@ -92,7 +92,7 @@ export function GravityCalculator() {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-xl font-black font-mono text-white tracking-wider">
+                  <div className="text-xl font-black font-mono text-paper tracking-wider">
                     {weightOnBody} <span className="text-xs text-secondary font-normal">kg</span>
                   </div>
                 </div>
@@ -111,14 +111,14 @@ export function GravityCalculator() {
                   <div className="p-1.5 bg-blue-500/10 rounded-md border border-blue-500/30">
                     <ArrowUp size={14} className="text-blue-400 group-hover:-translate-y-1 transition-transform" />
                   </div>
-                  <span className="text-[11px] font-mono text-gray-400">Zıplama İrtifası</span>
+                  <span className="text-[11px] font-mono text-muted">Zıplama İrtifası</span>
                 </div>
                 <span className="font-bold text-blue-400 font-mono text-sm bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
                   {jumpHeightCm >= 100 ? `${(jumpHeightCm / 100).toFixed(1)} m` : `${jumpHeightCm} cm`}
                 </span>
               </div>
 
-              <p className="text-[11px] text-gray-500 leading-relaxed italic bg-black/20 p-2 rounded-lg border border-white/5">
+              <p className="text-[11px] text-muted leading-relaxed italic bg-ink/20 p-2 rounded-lg border border-paper/5">
                 {body.funFact}
               </p>
             </div>

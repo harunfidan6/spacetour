@@ -1,118 +1,161 @@
-import { planets } from "@/data/planets";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Info, ThermometerSun, Orbit, Globe2 } from "lucide-react";
-import { PlanetHologram3D } from "@/components/space/PlanetHologram3D";
+import type { CSSProperties } from 'react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { planets } from '@/data/planets';
+import { PlanetHologram3D } from '@/components/space/PlanetHologram3D';
+import { SplitReveal } from '@/components/motion/SplitReveal';
+import { FitText } from '@/components/motion/FitText';
+import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
+import { Marquee } from '@/components/motion/Marquee';
 
 export function generateStaticParams() {
-  return planets.map((p) => ({
-    id: p.id,
-  }));
+  return planets.map((p) => ({ id: p.id }));
 }
+
+export async function generateMetadata(props: PageProps<'/ansiklopedi/[id]'>) {
+  const { id } = await props.params;
+  const planet = planets.find((p) => p.id === id);
+  return { title: planet ? `${planet.name} — SpaceTour TR Ansiklopedi` : 'Kayıt bulunamadı — SpaceTour TR' };
+}
+
+const TYPE_LABEL: Record<string, string> = {
+  gezegen: 'Gezegen',
+  yıldız: 'Yıldız',
+  ay: 'Doğal uydu',
+  'cüce-gezegen': 'Cüce gezegen',
+};
 
 export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>) {
   const { id } = await props.params;
-  const planet = planets.find((p) => p.id === id);
-  
-  if (!planet) {
-    return notFound();
-  }
+  const index = planets.findIndex((p) => p.id === id);
+  if (index === -1) notFound();
+
+  const planet = planets[index];
+  const prev = planets[(index - 1 + planets.length) % planets.length];
+  const next = planets[(index + 1) % planets.length];
+
+  const facts = [
+    { k: 'Çap', v: planet.facts.çap },
+    { k: 'Kütle', v: planet.facts.kütle },
+    { k: 'Yörünge süresi', v: planet.facts.yörüngeSüresi },
+    { k: 'Sıcaklık', v: planet.facts.sıcaklık },
+  ];
+  const telemetry = [
+    { k: 'Güneş’e uzaklık', v: planet.facts.güneşeUzaklık },
+    { k: 'Gün süresi', v: planet.facts.günSüresi },
+    { k: 'Doğal uydu', v: `${planet.facts.uyduSayısı} adet` },
+    { k: 'Halka sistemi', v: planet.facts.halkaSistemi ? 'Var' : 'Yok' },
+  ];
+  const paragraphs = planet.detay.split('\n').filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-background/60 backdrop-blur-sm text-white p-6 lg:p-12 relative z-10">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <Link href="/ansiklopedi" className="inline-flex items-center text-[#00d4ff] hover:text-white transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Ansiklopediye Dön
-        </Link>
+    <div className="relative" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
+      <div className="px-[var(--gutter)] pt-24 sm:pt-28">
+        <div className="flex items-center gap-4 border-b border-line pb-4">
+          <Link href="/ansiklopedi" className="label group flex items-center gap-2 text-paper transition-colors hover:text-violet">
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> Arşiv
+          </Link>
+          <span className="label text-muted">
+            (03) Kayıt {String(index + 1).padStart(2, '0')} / {String(planets.length).padStart(2, '0')}
+          </span>
+          <span className="label ml-auto hidden text-violet sm:inline">{TYPE_LABEL[planet.type] ?? planet.type}</span>
+        </div>
 
-        {/* 3D Hologram Laboratory & Hero Header */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-card-bg/75 p-6 lg:p-8 rounded-3xl border border-card-border backdrop-blur-md shadow-2xl">
-          {/* Left/Main: Interactive 3D Hologram */}
-          <div className="lg:col-span-7">
+        <FitText className="display mt-8 leading-[0.8] text-paper" fallback="18vw" max={420}>
+          <SplitReveal as="span" trigger="intro" effect="tilt" stagger={0.05} duration={1.3}>
+            {planet.name}
+          </SplitReveal>
+        </FitText>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-12">
+          <div className="flex flex-col justify-between gap-8 lg:col-span-5">
+            <div>
+              <div className="text-6xl">{planet.image}</div>
+              <SplitReveal as="p" by="lines" trigger="intro" delay={0.3} className="mt-6 text-xl leading-snug text-paper/85 sm:text-2xl">
+                {planet.description}
+              </SplitReveal>
+            </div>
+            <p className="label text-muted">Sürükle: 360° döndür · Tekerlek: yakınlaştır</p>
+          </div>
+          <Reveal mode="clip" className="ticks relative lg:col-span-7">
+            <Ticks />
             <PlanetHologram3D id={planet.id} />
-          </div>
-
-          {/* Right: Planet Title & Key Description */}
-          <div className="lg:col-span-5 flex flex-col justify-center">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">{planet.image}</span>
-              <div className="inline-block px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono font-bold uppercase tracking-widest text-primary">
-                {planet.type}
-              </div>
-            </div>
-
-            <h1 className={`text-4xl md:text-6xl font-black mb-3 ${planet.renk}`}>
-              {planet.name}
-            </h1>
-
-            <p className="text-base text-text-secondary leading-relaxed mb-6">
-              {planet.description}
-            </p>
-
-            <div className="p-3.5 rounded-2xl bg-background/50 border border-card-border/60 text-xs font-mono text-text-secondary">
-              ⚡ Farenizle yukarıdaki 3D modeli 360° serbestçe döndürebilir ve tekerlek ile yakınlaştırabilirsiniz.
-            </div>
-          </div>
-        </div>
-
-        {/* Facts Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <FactCard icon={<Globe2 />} label="Çap" value={planet.facts.çap} />
-          <FactCard icon={<Info />} label="Kütle" value={planet.facts.kütle} />
-          <FactCard icon={<Orbit />} label="Yörünge" value={planet.facts.yörüngeSüresi} />
-          <FactCard icon={<ThermometerSun />} label="Sıcaklık" value={planet.facts.sıcaklık} />
-        </div>
-
-        {/* Details and Extra Facts */}
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-4 bg-card-bg/60 p-6 rounded-3xl border border-card-border backdrop-blur-md">
-            <h2 className="text-xl font-bold border-b border-card-border pb-3 text-foreground flex items-center gap-2">
-              <Info className="text-primary h-5 w-5" />
-              Detaylı Bilimsel Rapor
-            </h2>
-            <div className="space-y-4 text-text-secondary leading-relaxed text-base whitespace-pre-line">
-              {planet.detay}
-            </div>
-          </div>
-          
-          <div className="space-y-4 bg-card-bg/60 p-6 rounded-3xl border border-card-border backdrop-blur-md h-fit">
-            <h2 className="text-xl font-bold border-b border-card-border pb-3 text-foreground">
-              Ekstra Telemetri
-            </h2>
-            <div className="space-y-4 text-sm font-mono">
-              <div className="flex justify-between border-b border-card-border/40 pb-2">
-                <span className="text-text-secondary">Güneş'e Uzaklık</span>
-                <span className="font-bold text-foreground">{planet.facts.güneşeUzaklık}</span>
-              </div>
-              <div className="flex justify-between border-b border-card-border/40 pb-2">
-                <span className="text-text-secondary">Gün Süresi</span>
-                <span className="font-bold text-foreground">{planet.facts.günSüresi}</span>
-              </div>
-              <div className="flex justify-between border-b border-card-border/40 pb-2">
-                <span className="text-text-secondary">Doğal Uydu</span>
-                <span className="font-bold text-foreground">{planet.facts.uyduSayısı} Adet</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-secondary">Halka Sistemi</span>
-                <span className="font-bold text-foreground">{planet.facts.halkaSistemi ? "Var (Belirgin)" : "Yok"}</span>
-              </div>
-            </div>
-          </div>
+          </Reveal>
         </div>
       </div>
-    </div>
-  );
-}
 
-function FactCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
-  return (
-    <div className="bg-card-bg/70 p-4 rounded-2xl border border-card-border backdrop-blur-md flex flex-col items-center text-center">
-      <div className="text-accent mb-2 w-6 h-6">
-        {icon}
+      <div className="mt-16 border-y border-line bg-violet py-3 text-ink">
+        <Marquee speed={50}>
+          {[planet.name, TYPE_LABEL[planet.type] ?? planet.type, planet.facts.çap, planet.facts.sıcaklık].map((t, i) => (
+            <span key={i} className="label flex items-center gap-6 px-6 text-sm font-semibold">
+              {t} <span>✦</span>
+            </span>
+          ))}
+        </Marquee>
       </div>
-      <span className="text-[10px] font-mono text-text-secondary uppercase tracking-wider mb-1">{label}</span>
-      <span className="font-bold text-sm md:text-base text-foreground">{value}</span>
+
+      <div className="space-y-20 px-[var(--gutter)] pb-28 pt-16">
+        <Reveal items="[data-fact]" stagger={0.08} className="grid grid-cols-2 gap-px border border-line bg-line lg:grid-cols-4">
+          {facts.map((f) => (
+            <div key={f.k} data-fact className="bg-ink p-5 sm:p-7">
+              <div className="label text-muted">{f.k}</div>
+              <div className="display display-tight mt-4 text-[clamp(1.4rem,2.6vw,2.4rem)] leading-[0.95] text-violet">
+                <Scramble text={f.v} />
+              </div>
+            </div>
+          ))}
+        </Reveal>
+
+        <div className="grid gap-12 lg:grid-cols-12">
+          <article className="lg:col-span-8">
+            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
+              <span className="label text-violet">(R)</span>
+              <span className="label text-paper">Bilimsel rapor</span>
+            </div>
+            <div className="max-w-3xl space-y-6 text-lg leading-relaxed text-paper/75 sm:text-xl">
+              {paragraphs.map((p, i) => (
+                <SplitReveal key={i} as="p" by="lines" stagger={0.06}>
+                  {p}
+                </SplitReveal>
+              ))}
+            </div>
+          </article>
+          <aside className="lg:col-span-4">
+            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
+              <span className="label text-violet">(T)</span>
+              <span className="label text-paper">Ekstra telemetri</span>
+            </div>
+            <dl className="border-t border-line">
+              {telemetry.map((t) => (
+                <div key={t.k} className="flex items-baseline justify-between gap-4 border-b border-line py-4">
+                  <dt className="label text-muted">{t.k}</dt>
+                  <dd className="text-right font-mono text-sm text-paper">
+                    <Scramble text={t.v} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
+        </div>
+
+        <nav className="grid gap-px border border-line bg-line sm:grid-cols-2" aria-label="Kayıtlar arasında gezin">
+          {[
+            { p: prev, label: 'Önceki kayıt', dir: -1 },
+            { p: next, label: 'Sonraki kayıt', dir: 1 },
+          ].map(({ p, label, dir }) => (
+            <Link key={label} href={`/ansiklopedi/${p.id}`} className={`group relative overflow-hidden bg-ink p-6 sm:p-10 ${dir > 0 ? 'text-right' : ''}`}>
+              <span aria-hidden className={`absolute inset-0 scale-x-0 bg-violet transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-x-100 ${dir > 0 ? 'origin-right' : 'origin-left'}`} />
+              <span className={`label relative flex items-center gap-2 text-muted group-hover:text-ink ${dir > 0 ? 'justify-end' : ''}`}>
+                {dir < 0 && <ArrowLeft size={14} />} {label} {dir > 0 && <ArrowRight size={14} />}
+              </span>
+              <span className="display relative mt-4 block pt-[0.12em] text-[clamp(2rem,5vw,4.5rem)] text-paper transition-colors group-hover:text-ink">
+                {p.image} {p.name}
+              </span>
+            </Link>
+          ))}
+        </nav>
+      </div>
     </div>
   );
 }

@@ -93,24 +93,24 @@ export function ArCameraOverlay({
       />
 
       {/* 2. Soft Dark Vignette for Star Contrast */}
-      <div className="absolute inset-0 bg-black/35 z-1" />
+      <div className="absolute inset-0 bg-ink/35 z-1" />
 
       {/* 3. AR Status & Controls Header */}
       <div className="absolute top-20 left-4 right-4 z-30 pointer-events-auto flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-emerald-400/40 bg-black/70 px-4 py-1.5 backdrop-blur-xl shadow-2xl">
+        <div className="flex items-center gap-2 rounded-full border border-lime/40 bg-ink/70 px-4 py-1.5 backdrop-blur-xl shadow-2xl">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-lime" />
           </span>
-          <span className="text-[11px] font-mono font-bold tracking-widest text-emerald-300 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-widest text-lime uppercase">
             CANLI AR GÖKYÜZÜ KAMERASI
           </span>
         </div>
 
         {/* Opacity Slider & Camera Switcher */}
-        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-black/70 px-4 py-1.5 backdrop-blur-xl">
-          <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-300">
-            <Eye size={13} className="text-cyan-400" />
+        <div className="flex items-center gap-3 rounded-full border border-paper/15 bg-ink/70 px-4 py-1.5 backdrop-blur-xl">
+          <div className="flex items-center gap-1.5 text-xs font-mono text-paper/75">
+            <Eye size={13} className="text-primary" />
             <span className="hidden sm:inline">Yıldız Saydamlığı:</span>
             <input
               type="range"
@@ -119,13 +119,13 @@ export function ArCameraOverlay({
               step="0.05"
               value={opacity}
               onChange={(e) => setOpacity(parseFloat(e.target.value))}
-              className="w-16 sm:w-24 accent-cyan-400 cursor-pointer"
+              className="w-16 sm:w-24 accent-primary cursor-pointer"
             />
           </div>
 
           <button
             onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-            className="text-neutral-400 hover:text-white transition-colors p-1"
+            className="text-muted hover:text-paper transition-colors p-1"
             title="Kamera Değiştir (Ön/Arka)"
           >
             <RefreshCw size={14} />
@@ -133,7 +133,7 @@ export function ArCameraOverlay({
 
           <button
             onClick={onClose}
-            className="flex items-center gap-1 text-xs font-mono text-neutral-400 hover:text-red-400 transition-colors pl-1 border-l border-white/10"
+            className="flex items-center gap-1 text-xs font-mono text-muted hover:text-red-400 transition-colors pl-1 border-l border-paper/10"
           >
             <CameraOff size={14} />
             <span className="hidden sm:inline">Kapat</span>
@@ -143,23 +143,23 @@ export function ArCameraOverlay({
 
       {/* Loading or Error State */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-auto">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-black/80 p-4 text-sm font-mono text-white">
-            <RefreshCw className="animate-spin text-cyan-400" size={18} />
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-ink/60 backdrop-blur-sm pointer-events-auto">
+          <div className="flex items-center gap-3 rounded-2xl border border-paper/15 bg-ink/80 p-4 text-sm font-mono text-paper">
+            <RefreshCw className="animate-spin text-primary" size={18} />
             <span>Kamera başlatılıyor...</span>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-ink/80 backdrop-blur-sm p-4 pointer-events-auto">
           <div className="max-w-md rounded-3xl border border-red-500/40 bg-red-950/80 p-6 text-center space-y-3">
             <AlertCircle className="mx-auto text-red-400" size={32} />
-            <h4 className="text-base font-bold text-white">Kamera Erişilemedi</h4>
+            <h4 className="text-base font-bold text-paper">Kamera Erişilemedi</h4>
             <p className="text-xs text-red-200 leading-relaxed font-sans">{error}</p>
             <button
               onClick={onClose}
-              className="mt-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-mono font-bold px-4 py-2 transition-colors"
+              className="mt-2 rounded-xl bg-paper/20 hover:bg-paper/30 text-paper text-xs font-mono font-bold px-4 py-2 transition-colors"
             >
               Simülasyon Moduna Dön
             </button>

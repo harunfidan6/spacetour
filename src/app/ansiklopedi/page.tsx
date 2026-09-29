@@ -1,185 +1,248 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { planets } from "@/data/planets";
-import { constellations } from "@/data/constellations";
-import { Search, Database, Fingerprint, Map } from "lucide-react";
-import { PlanetScaleComparator } from "@/components/space/PlanetScaleComparator";
-import { GravityCalculator } from "@/components/space/GravityCalculator";
-import { CosmicTimeMachine } from "@/components/space/CosmicTimeMachine";
-import { ExoplanetExplorer } from "@/components/space/ExoplanetExplorer";
-import { AsteroidImpactSimulator } from "@/components/space/AsteroidImpactSimulator";
-import { SolarSystemOrrery } from "@/components/space/SolarSystemOrrery";
+import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import Link from 'next/link';
+import { ArrowUpRight, Search } from 'lucide-react';
+import { planets } from '@/data/planets';
+import { constellations } from '@/data/constellations';
+import { PlanetScaleComparator } from '@/components/space/PlanetScaleComparator';
+import { GravityCalculator } from '@/components/space/GravityCalculator';
+import { CosmicTimeMachine } from '@/components/space/CosmicTimeMachine';
+import { ExoplanetExplorer } from '@/components/space/ExoplanetExplorer';
+import { AsteroidImpactSimulator } from '@/components/space/AsteroidImpactSimulator';
+import { SolarSystemOrrery } from '@/components/space/SolarSystemOrrery';
+import { BlackHoleSimulator } from '@/components/space/BlackHoleSimulator';
+import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
+import { Reveal, RotatingBadge } from '@/components/motion/primitives';
+import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
+
+const TABS = ['Tümü', 'Gezegenler', 'Yıldızlar', 'Diğer'] as const;
+type Tab = (typeof TABS)[number];
+
+const TYPE_LABEL: Record<string, string> = {
+  gezegen: 'Gezegen',
+  yıldız: 'Yıldız',
+  ay: 'Uydu',
+  'cüce-gezegen': 'Cüce gezegen',
+};
+
+function Chapter({ index, title, children }: { index: string; title: string; children: ReactNode }) {
+  return (
+    <section className="module">
+      <div className="mb-5 flex items-center gap-3 border-t border-line pt-4">
+        <span className="label text-violet">({index})</span>
+        <span className="label text-paper">{title}</span>
+      </div>
+      <Reveal mode="clip">{children}</Reveal>
+    </section>
+  );
+}
 
 export default function AnsiklopediPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState<"Tümü" | "Gezegenler" | "Yıldızlar" | "Diğer">("Tümü");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<Tab>('Tümü');
+  const list = useRef<HTMLOListElement>(null);
 
-  const filteredPlanets = planets.filter((planet) => {
-    const matchesSearch = planet.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTab =
-      activeTab === "Tümü" ||
-      (activeTab === "Gezegenler" && planet.type === "gezegen") ||
-      (activeTab === "Yıldızlar" && planet.type === "yıldız") ||
-      (activeTab === "Diğer" && (planet.type === "ay" || planet.type === "cüce-gezegen"));
-    return matchesSearch && matchesTab;
-  });
+  const filtered = useMemo(
+    () =>
+      planets.filter((p) => {
+        const matchesSearch = p.name.toLocaleLowerCase('tr-TR').includes(searchTerm.toLocaleLowerCase('tr-TR'));
+        const matchesTab =
+          activeTab === 'Tümü' ||
+          (activeTab === 'Gezegenler' && p.type === 'gezegen') ||
+          (activeTab === 'Yıldızlar' && p.type === 'yıldız') ||
+          (activeTab === 'Diğer' && (p.type === 'ay' || p.type === 'cüce-gezegen'));
+        return matchesSearch && matchesTab;
+      }),
+    [searchTerm, activeTab]
+  );
+
+  useGsap(
+    () => {
+      if (prefersReducedMotion() || !list.current) return;
+      gsap.from(list.current.querySelectorAll('[data-row]'), { yPercent: 60, autoAlpha: 0, duration: 0.7, stagger: 0.04, ease: 'mg.out' });
+    },
+    [activeTab]
+  );
+
+  const planetCount = planets.filter((p) => p.type === 'gezegen').length;
 
   return (
-    <div className="min-h-screen bg-background/60 backdrop-blur-sm text-gray-400 p-4 sm:p-8 lg:p-12 relative z-10 font-sans">
-      <div className="max-w-6xl mx-auto space-y-16">
-        
-        {/* Terminal Header Section */}
-        <section className="relative text-center space-y-8 py-8 border-b border-primary/20">
-          <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-2xl border border-primary/30 mb-2 shadow-[0_0_20px_rgba(0,212,255,0.15)]">
-            <Database className="w-8 h-8 text-primary" />
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-            Merkezi <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">Veritabanı</span>
-          </h1>
-          <p className="text-base sm:text-lg max-w-2xl mx-auto font-mono text-gray-400">
-            [BAĞLANTI KURULDU] • Gök cisimleri, yıldız sistemleri ve kozmik laboratuvar arşivine erişiliyor...
-          </p>
+    <div className="relative" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
+      <PageHero
+        index="03"
+        section="Ansiklopedi"
+        accent="var(--violet)"
+        lines={['Kozmik', <Em key="a">arşiv</Em>]}
+        size="clamp(3.4rem, 13vw, 14rem)"
+        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten yedi laboratuvar modülü."
+        meta={[
+          { k: 'Kayıt', v: planets.length },
+          { k: 'Gezegen', v: planetCount },
+          { k: 'Takımyıldızı', v: constellations.length },
+          { k: 'Laboratuvar', v: 7 },
+        ]}
+        graphic={
+          <RotatingBadge text="Kayıt · Arşiv · Laboratuvar · Orrery · " size={220} className="text-paper/80">
+            <svg viewBox="-50 -50 100 100" className="h-24 w-24" aria-hidden>
+              <circle r="22" fill="var(--violet)" />
+              <ellipse rx="42" ry="10" fill="none" stroke="var(--paper)" strokeWidth="2" transform="rotate(-18)" />
+            </svg>
+          </RotatingBadge>
+        }
+        ticker={planets.map((p) => p.name)}
+      />
 
-          {/* Search and Flight Deck Console Filters */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-6">
-            <div className="relative w-full max-w-md group">
-              <div className="relative flex items-center bg-card-bg rounded-xl border border-card-border focus-within:border-primary transition-colors">
-                <Search className="absolute left-4 w-5 h-5 text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Kozmik arşivi tara..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-transparent text-white focus:outline-none font-mono placeholder-gray-600 text-sm"
-                />
-              </div>
-            </div>
-            
-            <div className="flex bg-card-bg/80 p-1.5 rounded-xl border border-card-border shadow-inner w-full md:w-auto overflow-x-auto font-mono text-xs">
-              {(["Tümü", "Gezegenler", "Yıldızlar", "Diğer"] as const).map((tab) => (
+      <div className="space-y-24 px-[var(--gutter)] pb-28 pt-16">
+        {/* Records */}
+        <section>
+          <SectionHead
+            index="03.1"
+            kicker="Kayıtlı gök cisimleri"
+            title={
+              <>
+                Kimlik <Em>kartları</Em>
+              </>
+            }
+            lede="Bir kayda tıkla: 3D hologram, fiziksel veriler ve bilimsel rapor açılır."
+          />
+
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <label className="group relative block w-full max-w-xl">
+              <span className="sr-only">Kozmik arşivde ara</span>
+              <Search className="pointer-events-none absolute left-0 top-1/2 h-6 w-6 -translate-y-1/2 text-muted transition-colors group-focus-within:text-violet" />
+              <input
+                type="text"
+                placeholder="Arşivde ara…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full border-b-2 border-line bg-transparent py-3 pl-10 font-display text-3xl font-bold uppercase text-paper placeholder:text-muted/60 focus:border-violet focus:outline-none sm:text-4xl"
+                style={{ fontStretch: '112%' }}
+              />
+            </label>
+            <div className="flex gap-1 rounded-full border border-line p-1" role="tablist" aria-label="Kayıt türü">
+              {TABS.map((tab) => (
                 <button
                   key={tab}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-5 py-2.5 rounded-lg whitespace-nowrap transition-all cursor-pointer ${
-                    activeTab === tab
-                      ? "bg-primary text-background font-bold shadow-[0_0_15px_rgba(0,212,255,0.4)]"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
+                  className={`label rounded-full px-4 py-2 transition-colors ${activeTab === tab ? 'bg-violet text-ink' : 'text-paper/70 hover:text-paper'}`}
                 >
-                  {tab.toUpperCase()}
+                  {tab}
                 </button>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* Celestial Bodies Grid */}
-        <section>
-          <div className="flex items-center gap-3 mb-8">
-            <Fingerprint className="text-primary" />
-            <h2 className="text-2xl font-bold text-white font-mono uppercase tracking-widest">
-              Kayıtlı Gök Cisimleri
-            </h2>
-          </div>
-          
-          {filteredPlanets.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPlanets.map((planet) => (
-                <Link key={planet.id} href={`/ansiklopedi/${planet.id}`}>
-                  <div className="relative group bg-card-bg/75 rounded-2xl p-6 border border-card-border overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,212,255,0.15)] hover:-translate-y-2 hover:border-primary/50">
-                    <div className="flex items-start justify-between mb-6 relative z-10">
-                      <div className="w-16 h-16 flex items-center justify-center bg-black/40 rounded-2xl border border-card-border shadow-inner group-hover:scale-110 transition-transform duration-500">
-                        <span className="text-4xl drop-shadow-md">{planet.image}</span>
-                      </div>
-                      
-                      <span className={`text-[10px] font-bold font-mono px-3 py-1 rounded-full uppercase tracking-wider border backdrop-blur-sm ${
-                        planet.type === 'yıldız' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                        planet.type === 'gezegen' ? 'bg-primary/10 text-primary border-primary/30' :
-                        'bg-gray-500/10 text-gray-300 border-gray-500/30'
-                      }`}>
-                        {planet.type}
+          {filtered.length > 0 ? (
+            <ol ref={list} className="border-t border-line">
+              <li className="label hidden grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] items-center gap-4 border-b border-line py-3 text-muted md:grid">
+                <span>No</span>
+                <span>Ad</span>
+                <span>Tür</span>
+                <span>Çap</span>
+                <span>Uydu</span>
+                <span />
+              </li>
+              {filtered.map((p) => {
+                const index = planets.indexOf(p) + 1;
+                return (
+                  <li key={p.id} data-row className="overflow-hidden border-b border-line">
+                    <Link href={`/ansiklopedi/${p.id}`} className="group relative grid grid-cols-[3rem_1fr_auto] items-center gap-4 py-4 md:grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] md:py-5" data-cursor="Aç">
+                      <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-violet transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-x-100" />
+                      <span className="label relative text-muted transition-colors group-hover:text-ink">{String(index).padStart(2, '0')}</span>
+                      <span className="relative flex items-center gap-4">
+                        <span className="text-3xl transition-transform duration-500 group-hover:rotate-[20deg] group-hover:scale-110 sm:text-4xl">{p.image}</span>
+                        <span className="display display-tight pt-[0.12em] text-[clamp(1.8rem,4vw,3.6rem)] text-paper transition-[color,letter-spacing] duration-500 group-hover:tracking-[0.01em] group-hover:text-ink">
+                          {p.name}
+                        </span>
                       </span>
-                    </div>
-                    
-                    <h3 className="text-xl font-black text-white mb-2 tracking-wide group-hover:text-primary transition-colors relative z-10">
-                      {planet.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed relative z-10">
-                      {planet.description}
-                    </p>
-                    
-                    <div className="mt-6 flex items-center gap-2 relative z-10 font-mono text-[10px] text-gray-400">
-                      <span className="bg-black/50 px-2 py-1 rounded border border-card-border uppercase">
-                        ÇAP: {planet.facts.çap}
+                      <span className="label relative hidden text-paper/70 group-hover:text-ink md:block">{TYPE_LABEL[p.type] ?? p.type}</span>
+                      <span className="relative hidden font-mono text-sm text-paper/70 group-hover:text-ink md:block">{p.facts.çap}</span>
+                      <span className="relative hidden font-mono text-sm text-paper/70 group-hover:text-ink md:block">{p.facts.uyduSayısı}</span>
+                      <span className="relative grid h-10 w-10 place-items-center justify-self-end rounded-full border border-line text-paper transition-all duration-500 group-hover:rotate-45 group-hover:border-ink group-hover:bg-ink">
+                        <ArrowUpRight size={16} />
                       </span>
-                      <span className="bg-black/50 px-2 py-1 rounded border border-card-border uppercase">
-                        UYDU: {planet.facts.uyduSayısı}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ol>
           ) : (
-            <div className="text-center py-16 bg-card-bg/50 rounded-2xl border border-dashed border-card-border font-mono">
-              <Database className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400">Veritabanında eşleşen kayıt bulunamadı.</p>
+            <div className="border border-dashed border-line py-16 text-center">
+              <p className="display display-tight text-3xl text-paper">Kayıt yok</p>
+              <p className="mt-2 text-sm text-muted">“{searchTerm}” için eşleşen gök cismi bulunamadı.</p>
             </div>
           )}
         </section>
 
-        {/* Interactive Lab Modules */}
-        <div className="space-y-16 pt-12 border-t border-primary/20">
-          <section>
+        {/* Lab */}
+        <section className="space-y-16">
+          <SectionHead
+            index="03.2"
+            kicker="Laboratuvar"
+            title={
+              <>
+                Deneyerek <Em>öğren</Em>
+              </>
+            }
+            lede="Kepler yörüngeleri, ölçek, kütleçekim, zaman ve çarpışma: evrenin kurallarını kaydırıcılarla dene."
+          />
+          <Chapter index="L1" title="3D Kepler orrery’si">
             <SolarSystemOrrery />
-          </section>
-
-          <section>
+          </Chapter>
+          <Chapter index="L2" title="Gezegen ölçek karşılaştırıcı">
             <PlanetScaleComparator />
-          </section>
-
-          <section>
+          </Chapter>
+          <Chapter index="L3" title="Kütleçekim hesaplayıcı">
             <GravityCalculator />
-          </section>
-
-          <section>
+          </Chapter>
+          <Chapter index="L4" title="Kozmik zaman makinesi">
             <CosmicTimeMachine />
-          </section>
-
-          <section>
+          </Chapter>
+          <Chapter index="L5" title="Ötegezegen gezgini">
             <ExoplanetExplorer />
-          </section>
-
-          <section>
+          </Chapter>
+          <Chapter index="L6" title="Asteroit çarpışma simülatörü">
             <AsteroidImpactSimulator />
-          </section>
-        </div>
+          </Chapter>
+          <Chapter index="L7" title="Kara delik & görelilik zaman genleşmesi (Gargantua)">
+            <BlackHoleSimulator />
+          </Chapter>
+        </section>
 
-        {/* Constellations Section */}
-        <section className="pt-12">
-          <div className="flex items-center gap-3 mb-8">
-            <Map className="text-secondary" />
-            <h2 className="text-2xl font-bold text-white font-mono uppercase tracking-widest">
-              Gözlemlenebilir Takımyıldızlar
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {constellations.map((constellation) => (
-              <div key={constellation.id} className="bg-card-bg/60 rounded-2xl p-6 border border-card-border hover:border-secondary/50 flex flex-col items-center text-center transition-all hover:bg-card-bg hover:shadow-[0_0_25px_rgba(168,85,247,0.1)] group">
-                <span className="text-5xl mb-4 drop-shadow-lg group-hover:scale-110 transition-transform duration-500">{constellation.emoji}</span>
-                <h3 className="text-lg font-black text-star-gold mb-1 tracking-wide">{constellation.name}</h3>
-                <p className="text-xs text-secondary mb-4 font-mono border-b border-card-border w-full pb-2">{constellation.latinName}</p>
-                <p className="text-xs text-gray-400 line-clamp-3 mb-6 leading-relaxed">{constellation.description}</p>
-                <div className="mt-auto w-full flex justify-between bg-black/40 rounded-lg p-2 border border-card-border text-[9px] font-mono uppercase tracking-wider text-gray-500">
-                  <span>{constellation.mainStars} Yıldız</span>
-                  <span className="text-primary">Gözlem: {constellation.bestMonth}</span>
+        {/* Constellations */}
+        <section>
+          <SectionHead
+            index="03.3"
+            kicker="Gözlemlenebilir takımyıldızları"
+            title={
+              <>
+                Gökyüzünün <Em>haritası</Em>
+              </>
+            }
+            lede="Kuzey yarımküreden çıplak gözle görülebilen takımyıldızları, en iyi gözlem ayları ve mitolojik hikâyeleriyle."
+          />
+          <Reveal items="[data-card]" stagger={0.06} className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {constellations.map((c, i) => (
+              <article key={c.id} data-card className="group relative flex flex-col bg-ink p-6 transition-colors duration-500 hover:bg-ink-3">
+                <div className="flex items-start justify-between">
+                  <span className="label text-muted">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-5xl transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-rotate-12 group-hover:scale-110">{c.emoji}</span>
                 </div>
-              </div>
+                <h3 className="display display-tight mt-8 pt-[0.12em] text-3xl text-paper">{c.name}</h3>
+                <p className="serif-i text-xl text-violet">{c.latinName}</p>
+                <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-paper/60">{c.description}</p>
+                <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-muted">{c.mythology}</p>
+                <div className="label mt-auto flex justify-between border-t border-line pt-4 text-[10px] text-muted">
+                  <span>{c.mainStars} ana yıldız</span>
+                  <span className="text-paper">En iyi: {c.bestMonth}</span>
+                </div>
+              </article>
             ))}
-          </div>
+          </Reveal>
         </section>
       </div>
     </div>

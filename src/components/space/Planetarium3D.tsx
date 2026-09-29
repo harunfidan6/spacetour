@@ -150,7 +150,7 @@ function RealTimeStars({
             {/* Star Name Label */}
             {isSelected && (
               <Html distanceFactor={40} center>
-                <div className="pointer-events-none select-none rounded-full border border-cyan-400/80 bg-black/80 px-2.5 py-0.5 text-[10px] font-mono font-bold text-cyan-300 shadow-[0_0_15px_rgba(0,212,255,0.6)] backdrop-blur-md">
+                <div className="pointer-events-none select-none rounded-full border border-primary/80 bg-ink/80 px-2.5 py-0.5 text-[10px] font-mono font-bold text-primary shadow-[0_0_15px_rgba(255,91,34,0.6)] backdrop-blur-md">
                   {star.turkishName || star.name}
                 </div>
               </Html>
@@ -281,7 +281,7 @@ function LocalGroundHorizon({
             <div className={`pointer-events-none select-none rounded-md px-2 py-0.5 text-xs font-mono font-bold tracking-widest border backdrop-blur-md ${
               nightVision
                 ? 'border-red-800 bg-red-950/80 text-red-400'
-                : 'border-white/10 bg-black/60 text-white shadow-[0_0_10px_rgba(0,0,0,0.8)]'
+                : 'border-paper/10 bg-ink/60 text-paper shadow-[0_0_10px_rgba(0,0,0,0.8)]'
             }`}>
               {c.label}
             </div>
@@ -354,8 +354,8 @@ function RealTimeDeepSky({
                 }}
                 className={`cursor-pointer pointer-events-auto select-none rounded-full px-2 py-0.5 text-[9px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all ${
                   isSelected
-                    ? 'border-cyan-400 bg-cyan-950/90 text-cyan-200 scale-110 shadow-[0_0_15px_rgba(0,212,255,0.7)]'
-                    : 'border-white/10 bg-black/60 text-neutral-300 hover:text-white'
+                    ? 'border-primary bg-primary/10 text-primary scale-110 shadow-[0_0_15px_rgba(255,91,34,0.7)]'
+                    : 'border-paper/10 bg-ink/60 text-paper/75 hover:text-paper'
                 }`}
               >
                 <span>{dso.emoji} </span>
@@ -521,15 +521,15 @@ export function Planetarium3D() {
         <div className="pointer-events-auto relative">
           <button
             onClick={() => setIsLocDropdownOpen(!isLocDropdownOpen)}
-            className="flex items-center gap-2.5 rounded-2xl border border-white/10 bg-black/70 px-4 py-2 text-xs font-mono backdrop-blur-xl shadow-2xl hover:border-white/20 transition-all text-left"
+            className="flex items-center gap-2.5 rounded-2xl border border-paper/10 bg-ink/70 px-4 py-2 text-xs font-mono backdrop-blur-xl shadow-2xl hover:border-paper/20 transition-all text-left"
           >
-            <MapPin size={15} className="text-cyan-400 animate-pulse" />
+            <MapPin size={15} className="text-primary animate-pulse" />
             <div>
-              <div className="font-bold text-white flex items-center gap-1.5">
+              <div className="font-bold text-paper flex items-center gap-1.5">
                 <span>{selectedLocation.city}</span>
-                <ChevronDown size={12} className="text-neutral-400" />
+                <ChevronDown size={12} className="text-muted" />
               </div>
-              <div className="text-[10px] text-neutral-400">
+              <div className="text-[10px] text-muted">
                 {selectedLocation.latitude}°K • LST: {(currentLst / 15).toFixed(1)}h
               </div>
             </div>
@@ -537,17 +537,17 @@ export function Planetarium3D() {
 
           {/* Location Selector Dropdown */}
           {isLocDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-64 rounded-2xl border border-white/10 bg-black/95 p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1 font-mono text-xs">
+            <div className="absolute top-full left-0 mt-2 w-64 rounded-2xl border border-paper/10 bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1 font-mono text-xs">
               <button
                 onClick={handleAutoGps}
                 disabled={isGpsLoading}
-                className="w-full flex items-center gap-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 p-2.5 hover:bg-cyan-500/30 transition-colors font-bold text-left"
+                className="w-full flex items-center gap-2 rounded-xl bg-primary/20 text-primary border border-primary/30 p-2.5 hover:bg-primary/30 transition-colors font-bold text-left"
               >
                 <RefreshCw size={13} className={isGpsLoading ? 'animate-spin' : ''} />
                 <span>{isGpsLoading ? 'GPS Alınıyor...' : '📍 Otomatik GPS Konumu Al'}</span>
               </button>
 
-              <div className="text-[10px] text-neutral-500 uppercase tracking-widest px-2 pt-2">
+              <div className="text-[10px] text-muted uppercase tracking-widest px-2 pt-2">
                 Hazır Şehirler
               </div>
 
@@ -560,11 +560,11 @@ export function Planetarium3D() {
                       setIsLocDropdownOpen(false);
                     }}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-colors flex justify-between ${
-                      selectedLocation.city === loc.city ? 'bg-white/15 text-white font-bold' : 'text-neutral-300 hover:bg-white/5'
+                      selectedLocation.city === loc.city ? 'bg-paper/15 text-paper font-bold' : 'text-paper/75 hover:bg-paper/5'
                     }`}
                   >
                     <span>{loc.city}</span>
-                    <span className="text-[10px] text-neutral-500">{loc.latitude}°</span>
+                    <span className="text-[10px] text-muted">{loc.latitude}°</span>
                   </button>
                 ))}
               </div>
@@ -574,17 +574,17 @@ export function Planetarium3D() {
 
         {/* Search Bar */}
         <div className="pointer-events-auto relative w-60 sm:w-72">
-          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/70 px-3.5 py-2 backdrop-blur-xl text-xs">
-            <Search size={14} className="text-neutral-400" />
+          <div className="flex items-center gap-2 rounded-2xl border border-paper/10 bg-ink/70 px-3.5 py-2 backdrop-blur-xl text-xs">
+            <Search size={14} className="text-muted" />
             <input
               type="text"
               placeholder="Yıldız veya Bulutsu ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-xs text-white outline-none placeholder:text-neutral-500 font-mono"
+              className="w-full bg-transparent text-xs text-paper outline-none placeholder:text-muted font-mono"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="text-xs text-neutral-400 hover:text-white">
+              <button onClick={() => setSearchQuery('')} className="text-xs text-muted hover:text-paper">
                 ✕
               </button>
             )}
@@ -592,7 +592,7 @@ export function Planetarium3D() {
 
           {/* Search Dropdown */}
           {searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto rounded-2xl border border-white/10 bg-black/95 p-2 shadow-2xl backdrop-blur-2xl z-30 font-mono text-xs">
+            <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto rounded-2xl border border-paper/10 bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 font-mono text-xs">
               {searchResults.map((res, i) => (
                 <div
                   key={i}
@@ -606,13 +606,13 @@ export function Planetarium3D() {
                     }
                     setSearchQuery('');
                   }}
-                  className="flex items-center justify-between rounded-xl px-3 py-2 cursor-pointer hover:bg-white/10 text-white transition-all"
+                  className="flex items-center justify-between rounded-xl px-3 py-2 cursor-pointer hover:bg-paper/10 text-paper transition-all"
                 >
                   <div className="flex items-center gap-2">
                     <span>{res.type === 'star' ? '⭐' : res.data.emoji}</span>
                     <span className="font-bold">{res.data.name}</span>
                   </div>
-                  <span className="text-[10px] text-neutral-400">
+                  <span className="text-[10px] text-muted">
                     {res.type === 'star' ? `Mag ${res.data.magnitude}` : res.data.type}
                   </span>
                 </div>
@@ -628,8 +628,8 @@ export function Planetarium3D() {
             onClick={() => setIsArActive(!isArActive)}
             className={`flex items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-xs font-mono font-bold backdrop-blur-xl transition-all ${
               isArActive
-                ? 'border-emerald-400 bg-emerald-500/25 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
-                : 'border-white/10 bg-black/70 text-neutral-300 hover:border-emerald-400/40 hover:text-white'
+                ? 'border-lime bg-lime/25 text-lime shadow-[0_0_20px_rgba(212,255,61,0.4)]'
+                : 'border-paper/10 bg-ink/70 text-paper/75 hover:border-lime/40 hover:text-paper'
             }`}
             title="Kamerayı Aç / AR Moduna Geç"
           >
@@ -642,8 +642,8 @@ export function Planetarium3D() {
             onClick={() => setUseLocalHorizon(!useLocalHorizon)}
             className={`flex items-center gap-1.5 rounded-2xl border px-3 py-2 text-xs font-mono backdrop-blur-xl transition-all ${
               useLocalHorizon
-                ? 'border-cyan-400/40 bg-cyan-500/15 text-cyan-300 font-bold'
-                : 'border-white/10 bg-black/70 text-neutral-400 hover:text-white'
+                ? 'border-primary/40 bg-primary/15 text-primary font-bold'
+                : 'border-paper/10 bg-ink/70 text-muted hover:text-paper'
             }`}
             title="Yerel Ufuk / Tüm Gök Küre"
           >
@@ -656,8 +656,8 @@ export function Planetarium3D() {
             onClick={() => setShowConstellations(!showConstellations)}
             className={`flex items-center gap-1.5 rounded-2xl border px-3 py-2 text-xs font-mono backdrop-blur-xl transition-all ${
               showConstellations
-                ? 'border-white/20 bg-white/10 text-white font-bold'
-                : 'border-white/10 bg-black/70 text-neutral-400 hover:text-white'
+                ? 'border-paper/20 bg-paper/10 text-paper font-bold'
+                : 'border-paper/10 bg-ink/70 text-muted hover:text-paper'
             }`}
             title="Takımyıldız Çizgileri"
           >
@@ -669,10 +669,10 @@ export function Planetarium3D() {
             onClick={() => setTimeFlowRate((prev) => (prev === 1 ? 60 : prev === 60 ? 0 : 1))}
             className={`flex items-center gap-1.5 rounded-2xl border px-3 py-2 text-xs font-mono backdrop-blur-xl transition-all ${
               timeFlowRate > 1
-                ? 'border-amber-400 bg-amber-500/20 text-amber-300 font-bold'
+                ? 'border-gold bg-gold/20 text-gold font-bold'
                 : timeFlowRate === 0
                 ? 'border-red-400 bg-red-500/20 text-red-300'
-                : 'border-white/10 bg-black/70 text-neutral-400 hover:text-white'
+                : 'border-paper/10 bg-ink/70 text-muted hover:text-paper'
             }`}
             title="Zaman Hızı (Canlı / Hızlı / Duraklat)"
           >
@@ -684,24 +684,24 @@ export function Planetarium3D() {
 
       {/* 4. STAR INSPECTION PANEL */}
       {selectedStar && (
-        <div className="absolute bottom-6 left-6 z-20 max-w-sm rounded-3xl border border-white/15 bg-black/85 p-5 shadow-2xl backdrop-blur-2xl transition-all text-white font-mono">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+        <div className="absolute bottom-6 left-6 z-20 max-w-sm rounded-3xl border border-paper/15 bg-ink/85 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
+          <div className="flex items-center justify-between border-b border-paper/10 pb-2 mb-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
               YILDIZ SPEKTRUMU
             </span>
-            <button onClick={() => setSelectedStar(null)} className="text-xs text-neutral-400 hover:text-white">✕</button>
+            <button onClick={() => setSelectedStar(null)} className="text-xs text-muted hover:text-paper">✕</button>
           </div>
 
           <h2 className="text-xl font-black">{selectedStar.turkishName || selectedStar.name}</h2>
-          <div className="text-xs text-neutral-400 mb-3">{selectedStar.constellation} Takımyıldızı</div>
+          <div className="text-xs text-muted mb-3">{selectedStar.constellation} Takımyıldızı</div>
 
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-              <span className="text-[10px] text-neutral-400 block">Görünür Kadir</span>
-              <span className="font-bold text-amber-300">{selectedStar.magnitude} m</span>
+            <div className="rounded-xl border border-paper/10 bg-paper/5 p-2">
+              <span className="text-[10px] text-muted block">Görünür Kadir</span>
+              <span className="font-bold text-gold">{selectedStar.magnitude} m</span>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-              <span className="text-[10px] text-neutral-400 block">Sağ Açıklık (RA)</span>
+            <div className="rounded-xl border border-paper/10 bg-paper/5 p-2">
+              <span className="text-[10px] text-muted block">Sağ Açıklık (RA)</span>
               <span className="font-bold">{selectedStar.ra.toFixed(1)}°</span>
             </div>
           </div>
@@ -710,45 +710,45 @@ export function Planetarium3D() {
 
       {/* 5. DSO INSPECTION PANEL */}
       {selectedDso && (
-        <div className="absolute bottom-6 left-6 z-20 max-w-sm rounded-3xl border border-white/15 bg-black/85 p-5 shadow-2xl backdrop-blur-2xl transition-all text-white">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+        <div className="absolute bottom-6 left-6 z-20 max-w-sm rounded-3xl border border-paper/15 bg-ink/85 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper">
+          <div className="flex items-center justify-between border-b border-paper/10 pb-2 mb-3">
             <div className="flex items-center gap-2">
               <span className="text-base">{selectedDso.emoji}</span>
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-cyan-400">
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-primary">
                 DERİN UZAY CİSMİ
               </span>
             </div>
-            <button onClick={() => setSelectedDso(null)} className="text-xs text-neutral-400 hover:text-white">✕</button>
+            <button onClick={() => setSelectedDso(null)} className="text-xs text-muted hover:text-paper">✕</button>
           </div>
 
           <h2 className="text-xl font-black mb-1">{selectedDso.name}</h2>
-          <div className="text-xs text-neutral-400 font-mono mb-3">{selectedDso.distanceLightYears}</div>
+          <div className="text-xs text-muted font-mono mb-3">{selectedDso.distanceLightYears}</div>
 
           {selectedDso.image && (
-            <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-3 border border-white/10">
+            <div className="relative h-32 w-full rounded-2xl overflow-hidden mb-3 border border-paper/10">
               <img
                 src={selectedDso.image}
                 alt={selectedDso.name}
                 className="h-full w-full object-cover"
               />
-              <div className="absolute bottom-1.5 right-2 px-2 py-0.5 rounded-full bg-black/70 text-[9px] font-mono text-white/80">
+              <div className="absolute bottom-1.5 right-2 px-2 py-0.5 rounded-full bg-ink/70 text-[9px] font-mono text-paper/80">
                 Hubble / JWST
               </div>
             </div>
           )}
 
-          <p className="text-xs text-neutral-300 leading-relaxed font-sans mb-3">
+          <p className="text-xs text-paper/75 leading-relaxed font-sans mb-3">
             {selectedDso.description}
           </p>
 
           <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-              <span className="text-[10px] text-neutral-400 block">Tür</span>
+            <div className="rounded-xl border border-paper/10 bg-paper/5 p-2">
+              <span className="text-[10px] text-muted block">Tür</span>
               <span className="font-bold capitalize">{selectedDso.type}</span>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-              <span className="text-[10px] text-neutral-400 block">Katalog</span>
-              <span className="font-bold text-cyan-300">{selectedDso.catalog}</span>
+            <div className="rounded-xl border border-paper/10 bg-paper/5 p-2">
+              <span className="text-[10px] text-muted block">Katalog</span>
+              <span className="font-bold text-primary">{selectedDso.catalog}</span>
             </div>
           </div>
         </div>

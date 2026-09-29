@@ -314,7 +314,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   return (
-    <div className="relative h-80 sm:h-[420px] w-full rounded-3xl border border-white/10 bg-black/60 backdrop-blur-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    <div className="relative h-80 sm:h-[420px] w-full rounded-3xl border border-paper/10 bg-ink/60 backdrop-blur-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
       {/* 3D WebGL Canvas */}
       <Canvas camera={{ position: [0, 1.2, 5.8], fov: 45 }}>
         <ambientLight intensity={0.55} />
@@ -342,19 +342,19 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
 
       {/* Top Hologram Telemetry Visor */}
       <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-ping" />
-        <span className="font-mono text-[10px] tracking-widest text-cyan-300 font-bold uppercase">
+        <span className="h-2.5 w-2.5 rounded-full bg-primary animate-ping" />
+        <span className="font-mono text-[10px] tracking-widest text-primary font-bold uppercase">
           NASA FOTOGERÇEKÇİ 3D HOLOGRAM • 360° ETKİLEŞİMLİ
         </span>
       </div>
 
       {/* Interactive Control Pill Bar */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/70 backdrop-blur-xl border border-white/10 rounded-2xl p-1.5 text-xs font-mono">
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-ink/70 backdrop-blur-xl border border-paper/10 rounded-2xl p-1.5 text-xs font-mono">
         <button
           onClick={() => setIsPaused(!isPaused)}
           title={isPaused ? 'Döndürmeyi Başlat' : 'Döndürmeyi Duraklat'}
           className={`p-2 rounded-xl transition-all cursor-pointer ${
-            isPaused ? 'bg-amber-400 text-black' : 'text-neutral-300 hover:text-white hover:bg-white/10'
+            isPaused ? 'bg-gold text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
           }`}
         >
           {isPaused ? <Play size={13} /> : <Pause size={13} />}
@@ -364,7 +364,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           onClick={() => setIsWireframe(!isWireframe)}
           title="3D Tel Kafes (Wireframe) Modu"
           className={`p-2 rounded-xl transition-all cursor-pointer ${
-            isWireframe ? 'bg-cyan-400 text-black' : 'text-neutral-300 hover:text-white hover:bg-white/10'
+            isWireframe ? 'bg-primary text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
           }`}
         >
           <Layers size={13} />
@@ -374,7 +374,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           onClick={() => setShowAtmosphere(!showAtmosphere)}
           title="Atmosfer & Saçılma Efektini Aç/Kapat"
           className={`p-2 rounded-xl transition-all cursor-pointer ${
-            showAtmosphere ? 'bg-purple-400 text-black' : 'text-neutral-300 hover:text-white hover:bg-white/10'
+            showAtmosphere ? 'bg-violet text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
           }`}
         >
           <Sparkles size={13} />
@@ -382,12 +382,12 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
       </div>
 
       {/* Bottom Hint */}
-      <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono text-neutral-400">
+      <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono text-muted">
         <span className="flex items-center gap-1">
-          <Eye size={12} className="text-cyan-400" />
+          <Eye size={12} className="text-primary" />
           <span>Sol tuş ile döndürün • Tekerlek ile yakınlaşın</span>
         </span>
-        <span className="text-neutral-500 hidden sm:inline">
+        <span className="text-muted hidden sm:inline">
           USGS / NASA Planetary Science Division
         </span>
       </div>

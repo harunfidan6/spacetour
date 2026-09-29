@@ -241,8 +241,8 @@ function PlanetBody({
                 }}
                 className={`cursor-pointer pointer-events-auto select-none rounded-full px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider border whitespace-nowrap transition-all ${
                   isSelected
-                    ? 'border-primary bg-primary/30 text-white shadow-[0_0_15px_rgba(0,212,255,0.7)] scale-110'
-                    : 'border-card-border/60 bg-background/80 text-text-secondary hover:text-white'
+                    ? 'border-primary bg-primary/30 text-paper shadow-[0_0_15px_rgba(255,91,34,0.7)] scale-110'
+                    : 'border-card-border/60 bg-background/80 text-text-secondary hover:text-paper'
                 }`}
               >
                 {planet.name}
@@ -324,7 +324,7 @@ export function SolarSystemOrrery() {
             className={`p-2.5 rounded-xl border font-bold text-xs transition-all cursor-pointer ${
               isPaused
                 ? 'border-accent bg-accent/20 text-accent'
-                : 'border-primary bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,212,255,0.3)]'
+                : 'border-primary bg-primary/20 text-primary shadow-[0_0_15px_rgba(255,91,34,0.3)]'
             }`}
             title={isPaused ? 'Oynat' : 'Durdur'}
           >
@@ -341,8 +341,8 @@ export function SolarSystemOrrery() {
               }}
               className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${
                 speedMultiplier === s && !isPaused
-                  ? 'bg-primary text-background shadow-[0_0_15px_rgba(0,212,255,0.4)]'
-                  : 'border border-card-border/70 bg-background/50 text-text-secondary hover:text-white'
+                  ? 'bg-primary text-background shadow-[0_0_15px_rgba(255,91,34,0.4)]'
+                  : 'border border-card-border/70 bg-background/50 text-text-secondary hover:text-paper'
               }`}
             >
               {s}x

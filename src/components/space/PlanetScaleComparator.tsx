@@ -45,7 +45,7 @@ export function PlanetScaleComparator() {
             <Layers className="h-6 w-6 text-primary animate-pulse" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-lg tracking-widest font-mono uppercase">
+            <h3 className="font-bold text-paper text-lg tracking-widest font-mono uppercase">
               Holografik Ölçek Güvertesi
             </h3>
             <span className="text-xs text-primary font-mono tracking-widest flex items-center gap-2">
@@ -69,7 +69,7 @@ export function PlanetScaleComparator() {
           <select
             value={targetA.id}
             onChange={(e) => setTargetA(SCALE_DATA.find((x) => x.id === e.target.value) || targetA)}
-            className="w-full rounded-xl bg-card-bg border border-card-border px-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-primary transition-all cursor-pointer"
+            className="w-full rounded-xl bg-card-bg border border-card-border px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-primary transition-all cursor-pointer"
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id}>
@@ -86,7 +86,7 @@ export function PlanetScaleComparator() {
           <select
             value={targetB.id}
             onChange={(e) => setTargetB(SCALE_DATA.find((x) => x.id === e.target.value) || targetB)}
-            className="w-full rounded-xl bg-card-bg border border-card-border px-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-secondary transition-all cursor-pointer"
+            className="w-full rounded-xl bg-card-bg border border-card-border px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-secondary transition-all cursor-pointer"
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id}>
@@ -114,7 +114,7 @@ export function PlanetScaleComparator() {
           </div>
 
           <div className="text-center bg-card-bg/80 border border-primary/30 px-4 py-2 rounded-xl">
-            <div className="font-bold text-white text-sm">{targetA.name}</div>
+            <div className="font-bold text-paper text-sm">{targetA.name}</div>
             <div className="text-xs font-mono text-primary">{targetA.diameterKm.toLocaleString()} km</div>
           </div>
         </div>
@@ -124,14 +124,14 @@ export function PlanetScaleComparator() {
           <span className="text-[10px] font-mono text-secondary uppercase font-bold tracking-widest">
             HACİMSEL ORAN
           </span>
-          <div className="text-4xl font-black text-white font-mono">
+          <div className="text-4xl font-black text-paper font-mono">
             {ratio}x <span className="text-xs text-text-secondary font-normal">kat çap</span>
           </div>
           <div className="h-px w-full bg-secondary/30" />
           <p className="text-xs text-text-secondary font-mono max-w-[200px] leading-relaxed">
-            <strong className="text-white">{targetB.name}</strong> içine tam <br />
+            <strong className="text-paper">{targetB.name}</strong> içine tam <br />
             <strong className="text-secondary text-sm bg-secondary/10 px-2 py-0.5 rounded">{volumeRatio}</strong><br />
-            adet <strong className="text-white">{targetA.name}</strong> sığar
+            adet <strong className="text-paper">{targetA.name}</strong> sığar
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export function PlanetScaleComparator() {
           </div>
 
           <div className="text-center bg-card-bg/80 border border-secondary/30 px-4 py-2 rounded-xl">
-            <div className="font-bold text-white text-sm">{targetB.name}</div>
+            <div className="font-bold text-paper text-sm">{targetB.name}</div>
             <div className="text-xs font-mono text-secondary">{targetB.diameterKm.toLocaleString()} km</div>
           </div>
         </div>

@@ -27,7 +27,7 @@ const PROBES_DATA: Probe[] = [
     launchYear: 1977,
     signalDelay: '22 saat 39 dakika (Tek yön)',
     status: 'Yıldızlararası Uzayda',
-    badgeColor: 'text-purple-400 bg-purple-400/10 border-purple-400/30'
+    badgeColor: 'text-violet bg-violet/10 border-violet/30'
   },
   {
     id: 'voyager-2',
@@ -39,7 +39,7 @@ const PROBES_DATA: Probe[] = [
     launchYear: 1977,
     signalDelay: '18 saat 54 dakika (Tek yön)',
     status: 'Yıldızlararası Uzayda',
-    badgeColor: 'text-purple-400 bg-purple-400/10 border-purple-400/30'
+    badgeColor: 'text-violet bg-violet/10 border-violet/30'
   },
   {
     id: 'new-horizons',
@@ -51,7 +51,7 @@ const PROBES_DATA: Probe[] = [
     launchYear: 2006,
     signalDelay: '8 saat 12 dakika',
     status: 'Kuiper Kuşağında',
-    badgeColor: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30'
+    badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
   {
     id: 'parker',
@@ -63,7 +63,7 @@ const PROBES_DATA: Probe[] = [
     launchYear: 2018,
     signalDelay: '8 dakika 19 saniye',
     status: 'Güneş Tacında',
-    badgeColor: 'text-orange-400 bg-orange-400/10 border-orange-400/30'
+    badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
   {
     id: 'jwst',
@@ -111,8 +111,8 @@ export function InterstellarProbes() {
               onClick={() => setSelectedProbe(probe)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-secondary/20 text-secondary border border-secondary/40 shadow-[0_0_15px_rgba(168,85,247,0.3)] scale-102 font-bold'
-                  : 'bg-background/50 text-text-secondary border border-card-border/60 hover:text-white'
+                  ? 'bg-secondary/20 text-secondary border border-secondary/40 shadow-[0_0_15px_rgba(122,92,255,0.3)] scale-102 font-bold'
+                  : 'bg-background/50 text-text-secondary border border-card-border/60 hover:text-paper'
               }`}
             >
               {probe.name}

@@ -86,7 +86,7 @@ export function AsteroidImpactSimulator() {
       ctx.fill();
 
       // Target reticle
-      ctx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+      ctx.strokeStyle = 'rgba(255,91,34, 0.3)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(cx, cy, fireballSize + 25, 0, Math.PI * 2);
@@ -137,7 +137,7 @@ export function AsteroidImpactSimulator() {
                 setDiameter(p.diameterM);
                 setSpeed(p.speedKmS);
               }}
-              className="px-3 py-1.5 rounded-xl bg-background/60 border border-card-border/60 hover:border-accent/50 text-text-secondary hover:text-white whitespace-nowrap transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-background/60 border border-card-border/60 hover:border-accent/50 text-text-secondary hover:text-paper whitespace-nowrap transition-all cursor-pointer"
             >
               {p.name} ({p.diameterM}m)
             </button>
@@ -188,7 +188,7 @@ export function AsteroidImpactSimulator() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div className="lg:col-span-6 rounded-2xl overflow-hidden border border-card-border/60 relative">
           <canvas ref={canvasRef} className="w-full h-[220px] block" />
-          <div className="pointer-events-none absolute top-3 left-4 flex items-center gap-1.5 text-[10px] font-mono text-accent bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">
+          <div className="pointer-events-none absolute top-3 left-4 flex items-center gap-1.5 text-[10px] font-mono text-accent bg-ink/60 px-2 py-0.5 rounded backdrop-blur-xs">
             <Flame size={12} />
             <span>KİNETİK PATLAMA ANİMASYONU</span>
           </div>
@@ -226,7 +226,7 @@ export function AsteroidImpactSimulator() {
             <span
               className={`text-sm font-bold block mt-1 ${
                 diameter < 50
-                  ? 'text-emerald-400'
+                  ? 'text-lime'
                   : diameter < 500
                   ? 'text-yellow-400'
                   : diameter < 2000

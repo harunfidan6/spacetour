@@ -1,316 +1,361 @@
-"use client";
+'use client';
 
-import React, { useState, useMemo } from 'react';
-import { 
-  format, 
-  addMonths, 
-  subMonths, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  isSameMonth, 
-  isSameDay, 
-  addDays, 
-  isToday,
+import { useMemo, useRef, useState, type CSSProperties } from 'react';
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  isSameMonth,
+  isSameDay,
+  addDays,
   parseISO,
-  isAfter,
-  startOfToday
 } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, MapPin, Clock, Info } from 'lucide-react';
-import { events, EventType, eventTypeColors, eventTypeLabels, AstronomicalEvent } from '@/data/events';
+import { ArrowLeft, ArrowRight, MapPin, X } from 'lucide-react';
+import { events, EventType, eventTypeLabels, eventTypeTones } from '@/data/events';
 import { CosmicEventSimulator } from '@/components/space/CosmicEventSimulator';
+import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
+import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
+import { Reveal, Ticks } from '@/components/motion/primitives';
+import { useNow } from '@/lib/useNow';
+import { upcomingEvents } from '@/lib/sky';
 
-export default function CalendarPage() {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [activeFilters, setActiveFilters] = useState<Set<EventType>>(new Set(Object.keys(eventTypeLabels) as EventType[]));
-  
-  const toggleFilter = (type: EventType) => {
-    const newFilters = new Set(activeFilters);
-    if (newFilters.has(type)) {
-      newFilters.delete(type);
-    } else {
-      newFilters.add(type);
-    }
-    setActiveFilters(newFilters);
-  };
+const ALL_TYPES = Object.keys(eventTypeLabels) as EventType[];
 
-  const filteredEvents = useMemo(() => {
-    return events.filter(e => activeFilters.has(e.type));
-  }, [activeFilters]);
+const VISIBILITY: Record<string, string> = {
+  'tüm-dünya': 'Tüm dünya',
+  'kuzey-yarıküre': 'Kuzey yarıküre',
+  'güney-yarıküre': 'Güney yarıküre',
+  türkiye: 'Türkiye',
+};
 
-  const upcomingEvents = useMemo(() => {
-    const today = startOfToday();
-    return filteredEvents
-      .filter(e => isAfter(parseISO(e.date), today) || isSameDay(parseISO(e.date), today))
-      .sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
-      .slice(0, 8);
-  }, [filteredEvents]);
+function pad(n: number) {
+  return String(Math.max(0, n)).padStart(2, '0');
+}
 
-  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
-
-  const renderHeader = () => {
-    return (
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <CalendarIcon className="text-primary" />
-          {format(currentMonth, 'MMMM yyyy', { locale: tr })}
-        </h2>
-        <div className="flex gap-2">
-          <button 
-            onClick={prevMonth}
-            className="p-2 rounded-full bg-card-bg border border-gray-800 hover:bg-gray-800 transition text-white"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button 
-            onClick={nextMonth}
-            className="p-2 rounded-full bg-card-bg border border-gray-800 hover:bg-gray-800 transition text-white"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderDays = () => {
-    const days = [];
-    const startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
-    
-    for (let i = 0; i < 7; i++) {
-      days.push(
-        <div key={i} className="text-center font-medium text-text-secondary py-2 text-sm">
-          {format(addDays(startDate, i), 'EEEEEE', { locale: tr })}
-        </div>
-      );
-    }
-    return <div className="grid grid-cols-7 mb-2">{days}</div>;
-  };
-
-  const renderCells = () => {
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
-    const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
-
-    const rows = [];
-    let days = [];
-    let day = startDate;
-    let formattedDate = '';
-
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        formattedDate = format(day, 'd');
-        const cloneDay = day;
-        
-        // Find events for this day
-        const dayEvents = filteredEvents.filter(e => isSameDay(parseISO(e.date), cloneDay));
-        const isCurrentMonth = isSameMonth(day, monthStart);
-        const isTodayDate = isToday(day);
-        const isSelected = selectedDate && isSameDay(day, selectedDate);
-
-        days.push(
-          <div
-            key={day.toString()}
-            onClick={() => {
-              if (dayEvents.length > 0) {
-                setSelectedDate(cloneDay);
-              } else {
-                setSelectedDate(null);
-              }
-            }}
-            className={`
-              relative flex flex-col h-24 border border-gray-800/50 p-1 md:p-2 transition-all cursor-pointer
-              ${!isCurrentMonth ? 'text-gray-600 bg-black/20' : 'text-gray-300 bg-card-bg hover:bg-gray-800/60'}
-              ${isTodayDate ? 'border-primary/50 bg-primary/5' : ''}
-              ${isSelected ? 'ring-2 ring-primary ring-inset bg-gray-800' : ''}
-              ${dayEvents.length > 0 ? 'hover:border-gray-500' : ''}
-            `}
-          >
-            <div className="flex justify-between items-start">
-              <span className={`text-sm font-medium ${isTodayDate ? 'text-primary' : ''}`}>
-                {formattedDate}
-              </span>
-              {dayEvents.length > 0 && (
-                <span className="text-xs bg-gray-800 px-1.5 rounded-md text-gray-400">
-                  {dayEvents.length}
-                </span>
-              )}
-            </div>
-            
-            <div className="mt-1 flex flex-col gap-1 overflow-y-auto no-scrollbar">
-              {dayEvents.slice(0, 3).map((event, idx) => (
-                <div 
-                  key={idx} 
-                  className={`text-[10px] md:text-xs truncate px-1 rounded-sm ${eventTypeColors[event.type]}`}
-                  title={event.title}
-                >
-                  {event.emoji} {event.title}
-                </div>
-              ))}
-              {dayEvents.length > 3 && (
-                <div className="text-[10px] text-text-secondary px-1">
-                  +{dayEvents.length - 3} daha
-                </div>
-              )}
-            </div>
-          </div>
-        );
-        day = addDays(day, 1);
-      }
-      rows.push(
-        <div className="grid grid-cols-7" key={day.toString()}>
-          {days}
-        </div>
-      );
-      days = [];
-    }
-    return <div className="border-t border-l border-gray-800/50 flex flex-col">{rows}</div>;
-  };
-
-  const selectedDayEvents = selectedDate 
-    ? filteredEvents.filter(e => isSameDay(parseISO(e.date), selectedDate))
-    : [];
+/* Countdown to the next event — client only */
+function NextEventCountdown({ activeTypes, onPick }: { activeTypes: Set<EventType>; onPick: (iso: string) => void }) {
+  const now = useNow(1000);
+  const next = useMemo(() => (now ? upcomingEvents(now, 20).find((e) => activeTypes.has(e.type)) : undefined), [now, activeTypes]);
+  const target = next ? new Date(`${next.date}T${next.time ?? '00:00'}:00`) : null;
+  const diff = now && target ? Math.max(0, target.getTime() - now.getTime()) : 0;
+  const parts = [
+    { k: 'Gün', v: Math.floor(diff / 86400000) },
+    { k: 'Saat', v: Math.floor(diff / 3600000) % 24 },
+    { k: 'Dakika', v: Math.floor(diff / 60000) % 60 },
+    { k: 'Saniye', v: Math.floor(diff / 1000) % 60 },
+  ];
 
   return (
-    <div className="min-h-screen bg-background/60 backdrop-blur-sm pb-20 pt-8 px-4 md:px-8 relative z-10">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-gray-800 pb-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Gök Olayları Takvimi</h1>
-            <p className="text-text-secondary max-w-2xl">
-              Güneş ve Ay tutulmaları, meteor yağmurları, gezegen kavuşumları ve daha fazlası. Gelecekteki astronomik olayları keşfedin ve gözlem planınızı yapın.
-            </p>
-          </div>
+    <div className="ticks relative grid gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12 lg:items-end">
+      <Ticks />
+      <div className="lg:col-span-5">
+        <div className="label flex items-center gap-2 text-solar">
+          <span className="live-dot" /> Sıradaki gök olayı
         </div>
-
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(eventTypeLabels).map(([type, label]) => {
-            const t = type as EventType;
-            const isActive = activeFilters.has(t);
-            return (
-              <button
-                key={type}
-                onClick={() => toggleFilter(t)}
-                className={`
-                  px-3 py-1.5 rounded-full text-xs md:text-sm font-medium transition-colors border
-                  ${isActive 
-                    ? 'bg-gray-800 text-white border-gray-600' 
-                    : 'bg-transparent text-text-secondary border-gray-800 hover:border-gray-600'}
-                `}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Calendar Section */}
-          <div className="lg:col-span-2">
-            <div className="bg-[#12122a] p-4 md:p-6 rounded-2xl border border-gray-800 shadow-xl">
-              {renderHeader()}
-              {renderDays()}
-              {renderCells()}
+        <h2 className="display display-tight mt-5 text-[clamp(2rem,4.4vw,4rem)] text-paper">
+          {next ? (
+            <>
+              <span className="mr-3">{next.emoji}</span>
+              {next.title}
+            </>
+          ) : (
+            'Hesaplanıyor…'
+          )}
+        </h2>
+        {next && (
+          <button type="button" onClick={() => onPick(next.date)} className="label mt-5 inline-flex items-center gap-2 text-paper/70 transition-colors hover:text-solar">
+            {format(parseISO(next.date), 'd MMMM yyyy, EEEE', { locale: tr })} {next.time ? `· ${next.time}` : ''} <ArrowRight size={13} />
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-4 gap-px border border-line bg-line lg:col-span-7">
+        {parts.map((p) => (
+          <div key={p.k} className="bg-ink px-3 py-4 sm:px-5 sm:py-6">
+            <div className="display display-tight text-[clamp(2.2rem,6vw,5.5rem)] tabular-nums leading-[0.85] text-solar" suppressHydrationWarning>
+              {now ? pad(p.v) : '--'}
             </div>
+            <div className="label mt-3 text-muted">{p.k}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function CalendarPage() {
+  const [currentMonth, setCurrentMonth] = useState(() => new Date());
+  const [direction, setDirection] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [activeFilters, setActiveFilters] = useState<Set<EventType>>(() => new Set(ALL_TYPES));
+  const grid = useRef<HTMLDivElement>(null);
+  const today = useNow(60_000);
+
+  const toggleFilter = (type: EventType) => {
+    setActiveFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+  };
+  const allOn = activeFilters.size === ALL_TYPES.length;
+
+  const filteredEvents = useMemo(() => events.filter((e) => activeFilters.has(e.type)), [activeFilters]);
+  const upcoming = useMemo(() => (today ? upcomingEvents(today, 50).filter((e) => activeFilters.has(e.type)).slice(0, 8) : []), [today, activeFilters]);
+
+  const monthStart = startOfMonth(currentMonth);
+  const days = useMemo(() => {
+    const out: Date[] = [];
+    const end = endOfWeek(endOfMonth(monthStart), { weekStartsOn: 1 });
+    for (let d = startOfWeek(monthStart, { weekStartsOn: 1 }); d <= end; d = addDays(d, 1)) out.push(d);
+    return out;
+  }, [monthStart]);
+
+  const monthKey = format(currentMonth, 'yyyy-MM');
+
+  // Month change: cells cascade in from the travel direction
+  useGsap(
+    () => {
+      if (prefersReducedMotion() || !grid.current) return;
+      gsap.from(grid.current.querySelectorAll('[data-cell]'), {
+        x: 24 * direction,
+        autoAlpha: 0,
+        duration: 0.7,
+        stagger: { each: 0.012, from: direction > 0 ? 'start' : 'end' },
+        ease: 'mg.out',
+      });
+      gsap.from('[data-month-title]', { yPercent: 100 * direction, autoAlpha: 0, duration: 0.7, ease: 'mg.out' });
+    },
+    [monthKey]
+  );
+
+  const go = (delta: number) => {
+    setDirection(delta);
+    setCurrentMonth((m) => (delta > 0 ? addMonths(m, 1) : subMonths(m, 1)));
+  };
+
+  const pick = (iso: string) => {
+    const d = parseISO(iso);
+    setDirection(d > currentMonth ? 1 : -1);
+    setCurrentMonth(d);
+    setSelectedDate(d);
+    document.getElementById('takvim-izgara')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const selectedDayEvents = selectedDate ? filteredEvents.filter((e) => isSameDay(parseISO(e.date), selectedDate)) : [];
+  const featured = selectedDayEvents[0] ?? upcoming[0];
+
+  const counts = {
+    total: events.length,
+    eclipses: events.filter((e) => e.type === 'ay-tutulmasi' || e.type === 'gunes-tutulmasi').length,
+    meteors: events.filter((e) => e.type === 'meteor-yagmuru').length,
+    conjunctions: events.filter((e) => e.type === 'gezegen-kavusumu').length,
+  };
+
+  return (
+    <div className="relative" style={{ '--page-accent': 'var(--solar)' } as CSSProperties}>
+      <PageHero
+        index="02"
+        section="Olay takvimi"
+        accent="var(--solar)"
+        lines={[
+          <>
+            Gök <Em>olayları</Em>
+          </>,
+          'Takvimi',
+        ]}
+        size="clamp(3.2rem, 11vw, 12rem)"
+        lede="Güneş ve Ay tutulmaları, meteor yağmurları, gezegen kavuşumları, ekinokslar. Gözlem planını yap, geri sayımı başlat, gökyüzüyle randevulaş."
+        meta={[
+          { k: 'Kayıtlı olay', v: counts.total },
+          { k: 'Tutulma', v: counts.eclipses },
+          { k: 'Meteor yağmuru', v: counts.meteors },
+          { k: 'Kavuşum', v: counts.conjunctions },
+        ]}
+        ticker={Object.values(eventTypeLabels)}
+      />
+
+      <div className="space-y-20 px-[var(--gutter)] pb-28 pt-16">
+        <Reveal mode="clip">
+          <NextEventCountdown activeTypes={activeFilters} onPick={pick} />
+        </Reveal>
+
+        <section id="takvim-izgara" className="scroll-mt-24">
+          <SectionHead
+            index="02.1"
+            kicker="Ay görünümü"
+            title={
+              <>
+                Gün gün <Em>gökyüzü</Em>
+              </>
+            }
+            lede="Bir güne dokun, o günün olaylarını ve gözlem ipuçlarını aç. Filtrelerle yalnızca ilgilendiğin olay türlerini göster."
+          />
+
+          {/* Filters */}
+          <div className="mb-8 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveFilters(allOn ? new Set() : new Set(ALL_TYPES))}
+              className={`label rounded-full border px-4 py-2 transition-colors ${allOn ? 'border-paper bg-paper text-ink' : 'border-line text-paper/70 hover:border-paper'}`}
+            >
+              {allOn ? 'Tümünü kapat' : 'Tümünü aç'}
+            </button>
+            {ALL_TYPES.map((t) => {
+              const on = activeFilters.has(t);
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => toggleFilter(t)}
+                  aria-pressed={on}
+                  className={`label flex items-center gap-2 rounded-full border px-4 py-2 transition-all ${on ? 'border-paper/40 text-paper' : 'border-line text-muted line-through'}`}
+                >
+                  <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[t], opacity: on ? 1 : 0.35 }} />
+                  {eventTypeLabels[t]}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Side Panel */}
-          <div className="space-y-6">
-            {/* Live Cosmic Simulation Widget */}
-            <CosmicEventSimulator
-              type={selectedDayEvents[0]?.type || upcomingEvents[0]?.type || 'meteor-yagmuru'}
-              title={selectedDayEvents[0]?.title || upcomingEvents[0]?.title || 'Gök Olayı Simülasyonu'}
-            />
-            {selectedDate && (
-              <div className="bg-[#12122a] p-5 rounded-2xl border border-gray-800 shadow-lg animate-in fade-in slide-in-from-right-4">
-                <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
-                  <h3 className="text-xl font-bold text-white">
-                    {format(selectedDate, 'd MMMM yyyy', { locale: tr })}
+          <div className="grid gap-6 lg:grid-cols-12">
+            {/* Calendar */}
+            <div className="lg:col-span-8">
+              <div className="mb-5 flex items-end justify-between gap-4">
+                <div className="overflow-hidden pt-[0.16em]">
+                  <h3 data-month-title key={monthKey} className="display text-[clamp(2.6rem,7vw,6.5rem)] text-paper">
+                    {format(currentMonth, 'MMMM', { locale: tr })} <span className="serif-i text-solar">{format(currentMonth, 'yyyy')}</span>
                   </h3>
-                  <button 
-                    onClick={() => setSelectedDate(null)}
-                    className="text-text-secondary hover:text-white"
-                  >
-                    Kapat
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <button type="button" onClick={() => go(-1)} aria-label="Önceki ay" className="grid h-12 w-12 place-items-center rounded-full border border-line text-paper transition-colors hover:border-solar hover:bg-solar hover:text-ink">
+                    <ArrowLeft size={18} />
+                  </button>
+                  <button type="button" onClick={() => go(1)} aria-label="Sonraki ay" className="grid h-12 w-12 place-items-center rounded-full border border-line text-paper transition-colors hover:border-solar hover:bg-solar hover:text-ink">
+                    <ArrowRight size={18} />
                   </button>
                 </div>
-                
-                {selectedDayEvents.length === 0 ? (
-                  <p className="text-text-secondary text-sm">Bu tarihte filtrelenmiş gök olayı bulunmamaktadır.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedDayEvents.map(event => (
-                      <div key={event.id} className="bg-black/30 p-4 rounded-xl border border-gray-800/80">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-white text-lg flex items-center gap-2">
-                            <span>{event.emoji}</span> {event.title}
-                          </h4>
-                        </div>
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold mb-3 ${eventTypeColors[event.type]}`}>
-                          {eventTypeLabels[event.type]}
-                        </span>
-                        
-                        <p className="text-sm text-gray-300 mb-3">{event.description}</p>
-                        
-                        <div className="bg-[#12122a] p-3 rounded-lg border border-gray-800 text-xs text-gray-400 space-y-2">
-                          <div className="flex items-start gap-2">
-                            <Info size={14} className="mt-0.5 text-primary shrink-0" />
-                            <p>{event.details}</p>
-                          </div>
-                          <div className="flex items-center gap-2 pt-1">
-                            <MapPin size={14} className="text-accent" />
-                            <span className="capitalize">{event.visibility.replace('-', ' ')}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            )}
 
-            {/* Upcoming Events */}
-            <div className="bg-[#12122a] p-5 rounded-2xl border border-gray-800 shadow-lg">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Clock className="text-secondary" />
-                Yaklaşan Olaylar
-              </h3>
-              
-              <div className="space-y-3">
-                {upcomingEvents.length > 0 ? upcomingEvents.map(event => (
-                  <div 
-                    key={event.id} 
-                    className="flex gap-3 p-3 rounded-xl hover:bg-gray-800/50 transition cursor-pointer border border-transparent hover:border-gray-700"
-                    onClick={() => {
-                      setCurrentMonth(parseISO(event.date));
-                      setSelectedDate(parseISO(event.date));
-                    }}
-                  >
-                    <div className="text-2xl mt-1">{event.emoji}</div>
-                    <div>
-                      <h4 className="text-white font-medium text-sm">{event.title}</h4>
-                      <p className="text-xs text-primary font-medium my-0.5">
-                        {format(parseISO(event.date), 'd MMMM yyyy', { locale: tr })}
-                      </p>
-                      <p className="text-xs text-text-secondary line-clamp-1">{event.description}</p>
-                    </div>
+              <div className="grid grid-cols-7 border-x border-t border-line">
+                {days.slice(0, 7).map((d) => (
+                  <div key={d.toISOString()} className="label border-b border-line py-3 text-center text-muted">
+                    {format(d, 'EEEEEE', { locale: tr })}
                   </div>
-                )) : (
-                  <p className="text-sm text-text-secondary">Yakın zamanda filtrelenmiş olay bulunmuyor.</p>
-                )}
+                ))}
+              </div>
+              <div ref={grid} className="grid grid-cols-7 gap-px border-x border-b border-line bg-line">
+                {days.map((day) => {
+                  const dayEvents = filteredEvents.filter((e) => isSameDay(parseISO(e.date), day));
+                  const inMonth = isSameMonth(day, monthStart);
+                  const isToday = today ? isSameDay(day, today) : false;
+                  const selected = selectedDate ? isSameDay(day, selectedDate) : false;
+                  return (
+                    <button
+                      key={day.toISOString()}
+                      type="button"
+                      data-cell
+                      onClick={() => setSelectedDate(dayEvents.length ? day : null)}
+                      className={`group relative flex min-h-[64px] flex-col items-start p-1.5 text-left transition-colors sm:min-h-[104px] sm:p-2.5 ${
+                        selected ? 'bg-paper text-ink' : inMonth ? 'bg-ink text-paper hover:bg-ink-3' : 'bg-ink bg-[repeating-linear-gradient(135deg,transparent_0_7px,rgba(239,236,230,0.035)_7px_8px)] text-muted/40'
+                      } ${dayEvents.length ? 'cursor-pointer' : 'cursor-default'}`}
+                      aria-label={`${format(day, 'd MMMM', { locale: tr })}${dayEvents.length ? `, ${dayEvents.length} olay` : ''}`}
+                    >
+                      <span className="flex w-full items-center justify-between">
+                        <span className={`font-mono text-xs sm:text-sm ${isToday && !selected ? 'grid h-6 w-6 place-items-center rounded-full bg-solar text-ink' : ''}`}>{format(day, 'd')}</span>
+                        {dayEvents.length > 1 && <span className="label text-[9px] opacity-60">×{dayEvents.length}</span>}
+                      </span>
+                      <span className="mt-auto flex w-full flex-col gap-1">
+                        {dayEvents.slice(0, 2).map((e) => (
+                          <span key={e.id} className="flex w-full items-center gap-1.5">
+                            <span className="h-1.5 w-full shrink-0 sm:w-1.5 sm:rounded-full" style={{ background: eventTypeTones[e.type] }} />
+                            <span className="hidden truncate text-[11px] leading-tight sm:block">{e.title}</span>
+                          </span>
+                        ))}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
+            {/* Side */}
+            <aside className="module space-y-6 lg:col-span-4">
+              {selectedDate && (
+                <div className="border border-paper bg-paper p-5 text-ink">
+                  <div className="flex items-start justify-between gap-3 border-b border-ink/15 pb-3">
+                    <div>
+                      <div className="label text-ink/60">Seçili gün</div>
+                      <div className="display display-tight mt-2 text-3xl">{format(selectedDate, 'd MMMM yyyy', { locale: tr })}</div>
+                    </div>
+                    <button type="button" onClick={() => setSelectedDate(null)} aria-label="Kapat" className="grid h-9 w-9 place-items-center rounded-full border border-ink/20 hover:bg-ink hover:text-paper">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  {selectedDayEvents.length === 0 ? (
+                    <p className="pt-4 text-sm text-ink/70">Bu tarihte filtrelenmiş gök olayı yok.</p>
+                  ) : (
+                    <div className="divide-y divide-ink/15">
+                      {selectedDayEvents.map((e) => (
+                        <article key={e.id} className="py-4">
+                          <div className="label flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[e.type] === 'var(--paper)' ? 'var(--ink)' : eventTypeTones[e.type] }} />
+                            {eventTypeLabels[e.type]} {e.time ? `· ${e.time}` : ''}
+                          </div>
+                          <h4 className="mt-2 text-lg font-semibold">
+                            {e.emoji} {e.title}
+                          </h4>
+                          <p className="mt-2 text-sm leading-relaxed text-ink/75">{e.description}</p>
+                          <p className="mt-3 border-l-2 border-solar pl-3 text-sm leading-relaxed text-ink/75">{e.details}</p>
+                          <div className="label mt-3 flex items-center gap-1.5 text-ink/60">
+                            <MapPin size={12} /> {VISIBILITY[e.visibility] ?? e.visibility}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <CosmicEventSimulator type={featured?.type ?? 'meteor-yagmuru'} title={featured?.title ?? 'Gök olayı simülasyonu'} />
+
+              <div className="border border-line bg-ink-2">
+                <div className="flex items-center justify-between border-b border-line px-5 py-3">
+                  <span className="label text-paper">Yaklaşan olaylar</span>
+                  <span className="label text-muted">{upcoming.length}</span>
+                </div>
+                <ol className="relative">
+                  {upcoming.length === 0 && <li className="px-5 py-6 text-sm text-muted">Yakın zamanda filtrelenmiş olay yok.</li>}
+                  {upcoming.map((e, i) => (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        onClick={() => pick(e.date)}
+                        className="group grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-line px-5 py-4 text-left transition-colors last:border-b-0 hover:bg-ink-3"
+                      >
+                        <span className="label text-muted">{pad(i + 1)}</span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm text-paper group-hover:text-solar">
+                            {e.emoji} {e.title}
+                          </span>
+                          <span className="label mt-1 block text-[10px]" style={{ color: eventTypeTones[e.type] }}>
+                            {format(parseISO(e.date), 'd MMM yyyy', { locale: tr })}
+                          </span>
+                        </span>
+                        <ArrowRight size={15} className="text-muted transition-transform group-hover:translate-x-1 group-hover:text-solar" />
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </aside>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

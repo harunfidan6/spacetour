@@ -1,143 +1,289 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Telescope,
-  Calendar,
-  BookOpen,
-  Menu,
-  X,
-  Sparkles,
-  Layers,
-  Moon,
-} from "lucide-react";
-import { useState } from "react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
+import { LiveClock, RotatingBadge } from '@/components/motion/primitives';
+import { SITE_ROUTES, TELEMETRY_ROUTE } from '@/lib/routes';
+import { CosmicAudioEngine } from '@/components/space/CosmicAudioEngine';
 
-const navLinks = [
-  { href: "/", label: "Ana Sayfa", icon: Sparkles },
-  { href: "/harita", label: "Gökyüzü Haritası", icon: Telescope },
-  { href: "/takvim", label: "Olay Takvimi", icon: Calendar },
-  { href: "/ansiklopedi", label: "Ansiklopedi", icon: BookOpen },
-  { href: "/astroloji", label: "Astroloji", icon: Moon },
-  { href: "/gozlemevi", label: "Gözlemevi", icon: Layers },
-];
+function isActive(pathname: string, href: string) {
+  return href === '/' ? pathname === '/' : pathname.startsWith(href);
+}
+
+export function LogoMark({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" className={className} aria-hidden>
+      <circle cx="20" cy="20" r="6" fill="var(--solar)" />
+      <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.55" />
+      <g className="origin-center spin-slow" style={{ transformBox: 'view-box', animationDuration: '6s' }}>
+        <circle cx="35" cy="20" r="2.6" fill="var(--lime)" />
+      </g>
+    </svg>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const progress = useRef<HTMLDivElement>(null);
+
+  // Scroll state: solid bar after the fold, hide on scroll down, progress line.
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (progress.current) progress.current.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
+      setScrolled(y > 40);
+      if (y > 200 && y > last + 2) setHidden(true);
+      else if (y < last - 2) setHidden(false);
+      last = y;
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pathname]);
+
+  // Close the menu once a navigation has committed.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setMenuOpen(false);
+  }
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-primary/20 bg-background/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,212,255,0.08)]">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        {/* Logo */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl group-hover:scale-110 transition-transform">🚀</span>
-            <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight leading-none">
-                <span className="text-primary group-hover:text-cyan-300 transition-colors">SpaceTour</span>
-                <span className="text-foreground ml-1">TR</span>
-              </span>
-              <span className="text-[9px] font-mono text-text-secondary tracking-widest mt-0.5">spacetour.com.tr</span>
-            </div>
-          </Link>
-          <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-[10px] font-mono tracking-widest text-primary shadow-[inset_0_0_10px_rgba(0,212,255,0.1)]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+    <>
+      <nav
+        className={`fixed inset-x-0 top-0 z-[120] transition-[transform,background-color,border-color] duration-500 ease-[cubic-bezier(.16,1,.3,1)] ${
+          hidden && !menuOpen ? '-translate-y-full' : 'translate-y-0'
+        } ${scrolled ? 'border-b border-line bg-ink/80 backdrop-blur-xl' : 'border-b border-transparent bg-transparent'}`}
+      >
+        <div className="flex h-16 items-center gap-6 px-[var(--gutter)]">
+          <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="SpaceTour TR ana sayfa">
+            <LogoMark className="h-8 w-8" />
+            <span className="display text-[17px] leading-none tracking-[-0.02em]">
+              Spacetour<span className="text-solar">.tr</span>
             </span>
-            3D UZAY YOLCULUĞU • CANLI
-          </div>
-        </div>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-2">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden ${
-                  isActive
-                    ? "bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(0,212,255,0.3),0_0_15px_rgba(0,212,255,0.2)]"
-                    : "text-text-secondary hover:text-primary hover:bg-primary/5 hover:shadow-[inset_0_0_0_1px_rgba(0,212,255,0.2),0_0_10px_rgba(0,212,255,0.1)]"
-                }`}
-              >
-                <Icon size={16} className={isActive ? "animate-pulse" : "group-hover:animate-pulse"} />
-                {link.label}
-                {/* Animated Indicator Line */}
-                <span className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ${isActive ? "w-full shadow-[0_0_8px_rgba(0,212,255,0.8)]" : "w-0 group-hover:w-full group-hover:shadow-[0_0_8px_rgba(0,212,255,0.8)]"}`} />
-              </Link>
-            );
-          })}
-
-          {/* Real-Time Visitor Telemetry Link */}
-          <Link
-            href="/admin/analitik"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 hover:border-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] ml-2"
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="hidden xl:inline">Canlı Telemetri &</span>
-            <span>Analitik</span>
           </Link>
-        </div>
 
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden rounded-lg p-2 text-primary hover:text-cyan-300 hover:bg-primary/10 transition-colors border border-transparent hover:border-primary/30"
-          aria-label="Menüyü aç/kapat"
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-primary/20 bg-background/95 backdrop-blur-2xl px-4 py-4 shadow-[0_10px_30px_rgba(0,212,255,0.1)]">
-          <div className="mb-4 flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-[10px] font-mono tracking-widest text-primary">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            TELEMETRY ACTIVE
-          </div>
-          <div className="flex flex-col gap-2">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              const Icon = link.icon;
+          <div className="ml-auto hidden items-center gap-7 lg:flex">
+            {SITE_ROUTES.slice(1).map((r) => {
+              const active = isActive(pathname, r.href);
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all overflow-hidden border ${
-                    isActive
-                      ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_15px_rgba(0,212,255,0.2)]"
-                      : "border-transparent text-text-secondary hover:border-primary/30 hover:text-primary hover:bg-primary/5"
-                  }`}
-                >
-                  <Icon size={18} className={isActive ? "animate-pulse" : ""} />
-                  {link.label}
-                  {isActive && <span className="absolute left-0 top-0 h-full w-1 bg-primary shadow-[0_0_10px_rgba(0,212,255,0.8)]" />}
+                <Link key={r.href} href={r.href} className="group flex items-start gap-1.5 text-[13px] font-medium" aria-current={active ? 'page' : undefined}>
+                  <span className="label mt-[1px] text-[9px]" style={{ color: active ? r.accent : 'var(--muted)' }}>
+                    {r.index}
+                  </span>
+                  <span className={`roll ${active ? 'text-paper' : 'text-paper/70'}`}>
+                    <span>{r.label}</span>
+                    <span style={{ color: r.accent }}>{r.label}</span>
+                  </span>
                 </Link>
               );
             })}
+          </div>
 
+          <div className="ml-auto flex items-center gap-3 lg:ml-6">
+            <CosmicAudioEngine />
             <Link
-              href="/admin/analitik"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-mono font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] mt-2"
+              href={TELEMETRY_ROUTE.href}
+              className="hidden items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-paper/80 transition-colors hover:border-lime hover:text-lime xl:flex"
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>Canlı Ziyaretçi Analitiği</span>
+              <span className="live-dot" /> Telemetri
             </Link>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="group flex items-center gap-3 rounded-full bg-paper py-2 pl-4 pr-2 text-ink transition-colors hover:bg-solar"
+              aria-expanded={menuOpen}
+              aria-controls="site-menu"
+            >
+              <span className="label font-semibold text-ink">Menü</span>
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-ink">
+                <span className="flex flex-col gap-[3px]">
+                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:translate-x-0.5" />
+                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:-translate-x-0.5" />
+                </span>
+              </span>
+            </button>
           </div>
         </div>
-      )}
-    </nav>
+        <div className="absolute inset-x-0 bottom-0 h-[2px]">
+          <div ref={progress} className="h-full origin-left bg-solar" style={{ transform: 'scaleX(0)' }} />
+        </div>
+      </nav>
+
+      <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} pathname={pathname} />
+    </>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Fullscreen menu
+   -------------------------------------------------------------------------- */
+function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () => void; pathname: string }) {
+  const root = useRef<HTMLDivElement>(null);
+  const tl = useRef<gsap.core.Timeline | null>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      tl.current = gsap
+        .timeline({
+          paused: true,
+          defaults: { ease: 'mg.inOut' },
+          onReverseComplete: () => {
+            el.style.visibility = 'hidden';
+          },
+        })
+        .fromTo('[data-menu-panel]', { yPercent: -100 }, { yPercent: 0, duration: 0.75, stagger: 0.08 })
+        .fromTo('[data-menu-link]', { yPercent: 120 }, { yPercent: 0, duration: 0.9, stagger: 0.05, ease: 'mg.out' }, '-=0.35')
+        .fromTo('[data-menu-fade]', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.05, ease: 'mg.out' }, '<0.1');
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const t = tl.current;
+    if (!t) return;
+    if (open) {
+      document.documentElement.style.overflow = 'hidden';
+      root.current!.style.visibility = 'visible';
+      if (prefersReducedMotion()) t.progress(1);
+      else t.timeScale(1).play();
+      closeBtn.current?.focus({ preventScroll: true });
+    } else {
+      document.documentElement.style.overflow = '';
+      if (t.progress() > 0) {
+        if (prefersReducedMotion()) {
+          t.progress(0);
+          root.current!.style.visibility = 'hidden';
+        } else t.timeScale(1.6).reverse();
+      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  const items = [...SITE_ROUTES, TELEMETRY_ROUTE];
+  const preview = hovered !== null ? items[hovered] : null;
+
+  return (
+    <div
+      ref={root}
+      id="site-menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site menüsü"
+      aria-hidden={!open}
+      className="fixed inset-0 z-[200] overflow-y-auto"
+      style={{ visibility: 'hidden' }}
+    >
+      <div data-menu-panel className="absolute inset-0 bg-solar" />
+      <div data-menu-panel className="absolute inset-0 bg-ink">
+        <div className="absolute inset-0 bg-grid opacity-40" />
+      </div>
+
+      <div className="relative flex min-h-full flex-col px-[var(--gutter)] pb-8">
+        <div className="flex h-16 items-center justify-between">
+          <span data-menu-fade className="label text-muted">
+            Navigasyon · {items.length} durak
+          </span>
+          <button
+            ref={closeBtn}
+            type="button"
+            onClick={onClose}
+            data-menu-fade
+            className="flex items-center gap-3 rounded-full border border-line py-2 pl-4 pr-2 text-paper transition-colors hover:border-solar hover:text-solar"
+          >
+            <span className="label">Kapat</span>
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-paper text-sm text-ink">✕</span>
+          </button>
+        </div>
+
+        <div className="grid flex-1 gap-10 py-8 lg:grid-cols-12">
+          <ul className="flex flex-col justify-center lg:col-span-8" onMouseLeave={() => setHovered(null)}>
+            {items.map((r, i) => {
+              const active = r.href === '/' ? pathname === '/' : pathname.startsWith(r.href);
+              return (
+                <li key={r.href} className="overflow-hidden border-b border-line" onMouseEnter={() => setHovered(i)}>
+                  <Link
+                    href={r.href}
+                    data-menu-link
+                    className="group flex items-baseline gap-4 py-2 sm:gap-6"
+                    tabIndex={open ? 0 : -1}
+                    onClick={() => {
+                      if (active) onClose();
+                    }}
+                  >
+                    <span className="label w-8 shrink-0" style={{ color: r.accent }}>
+                      {r.index}
+                    </span>
+                    <span
+                      className="display pt-[0.14em] text-[clamp(2.2rem,6.4vw,6rem)] transition-[transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-4"
+                      style={{ color: active ? r.accent : undefined }}
+                    >
+                      {r.label}
+                    </span>
+                    <span className="label ml-auto hidden text-muted opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:inline">
+                      {r.blurb} →
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          <aside className="flex flex-col justify-between gap-10 lg:col-span-4 lg:pl-10">
+            <div data-menu-fade className="hidden lg:block">
+              <div
+                className="relative grid aspect-square w-full max-w-[320px] place-items-center rounded-full transition-colors duration-500"
+                style={{ background: preview?.accent ?? 'var(--ink-3)' }}
+              >
+                <RotatingBadge text="SpaceTour TR · Kinetik Uzay Atlası · 2026 · " size={300} className="absolute text-ink/80">
+                  <span className="display text-[4.5rem] text-ink">{preview?.index ?? '✺'}</span>
+                </RotatingBadge>
+              </div>
+            </div>
+            <dl data-menu-fade className="grid grid-cols-2 gap-6 text-paper">
+              <div>
+                <dt className="label text-muted">Yerel saat</dt>
+                <dd className="mt-2 font-mono text-lg">
+                  <LiveClock />
+                </dd>
+              </div>
+              <div>
+                <dt className="label text-muted">Konum</dt>
+                <dd className="mt-2 font-mono text-lg">41.00°K 28.97°D</dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="label text-muted">Veri kaynakları</dt>
+                <dd className="mt-2 text-sm text-paper/70">NASA · ESA · NOAA SWPC · JPL Horizons · USGS</dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+      </div>
+    </div>
   );
 }

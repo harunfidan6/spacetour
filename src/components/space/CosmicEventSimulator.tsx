@@ -144,7 +144,7 @@ export function CosmicEventSimulator({ type, title }: SimulatorProps) {
 
           // Streak line
           const streakGrad = ctx.createLinearGradient(m.x - m.length, m.y - m.length * 0.7, m.x, m.y);
-          streakGrad.addColorStop(0, 'rgba(0, 212, 255, 0)');
+          streakGrad.addColorStop(0, 'rgba(255,91,34, 0)');
           streakGrad.addColorStop(1, `rgba(255, 255, 255, ${m.alpha})`);
           ctx.strokeStyle = streakGrad;
           ctx.lineWidth = 1.8;
@@ -167,7 +167,7 @@ export function CosmicEventSimulator({ type, title }: SimulatorProps) {
         const p2X = cx + 40 - Math.sin(progress * 0.8) * 35;
 
         // Orbit paths
-        ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
+        ctx.strokeStyle = 'rgba(255,91,34, 0.2)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.ellipse(cx, cy, 90, 35, 0, 0, Math.PI * 2);

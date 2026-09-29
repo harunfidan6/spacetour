@@ -76,8 +76,8 @@ export function CosmicAudioEngine() {
         onClick={toggleSound}
         className={`flex items-center gap-2 rounded-2xl border px-3.5 py-1.5 text-xs font-mono font-bold backdrop-blur-md transition-all cursor-pointer ${
           isPlaying
-            ? 'border-primary bg-primary/20 text-primary shadow-[0_0_20px_rgba(0,212,255,0.4)]'
-            : 'border-card-border bg-background/80 text-text-secondary hover:text-white hover:border-primary/40'
+            ? 'border-primary bg-primary/20 text-primary shadow-[0_0_20px_rgba(255,91,34,0.4)]'
+            : 'border-card-border bg-background/80 text-text-secondary hover:text-paper hover:border-primary/40'
         }`}
         title={isPlaying ? 'Kozmik Ambiyansı Durdur' : 'Kozmik Frekans Ambiyansını Başlat'}
       >

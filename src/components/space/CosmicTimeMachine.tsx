@@ -30,7 +30,7 @@ const COSMIC_TIME_DATA: TimeItem[] = [
     distanceKm: '149.6 Milyon km',
     earthEra: 'Dakikalar Önce',
     earthHistory: 'Güneş aniden sönseydi, Dünya’daki insanlar bunu ancak 8 dakika 20 saniye sonra fark edebilirdi.',
-    badgeColor: 'text-orange-400 bg-orange-400/10 border-orange-400/30'
+    badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
   {
     id: 'proxima',
@@ -39,7 +39,7 @@ const COSMIC_TIME_DATA: TimeItem[] = [
     distanceKm: '40.1 Trilyon km (4.24 Işık Yılı)',
     earthEra: 'Yakın Geçmiş',
     earthHistory: 'Şu an gökyüzünde gördüğünüz ışık, Dünya’da bundan yaklaşık 4 yıl önce yola çıktı.',
-    badgeColor: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30'
+    badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
   {
     id: 'polaris',
@@ -110,8 +110,8 @@ export function CosmicTimeMachine() {
               onClick={() => setSelectedItem(item)}
               className={`px-3.5 py-2 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-primary text-background font-bold shadow-[0_0_20px_rgba(0,212,255,0.4)] scale-102'
-                  : 'bg-background/60 text-text-secondary border border-card-border/60 hover:text-white'
+                  ? 'bg-primary text-background font-bold shadow-[0_0_20px_rgba(255,91,34,0.4)] scale-102'
+                  : 'bg-background/60 text-text-secondary border border-card-border/60 hover:text-paper'
               }`}
             >
               {item.name}

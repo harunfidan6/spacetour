@@ -1,0 +1,249 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { ArrowUpRight, Zap } from 'lucide-react';
+import { useSpace, type DestinationId } from '@/components/space/SpaceContext';
+import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
+import { Scramble, Ticks } from '@/components/motion/primitives';
+import { SectionHead, Em } from '@/components/ui/Headings';
+
+const JourneyEngine = dynamic(() => import('@/components/space/SpaceJourneyEngine').then((m) => m.SpaceJourneyEngine), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 grid place-items-center">
+      <span className="label text-muted">WebGL sahnesi yükleniyor…</span>
+    </div>
+  ),
+});
+
+const STOPS: { id: DestinationId; name: string; meta: string }[] = [
+  { id: 'solar-overview', name: 'Sistem', meta: 'Genel görünüm' },
+  { id: 'sun', name: 'Güneş', meta: 'G2V · 0.00 AU' },
+  { id: 'earth', name: 'Dünya', meta: '1.00 AU' },
+  { id: 'mars', name: 'Mars', meta: '1.52 AU' },
+  { id: 'jupiter', name: 'Jüpiter', meta: '5.20 AU' },
+  { id: 'saturn', name: 'Satürn', meta: '9.58 AU' },
+  { id: 'blackhole', name: 'Gargantua', meta: 'Olay ufku' },
+];
+
+const ENCYCLOPEDIA: Partial<Record<DestinationId, string>> = {
+  sun: 'gunes',
+  earth: 'dunya',
+  mars: 'mars',
+  jupiter: 'jupiter',
+  saturn: 'saturn',
+};
+
+function WarpOverlay({ warping }: { warping: boolean }) {
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = root.current;
+    if (!el || !warping || prefersReducedMotion()) return;
+    const ctx = gsap.context(() => {
+      gsap
+        .timeline()
+        .set(el, { autoAlpha: 1 })
+        .fromTo('line', { drawSVG: '0% 0%' }, { drawSVG: '40% 100%', duration: 0.9, stagger: { each: 0.004, from: 'random' }, ease: 'power2.in' })
+        .fromTo('[data-warp-word]', { scale: 0.4, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.5, ease: 'mg.out' }, 0.1)
+        .to('line', { drawSVG: '100% 100%', duration: 0.6, ease: 'power2.out' }, 1.2)
+        .to('[data-warp-word]', { scale: 2.4, autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, 1.2)
+        .set(el, { autoAlpha: 0 });
+    }, el);
+    return () => ctx.revert();
+  }, [warping]);
+
+  return (
+    <div ref={root} aria-hidden className="pointer-events-none absolute inset-0 z-20 grid place-items-center" style={{ visibility: 'hidden' }}>
+      <svg viewBox="-100 -100 200 200" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full">
+        {Array.from({ length: 90 }, (_, i) => {
+          const a = (i / 90) * Math.PI * 2 + (i % 3) * 0.02;
+          const r0 = 12 + (i % 5) * 4;
+          return (
+            <line
+              key={i}
+              x1={(Math.cos(a) * r0).toFixed(2)}
+              y1={(Math.sin(a) * r0).toFixed(2)}
+              x2={(Math.cos(a) * 150).toFixed(2)}
+              y2={(Math.sin(a) * 150).toFixed(2)}
+              stroke={i % 7 === 0 ? 'var(--solar)' : 'var(--paper)'}
+              strokeOpacity={0.7}
+              strokeWidth={0.35}
+            />
+          );
+        })}
+      </svg>
+      <span data-warp-word className="display relative text-[clamp(4rem,14vw,12rem)] text-paper mix-blend-difference">
+        Warp
+      </span>
+    </div>
+  );
+}
+
+export function Voyage() {
+  const { currentDestination, setDestination, isWarping, autoPilot, toggleAutoPilot, triggerWarp } = useSpace();
+  const stage = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+        if (entry.isIntersecting) setMounted(true);
+      },
+      { rootMargin: '300px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const d = currentDestination;
+  const slug = ENCYCLOPEDIA[d.id];
+  const activeIndex = STOPS.findIndex((s) => s.id === d.id);
+
+  return (
+    <section id="yolculuk" className="relative scroll-mt-0 bg-ink px-[var(--gutter)] pb-24 pt-24 sm:pt-32" style={{ '--page-accent': 'var(--solar)' } as CSSProperties}>
+      <SectionHead
+        index="02"
+        kicker="Yolculuk"
+        aside="WebGL · NASA dokuları"
+        title={
+          <>
+            Warp&apos;a <Em>hazır</Em>
+          </>
+        }
+        lede="Gerçek NASA yüzey haritalarıyla modellenmiş Güneş Sistemi. Bir durak seç, kamera oraya uçsun; fareyle hafifçe yörüngeyi kaydır."
+      />
+
+      {/* Mobile stop rail */}
+      <div className="no-scrollbar -mx-[var(--gutter)] mb-3 flex gap-2 overflow-x-auto px-[var(--gutter)] md:hidden">
+        {STOPS.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => setDestination(s.id)}
+            aria-pressed={d.id === s.id}
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors ${
+              d.id === s.id ? 'border-solar bg-solar text-ink' : 'border-line text-paper/80'
+            }`}
+          >
+            <span className="label mr-2 text-[9px] opacity-70">{String(i + 1).padStart(2, '0')}</span>
+            {s.name}
+          </button>
+        ))}
+      </div>
+
+      <div ref={stage} className="ticks relative h-[78svh] min-h-[520px] overflow-hidden border border-line bg-black" data-cursor="Sürükle">
+        <Ticks />
+        {mounted && <JourneyEngine active={inView} />}
+
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(9,9,11,0.85)_0%,rgba(9,9,11,0.2)_35%,transparent_60%)]" />
+
+        {/* Reticle */}
+        <svg viewBox="-60 -60 120 120" className="pointer-events-none absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 opacity-60" aria-hidden>
+          <g className="spin-slow">
+            <circle r="40" fill="none" stroke="var(--paper)" strokeWidth="0.6" strokeDasharray="3 5" />
+          </g>
+          <path d="M-56 0H-44M44 0H56M0 -56V-44M0 44V56" stroke="var(--solar)" strokeWidth="1.2" />
+        </svg>
+
+        {/* Stop list */}
+        <ol className="absolute bottom-6 left-6 top-6 z-10 hidden flex-col justify-center md:flex">
+          {STOPS.map((s, i) => {
+            const on = d.id === s.id;
+            return (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  onClick={() => setDestination(s.id)}
+                  aria-pressed={on}
+                  className="group flex items-baseline gap-3 py-1 text-left"
+                >
+                  <span className={`label w-6 text-[10px] ${on ? 'text-solar' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className={`display text-[clamp(1.6rem,2.6vw,2.6rem)] transition-[color,transform] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-2 ${on ? 'text-solar' : 'text-paper/55 group-hover:text-paper'}`}>
+                    {s.name}
+                  </span>
+                  <span className={`label text-[9px] transition-opacity ${on ? 'text-paper/80 opacity-100' : 'text-muted opacity-0 group-hover:opacity-100'}`}>{s.meta}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+
+        {/* Controls */}
+        <div className="absolute right-4 top-4 z-10 flex gap-2">
+          <button
+            type="button"
+            onClick={triggerWarp}
+            className="flex items-center gap-2 rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-solar"
+          >
+            <Zap size={13} /> Warp
+          </button>
+          <button
+            type="button"
+            onClick={toggleAutoPilot}
+            aria-pressed={autoPilot}
+            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs transition-colors ${
+              autoPilot ? 'border-lime bg-lime text-ink' : 'border-paper/30 bg-ink/60 text-paper backdrop-blur hover:border-lime'
+            }`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${autoPilot ? 'bg-ink' : 'bg-lime'}`} /> Sinematik tur
+          </button>
+        </div>
+
+        {/* Telemetry */}
+        <div className="absolute bottom-4 right-4 z-10 hidden w-[min(360px,40%)] border border-line bg-ink/85 backdrop-blur-md md:block">
+          <TelemetryBody d={d} slug={slug} index={activeIndex} />
+        </div>
+
+        <WarpOverlay warping={isWarping} />
+      </div>
+
+      <div className="mt-3 border border-line bg-ink-2 md:hidden">
+        <TelemetryBody d={d} slug={slug} index={activeIndex} />
+      </div>
+    </section>
+  );
+}
+
+function TelemetryBody({ d, slug, index }: { d: ReturnType<typeof useSpace>['currentDestination']; slug?: string; index: number }) {
+  const rows = [
+    { k: 'Uzaklık', v: d.distance },
+    { k: 'Hız', v: d.speed },
+    { k: 'Sıcaklık', v: d.temperature },
+    { k: 'Yerçekimi', v: d.gravity },
+  ];
+  return (
+    <>
+      <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+        <span className="label text-solar">{d.tag}</span>
+        <span className="label text-muted">{String(Math.max(index, 0) + 1).padStart(2, '0')} / 07</span>
+      </div>
+      <div className="px-4 pb-4 pt-3">
+        <div className="display display-tight text-3xl text-paper">
+          <Scramble text={d.name} onView={false} />
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-paper/60">{d.description}</p>
+        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+          {rows.map((r) => (
+            <div key={r.k}>
+              <dt className="label text-[9px] text-muted">{r.k}</dt>
+              <dd className="mt-1 font-mono text-xs text-paper">
+                <Scramble text={r.v} onView={false} duration={0.7} />
+              </dd>
+            </div>
+          ))}
+        </dl>
+        {slug && (
+          <Link href={`/ansiklopedi/${slug}`} className="group mt-4 inline-flex items-center gap-1.5 text-xs text-paper/80 hover:text-solar">
+            Ansiklopedi kaydı <ArrowUpRight size={13} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </Link>
+        )}
+      </div>
+    </>
+  );
+}
