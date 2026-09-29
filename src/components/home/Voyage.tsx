@@ -2,11 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { ArrowUpRight, Zap } from 'lucide-react';
+import { useEffect, useRef, useState, useMemo, type CSSProperties } from 'react';
+import { ArrowUpRight, Zap, Orbit } from 'lucide-react';
 import { useSpace, type DestinationId } from '@/components/space/SpaceContext';
 import { Scramble, Ticks } from '@/components/motion/primitives';
 import { SectionHead, Em } from '@/components/ui/Headings';
+import { computePlanetState, getJulianDate, PLANET_EPHEMERIS } from '@/lib/astrophysics/keplerEphemeris';
 
 const JourneyEngine = dynamic(() => import('@/components/space/SpaceJourneyEngine').then((m) => m.SpaceJourneyEngine), {
   ssr: false,
@@ -38,7 +39,7 @@ const ENCYCLOPEDIA: Partial<Record<DestinationId, string>> = {
 import { RelativisticWarpHUD } from '@/components/space/RelativisticWarpHUD';
 
 export function Voyage() {
-  const { currentDestination, setDestination, isWarping, autoPilot, toggleAutoPilot, triggerWarp } = useSpace();
+  const { currentDestination, setDestination, isWarping, autoPilot, toggleAutoPilot, triggerWarp, orbitMode, toggleOrbitMode } = useSpace();
   const stage = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [inView, setInView] = useState(false);
@@ -66,13 +67,13 @@ export function Voyage() {
       <SectionHead
         index="02"
         kicker="Yolculuk"
-        aside="WebGL · NASA dokuları"
+        aside="WebGL · NASA dokuları · J2000 Efemeris"
         title={
           <>
             Warp&apos;a <Em>hazır</Em>
           </>
         }
-        lede="Gerçek NASA yüzey haritalarıyla modellenmiş Güneş Sistemi. Bir durak seç, kamera oraya uçsun; fareyle hafifçe yörüngeyi kaydır."
+        lede="Gerçek NASA yüzey haritaları ve J2000 Keplerian yörünge mekaniğiyle simüle edilen Güneş Sistemi. Bir durak seç, kamera oraya uçsun; yörünge modunu değiştirerek gerçek göksel dizilimi izle."
       />
 
       {/* Mobile stop rail */}
@@ -123,7 +124,22 @@ export function Voyage() {
         </ol>
 
         {/* Controls */}
-        <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+        <div className="absolute right-4 top-4 z-10 flex flex-wrap items-center justify-end gap-2">
+          {/* Keplerian Ephemeris Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleOrbitMode}
+            className={`flex items-center gap-2 border px-3 py-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              orbitMode === 'j2000'
+                ? 'border-lime bg-lime/15 text-lime shadow-[0_0_20px_rgba(212,255,61,0.2)]'
+                : 'border-line bg-ink/80 text-paper/80 backdrop-blur hover:border-paper/40'
+            }`}
+          >
+            <Orbit size={14} className={orbitMode === 'j2000' ? 'animate-spin' : ''} />
+            <span>{orbitMode === 'j2000' ? 'J2000 Canlı Efemeris' : 'Didaktik Sıralama'}</span>
+          </button>
+
+          {/* Warp Trigger */}
           <button
             type="button"
             onClick={triggerWarp}
@@ -137,6 +153,8 @@ export function Voyage() {
             <Zap size={14} className={isWarping ? 'animate-bounce' : 'animate-pulse'} />
             <span>{isWarping ? 'Warp Aktif' : 'Warp Sıçraması'}</span>
           </button>
+
+          {/* Cinematic Autopilot */}
           <button
             type="button"
             onClick={toggleAutoPilot}
@@ -153,8 +171,8 @@ export function Voyage() {
         </div>
 
         {/* Telemetry */}
-        <div className="absolute bottom-4 right-4 z-10 hidden w-[min(360px,40%)] border border-line bg-ink/85 backdrop-blur-md md:block">
-          <TelemetryBody d={d} slug={slug} index={activeIndex} />
+        <div className="absolute bottom-4 right-4 z-10 hidden w-[min(380px,42%)] border border-line bg-ink/90 backdrop-blur-md md:block">
+          <TelemetryBody d={d} slug={slug} index={activeIndex} orbitMode={orbitMode} />
         </div>
 
         {/* Relativistic Hyperspace Warp HUD */}
@@ -166,23 +184,55 @@ export function Voyage() {
       </div>
 
       <div className="mt-3 border border-line bg-ink-2 md:hidden">
-        <TelemetryBody d={d} slug={slug} index={activeIndex} />
+        <TelemetryBody d={d} slug={slug} index={activeIndex} orbitMode={orbitMode} />
       </div>
     </section>
   );
 }
 
-function TelemetryBody({ d, slug, index }: { d: ReturnType<typeof useSpace>['currentDestination']; slug?: string; index: number }) {
-  const rows = [
-    { k: 'Uzaklık', v: d.distance },
-    { k: 'Hız', v: d.speed },
-    { k: 'Sıcaklık', v: d.temperature },
-    { k: 'Yerçekimi', v: d.gravity },
-  ];
+function TelemetryBody({
+  d,
+  slug,
+  index,
+  orbitMode,
+}: {
+  d: ReturnType<typeof useSpace>['currentDestination'];
+  slug?: string;
+  index: number;
+  orbitMode: 'didactic' | 'j2000';
+}) {
+  const isPlanet = d.id in PLANET_EPHEMERIS;
+  const ephem = isPlanet ? computePlanetState(d.id as keyof typeof PLANET_EPHEMERIS) : null;
+  const currentJD = getJulianDate();
+
+  const rows: { k: string; v: string }[] = useMemo(() => {
+    if (orbitMode === 'j2000' && ephem) {
+      return [
+        { k: 'Uzaklık (Güneş)', v: `${ephem.rAU.toFixed(3)} AU (${Math.round(ephem.rKm / 1e6)}M km)` },
+        { k: 'Yörünge Hızı', v: `${ephem.speedKmS.toFixed(2)} km/s` },
+        { k: 'Gerçek Anomali (ν)', v: `${ephem.trueAnomalyDeg.toFixed(1)}°` },
+        { k: 'J2000 Efemeris', v: `JD ${currentJD.toFixed(2)}` },
+      ];
+    }
+    return [
+      { k: 'Uzaklık', v: d.distance },
+      { k: 'Hız', v: d.speed },
+      { k: 'Sıcaklık', v: d.temperature },
+      { k: 'Yerçekimi', v: d.gravity },
+    ];
+  }, [orbitMode, ephem, currentJD, d.distance, d.speed, d.temperature, d.gravity]);
+
   return (
     <>
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-        <span className="label text-solar">{d.tag}</span>
+        <div className="flex items-center gap-2">
+          <span className="label text-solar">{d.tag}</span>
+          {orbitMode === 'j2000' && (
+            <span className="border border-lime/30 bg-lime/10 px-1.5 py-0.5 font-mono text-[9px] text-lime font-bold">
+              J2000 CANLI
+            </span>
+          )}
+        </div>
         <span className="label text-muted">{String(Math.max(index, 0) + 1).padStart(2, '0')} / 07</span>
       </div>
       <div className="px-4 pb-4 pt-3">

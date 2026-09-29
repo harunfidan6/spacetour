@@ -125,6 +125,8 @@ export const DESTINATIONS: Record<DestinationId, DestinationInfo> = {
   }
 };
 
+export type OrbitMode = 'didactic' | 'j2000';
+
 interface SpaceContextType {
   currentDestination: DestinationInfo;
   setDestination: (id: DestinationId) => void;
@@ -137,6 +139,8 @@ interface SpaceContextType {
   throttle: number; // 1 to 10
   setThrottle: (val: number) => void;
   triggerWarp: () => void;
+  orbitMode: OrbitMode;
+  toggleOrbitMode: () => void;
 }
 
 const SpaceContext = createContext<SpaceContextType | undefined>(undefined);
@@ -148,6 +152,7 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
   const [autoPilot, setAutoPilot] = useState<boolean>(false);
   const [hudVisible, setHudVisible] = useState<boolean>(true);
   const [throttle, setThrottle] = useState<number>(1);
+  const [orbitMode, setOrbitMode] = useState<OrbitMode>('didactic');
 
   const triggerWarp = () => {
     setIsWarping(true);
@@ -182,6 +187,10 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
     setHudVisible((prev) => !prev);
   };
 
+  const toggleOrbitMode = () => {
+    setOrbitMode((prev) => (prev === 'didactic' ? 'j2000' : 'didactic'));
+  };
+
   return (
     <SpaceContext.Provider
       value={{
@@ -195,7 +204,9 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
         toggleHud,
         throttle,
         setThrottle,
-        triggerWarp
+        triggerWarp,
+        orbitMode,
+        toggleOrbitMode,
       }}
     >
       {children}

@@ -13,6 +13,8 @@ import { AsteroidImpactSimulator } from '@/components/space/AsteroidImpactSimula
 import { SolarSystemOrrery } from '@/components/space/SolarSystemOrrery';
 import { BlackHoleSimulator } from '@/components/space/BlackHoleSimulator';
 import { HohmannTransferSimulator } from '@/components/space/HohmannTransferSimulator';
+import { GravitationalWaveInterferometer } from '@/components/space/GravitationalWaveInterferometer';
+import { PlanckCMBExplorer } from '@/components/space/PlanckCMBExplorer';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { Reveal, RotatingBadge } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
@@ -76,12 +78,12 @@ export default function AnsiklopediPage() {
         accent="var(--violet)"
         lines={['Kozmik', <Em key="a">arşiv</Em>]}
         size="clamp(3.4rem, 13vw, 14rem)"
-        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten sekiz laboratuvar modülü."
+        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten on Nobel ödüllü astrofizik laboratuvar modülü."
         meta={[
           { k: 'Kayıt', v: planets.length },
           { k: 'Gezegen', v: planetCount },
           { k: 'Takımyıldızı', v: constellations.length },
-          { k: 'Laboratuvar', v: 8 },
+          { k: 'Laboratuvar', v: 10 },
         ]}
         graphic={
           <RotatingBadge text="Kayıt · Arşiv · Laboratuvar · Orrery · " size={220} className="text-paper/80">
@@ -214,6 +216,12 @@ export default function AnsiklopediPage() {
           </Chapter>
           <Chapter index="L8" title="Hohmann transfer yörüngesi & gezegenlerarası rota">
             <HohmannTransferSimulator />
+          </Chapter>
+          <Chapter index="L9" title="LIGO / Virgo kütleçekimsel dalga interferometresi & uzayzaman dalgalanması">
+            <GravitationalWaveInterferometer />
+          </Chapter>
+          <Chapter index="L10" title="Planck CMB 3D kozmik arka plan ışıması & evrenin geometrisi">
+            <PlanckCMBExplorer />
           </Chapter>
         </section>
 

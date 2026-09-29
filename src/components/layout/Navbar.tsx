@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { LiveClock, RotatingBadge } from '@/components/motion/primitives';
 import { SITE_ROUTES, TELEMETRY_ROUTE } from '@/lib/routes';
+import { Terminal } from 'lucide-react';
 import { CosmicAudioEngine } from '@/components/space/CosmicAudioEngine';
 
 function isActive(pathname: string, href: string) {
@@ -97,6 +98,15 @@ export default function Navbar() {
 
           <div className="ml-auto flex items-center gap-3 lg:ml-6">
             <CosmicAudioEngine />
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-cosmic-terminal'))}
+              className="hidden items-center gap-2 rounded-full border border-line bg-ink/60 px-3 py-1.5 font-mono text-[11px] text-paper/80 transition-colors hover:border-solar hover:text-solar sm:flex cursor-pointer"
+              title="Kozmik Kumanda Terminali (⌘K / Ctrl+K)"
+            >
+              <Terminal size={12} className="text-solar" />
+              <span>⌘K</span>
+            </button>
             <Link
               href={TELEMETRY_ROUTE.href}
               className="hidden items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-paper/80 transition-colors hover:border-lime hover:text-lime xl:flex"
