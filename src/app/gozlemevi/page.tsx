@@ -6,6 +6,9 @@ import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { GozlemeviGraphic } from '@/components/home/ModuleGraphics';
 import { Scramble, Ticks } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
+import { WebbHubbleCompareSlider } from '@/components/space/WebbHubbleCompareSlider';
+import { CosmicRadioSpectrograph } from '@/components/space/CosmicRadioSpectrograph';
+import { CosmicAcademyQuiz } from '@/components/space/CosmicAcademyQuiz';
 
 /* Long → short wavelength, left to right, like a real EM spectrum chart. */
 const BANDS: { id: WavelengthMode; label: string; band: string; desc: string; stop: number }[] = [
@@ -180,6 +183,51 @@ export default function GozlemeviPage() {
             </div>
           </div>
         </div>
+
+        {/* 05.2 - Webb vs Hubble Infrared Comparison Deck */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.2"
+            kicker="Kızılötesi derin uzay devrimi"
+            title={
+              <>
+                Hubble <Em>vs</Em> James Webb
+              </>
+            }
+            lede="Toz bulutlarının ardındaki proto-yıldızları ve 13.1 milyar yıl önceki bebek galaksileri interaktif kaydırıcıyla keşfet."
+          />
+          <WebbHubbleCompareSlider />
+        </section>
+
+        {/* 05.3 - Cosmic Radio Spectrograph & Pulsar Audio */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.3"
+            kicker="Elektromanyetik ses laboratuvarı"
+            title={
+              <>
+                Kozmik radyo & <Em>pulsar akustik spektrografı</Em>
+              </>
+            }
+            lede="Nötron yıldızlarının periyodik radyo atımlarını, Satürn’ün auroral ıslıklarını ve yıldızlararası plazmayı canlı dinle."
+          />
+          <CosmicRadioSpectrograph />
+        </section>
+
+        {/* 05.4 - Cosmic Academy & Astrophysics Certification */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.4"
+            kicker="AstroTR Gözlemevi Değerlendirmesi"
+            title={
+              <>
+                Astrofizik akademisi & <Em>unvan sertifikası</Em>
+              </>
+            }
+            lede="10 soruluk interaktif sınavla evrenin fiziksel yasalarındaki yetkinliğini test et ve onaylı resmi sertifikanı oluştur."
+          />
+          <CosmicAcademyQuiz />
+        </section>
       </div>
     </div>
   );
