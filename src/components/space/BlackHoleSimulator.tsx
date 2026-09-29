@@ -16,6 +16,7 @@ import {
   Info
 } from 'lucide-react';
 import { createAccretionDiskTexture } from './textures';
+import { Ticks } from '@/components/motion/primitives';
 
 function BlackHole3DMesh({
   distanceRs,
@@ -162,33 +163,32 @@ export function BlackHoleSimulator() {
       : { level: 'GÜVENLİ YÖRÜNGE', desc: 'İstikrarlı dairesel yörünge. Güvenli bilimsel gözlem mesafesi.', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' };
 
   return (
-    <div className="rounded-3xl border border-purple-500/30 bg-black/60 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-8">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 border-b border-line pb-6">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-5 w-5 text-purple-400 animate-pulse" />
-            <span className="text-[10px] font-mono text-purple-300 font-bold uppercase tracking-widest">
-              GENEL GÖRELİLİK & ASTROFİZİK LABORATUVARI
-            </span>
+          <div className="label flex items-center gap-2 text-violet">
+            <span className="live-dot" /> Genel Görelilik & Astrofizik Laboratuvarı
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">
-            Kara Delik & Zaman Genleşmesi Simülatörü
-          </h2>
-          <p className="text-xs text-neutral-400 mt-1 max-w-xl">
-            Albert Einstein&apos;ın kütleçekimsel zaman genişlemesini ve Interstellar filmindeki Gargantua benzeri süper kütleli bir kara deliğin etrafındaki ışık bükülmesini interaktif deneyimleyin.
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
+            Gargantua <span className="serif-i text-violet">& zaman genleşmesi</span>
+          </h3>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
+            Albert Einstein&apos;ın kütleçekimsel zaman bükülmesini ve süper kütleli bir kara deliğin etrafındaki ışık merceklenmesini deneyimleyin.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-purple-300 bg-purple-500/10 border border-purple-500/30 px-3.5 py-1.5 rounded-full">
-          <span>Schwarzschild Metriği</span>
+        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-violet">
+          Schwarzschild metriği · γ = 1/√(1-r_s/r)
         </div>
       </div>
 
       {/* Main 3D Canvas & Simulation Deck */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* 3D Black Hole Canvas (7 cols) */}
-        <div className="lg:col-span-7 relative h-80 sm:h-[440px] w-full rounded-3xl border border-white/10 bg-black/80 overflow-hidden shadow-[0_0_50px_rgba(168,85,247,0.15)]">
+        <div className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
           <Canvas camera={{ position: [0, 2.5, 9.5], fov: 45 }}>
             <ambientLight intensity={0.2} />
             <directionalLight position={[5, 10, 5]} intensity={1.5} color="#fff" />
@@ -208,38 +208,38 @@ export function BlackHoleSimulator() {
           </Canvas>
 
           {/* Interactive controls on canvas */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
-            <span className="h-2.5 w-2.5 rounded-full bg-purple-400 animate-ping" />
-            <span className="text-[10px] font-mono text-purple-300 font-bold tracking-widest uppercase">
-              3D GARGANTUA • GÖZLEM GEMİSİ YÖRÜNGESİ
+          <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none bg-ink/80 px-3 py-1.5 backdrop-blur border border-line">
+            <span className="h-2 w-2 rounded-full bg-violet animate-ping" />
+            <span className="label text-paper">
+              Gözlem gemisi yörüngesi · {distanceRs.toFixed(1)} r_s
             </span>
           </div>
 
-          <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/70 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 text-xs font-mono">
+          <div className="absolute top-4 right-4 flex items-center gap-2">
             <button
               onClick={() => setIsRotating(!isRotating)}
-              className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+              className="label px-3 py-1.5 bg-ink/80 border border-line text-paper backdrop-blur hover:bg-ink-3 transition-colors cursor-pointer"
             >
               {isRotating ? 'Döndürmeyi Duraklat' : 'Döndür'}
             </button>
           </div>
 
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono text-neutral-400 pointer-events-none">
-            <span>Mavi Halkalar: Gözlemcinin Anlık Yörüngesi</span>
-            <span>🖱️ 360° Çevir • Tekerlek ile Yakınlaş</span>
+          <div className="absolute inset-x-4 bottom-4 flex items-center justify-between bg-ink/80 px-4 py-2 border border-line backdrop-blur pointer-events-none">
+            <span className="label text-muted">Mavi Halka: Gözlemci Konumu</span>
+            <span className="label text-paper">360° Sürükle · Yakınlaştır</span>
           </div>
         </div>
 
         {/* Telemetry & Time Dilation Cockpit (5 cols) */}
-        <div className="lg:col-span-5 space-y-5">
+        <div className="lg:col-span-5 space-y-6">
           {/* Distance Slider */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 space-y-3 font-mono">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Sliders size={14} className="text-purple-400" />
+          <div className="border border-line bg-ink-2 p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="label text-muted flex items-center gap-1.5">
+                <Sliders size={13} className="text-violet" />
                 Olay Ufkuna Uzaklık
               </span>
-              <span className="text-purple-300 font-black text-sm">
+              <span className="label text-violet font-bold text-sm">
                 {distanceRs.toFixed(1)} r<sub>s</sub>
               </span>
             </div>
@@ -251,38 +251,41 @@ export function BlackHoleSimulator() {
               step="0.1"
               value={distanceRs}
               onChange={(e) => setDistanceRs(parseFloat(e.target.value))}
-              className="w-full accent-purple-400 cursor-pointer h-2 bg-white/10 rounded-lg"
+              className="w-full accent-[var(--violet)] cursor-pointer h-1.5 bg-ink"
             />
 
-            <div className="flex justify-between text-[10px] text-neutral-500">
-              <span className="text-rose-400">1.1 r<sub>s</sub> (Tehlikeli)</span>
+            <div className="flex justify-between text-[10px] font-mono text-muted">
+              <span className="text-rose-signal">1.1 r<sub>s</sub> (Kritik)</span>
               <span>6.0 r<sub>s</sub> (ISCO)</span>
-              <span className="text-emerald-400">20.0 r<sub>s</sub> (Güvenli)</span>
+              <span className="text-lime">20.0 r<sub>s</sub> (Güvenli)</span>
             </div>
           </div>
 
-          {/* Big Time Dilation Readout Card */}
-          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-black/40 to-black/60 p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-amber-300 font-mono text-xs font-bold uppercase tracking-wider">
-                <Clock size={16} className="text-amber-400" />
-                <span>Kütleçekimsel Zaman Genleşmesi</span>
-              </div>
-              <span className="text-xs font-mono font-bold text-amber-300">
+          {/* Time Dilation Readout Grid */}
+          <div className="grid grid-cols-2 gap-px border border-line bg-line">
+            <div className="bg-ink p-4">
+              <span className="label text-muted">Burada geçen</span>
+              <div className="display display-tight mt-2 text-2xl text-violet">1.0 Saat</div>
+            </div>
+            <div className="bg-ink p-4">
+              <span className="label text-muted">Dünya’da geçen</span>
+              <div className="display display-tight mt-2 text-2xl text-paper">{timeDilationText}</div>
+            </div>
+          </div>
+
+          {/* Lorentz & Relativity Card */}
+          <div className="border border-line bg-ink-2 p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <span className="label text-violet flex items-center gap-1.5">
+                <Clock size={13} />
+                Genel Görelilik Zaman Faktörü
+              </span>
+              <span className="label text-paper font-mono">
                 γ = {timeDilationFactor > 1000 ? '∞' : timeDilationFactor.toFixed(2)}x
               </span>
             </div>
 
-            <div className="pt-1">
-              <span className="text-[11px] text-neutral-400 block font-mono">
-                Bu yörüngede geçireceğiniz her 1 Saat =
-              </span>
-              <div className="text-3xl font-black text-white font-mono mt-0.5">
-                Dünya&apos;da {timeDilationText}
-              </div>
-            </div>
-
-            <p className="text-xs text-neutral-300 leading-relaxed font-sans pt-1">
+            <p className="text-xs leading-relaxed text-paper/75">
               {distanceRs < 2.0
                 ? 'Olay ufkuna o kadar yakınsınız ki uzay-zaman neredeyse donmuş durumda. Dünya’da uygarlıklar yükselip yıkılırken siz yalnızca dakikalar yaşarsınız.'
                 : distanceRs < 6.0
@@ -292,12 +295,12 @@ export function BlackHoleSimulator() {
           </div>
 
           {/* Spaghettification / Tidal Force Alert */}
-          <div className={`p-4 rounded-2xl border text-xs font-mono space-y-1 ${spaghettificationRisk.color}`}>
-            <div className="flex items-center gap-2 font-bold uppercase">
-              <ShieldAlert size={15} />
-              <span>Gelgit Kuvveti & Spagettileşme: {spaghettificationRisk.level}</span>
+          <div className="border border-line bg-ink-2 p-4">
+            <div className="flex items-center gap-2">
+              <ShieldAlert size={14} className="text-violet" />
+              <span className="label text-paper">Gelgit kuvveti: {spaghettificationRisk.level}</span>
             </div>
-            <p className="text-[11px] text-neutral-300 font-sans leading-relaxed">
+            <p className="mt-2 text-xs leading-relaxed text-paper/70">
               {spaghettificationRisk.desc}
             </p>
           </div>

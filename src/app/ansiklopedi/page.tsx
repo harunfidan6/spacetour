@@ -12,6 +12,7 @@ import { ExoplanetExplorer } from '@/components/space/ExoplanetExplorer';
 import { AsteroidImpactSimulator } from '@/components/space/AsteroidImpactSimulator';
 import { SolarSystemOrrery } from '@/components/space/SolarSystemOrrery';
 import { BlackHoleSimulator } from '@/components/space/BlackHoleSimulator';
+import { HohmannTransferSimulator } from '@/components/space/HohmannTransferSimulator';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { Reveal, RotatingBadge } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
@@ -75,12 +76,12 @@ export default function AnsiklopediPage() {
         accent="var(--violet)"
         lines={['Kozmik', <Em key="a">arşiv</Em>]}
         size="clamp(3.4rem, 13vw, 14rem)"
-        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten yedi laboratuvar modülü."
+        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten sekiz laboratuvar modülü."
         meta={[
           { k: 'Kayıt', v: planets.length },
           { k: 'Gezegen', v: planetCount },
           { k: 'Takımyıldızı', v: constellations.length },
-          { k: 'Laboratuvar', v: 7 },
+          { k: 'Laboratuvar', v: 8 },
         ]}
         graphic={
           <RotatingBadge text="Kayıt · Arşiv · Laboratuvar · Orrery · " size={220} className="text-paper/80">
@@ -210,6 +211,9 @@ export default function AnsiklopediPage() {
           </Chapter>
           <Chapter index="L7" title="Kara delik & görelilik zaman genleşmesi (Gargantua)">
             <BlackHoleSimulator />
+          </Chapter>
+          <Chapter index="L8" title="Hohmann transfer yörüngesi & gezegenlerarası rota">
+            <HohmannTransferSimulator />
           </Chapter>
         </section>
 

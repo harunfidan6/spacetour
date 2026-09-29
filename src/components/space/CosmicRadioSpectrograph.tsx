@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Volume2, VolumeX, Play, Pause, Radio, Activity, Zap, Info, Waves, Disc } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface CelestialSignal {
   id: string;
@@ -406,40 +407,41 @@ export function CosmicRadioSpectrograph() {
   }, [isPlaying, displayMode]);
 
   return (
-    <div className="rounded-3xl border border-line bg-ink p-6 md:p-8 space-y-8">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono tracking-widest uppercase">
-            <Radio className="h-4 w-4 animate-pulse" />
-            <span>Kozmik Radyo Spektrografı & Pulsar Akustiği</span>
+          <div className="label flex items-center gap-2 text-lime">
+            <span className="live-dot" /> Kozmik Radyo Spektrografı & Pulsar Akustiği
           </div>
-          <h3 className="display display-tight text-3xl md:text-4xl text-paper mt-2">
-            Evrenin <span className="serif-i text-emerald-400">Radyo Şarkıları</span>
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
+            Evrenin <span className="serif-i text-lime">radyo şarkıları</span>
           </h3>
-          <p className="text-sm text-paper/70 mt-2 max-w-xl">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
             Radyo teleskoplar ve derin uzay sondalarının elektromanyetik dalgalardan elde ettiği gerçek kozmik sonifikasyon kayıtları. Nötron yıldızlarının nabzını ve yıldızlararası plazmayı canlı dinleyin.
           </p>
         </div>
 
         {/* Global Sound Controls */}
-        <div className="flex items-center gap-4 bg-ink-2 p-3 rounded-2xl border border-line">
+        <div className="flex items-center gap-4 border border-line bg-ink-2 p-3">
           <button
             onClick={togglePlay}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all shadow-lg ${
+            className={`label flex items-center gap-2 px-4 py-2 border transition-colors cursor-pointer ${
               isPlaying
-                ? 'bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30'
-                : 'bg-emerald-500 text-black font-bold hover:bg-emerald-400 shadow-emerald-500/20'
+                ? 'border-rose-signal/60 bg-rose-signal/20 text-rose-signal'
+                : 'border-lime bg-lime text-ink font-bold hover:bg-lime/90'
             }`}
           >
             {isPlaying ? (
               <>
-                <Pause className="w-4 h-4 fill-current" />
+                <Pause className="w-3.5 h-3.5 fill-current" />
                 <span>Durdur</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-current" />
+                <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Sinyali Dinle</span>
               </>
             )}
@@ -459,35 +461,39 @@ export function CosmicRadioSpectrograph() {
               step="0.05"
               value={volume}
               onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className="w-20 accent-emerald-400 cursor-pointer h-1.5 bg-ink rounded-lg"
+              className="w-20 accent-[var(--lime)] cursor-pointer h-1 bg-ink"
             />
           </div>
         </div>
       </div>
 
-      {/* Signal Selection Deck */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {CELESTIAL_SIGNALS.map((sig) => {
+      {/* Signal Selection Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
+        {CELESTIAL_SIGNALS.map((sig, idx) => {
           const isSelected = sig.id === selectedSignal.id;
           return (
             <button
               key={sig.id}
               onClick={() => setSelectedSignal(sig)}
-              className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all ${
+              className={`p-4 text-left flex flex-col justify-between transition-colors cursor-pointer ${
                 isSelected
-                  ? 'bg-emerald-950/40 border-emerald-500/60 shadow-lg shadow-emerald-500/10'
-                  : 'bg-ink-2 border-line hover:border-paper/40'
+                  ? 'bg-lime text-ink'
+                  : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <Disc className={`w-3.5 h-3.5 ${isSelected ? 'text-emerald-400 animate-spin' : 'text-muted'}`} />
-                <span className="text-[10px] font-mono text-muted">{sig.distance}</span>
+              <div className="flex items-center justify-between mb-3">
+                <span className={`label ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                  0{idx + 1}
+                </span>
+                <Disc className={`w-3.5 h-3.5 ${isSelected ? 'text-ink animate-spin' : 'text-muted'}`} />
               </div>
               <div>
-                <div className={`text-xs font-bold truncate ${isSelected ? 'text-emerald-300' : 'text-paper'}`}>
+                <div className="display display-tight text-base font-bold truncate">
                   {sig.name.split(' (')[0]}
                 </div>
-                <div className="text-[10px] text-muted truncate mt-0.5">{sig.source}</div>
+                <div className={`label mt-1 text-[10px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                  {sig.source.split(' / ')[0]}
+                </div>
               </div>
             </button>
           );
@@ -495,7 +501,7 @@ export function CosmicRadioSpectrograph() {
       </div>
 
       {/* Real-time Oscilloscope & Spectrogram Canvas Display */}
-      <div className="relative rounded-2xl overflow-hidden border border-emerald-500/30 bg-black shadow-2xl">
+      <div className="relative border border-line bg-black overflow-hidden">
         <canvas
           ref={canvasRef}
           width={800}
@@ -505,61 +511,61 @@ export function CosmicRadioSpectrograph() {
 
         {/* Display Overlay Badges */}
         <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-          <span className="px-2.5 py-1 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono text-xs flex items-center gap-1.5 backdrop-blur">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span className="label px-3 py-1 bg-ink/90 border border-line text-lime flex items-center gap-2 backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-lime animate-ping" />
             <span>{selectedSignal.frequency}</span>
           </span>
-          <span className="px-2.5 py-1 rounded-md bg-black/60 border border-line text-muted font-mono text-xs backdrop-blur">
+          <span className="label px-2.5 py-1 bg-ink/80 border border-line text-muted backdrop-blur">
             {selectedSignal.discoveryMission}
           </span>
         </div>
 
         {/* Oscilloscope vs Spectrogram Mode Toggles */}
-        <div className="absolute top-4 right-4 flex items-center bg-black/80 border border-line rounded-lg p-1 backdrop-blur text-xs font-mono">
+        <div className="absolute top-4 right-4 flex items-center border border-line bg-ink/90 backdrop-blur">
           <button
             onClick={() => setDisplayMode('oscilloscope')}
-            className={`px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${
-              displayMode === 'oscilloscope' ? 'bg-emerald-500 text-black font-bold' : 'text-muted hover:text-paper'
+            className={`label px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-1.5 ${
+              displayMode === 'oscilloscope' ? 'bg-paper text-ink font-bold' : 'text-muted hover:text-paper'
             }`}
           >
-            <Activity className="w-3.5 h-3.5" />
+            <Activity className="w-3 h-3" />
             <span>Osiloskop</span>
           </button>
           <button
             onClick={() => setDisplayMode('spectrogram')}
-            className={`px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${
-              displayMode === 'spectrogram' ? 'bg-emerald-500 text-black font-bold' : 'text-muted hover:text-paper'
+            className={`label px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-1.5 border-l border-line ${
+              displayMode === 'spectrogram' ? 'bg-paper text-ink font-bold' : 'text-muted hover:text-paper'
             }`}
           >
-            <Waves className="w-3.5 h-3.5" />
+            <Waves className="w-3 h-3" />
             <span>Spektrogram</span>
           </button>
         </div>
 
         {/* Status watermark */}
-        <div className="absolute bottom-3 right-4 font-mono text-[10px] text-emerald-500/60 uppercase tracking-widest pointer-events-none">
-          {isPlaying ? 'CANLI SPEKTRAL REZONANS AKTİF' : 'BEKLEMEDE • OYNATMAK İÇİN SİNYALİ SEÇİN'}
+        <div className="absolute bottom-3 right-4 label text-[10px] text-muted pointer-events-none">
+          {isPlaying ? 'Canlı Rezonans Aktif · 256-pt FFT' : 'Sinyali Seçin ve Oynatın'}
         </div>
       </div>
 
       {/* Signal Scientific Explanation Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-        <div className="p-5 rounded-2xl bg-ink-2 border border-line space-y-2">
-          <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-px border border-line bg-line">
+        <div className="bg-ink p-6 space-y-2">
+          <div className="label text-muted flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5 text-paper" />
             <span>Gök Cismi & Keşif Bilgisi</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed">
+          <p className="text-xs text-paper/80 leading-relaxed pt-1">
             {selectedSignal.description}
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
-          <div className="text-xs font-mono text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+        <div className="bg-ink p-6 space-y-2">
+          <div className="label text-lime flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5" />
             <span>Fiziksel Akustik Mekanizması</span>
           </div>
-          <p className="text-xs text-paper/90 leading-relaxed">
+          <p className="text-xs text-paper/80 leading-relaxed pt-1">
             {selectedSignal.scientificMechanism}
           </p>
         </div>

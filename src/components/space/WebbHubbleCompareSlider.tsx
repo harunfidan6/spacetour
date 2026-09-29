@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Eye, Sparkles, Sliders, Info, Zap, Shield, Compass, ArrowLeftRight } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface ComparisonTarget {
   id: string;
@@ -150,36 +151,37 @@ export function WebbHubbleCompareSlider() {
   };
 
   return (
-    <div className="rounded-3xl border border-line bg-ink p-6 md:p-8 space-y-8">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header & Telescope Quick Specs */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="flex items-center gap-2 text-rose-signal text-xs font-mono tracking-widest uppercase">
-            <Zap className="h-4 w-4 animate-pulse" />
-            <span>Kızılötesi vs Optik Spektrum Karşılaştırıcısı</span>
+          <div className="label flex items-center gap-2 text-rose-signal">
+            <span className="live-dot" /> Kızılötesi vs Optik Spektrum Karşılaştırıcısı
           </div>
-          <h3 className="display display-tight text-3xl md:text-4xl text-paper mt-2">
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
             Hubble <span className="serif-i text-rose-signal">ve</span> James Webb
           </h3>
-          <p className="text-sm text-paper/70 mt-2 max-w-xl">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
             Aynı kozmik hedefe iki farklı çağın dev teleskobuyla bakın. Kaydırıcıyı sağa-sola çekerek toz perdesinin ardındaki kızılötesi evreni ortaya çıkarın.
           </p>
         </div>
 
         {/* Specs Pill */}
-        <div className="flex flex-wrap gap-2 text-xs font-mono">
-          <div className="px-3 py-2 rounded-xl bg-ink-2 border border-line text-muted">
+        <div className="flex flex-wrap gap-2">
+          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
             <span className="text-paper font-bold">JWST:</span> 6.5m Ayna · L2 Noktası (-233°C)
           </div>
-          <div className="px-3 py-2 rounded-xl bg-ink-2 border border-line text-muted">
+          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
             <span className="text-paper font-bold">Hubble:</span> 2.4m Ayna · Alçak Dünya Yörüngesi
           </div>
         </div>
       </div>
 
-      {/* Target Selector Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {COMPARISON_TARGETS.map((t) => {
+      {/* Target Selector Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px border border-line bg-line">
+        {COMPARISON_TARGETS.map((t, idx) => {
           const isSelected = t.id === selectedTarget.id;
           return (
             <button
@@ -188,16 +190,26 @@ export function WebbHubbleCompareSlider() {
                 setSelectedTarget(t);
                 setSliderPosition(50);
               }}
-              className={`px-4 py-2.5 rounded-xl font-mono text-xs transition-all flex items-center gap-2 border ${
+              className={`p-4 text-left transition-colors cursor-pointer flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-rose-signal text-ink border-rose-signal font-bold shadow-lg shadow-rose-signal/20'
-                  : 'bg-ink-2 text-paper/70 border-line hover:border-paper/40 hover:text-paper'
+                  ? 'bg-rose-signal text-ink'
+                  : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <span>{t.name}</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded ${isSelected ? 'bg-ink/20 text-ink' : 'bg-ink text-muted'}`}>
-                {t.distance}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className={`label ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                  Hedef 0{idx + 1}
+                </span>
+                <span className={`label text-[10px] ${isSelected ? 'text-ink/80' : 'text-rose-signal'}`}>
+                  {t.distance}
+                </span>
+              </div>
+              <div className="display display-tight mt-3 text-lg font-bold">
+                {t.name.split(' (')[0]}
+              </div>
+              <div className={`serif-i text-xs mt-1 ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                {t.constellation}
+              </div>
             </button>
           );
         })}
@@ -211,7 +223,7 @@ export function WebbHubbleCompareSlider() {
         onMouseLeave={onMouseUp}
         onMouseMove={onMouseMove}
         onTouchMove={onTouchMove}
-        className="relative h-[380px] sm:h-[480px] md:h-[560px] w-full rounded-2xl overflow-hidden cursor-ew-resize select-none border border-line shadow-2xl bg-black"
+        className="relative h-[380px] sm:h-[480px] md:h-[560px] w-full overflow-hidden cursor-ew-resize select-none border border-line bg-black"
       >
         {/* Layer 1: Right Side - James Webb (Infrared) Background */}
         <div className="absolute inset-0 w-full h-full">
@@ -227,10 +239,10 @@ export function WebbHubbleCompareSlider() {
 
           {/* Right Label (Webb) */}
           <div className="absolute right-4 top-4 z-10 flex flex-col items-end gap-1 pointer-events-none">
-            <span className="px-3 py-1 rounded-full bg-rose-600/90 text-white font-mono text-xs uppercase tracking-wider shadow-lg backdrop-blur">
+            <span className="label px-3 py-1 bg-rose-signal text-ink font-bold backdrop-blur">
               ★ {selectedTarget.webb.label}
             </span>
-            <span className="text-[11px] font-mono text-white/80 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+            <span className="label text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur">
               {selectedTarget.webb.instrument} · {selectedTarget.webb.wavelength}
             </span>
           </div>
@@ -253,10 +265,10 @@ export function WebbHubbleCompareSlider() {
 
           {/* Left Label (Hubble) */}
           <div className="absolute left-4 top-4 z-10 flex flex-col items-start gap-1 pointer-events-none">
-            <span className="px-3 py-1 rounded-full bg-cyan-600/90 text-white font-mono text-xs uppercase tracking-wider shadow-lg backdrop-blur">
+            <span className="label px-3 py-1 bg-ink/90 border border-line text-paper font-bold backdrop-blur">
               {selectedTarget.hubble.label}
             </span>
-            <span className="text-[11px] font-mono text-white/80 bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+            <span className="label text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur">
               {selectedTarget.hubble.instrument} · {selectedTarget.hubble.wavelength}
             </span>
           </div>
@@ -264,51 +276,52 @@ export function WebbHubbleCompareSlider() {
 
         {/* Divider Bar & Handle */}
         <div
-          className="absolute inset-y-0 w-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.9)] z-20 pointer-events-none"
+          className="absolute inset-y-0 w-px bg-paper shadow-[0_0_12px_rgba(255,255,255,0.8)] z-20 pointer-events-none"
           style={{ left: `${sliderPosition}%` }}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-paper text-ink flex items-center justify-center shadow-2xl border-2 border-ink">
-            <ArrowLeftRight className="w-5 h-5 text-ink animate-pulse" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 border border-ink bg-paper text-ink flex items-center justify-center">
+            <ArrowLeftRight className="w-4 h-4 text-ink" />
           </div>
         </div>
 
         {/* Bottom Hint */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-10">
-          <div className="px-3 py-1.5 rounded-full bg-ink/80 backdrop-blur border border-line text-muted font-mono text-[11px] flex items-center gap-2">
-            <Sliders className="w-3.5 h-3.5 text-rose-signal" />
-            <span>Kaydırmak için sürükleyin ({Math.round(sliderPosition)}%)</span>
-          </div>
+        <div className="absolute inset-x-4 bottom-4 flex items-center justify-between bg-ink/80 px-4 py-2 border border-line backdrop-blur pointer-events-none z-10">
+          <span className="label text-muted">Sol: Görünür Işık · Sağ: Kızılötesi</span>
+          <span className="label text-paper flex items-center gap-1.5">
+            <Sliders className="w-3 h-3 text-rose-signal" />
+            <span>Kaydır: %{Math.round(sliderPosition)}</span>
+          </span>
         </div>
       </div>
 
       {/* Target Scientific Deep-Dive & Details Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-        <div className="p-5 rounded-2xl bg-ink-2 border border-line space-y-2">
-          <div className="text-xs font-mono text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line">
+        <div className="bg-ink p-6 space-y-2">
+          <div className="label text-muted flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5 text-paper" />
             <span>Hubble Gözlemi</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed">
+          <p className="text-xs text-paper/80 leading-relaxed pt-1">
             {selectedTarget.hubble.details}
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-ink-2 border border-line space-y-2">
-          <div className="text-xs font-mono text-rose-signal uppercase tracking-wider flex items-center gap-1.5">
+        <div className="bg-ink p-6 space-y-2">
+          <div className="label text-rose-signal flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Webb Kızılötesi Keşfi</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed">
+          <p className="text-xs text-paper/80 leading-relaxed pt-1">
             {selectedTarget.webb.details}
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-          <div className="text-xs font-mono text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5" />
+        <div className="bg-ink p-6 space-y-2">
+          <div className="label text-muted flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5 text-rose-signal" />
             <span>Astrofizik Çıkarımı</span>
           </div>
-          <p className="text-xs text-paper/90 leading-relaxed">
+          <p className="text-xs text-paper/80 leading-relaxed pt-1">
             {selectedTarget.scientificInsight}
           </p>
         </div>

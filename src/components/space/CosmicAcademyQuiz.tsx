@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Award, CheckCircle2, XCircle, RotateCcw, Sparkles, ChevronRight, HelpCircle, Shield, FileText, Download, Share2 } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface QuizQuestion {
   id: number;
@@ -241,31 +242,30 @@ export function CosmicAcademyQuiz() {
   }, [score, percentage]);
 
   return (
-    <div className="rounded-3xl border border-line bg-ink p-6 md:p-8 space-y-8">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="flex items-center gap-2 text-violet text-xs font-mono tracking-widest uppercase">
-            <Award className="h-4 w-4" />
-            <span>AstroTR Kozmik Akademi & Değerlendirme</span>
+          <div className="label flex items-center gap-2 text-violet">
+            <span className="live-dot" /> AstroTR Kozmik Akademi & Değerlendirme
           </div>
-          <h3 className="display display-tight text-3xl md:text-4xl text-paper mt-2">
-            Astrofizik <span className="serif-i text-violet">& Uzay Yetkinlik Testi</span>
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
+            Astrofizik <span className="serif-i text-violet">& yetkinlik testi</span>
           </h3>
-          <p className="text-sm text-paper/70 mt-2 max-w-xl">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
             10 soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza onaylı resmi AstroTR Kozmik Kaşif Sertifikası kazanın.
           </p>
         </div>
 
         {/* Progress Pill */}
-        <div className="flex items-center gap-3 font-mono text-xs">
-          <div className="px-4 py-2 rounded-xl bg-ink-2 border border-line">
-            <span className="text-muted">Soru: </span>
-            <span className="text-paper font-bold">{currentQuestionIndex + 1} / {totalQuestions}</span>
+        <div className="flex items-center gap-2">
+          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
+            Soru: <span className="text-paper font-bold">{currentQuestionIndex + 1} / {totalQuestions}</span>
           </div>
-          <div className="px-4 py-2 rounded-xl bg-ink-2 border border-line">
-            <span className="text-muted">Doğru: </span>
-            <span className="text-emerald-400 font-bold">{score}</span>
+          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
+            Doğru: <span className="text-lime font-bold">{score}</span>
           </div>
         </div>
       </div>
@@ -274,41 +274,41 @@ export function CosmicAcademyQuiz() {
         /* Quiz in progress */
         <div className="space-y-6">
           {/* Progress Bar */}
-          <div className="w-full bg-ink-2 h-1.5 rounded-full overflow-hidden border border-line">
+          <div className="w-full bg-ink-2 h-1 overflow-hidden border border-line">
             <div
-              className="h-full bg-gradient-to-r from-violet to-emerald-400 transition-all duration-300"
+              className="h-full bg-violet transition-all duration-300"
               style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
             />
           </div>
 
           {/* Question Card */}
-          <div className="p-6 md:p-8 rounded-2xl bg-ink-2 border border-line space-y-6">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="px-2.5 py-1 rounded-md bg-violet/20 text-violet border border-violet/30 uppercase">
+          <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <span className="label text-violet border border-violet/30 bg-ink px-2.5 py-1">
                 {currentQ.category}
               </span>
-              <span className="text-muted">ID: #Q{currentQ.id.toString().padStart(2, '0')}</span>
+              <span className="label text-muted">ID: #Q{currentQ.id.toString().padStart(2, '0')}</span>
             </div>
 
-            <h4 className="text-xl md:text-2xl font-display font-medium text-paper leading-snug">
+            <h4 className="display display-tight text-xl md:text-2xl text-paper">
               {currentQ.question}
             </h4>
 
             {/* Options */}
-            <div className="grid grid-cols-1 gap-3 pt-2">
+            <div className="grid grid-cols-1 gap-px border border-line bg-line pt-2">
               {currentQ.options.map((option, idx) => {
                 const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                 const isCorrect = idx === currentQ.correctAnswer;
                 const hasAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
 
-                let btnStyle = 'bg-ink border-line text-paper hover:border-paper/40';
+                let btnStyle = 'bg-ink text-paper hover:bg-ink-3';
                 if (hasAnswered) {
                   if (isCorrect) {
-                    btnStyle = 'bg-emerald-950/40 border-emerald-500 text-emerald-300 font-bold';
+                    btnStyle = 'bg-lime text-ink font-bold';
                   } else if (isSelected && !isCorrect) {
-                    btnStyle = 'bg-red-950/40 border-red-500 text-red-300';
+                    btnStyle = 'bg-rose-signal text-ink';
                   } else {
-                    btnStyle = 'bg-ink/50 border-line/40 text-muted opacity-60';
+                    btnStyle = 'bg-ink/50 text-muted opacity-50';
                   }
                 }
 
@@ -317,20 +317,20 @@ export function CosmicAcademyQuiz() {
                     key={idx}
                     disabled={hasAnswered}
                     onClick={() => handleSelectOption(idx)}
-                    className={`w-full p-4 rounded-xl border text-left transition-all flex items-center justify-between gap-4 text-sm ${btnStyle}`}
+                    className={`w-full p-4 text-left transition-colors flex items-center justify-between gap-4 text-sm cursor-pointer ${btnStyle}`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-lg bg-ink-3 border border-line flex items-center justify-center font-mono text-xs text-muted flex-shrink-0">
+                      <span className="h-6 w-6 border border-line bg-ink-2 flex items-center justify-center font-mono text-xs text-muted flex-shrink-0">
                         {String.fromCharCode(65 + idx)}
                       </span>
                       <span>{option}</span>
                     </div>
 
                     {hasAnswered && isCorrect && (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-ink flex-shrink-0" />
                     )}
                     {hasAnswered && isSelected && !isCorrect && (
-                      <XCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <XCircle className="w-5 h-5 text-ink flex-shrink-0" />
                     )}
                   </button>
                 );
@@ -339,13 +339,13 @@ export function CosmicAcademyQuiz() {
 
             {/* Explanation Drawer */}
             {showExplanation && (
-              <div className="mt-6 p-5 rounded-xl bg-ink border border-line space-y-3 animate-fadeIn">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-violet uppercase tracking-wider flex items-center gap-1.5">
+              <div className="p-5 border border-line bg-ink space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="label text-violet flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Bilimsel Açıklama: {currentQ.scientificConcept}</span>
                   </span>
-                  <span className={selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
+                  <span className={`label ${selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? 'text-lime' : 'text-rose-signal'}`}>
                     {selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? '✓ Doğru Cevap' : '✗ Yanlış Cevap'}
                   </span>
                 </div>
@@ -355,7 +355,7 @@ export function CosmicAcademyQuiz() {
                 <div className="pt-2 flex justify-end">
                   <button
                     onClick={handleNext}
-                    className="px-5 py-2.5 rounded-xl bg-paper text-ink font-bold text-xs font-mono uppercase tracking-wider flex items-center gap-2 hover:bg-paper/90 transition-colors shadow-lg"
+                    className="label px-5 py-2.5 bg-paper text-ink font-bold flex items-center gap-2 hover:bg-paper/90 transition-colors cursor-pointer"
                   >
                     <span>{currentQuestionIndex < totalQuestions - 1 ? 'Sonraki Soru' : 'Sonuçları Gör'}</span>
                     <ChevronRight className="w-4 h-4" />
@@ -367,21 +367,21 @@ export function CosmicAcademyQuiz() {
         </div>
       ) : (
         /* Quiz Finished - Official Certificate View */
-        <div className="space-y-8 animate-fadeIn">
-          <div className="p-6 md:p-8 rounded-2xl bg-ink-2 border border-line text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet/20 border border-violet/40 text-violet mb-2">
-              <Award className="w-8 h-8 animate-pulse" />
+        <div className="space-y-8">
+          <div className="p-6 sm:p-8 border border-line bg-ink-2 text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 border border-violet/40 bg-ink text-violet mb-2">
+              <Award className="w-6 h-6 animate-pulse" />
             </div>
-            <h4 className="display text-3xl md:text-4xl text-paper">
-              Tebrikler! Değerlendirme Tamamlandı
+            <h4 className="display display-tight text-3xl md:text-4xl text-paper">
+              Değerlendirme Tamamlandı
             </h4>
             <p className="text-sm text-paper/70 max-w-lg mx-auto">
-              Toplam 10 sorudan <span className="text-emerald-400 font-bold">{score}</span> tanesini doğru cevaplayarak <span className="text-paper font-bold">%{percentage}</span> başarı oranı elde ettiniz.
+              Toplam 10 sorudan <span className="text-lime font-bold">{score}</span> tanesini doğru cevaplayarak <span className="text-paper font-bold">%{percentage}</span> başarı oranı elde ettiniz.
             </p>
 
             {/* Candidate Name Input */}
             <div className="max-w-xs mx-auto pt-2">
-              <label className="block text-[11px] font-mono text-muted mb-1 text-left">
+              <label className="block label text-muted mb-1 text-left">
                 Sertifikada Görünecek İsim / Çağrı Kodu:
               </label>
               <input
@@ -389,47 +389,49 @@ export function CosmicAcademyQuiz() {
                 value={candidateName}
                 onChange={(e) => setCandidateName(e.target.value)}
                 maxLength={30}
-                className="w-full bg-ink border border-line rounded-xl px-4 py-2 font-mono text-xs text-paper focus:outline-none focus:border-violet"
+                className="w-full bg-ink border border-line px-4 py-2 font-mono text-xs text-paper focus:outline-none focus:border-violet"
                 placeholder="Adınız veya Çağrı Kodunuz"
               />
             </div>
           </div>
 
-          {/* SVG Printable Certificate Preview */}
-          <div className="relative rounded-3xl border-2 border-line bg-gradient-to-b from-ink to-black p-8 md:p-12 shadow-2xl overflow-hidden text-center space-y-6">
-            {/* Guilloche Corner Accents */}
-            <div className="absolute top-4 left-4 font-mono text-[10px] text-muted">ASTRO-TR CERT-ID: {verificationHash}</div>
-            <div className="absolute top-4 right-4 font-mono text-[10px] text-muted">GÖZLEMEVİ ONAYLI</div>
-            <div className="absolute bottom-4 left-4 font-mono text-[10px] text-muted">TARİH: {new Date().toLocaleDateString('tr-TR')}</div>
-            <div className="absolute bottom-4 right-4 font-mono text-[10px] text-emerald-400 font-bold">DURUM: ONAYLANDI</div>
+          {/* Printable Certificate Preview */}
+          <div className="ticks relative border border-line bg-ink p-8 sm:p-12 space-y-6 text-center">
+            <Ticks />
 
-            <div className="space-y-2 pt-4">
-              <span className="text-xs font-mono tracking-[0.3em] uppercase text-violet">
+            {/* Corner Accents */}
+            <div className="absolute top-4 left-4 label text-muted">CERT-ID: {verificationHash}</div>
+            <div className="absolute top-4 right-4 label text-muted">Gözlemevi Onaylı</div>
+            <div className="absolute bottom-4 left-4 label text-muted">Tarih: {new Date().toLocaleDateString('tr-TR')}</div>
+            <div className="absolute bottom-4 right-4 label text-lime">Durum: Onaylandı</div>
+
+            <div className="space-y-2 pt-6">
+              <span className="label text-violet tracking-[0.25em]">
                 ASTROTR KOZMİK GÖZLEMEVİ AKADEMİSİ
               </span>
-              <h2 className="display text-3xl md:text-5xl text-paper tracking-wider">
-                ASTROFİZİK YETKİNLİK BELGESİ
+              <h2 className="display display-tight text-3xl md:text-5xl text-paper tracking-wider">
+                Astrofizik Yetkinlik Belgesi
               </h2>
-              <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-violet to-transparent mx-auto mt-2" />
+              <div className="w-24 h-px bg-violet mx-auto mt-2" />
             </div>
 
             <div className="space-y-2 py-4">
-              <p className="text-xs font-mono text-muted uppercase">Bu belge, evrenin fiziksel yasaları sınavını başarıyla tamamlayan</p>
-              <h3 className="display text-2xl md:text-4xl text-paper font-bold uppercase underline decoration-violet decoration-2 underline-offset-8">
+              <p className="label text-muted">Bu belge, evrenin fiziksel yasaları sınavını başarıyla tamamlayan</p>
+              <h3 className="display display-tight text-2xl md:text-4xl text-paper font-bold uppercase underline decoration-violet decoration-2 underline-offset-8">
                 {candidateName || 'Kozmik Kaşif'}
               </h3>
-              <p className="text-xs text-paper/70 max-w-xl mx-auto pt-2">
+              <p className="text-xs text-paper/70 max-w-xl mx-auto pt-2 leading-relaxed">
                 adına düzenlenmiş olup adayın astrofizik, genel görelilik, derin uzay dalgaboyu gözlemleri ve yörünge mekaniği konularındaki yetkinliğini tasdik eder.
               </p>
             </div>
 
             {/* Rank Card inside Certificate */}
-            <div className="inline-block p-4 rounded-2xl bg-ink-2 border border-line text-center space-y-1">
-              <div className="text-xs font-mono text-muted uppercase">Atanan Kozmik Unvan</div>
-              <div className={`text-xl font-bold font-display ${rankInfo.color}`}>
+            <div className="inline-block border border-line bg-ink-2 p-5 text-center space-y-1">
+              <div className="label text-muted">Atanan Kozmik Unvan</div>
+              <div className={`display display-tight text-xl font-bold ${rankInfo.color}`}>
                 {rankInfo.title}
               </div>
-              <div className="text-xs font-mono text-paper/80">
+              <div className="label text-paper/80 mt-1">
                 {rankInfo.badge} · {rankInfo.grade}
               </div>
             </div>
@@ -437,15 +439,15 @@ export function CosmicAcademyQuiz() {
             {/* Signatures */}
             <div className="flex justify-between items-end pt-8 max-w-lg mx-auto border-t border-line text-xs font-mono text-muted">
               <div className="text-center">
-                <div className="font-serif italic text-paper text-sm">AstroTR Telemetri</div>
-                <div className="text-[10px] mt-1">Gözlem Masası Şefi</div>
+                <div className="serif-i text-paper text-sm">AstroTR Telemetri</div>
+                <div className="label text-[9px] mt-1">Gözlem Masası Şefi</div>
               </div>
-              <div className="w-12 h-12 rounded-full border border-violet/40 flex items-center justify-center text-violet">
-                <Shield className="w-6 h-6" />
+              <div className="w-10 h-10 border border-violet/40 flex items-center justify-center text-violet">
+                <Shield className="w-5 h-5" />
               </div>
               <div className="text-center">
-                <div className="font-serif italic text-paper text-sm">Kozmik Kurul</div>
-                <div className="text-[10px] mt-1">Yetkilendirme Mührü</div>
+                <div className="serif-i text-paper text-sm">Kozmik Kurul</div>
+                <div className="label text-[9px] mt-1">Yetkilendirme Mührü</div>
               </div>
             </div>
           </div>
@@ -454,14 +456,14 @@ export function CosmicAcademyQuiz() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={() => window.print()}
-              className="px-6 py-3 rounded-xl bg-violet text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-violet/90 transition-all shadow-lg shadow-violet/20"
+              className="label px-6 py-3 bg-paper text-ink font-bold flex items-center gap-2 hover:bg-paper/90 transition-colors cursor-pointer"
             >
               <Download className="w-4 h-4" />
               <span>Sertifikayı Yazdır / PDF Kaydet</span>
             </button>
             <button
               onClick={handleRestart}
-              className="px-6 py-3 rounded-xl bg-ink-2 border border-line text-paper/80 font-mono text-xs uppercase tracking-wider flex items-center gap-2 hover:border-paper/40 transition-colors"
+              className="label px-6 py-3 border border-line bg-ink-2 text-paper/80 flex items-center gap-2 hover:bg-ink-3 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Testi Baştan Başlat</span>
