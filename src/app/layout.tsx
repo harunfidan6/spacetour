@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import { SpaceExperienceWrapper } from "@/components/space/SpaceExperienceWrapper";
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <SpaceExperienceWrapper>
+          <AnalyticsTracker />
           <Navbar />
           <main className="flex-1">{children}</main>
         </SpaceExperienceWrapper>

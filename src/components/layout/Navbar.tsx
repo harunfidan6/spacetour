@@ -73,6 +73,16 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* Real-Time Visitor Telemetry Link */}
+          <Link
+            href="/admin/analitik"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-500/20 hover:border-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] ml-2"
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="hidden xl:inline">Canlı Telemetri &</span>
+            <span>Analitik</span>
+          </Link>
         </div>
 
         {/* Mobile Toggle */}
@@ -116,6 +126,15 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            <Link
+              href="/admin/analitik"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-mono font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] mt-2"
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>Canlı Ziyaretçi Analitiği</span>
+            </Link>
           </div>
         </div>
       )}
