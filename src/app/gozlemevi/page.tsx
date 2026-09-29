@@ -8,6 +8,8 @@ import { Scramble, Ticks } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { WebbHubbleCompareSlider } from '@/components/space/WebbHubbleCompareSlider';
 import { CosmicRadioSpectrograph } from '@/components/space/CosmicRadioSpectrograph';
+import { MegaObservatoriesRegistry } from '@/components/space/MegaObservatoriesRegistry';
+import { StellarSpectroscopyLab } from '@/components/space/StellarSpectroscopyLab';
 import { CosmicAcademyQuiz } from '@/components/space/CosmicAcademyQuiz';
 
 /* Long → short wavelength, left to right, like a real EM spectrum chart. */
@@ -214,10 +216,40 @@ export default function GozlemeviPage() {
           <CosmicRadioSpectrograph />
         </section>
 
-        {/* 05.4 - Cosmic Academy & Astrophysics Certification */}
+        {/* 05.4 - Mega Observatories & Optical Aperture Scale */}
         <section className="pt-16">
           <SectionHead
             index="05.4"
+            kicker="Dev diyaframlar & aynalar atlası"
+            title={
+              <>
+                Karasal & uzay konuşlu <Em>mega gözlemevleri</Em>
+              </>
+            }
+            lede="Webb'in altın berilyum altıgenlerinden ELT'nin 39 metrelik dev aynasına, DAG Erzurum'dan ALMA radyo interferometresine insanlığın en büyük gözleri."
+          />
+          <MegaObservatoriesRegistry />
+        </section>
+
+        {/* 05.5 - Stellar Spectroscopy & Fraunhofer Lines */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.5"
+            kicker="Yıldızların kimyasal parmak izleri"
+            title={
+              <>
+                Fraunhofer soğurma & <Em>spektral sınıflar</Em>
+              </>
+            }
+            lede="O'dan M'ye Harvard tayf tipleri, canlı spektrogram çubuğu, hidrojen Balmer serisi ve Doppler radyal hız kayması simülatörü."
+          />
+          <StellarSpectroscopyLab />
+        </section>
+
+        {/* 05.6 - Cosmic Academy & Astrophysics Certification */}
+        <section className="pt-16">
+          <SectionHead
+            index="05.6"
             kicker="AstroTR Gözlemevi Değerlendirmesi"
             title={
               <>

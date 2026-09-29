@@ -2,67 +2,117 @@
 
 import dynamic from 'next/dynamic';
 import { useRef, type CSSProperties } from 'react';
-import { gsap, useGsap, prefersReducedMotion, whenIntroDone } from '@/components/motion/gsap';
-import { SplitReveal } from '@/components/motion/SplitReveal';
-import { LiveClock, Ticks } from '@/components/motion/primitives';
+import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
+import { LiveClock, RotatingBadge, Ticks } from '@/components/motion/primitives';
+import { BrightStarsRadar } from '@/components/space/BrightStarsRadar';
+import { BortleScaleSimulator } from '@/components/space/BortleScaleSimulator';
+import { MessierDeepSkyRadar } from '@/components/space/MessierDeepSkyRadar';
+import { HaritaGraphic } from '@/components/home/ModuleGraphics';
 
 const Planetarium3D = dynamic(() => import('@/components/space/Planetarium3D').then((mod) => mod.Planetarium3D), {
   ssr: false,
   loading: () => (
-    <div className="grid h-full place-items-center">
+    <div className="grid h-full place-items-center bg-black">
       <span className="label text-muted">Gök kubbesi hesaplanıyor…</span>
     </div>
   ),
 });
 
-/* Title card that plays over the dome, then lifts away to hand over control. */
-function DomeIntro() {
-  const root = useRef<HTMLDivElement>(null);
-
-  useGsap(
-    () => {
-      const el = root.current!;
-      if (prefersReducedMotion()) {
-        gsap.set(el, { autoAlpha: 0 });
-        return;
-      }
-      const tl = gsap
-        .timeline({ paused: true, delay: 1.9 })
-        .to('[data-intro-copy]', { yPercent: -40, autoAlpha: 0, duration: 0.7, ease: 'mg.inOut' })
-        .to(el, { clipPath: 'inset(0% 0% 100% 0%)', duration: 1, ease: 'mg.inOut' }, '<0.2')
-        .set(el, { display: 'none' });
-      return whenIntroDone(() => tl.play());
-    },
-    [],
-    root
-  );
-
-  return (
-    <div ref={root} className="absolute inset-0 z-40 flex flex-col justify-between bg-ink/92 p-[var(--gutter)] backdrop-blur-sm" style={{ clipPath: 'inset(0% 0% 0% 0%)' }}>
-      <div data-intro-copy className="flex items-center gap-3 border-b border-line pb-4">
-        <span className="label text-lime">(01)</span>
-        <span className="label text-paper">Gök haritası</span>
-        <span className="label ml-auto text-muted">
-          İstanbul · <LiveClock />
-        </span>
-      </div>
-      <div data-intro-copy>
-        <SplitReveal as="h1" trigger="intro" effect="tilt" className="display text-[clamp(3.4rem,13vw,13rem)] text-paper">
-          Gök <span className="serif-i text-lime">kubbesi</span>
-        </SplitReveal>
-        <p className="mt-6 max-w-lg text-base text-paper/70">Bulunduğun yerin gökyüzü, şu an. Sürükle, yakınlaştır, bir yıldıza dokun.</p>
-      </div>
-    </div>
-  );
-}
-
 export default function HaritaPage() {
   return (
-    <div className="relative h-[100svh] w-full bg-ink pt-16" style={{ '--page-accent': 'var(--lime)' } as CSSProperties}>
-      <div className="ticks relative h-full w-full overflow-hidden border-t border-line">
-        <Ticks />
-        <Planetarium3D />
-        <DomeIntro />
+    <div className="relative" style={{ '--page-accent': 'var(--lime)' } as CSSProperties}>
+      <PageHero
+        index="01"
+        section="Gök Haritası"
+        accent="var(--lime)"
+        lines={['Gök', <Em key="a">kubbesi</Em>]}
+        size="clamp(3.4rem, 13vw, 14rem)"
+        lede="Konumuna göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği analizi ve Messier derin uzay atlası."
+        meta={[
+          { k: 'Görünür Yıldız', v: '9,000+' },
+          { k: 'Takımyıldızı', v: 88 },
+          { k: 'Messier Hedefi', v: 110 },
+          { k: 'Optik Mod', v: 'Alt-Az & AR' },
+        ]}
+        graphic={
+          <RotatingBadge text="Gök Kubbesi · Planetaryum · Alt-Azimuth · " size={220} className="text-paper/80">
+            <div className="aspect-square w-24 text-lime">
+              <HaritaGraphic />
+            </div>
+          </RotatingBadge>
+        }
+        ticker={['Polaris', 'Sirius', 'Vega', 'Betelgeuse', 'Arcturus', 'Rigel', 'Capella', 'Antares', 'Andromeda (M31)', 'Orion (M42)']}
+      />
+
+      <div className="space-y-24 px-[var(--gutter)] pb-28 pt-16">
+        {/* 01.1 - 3D Interactive Planetarium Dome */}
+        <section>
+          <SectionHead
+            index="01.1"
+            kicker="Canlı planetaryum simülasyonu"
+            title={
+              <>
+                360° <Em>gözlem kubbesi</Em>
+              </>
+            }
+            lede="Bulunduğun konumun şu anki gökyüzü. Mouse ile sürükle, yakınlaş, yıldızlara dokun veya AR kamera modunu aç."
+            aside={
+              <span className="inline-flex items-center gap-2 label text-lime">
+                <span className="live-dot" /> Yerel Ufuk Aktif
+              </span>
+            }
+          />
+
+          <div className="ticks relative h-[70svh] sm:h-[82svh] w-full border border-line bg-black overflow-hidden">
+            <Ticks />
+            <Planetarium3D />
+          </div>
+        </section>
+
+        {/* 01.2 - Brightest 8 Stars Radar */}
+        <section>
+          <SectionHead
+            index="01.2"
+            kicker="Gökkubbe kerterizleri"
+            title={
+              <>
+                En parlak <Em>sekiz yıldız</Em>
+              </>
+            }
+            lede="Kuzey yarımkürenin gece göğünde ilk göze çarpan devleri. Kadir, tayf türü, uzaklık ve Alt-Azimuth koordinatları."
+          />
+          <BrightStarsRadar />
+        </section>
+
+        {/* 01.3 - Light Pollution & Bortle Scale Simulator */}
+        <section>
+          <SectionHead
+            index="01.3"
+            kicker="Atmosferik görüş analizi"
+            title={
+              <>
+                Bortle skalası <Em>& gökyüzü karanlığı</Em>
+              </>
+            }
+            lede="Kentsel aydınlatmanın gökyüzünü nasıl sildiğini interaktif ölçekle incele: Sınıf 1 (saf karanlık) ile Sınıf 9 (şehir merkezi) arası yıldız kaybı."
+          />
+          <BortleScaleSimulator />
+        </section>
+
+        {/* 01.4 - Messier Deep Sky Radar */}
+        <section>
+          <SectionHead
+            index="01.4"
+            kicker="Derin uzay atlası"
+            title={
+              <>
+                Messier <Em>derin uzay hedefleri</Em>
+              </>
+            }
+            lede="Charles Messier’in 110 nesnelik kataloğundan kuzey göğünün en görkemli 6 derin uzay hedefi: galaksiler, gaz bulutsuları ve yıldız kümeleri."
+          />
+          <MessierDeepSkyRadar />
+        </section>
       </div>
     </div>
   );
