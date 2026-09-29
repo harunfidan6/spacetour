@@ -18,6 +18,11 @@ import {
   PLANET_EPHEMERIS,
 } from '@/lib/astrophysics/keplerEphemeris';
 
+// Static scratch vectors for zero-allocation 60fps render loop
+const _scratchVecA = new THREE.Vector3();
+const _scratchVecB = new THREE.Vector3();
+const _zeroVec = new THREE.Vector3(0, 0, 0);
+
 // -------------------------------------------------------------
 // 1. CINEMATIC FLIGHT CONTROLLER (Smooth Lerp + Dynamic Orbit Drift)
 // -------------------------------------------------------------
@@ -29,13 +34,32 @@ function FlightCameraController() {
   const mouse = useRef({ x: 0, y: 0 });
   const timeRef = useRef(0);
 
+  // Memoized destination offsets for J2000 mode
+  const j2000Offsets = useMemo(() => {
+    const map: Record<string, { target: [number, number, number]; lookAt: [number, number, number] }> = {};
+    for (const key of Object.keys(PLANET_EPHEMERIS)) {
+      const pState = computePlanetState(key as keyof typeof PLANET_EPHEMERIS);
+      const dest = DESTINATIONS[key as DestinationId];
+      if (dest) {
+        const offX = dest.targetPosition[0] - dest.coords[0];
+        const offY = dest.targetPosition[1] - dest.coords[1];
+        const offZ = dest.targetPosition[2] - dest.coords[2];
+        map[key] = {
+          target: [pState.sceneX + offX, pState.sceneY + offY, pState.sceneZ + offZ],
+          lookAt: [pState.sceneX, pState.sceneY, pState.sceneZ],
+        };
+      }
+    }
+    return map;
+  }, []);
+
   // Mouse parallax
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouse.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
       mouse.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
@@ -57,23 +81,13 @@ function FlightCameraController() {
     let targetBase = currentDestination.targetPosition;
     let lookBase = currentDestination.lookAt;
 
-    if (orbitMode === 'j2000' && currentDestination.id in PLANET_EPHEMERIS) {
-      const pState = computePlanetState(currentDestination.id as keyof typeof PLANET_EPHEMERIS);
-      const offsetTarget = [
-        currentDestination.targetPosition[0] - currentDestination.coords[0],
-        currentDestination.targetPosition[1] - currentDestination.coords[1],
-        currentDestination.targetPosition[2] - currentDestination.coords[2],
-      ];
-      targetBase = [
-        pState.sceneX + offsetTarget[0],
-        pState.sceneY + offsetTarget[1],
-        pState.sceneZ + offsetTarget[2],
-      ];
-      lookBase = [pState.sceneX, pState.sceneY, pState.sceneZ];
+    if (orbitMode === 'j2000' && j2000Offsets[currentDestination.id]) {
+      targetBase = j2000Offsets[currentDestination.id].target;
+      lookBase = j2000Offsets[currentDestination.id].lookAt;
     }
 
-    const target = new THREE.Vector3(...targetBase);
-    const targetLook = new THREE.Vector3(...lookBase);
+    _scratchVecA.set(...targetBase);
+    _scratchVecB.set(...lookBase);
 
     // Natural subtle space float (orbital drift)
     const driftX = Math.sin(timeRef.current * 0.12) * 0.5;
@@ -83,24 +97,22 @@ function FlightCameraController() {
     const lerpFactor = isWarping ? Math.min(4.5 * delta, 0.22) : Math.min(1.2 * delta, 0.06);
 
     if (!isWarping) {
-      target.x += mouse.current.x * 2.0 + driftX;
-      target.y -= mouse.current.y * 1.5 - driftY;
-      target.z += driftZ;
+      _scratchVecA.x += mouse.current.x * 2.0 + driftX;
+      _scratchVecA.y -= mouse.current.y * 1.5 - driftY;
+      _scratchVecA.z += driftZ;
     } else {
-      // Relativistic high-speed metric vibration
-      const shake = 0.85;
-      target.x += (Math.random() - 0.5) * shake;
-      target.y += (Math.random() - 0.5) * shake;
-      target.z += (Math.random() - 0.5) * shake;
+      const shake = 0.6;
+      _scratchVecA.x += (Math.random() - 0.5) * shake;
+      _scratchVecA.y += (Math.random() - 0.5) * shake;
+      _scratchVecA.z += (Math.random() - 0.5) * shake;
     }
 
-    currentPos.current.lerp(target, lerpFactor);
-    lookAtTarget.current.lerp(targetLook, Math.min(lerpFactor * 1.3, 0.25));
+    currentPos.current.lerp(_scratchVecA, lerpFactor);
+    lookAtTarget.current.lerp(_scratchVecB, Math.min(lerpFactor * 1.3, 0.25));
 
     camera.position.copy(currentPos.current);
     camera.lookAt(lookAtTarget.current);
 
-    // Dynamic FOV distortion (warp stretch)
     if ('fov' in camera) {
       const persp = camera as THREE.PerspectiveCamera;
       const targetFov = isWarping ? 82 : 45;
@@ -136,53 +148,47 @@ function DeepSpaceMilkyWay() {
 }
 
 // -------------------------------------------------------------
-// 3. WARP SPEED STARFIELD PARTICLES
+// 3. ZERO-CPU WARP STARFIELD (GPU-optimized transform)
 // -------------------------------------------------------------
 function WarpStars() {
   const { isWarping, throttle } = useSpace();
-  const pointsRef = useRef<THREE.Points>(null);
-  const count = 3500;
+  const groupRef = useRef<THREE.Group>(null);
+  const count = 1800;
 
-  const [positions, speeds] = useMemo(() => {
+  const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
-    const spd = new Float32Array(count);
-
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 350;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 350;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 350;
-      spd[i] = Math.random() * 0.5 + 0.2;
+      pos[i * 3] = (Math.random() - 0.5) * 360;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 360;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 360;
     }
-    return [pos, spd];
+    return pos;
   }, [count]);
 
   useFrame((_, delta) => {
-    if (!pointsRef.current) return;
-    const pos = pointsRef.current.geometry.attributes.position.array as Float32Array;
-    const speedMult = (isWarping ? 110.0 : 0.6) * throttle;
-
-    for (let i = 0; i < count; i++) {
-      pos[i * 3 + 2] += speeds[i] * speedMult * delta * 20;
-      if (pos[i * 3 + 2] > 180) {
-        pos[i * 3 + 2] = -180;
-      }
+    if (!groupRef.current) return;
+    const speedMult = (isWarping ? 140.0 : 1.2) * throttle;
+    groupRef.current.position.z += speedMult * delta * 12;
+    if (groupRef.current.position.z > 180) {
+      groupRef.current.position.z = -180;
     }
-    pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
   return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        size={isWarping ? 3.2 : 0.8}
-        color={isWarping ? '#d4ff3d' : '#e6f0ff'}
-        transparent
-        opacity={isWarping ? 1.0 : 0.6}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
+    <group ref={groupRef}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          size={isWarping ? 2.4 : 0.8}
+          color={isWarping ? '#d4ff3d' : '#e6f0ff'}
+          transparent
+          opacity={isWarping ? 0.9 : 0.6}
+          blending={THREE.AdditiveBlending}
+        />
+      </points>
+    </group>
   );
 }
 
@@ -219,27 +225,23 @@ function Sun() {
     if (sunMesh.current) sunMesh.current.rotation.y += delta * 0.02;
     if (innerCoronaRef.current) {
       innerCoronaRef.current.rotation.z -= delta * 0.015;
-      const s = 1.08 + Math.sin(Date.now() * 0.0018) * 0.02;
-      innerCoronaRef.current.scale.set(s, s, s);
     }
     if (outerCoronaRef.current) {
       outerCoronaRef.current.rotation.z += delta * 0.01;
-      const s = 1.28 + Math.cos(Date.now() * 0.0012) * 0.03;
-      outerCoronaRef.current.scale.set(s, s, s);
     }
   });
 
   return (
     <group position={[0, 0, 0]}>
-      {/* 1. Photosphere Sphere with Convective Granulation Shader - 128x128 */}
+      {/* 1. Photosphere Sphere with Convective Granulation Shader */}
       <mesh ref={sunMesh} material={sunTex ? sunShaderMaterial : undefined}>
-        <sphereGeometry args={[5, 128, 128]} />
+        <sphereGeometry args={[5, 96, 96]} />
         {!sunTex && <meshBasicMaterial color="#ffaa00" />}
       </mesh>
 
       {/* 2. Inner Hot Coronal Atmosphere */}
       <mesh ref={innerCoronaRef}>
-        <sphereGeometry args={[5.35, 64, 64]} />
+        <sphereGeometry args={[5.35, 48, 48]} />
         <meshBasicMaterial
           color="#fff5e6"
           transparent
@@ -251,7 +253,7 @@ function Sun() {
 
       {/* 3. Outer Solar Halo */}
       <mesh ref={outerCoronaRef}>
-        <sphereGeometry args={[6.6, 64, 64]} />
+        <sphereGeometry args={[6.6, 48, 48]} />
         <meshBasicMaterial
           color="#ff7700"
           transparent
@@ -275,9 +277,9 @@ function InternationalSpaceStation() {
 
   useFrame(({ clock }) => {
     if (!issRef.current) return;
-    const t = clock.getElapsedTime() * 0.35; // LEO scaled orbital period
-    const r = 2.15; // 420 km altitude above 1.5 radius Earth
-    const inc = 51.6 * (Math.PI / 180); // 51.6 deg inclination to equator
+    const t = clock.getElapsedTime() * 0.35;
+    const r = 2.15;
+    const inc = 51.6 * (Math.PI / 180);
     const x = Math.cos(t) * r;
     const z = Math.sin(t) * r * Math.cos(inc);
     const y = Math.sin(t) * r * Math.sin(inc);
@@ -287,9 +289,9 @@ function InternationalSpaceStation() {
 
   return (
     <group ref={issRef}>
-      {/* Pressurized Modules (Zarya, Unity, Destiny, Columbus, Kibo) */}
+      {/* Pressurized Modules */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.035, 0.035, 0.34, 16]} />
+        <cylinderGeometry args={[0.035, 0.035, 0.34, 12]} />
         <meshStandardMaterial color="#f0f2f5" metalness={0.8} roughness={0.25} />
       </mesh>
       {/* Integrated Truss Backbone */}
@@ -297,7 +299,7 @@ function InternationalSpaceStation() {
         <boxGeometry args={[0.02, 0.88, 0.02]} />
         <meshStandardMaterial color="#d4d4d8" metalness={0.9} roughness={0.3} />
       </mesh>
-      {/* 4 Ultra-high efficiency photovoltaic solar array wings */}
+      {/* Photovoltaic solar array wings */}
       <group position={[0, 0.28, 0]}>
         <mesh position={[0.15, 0, 0]}>
           <boxGeometry args={[0.26, 0.005, 0.11]} />
@@ -318,12 +320,11 @@ function InternationalSpaceStation() {
           <meshStandardMaterial color="#1e3a8a" roughness={0.2} metalness={0.85} />
         </mesh>
       </group>
-      {/* Thermal Radiator Panels */}
+      {/* Radiator */}
       <mesh position={[0, 0.08, 0.08]} rotation={[0.4, 0, 0]}>
         <boxGeometry args={[0.12, 0.004, 0.07]} />
         <meshStandardMaterial color="#fafafa" metalness={0.5} roughness={0.4} />
       </mesh>
-      {/* Active Telemetry Nav Beacon */}
       <pointLight color="#22c55e" intensity={0.35} distance={0.8} />
     </group>
   );
@@ -338,6 +339,12 @@ function Earth() {
   const cloudsRef = useRef<THREE.Mesh>(null);
   const moonOrbitRef = useRef<THREE.Group>(null);
   const { orbitMode } = useSpace();
+
+  const j2000Pos = useMemo(() => {
+    const st = computePlanetState('earth');
+    return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
+  }, []);
+  const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.earth.coords), []);
 
   const [textures, setTextures] = useState<{
     map: THREE.Texture | null;
@@ -384,18 +391,13 @@ function Earth() {
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      const targetPos = orbitMode === 'j2000'
-        ? (() => {
-            const st = computePlanetState('earth');
-            return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
-          })()
-        : new THREE.Vector3(...DESTINATIONS.earth.coords);
+      const targetPos = orbitMode === 'j2000' ? j2000Pos : didacticPos;
       groupRef.current.position.lerp(targetPos, Math.min(delta * 2.5, 0.15));
 
-      // Calculate sun direction vector pointing to origin
-      const worldPos = new THREE.Vector3();
-      groupRef.current.getWorldPosition(worldPos);
-      earthMaterial.uniforms.sunDirection.value.copy(new THREE.Vector3(0, 0, 0).sub(worldPos).normalize());
+      // Zero-allocation sun direction
+      groupRef.current.getWorldPosition(_scratchVecA);
+      _scratchVecB.copy(_zeroVec).sub(_scratchVecA).normalize();
+      earthMaterial.uniforms.sunDirection.value.copy(_scratchVecB);
     }
 
     if (earthRef.current) earthRef.current.rotation.y += delta * 0.08;
@@ -405,9 +407,9 @@ function Earth() {
 
   return (
     <group ref={groupRef} position={DESTINATIONS.earth.coords}>
-      {/* 1. Earth Globe with Day/Night Terminator & Ocean Glint - High Poly 128x128 */}
+      {/* 1. Earth Globe with Day/Night Terminator & Ocean Glint */}
       <mesh ref={earthRef} material={textures.map && textures.night ? earthMaterial : undefined}>
-        <sphereGeometry args={[1.5, 128, 128]} />
+        <sphereGeometry args={[1.5, 96, 96]} />
         {(!textures.map || !textures.night) && (
           <meshStandardMaterial
             map={textures.map || undefined}
@@ -420,9 +422,9 @@ function Earth() {
         )}
       </mesh>
 
-      {/* 2. Independent Real Cloud Layer - High Poly 128x128 */}
+      {/* 2. Independent Real Cloud Layer */}
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[1.522, 128, 128]} />
+        <sphereGeometry args={[1.522, 96, 96]} />
         {textures.clouds && (
           <meshStandardMaterial
             map={textures.clouds}
@@ -436,7 +438,7 @@ function Earth() {
 
       {/* 3. Atmospheric Rayleigh Scattering Blue Rim Glow */}
       <mesh scale={1.045}>
-        <sphereGeometry args={[1.5, 64, 64]} />
+        <sphereGeometry args={[1.5, 48, 48]} />
         <meshBasicMaterial
           color="#0088ff"
           transparent
@@ -446,10 +448,10 @@ function Earth() {
         />
       </mesh>
 
-      {/* 4. Realistic Moon with NASA LRO Texture */}
+      {/* 4. Moon with NASA LRO Texture */}
       <group ref={moonOrbitRef}>
         <mesh position={[3.8, 0.4, 0]}>
-          <sphereGeometry args={[0.38, 64, 64]} />
+          <sphereGeometry args={[0.38, 48, 48]} />
           <meshStandardMaterial
             map={textures.moon || undefined}
             color={textures.moon ? '#ffffff' : '#b0b5bc'}
@@ -458,7 +460,7 @@ function Earth() {
         </mesh>
       </group>
 
-      {/* 5. International Space Station (ISS) 420 km LEO Orbit */}
+      {/* 5. International Space Station (ISS) */}
       <InternationalSpaceStation />
     </group>
   );
@@ -473,6 +475,12 @@ function Mars() {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const { orbitMode } = useSpace();
 
+  const j2000Pos = useMemo(() => {
+    const st = computePlanetState('mars');
+    return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
+  }, []);
+  const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.mars.coords), []);
+
   useEffect(() => {
     const tex = loadNasaTexture(NASA_TEXTURES.mars);
     if (tex) setTexture(tex);
@@ -480,12 +488,7 @@ function Mars() {
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      const targetPos = orbitMode === 'j2000'
-        ? (() => {
-            const st = computePlanetState('mars');
-            return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
-          })()
-        : new THREE.Vector3(...DESTINATIONS.mars.coords);
+      const targetPos = orbitMode === 'j2000' ? j2000Pos : didacticPos;
       groupRef.current.position.lerp(targetPos, Math.min(delta * 2.5, 0.15));
     }
     if (marsRef.current) marsRef.current.rotation.y += delta * 0.07;
@@ -493,9 +496,8 @@ function Mars() {
 
   return (
     <group ref={groupRef} position={DESTINATIONS.mars.coords}>
-      {/* High-Poly Mars Sphere 128x128 */}
       <mesh ref={marsRef}>
-        <sphereGeometry args={[1.0, 128, 128]} />
+        <sphereGeometry args={[1.0, 96, 96]} />
         <meshStandardMaterial
           map={texture || undefined}
           color={texture ? '#ffffff' : '#b74418'}
@@ -504,9 +506,8 @@ function Mars() {
         />
       </mesh>
 
-      {/* Thin Salmon Atmospheric Rim */}
       <mesh scale={1.035}>
-        <sphereGeometry args={[1.0, 64, 64]} />
+        <sphereGeometry args={[1.0, 48, 48]} />
         <meshBasicMaterial
           color="#ff5533"
           transparent
@@ -528,6 +529,12 @@ function Jupiter() {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const { orbitMode } = useSpace();
 
+  const j2000Pos = useMemo(() => {
+    const st = computePlanetState('jupiter');
+    return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
+  }, []);
+  const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.jupiter.coords), []);
+
   useEffect(() => {
     const tex = loadNasaTexture(NASA_TEXTURES.jupiter);
     if (tex) setTexture(tex);
@@ -535,12 +542,7 @@ function Jupiter() {
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      const targetPos = orbitMode === 'j2000'
-        ? (() => {
-            const st = computePlanetState('jupiter');
-            return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
-          })()
-        : new THREE.Vector3(...DESTINATIONS.jupiter.coords);
+      const targetPos = orbitMode === 'j2000' ? j2000Pos : didacticPos;
       groupRef.current.position.lerp(targetPos, Math.min(delta * 2.5, 0.15));
     }
     if (jupiterRef.current) jupiterRef.current.rotation.y += delta * 0.16;
@@ -548,9 +550,8 @@ function Jupiter() {
 
   return (
     <group ref={groupRef} position={DESTINATIONS.jupiter.coords}>
-      {/* High-Poly Jupiter 128x128 */}
       <mesh ref={jupiterRef}>
-        <sphereGeometry args={[3.2, 128, 128]} />
+        <sphereGeometry args={[3.2, 96, 96]} />
         <meshStandardMaterial
           map={texture || undefined}
           color={texture ? '#ffffff' : '#c88b3a'}
@@ -559,9 +560,8 @@ function Jupiter() {
         />
       </mesh>
 
-      {/* Soft Jovian Atmosphere Haze */}
       <mesh scale={1.025}>
-        <sphereGeometry args={[3.2, 64, 64]} />
+        <sphereGeometry args={[3.2, 48, 48]} />
         <meshBasicMaterial
           color="#dca565"
           transparent
@@ -582,6 +582,12 @@ function Saturn() {
   const saturnRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
   const { orbitMode } = useSpace();
+
+  const j2000Pos = useMemo(() => {
+    const st = computePlanetState('saturn');
+    return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
+  }, []);
+  const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.saturn.coords), []);
 
   const [textures, setTextures] = useState<{
     planet: THREE.Texture | null;
@@ -628,19 +634,14 @@ function Saturn() {
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      const targetPos = orbitMode === 'j2000'
-        ? (() => {
-            const st = computePlanetState('saturn');
-            return new THREE.Vector3(st.sceneX, st.sceneY, st.sceneZ);
-          })()
-        : new THREE.Vector3(...DESTINATIONS.saturn.coords);
+      const targetPos = orbitMode === 'j2000' ? j2000Pos : didacticPos;
       groupRef.current.position.lerp(targetPos, Math.min(delta * 2.5, 0.15));
 
-      // Calculate sun direction in Saturn's local space
-      const sunWorld = new THREE.Vector3(0, 0, 0);
-      const sunLocal = groupRef.current.worldToLocal(sunWorld.clone()).normalize();
-      saturnGlobeMaterial.uniforms.sunDirectionLocal.value.copy(sunLocal);
-      saturnRingMaterial.uniforms.sunDirectionLocal.value.copy(sunLocal);
+      // Zero allocation local sun direction
+      _scratchVecA.copy(_zeroVec);
+      groupRef.current.worldToLocal(_scratchVecA).normalize();
+      saturnGlobeMaterial.uniforms.sunDirectionLocal.value.copy(_scratchVecA);
+      saturnRingMaterial.uniforms.sunDirectionLocal.value.copy(_scratchVecA);
     }
     if (saturnRef.current) saturnRef.current.rotation.y += delta * 0.12;
     if (ringRef.current) ringRef.current.rotation.z += delta * 0.02;
@@ -648,9 +649,9 @@ function Saturn() {
 
   return (
     <group ref={groupRef} position={DESTINATIONS.saturn.coords} rotation={[0.42, 0.18, 0]}>
-      {/* 1. High-Poly Saturn Sphere 128x128 with Analytical Ring Shadow */}
+      {/* 1. Saturn Sphere with Analytical Ring Shadow */}
       <mesh ref={saturnRef} material={textures.planet ? saturnGlobeMaterial : undefined}>
-        <sphereGeometry args={[2.5, 128, 128]} />
+        <sphereGeometry args={[2.5, 96, 96]} />
         {!textures.planet && (
           <meshStandardMaterial
             color="#e8dbb7"
@@ -662,7 +663,7 @@ function Saturn() {
 
       {/* 2. Saturn Haze */}
       <mesh scale={1.03}>
-        <sphereGeometry args={[2.5, 64, 64]} />
+        <sphereGeometry args={[2.5, 48, 48]} />
         <meshBasicMaterial
           color="#ebd59b"
           transparent
@@ -672,13 +673,13 @@ function Saturn() {
         />
       </mesh>
 
-      {/* 3. The Majestic Rings - 256 Radial Segments with Analytical Globe Shadow */}
+      {/* 3. The Rings - 128 Radial Segments with Analytical Globe Shadow */}
       <mesh
         ref={ringRef}
         rotation={[-Math.PI / 2, 0, 0]}
         material={textures.ring ? saturnRingMaterial : undefined}
       >
-        <ringGeometry args={[3.1, 7.2, 256]} />
+        <ringGeometry args={[3.1, 7.2, 128]} />
         {!textures.ring && (
           <meshStandardMaterial
             color="#c7b48a"
@@ -722,15 +723,15 @@ function BlackHole() {
 
   return (
     <group position={DESTINATIONS.blackhole.coords} rotation={[0.55, 0.35, 0]}>
-      {/* 1. Pitch Black Event Horizon - High Poly 128x128 */}
+      {/* 1. Event Horizon */}
       <mesh>
-        <sphereGeometry args={[3.2, 128, 128]} />
+        <sphereGeometry args={[3.2, 96, 96]} />
         <meshBasicMaterial color="#000000" />
       </mesh>
 
       {/* 2. Razor Sharp Photon Sphere */}
       <mesh scale={1.025}>
-        <sphereGeometry args={[3.2, 96, 96]} />
+        <sphereGeometry args={[3.2, 64, 64]} />
         <meshBasicMaterial
           color="#fff5cc"
           transparent
@@ -740,14 +741,14 @@ function BlackHole() {
         />
       </mesh>
 
-      {/* 3. Relativistic Accretion Disk (Equatorial) - High Poly 256 */}
+      {/* 3. Relativistic Accretion Disk */}
       <mesh ref={diskRef} rotation={[-Math.PI / 2, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.45, 10.2, 256]} />
+        <ringGeometry args={[3.45, 10.2, 128]} />
       </mesh>
 
-      {/* 4. Gravitational Lensing Vertical Arch - High Poly 256 */}
+      {/* 4. Gravitational Lensing Vertical Arch */}
       <mesh ref={lensRef} rotation={[0, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.55, 7.6, 256]} />
+        <ringGeometry args={[3.55, 7.6, 128]} />
       </mesh>
     </group>
   );
@@ -761,7 +762,7 @@ function OrbitLines() {
 
   const lineObjects = useMemo(() => {
     const keys: (keyof typeof PLANET_EPHEMERIS)[] = ['earth', 'mars', 'jupiter', 'saturn'];
-    const segments = 128;
+    const segments = 96;
 
     return keys.map((key) => {
       const elem = PLANET_EPHEMERIS[key];
@@ -774,7 +775,6 @@ function OrbitLines() {
           points.push(new THREE.Vector3(Math.cos(theta) * r, 0, Math.sin(theta) * r));
         }
       } else {
-        // True Keplerian Ellipse
         const a = elem.sceneRadius;
         const e = elem.e0;
         const inc = (elem.I0 * Math.PI) / 180;
@@ -810,12 +810,12 @@ export function SpaceJourneyEngine({ active = true, className = '' }: { active?:
     <div className={`absolute inset-0 h-full w-full overflow-hidden bg-[#000003] ${className}`}>
       <Canvas
         frameloop={active ? 'always' : 'never'}
-        dpr={[1, 2]}
+        dpr={[1, 1.25]}
         camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 2500 }}
         gl={{
           antialias: true,
           alpha: false,
-          powerPreference: 'high-performance',
+          powerPreference: 'default',
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.15,
         }}
