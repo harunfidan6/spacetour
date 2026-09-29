@@ -7,7 +7,6 @@ import { SpaceProvider } from "@/components/space/SpaceContext";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { PageTransitionProvider } from "@/components/motion/PageTransition";
 import { Preloader } from "@/components/motion/Preloader";
-import { Cursor } from "@/components/motion/Cursor";
 import { StarfieldBackdrop } from "@/components/motion/StarfieldBackdrop";
 
 const archivo = Archivo({
@@ -66,7 +65,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Navbar />
             <main className="relative z-10 min-h-screen">{children}</main>
             <Footer />
-            <Cursor />
             <Preloader />
             <div aria-hidden className="grain" />
           </PageTransitionProvider>

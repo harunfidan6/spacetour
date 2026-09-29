@@ -340,16 +340,6 @@ body {
 .wave-x { animation: wave-x 2s linear infinite; }
 @keyframes wave-x { to { transform: translateX(-100px); } }
 
-/* Custom cursor: hide native pointer only on fine pointers once mounted */
-@media (pointer: fine) {
-  html.has-cursor,
-  html.has-cursor * { cursor: none !important; }
-  html.has-cursor input,
-  html.has-cursor textarea,
-  html.has-cursor select,
-  html.has-cursor [contenteditable="true"] { cursor: auto !important; }
-}
-
 /* --------------------------------------------------------------------------
    Module skin — harmonises interactive modules rendered inside pages
    -------------------------------------------------------------------------- */

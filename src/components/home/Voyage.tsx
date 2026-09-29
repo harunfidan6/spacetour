@@ -93,19 +93,11 @@ export function Voyage() {
         ))}
       </div>
 
-      <div ref={stage} className="ticks relative h-[78svh] min-h-[520px] overflow-hidden border border-line bg-black" data-cursor="Sürükle">
+      <div ref={stage} className="ticks relative h-[78svh] min-h-[520px] overflow-hidden border border-line bg-black">
         <Ticks />
         {mounted && <JourneyEngine active={inView} />}
 
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(9,9,11,0.85)_0%,rgba(9,9,11,0.2)_35%,transparent_60%)]" />
-
-        {/* Reticle */}
-        <svg viewBox="-60 -60 120 120" className="pointer-events-none absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 opacity-60" aria-hidden>
-          <g className="spin-slow">
-            <circle r="40" fill="none" stroke="var(--paper)" strokeWidth="0.6" strokeDasharray="3 5" />
-          </g>
-          <path d="M-56 0H-44M44 0H56M0 -56V-44M0 44V56" stroke="var(--solar)" strokeWidth="1.2" />
-        </svg>
 
         {/* Stop list */}
         <ol className="absolute bottom-6 left-6 top-6 z-10 hidden flex-col justify-center md:flex">

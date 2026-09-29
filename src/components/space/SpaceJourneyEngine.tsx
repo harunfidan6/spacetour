@@ -189,9 +189,9 @@ function Sun() {
 
   return (
     <group position={[0, 0, 0]}>
-      {/* 1. Photosphere Sphere */}
+      {/* 1. Photosphere Sphere - High Poly 128x128 */}
       <mesh ref={sunMesh}>
-        <sphereGeometry args={[5, 64, 64]} />
+        <sphereGeometry args={[5, 128, 128]} />
         {sunTex ? (
           <meshBasicMaterial map={sunTex} />
         ) : (
@@ -201,11 +201,11 @@ function Sun() {
 
       {/* 2. Inner Hot Coronal Atmosphere */}
       <mesh ref={innerCoronaRef}>
-        <sphereGeometry args={[5.4, 32, 32]} />
+        <sphereGeometry args={[5.35, 64, 64]} />
         <meshBasicMaterial
-          color="#ffeedd"
+          color="#fff5e6"
           transparent
-          opacity={0.35}
+          opacity={0.38}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -213,18 +213,18 @@ function Sun() {
 
       {/* 3. Outer Solar Halo */}
       <mesh ref={outerCoronaRef}>
-        <sphereGeometry args={[6.5, 32, 32]} />
+        <sphereGeometry args={[6.6, 64, 64]} />
         <meshBasicMaterial
           color="#ff7700"
           transparent
-          opacity={0.2}
+          opacity={0.22}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
       {/* Primary Solar Illuminator for the entire solar system */}
-      <pointLight color="#fff8ea" intensity={5.5} distance={400} decay={1.1} />
+      <pointLight color="#fff8ea" intensity={6.5} distance={550} decay={1.05} />
     </group>
   );
 }
@@ -269,39 +269,40 @@ function Earth() {
 
   return (
     <group position={DESTINATIONS.earth.coords}>
-      {/* 1. Earth Globe with NASA PBR Maps */}
+      {/* 1. Earth Globe with NASA PBR Maps - High Poly 128x128 */}
       <mesh ref={earthRef}>
-        <sphereGeometry args={[1.5, 64, 64]} />
+        <sphereGeometry args={[1.5, 128, 128]} />
         <meshStandardMaterial
           map={textures.map || undefined}
           roughnessMap={textures.specular || undefined}
-          roughness={0.55}
-          metalness={0.1}
+          roughness={0.45}
+          metalness={0.06}
           normalMap={textures.normal || undefined}
-          normalScale={new THREE.Vector2(0.2, 0.2)}
+          normalScale={new THREE.Vector2(0.85, 0.85)}
         />
       </mesh>
 
-      {/* 2. Independent Real Cloud Layer */}
+      {/* 2. Independent Real Cloud Layer - High Poly 128x128 */}
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[1.53, 64, 64]} />
+        <sphereGeometry args={[1.522, 128, 128]} />
         {textures.clouds && (
           <meshStandardMaterial
             map={textures.clouds}
             transparent
-            opacity={0.75}
+            opacity={0.82}
             blending={THREE.AdditiveBlending}
+            depthWrite={false}
           />
         )}
       </mesh>
 
       {/* 3. Atmospheric Rayleigh Scattering Blue Rim Glow */}
-      <mesh scale={1.08}>
-        <sphereGeometry args={[1.5, 32, 32]} />
+      <mesh scale={1.045}>
+        <sphereGeometry args={[1.5, 64, 64]} />
         <meshBasicMaterial
           color="#0088ff"
           transparent
-          opacity={0.22}
+          opacity={0.24}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -310,11 +311,11 @@ function Earth() {
       {/* 4. Realistic Moon with NASA LRO Texture */}
       <group ref={moonOrbitRef}>
         <mesh position={[3.8, 0.4, 0]}>
-          <sphereGeometry args={[0.38, 32, 32]} />
+          <sphereGeometry args={[0.38, 64, 64]} />
           <meshStandardMaterial
             map={textures.moon || undefined}
             color={textures.moon ? '#ffffff' : '#b0b5bc'}
-            roughness={0.88}
+            roughness={0.92}
           />
         </mesh>
       </group>
@@ -340,22 +341,24 @@ function Mars() {
 
   return (
     <group position={DESTINATIONS.mars.coords}>
+      {/* High-Poly Mars Sphere 128x128 */}
       <mesh ref={marsRef}>
-        <sphereGeometry args={[1.0, 64, 64]} />
+        <sphereGeometry args={[1.0, 128, 128]} />
         <meshStandardMaterial
           map={texture || undefined}
           color={texture ? '#ffffff' : '#b74418'}
-          roughness={0.75}
+          roughness={0.82}
+          metalness={0.05}
         />
       </mesh>
 
       {/* Thin Salmon Atmospheric Rim */}
-      <mesh scale={1.05}>
-        <sphereGeometry args={[1.0, 32, 32]} />
+      <mesh scale={1.035}>
+        <sphereGeometry args={[1.0, 64, 64]} />
         <meshBasicMaterial
-          color="#ff4422"
+          color="#ff5533"
           transparent
-          opacity={0.16}
+          opacity={0.18}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -382,22 +385,24 @@ function Jupiter() {
 
   return (
     <group position={DESTINATIONS.jupiter.coords}>
+      {/* High-Poly Jupiter 128x128 */}
       <mesh ref={jupiterRef}>
-        <sphereGeometry args={[3.2, 64, 64]} />
+        <sphereGeometry args={[3.2, 128, 128]} />
         <meshStandardMaterial
           map={texture || undefined}
           color={texture ? '#ffffff' : '#c88b3a'}
-          roughness={0.5}
+          roughness={0.45}
+          metalness={0.0}
         />
       </mesh>
 
       {/* Soft Jovian Atmosphere Haze */}
-      <mesh scale={1.03}>
-        <sphereGeometry args={[3.2, 32, 32]} />
+      <mesh scale={1.025}>
+        <sphereGeometry args={[3.2, 64, 64]} />
         <meshBasicMaterial
           color="#dca565"
           transparent
-          opacity={0.12}
+          opacity={0.15}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -434,38 +439,39 @@ function Saturn() {
 
   return (
     <group position={DESTINATIONS.saturn.coords} rotation={[0.42, 0.18, 0]}>
-      {/* 1. Saturn Sphere */}
+      {/* 1. High-Poly Saturn Sphere 128x128 */}
       <mesh ref={saturnRef}>
-        <sphereGeometry args={[2.5, 64, 64]} />
+        <sphereGeometry args={[2.5, 128, 128]} />
         <meshStandardMaterial
           map={textures.planet || undefined}
           color={textures.planet ? '#ffffff' : '#e8dbb7'}
-          roughness={0.6}
+          roughness={0.52}
+          metalness={0.0}
         />
       </mesh>
 
       {/* 2. Saturn Haze */}
-      <mesh scale={1.04}>
-        <sphereGeometry args={[2.5, 32, 32]} />
+      <mesh scale={1.03}>
+        <sphereGeometry args={[2.5, 64, 64]} />
         <meshBasicMaterial
           color="#ebd59b"
           transparent
-          opacity={0.15}
+          opacity={0.16}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* 3. The Majestic Rings */}
+      {/* 3. The Majestic Rings - 256 Radial Segments */}
       <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[3.2, 6.8, 128]} />
+        <ringGeometry args={[3.1, 7.2, 256]} />
         <meshStandardMaterial
           map={textures.ring || undefined}
           color={textures.ring ? '#ffffff' : '#c7b48a'}
           side={THREE.DoubleSide}
           transparent
-          opacity={0.88}
-          roughness={0.4}
+          opacity={0.92}
+          roughness={0.35}
         />
       </mesh>
     </group>
@@ -501,32 +507,32 @@ function BlackHole() {
 
   return (
     <group position={DESTINATIONS.blackhole.coords} rotation={[0.55, 0.35, 0]}>
-      {/* 1. Pitch Black Event Horizon */}
+      {/* 1. Pitch Black Event Horizon - High Poly 128x128 */}
       <mesh>
-        <sphereGeometry args={[3.2, 64, 64]} />
+        <sphereGeometry args={[3.2, 128, 128]} />
         <meshBasicMaterial color="#000000" />
       </mesh>
 
       {/* 2. Razor Sharp Photon Sphere */}
-      <mesh scale={1.03}>
-        <sphereGeometry args={[3.2, 32, 32]} />
+      <mesh scale={1.025}>
+        <sphereGeometry args={[3.2, 96, 96]} />
         <meshBasicMaterial
           color="#fff5cc"
           transparent
-          opacity={0.65}
+          opacity={0.72}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* 3. Relativistic Accretion Disk (Equatorial) */}
+      {/* 3. Relativistic Accretion Disk (Equatorial) - High Poly 256 */}
       <mesh ref={diskRef} rotation={[-Math.PI / 2, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.5, 9.8, 96]} />
+        <ringGeometry args={[3.45, 10.2, 256]} />
       </mesh>
 
-      {/* 4. Gravitational Lensing Vertical Arch (Interstellar Hallmark) */}
+      {/* 4. Gravitational Lensing Vertical Arch - High Poly 256 */}
       <mesh ref={lensRef} rotation={[0, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.6, 7.2, 96]} />
+        <ringGeometry args={[3.55, 7.6, 256]} />
       </mesh>
     </group>
   );
@@ -568,14 +574,14 @@ export function SpaceJourneyEngine({ active = true, className = '' }: { active?:
     <div className={`absolute inset-0 h-full w-full overflow-hidden bg-[#000003] ${className}`}>
       <Canvas
         frameloop={active ? 'always' : 'never'}
-        dpr={[1, 1.75]}
-        camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 2000 }}
+        dpr={[1, 2]}
+        camera={{ position: [0, 35, 65], fov: 48, near: 0.1, far: 2500 }}
         gl={{
           antialias: true,
           alpha: false,
           powerPreference: 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.05
+          toneMappingExposure: 1.15
         }}
       >
         <color attach="background" args={['#000003']} />
