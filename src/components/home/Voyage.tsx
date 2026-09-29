@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpRight, Zap } from 'lucide-react';
 import { useSpace, type DestinationId } from '@/components/space/SpaceContext';
-import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { Scramble, Ticks } from '@/components/motion/primitives';
 import { SectionHead, Em } from '@/components/ui/Headings';
 
@@ -36,50 +35,7 @@ const ENCYCLOPEDIA: Partial<Record<DestinationId, string>> = {
   saturn: 'saturn',
 };
 
-function WarpOverlay({ warping }: { warping: boolean }) {
-  const root = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = root.current;
-    if (!el || !warping || prefersReducedMotion()) return;
-    const ctx = gsap.context(() => {
-      gsap
-        .timeline()
-        .set(el, { autoAlpha: 1 })
-        .fromTo('line', { drawSVG: '0% 0%' }, { drawSVG: '40% 100%', duration: 0.9, stagger: { each: 0.004, from: 'random' }, ease: 'power2.in' })
-        .fromTo('[data-warp-word]', { scale: 0.4, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.5, ease: 'mg.out' }, 0.1)
-        .to('line', { drawSVG: '100% 100%', duration: 0.6, ease: 'power2.out' }, 1.2)
-        .to('[data-warp-word]', { scale: 2.4, autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, 1.2)
-        .set(el, { autoAlpha: 0 });
-    }, el);
-    return () => ctx.revert();
-  }, [warping]);
-
-  return (
-    <div ref={root} aria-hidden className="pointer-events-none absolute inset-0 z-20 grid place-items-center" style={{ visibility: 'hidden' }}>
-      <svg viewBox="-100 -100 200 200" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full">
-        {Array.from({ length: 90 }, (_, i) => {
-          const a = (i / 90) * Math.PI * 2 + (i % 3) * 0.02;
-          const r0 = 12 + (i % 5) * 4;
-          return (
-            <line
-              key={i}
-              x1={(Math.cos(a) * r0).toFixed(2)}
-              y1={(Math.sin(a) * r0).toFixed(2)}
-              x2={(Math.cos(a) * 150).toFixed(2)}
-              y2={(Math.sin(a) * 150).toFixed(2)}
-              stroke={i % 7 === 0 ? 'var(--solar)' : 'var(--paper)'}
-              strokeOpacity={0.7}
-              strokeWidth={0.35}
-            />
-          );
-        })}
-      </svg>
-      <span data-warp-word className="display relative text-[clamp(4rem,14vw,12rem)] text-paper mix-blend-difference">
-        Warp
-      </span>
-    </div>
-  );
-}
+import { RelativisticWarpHUD } from '@/components/space/RelativisticWarpHUD';
 
 export function Voyage() {
   const { currentDestination, setDestination, isWarping, autoPilot, toggleAutoPilot, triggerWarp } = useSpace();
@@ -120,18 +76,18 @@ export function Voyage() {
       />
 
       {/* Mobile stop rail */}
-      <div className="no-scrollbar -mx-[var(--gutter)] mb-3 flex gap-2 overflow-x-auto px-[var(--gutter)] md:hidden">
+      <div className="no-scrollbar -mx-[var(--gutter)] mb-3 flex gap-1.5 overflow-x-auto px-[var(--gutter)] md:hidden">
         {STOPS.map((s, i) => (
           <button
             key={s.id}
             type="button"
             onClick={() => setDestination(s.id)}
             aria-pressed={d.id === s.id}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors ${
-              d.id === s.id ? 'border-solar bg-solar text-ink' : 'border-line text-paper/80'
+            className={`shrink-0 border px-3 py-1.5 font-mono text-xs transition-colors cursor-pointer ${
+              d.id === s.id ? 'border-solar bg-solar text-ink font-bold' : 'border-line bg-ink text-paper/80 hover:bg-ink-3'
             }`}
           >
-            <span className="label mr-2 text-[9px] opacity-70">{String(i + 1).padStart(2, '0')}</span>
+            <span className="mr-1.5 text-[9px] opacity-70">{String(i + 1).padStart(2, '0')}</span>
             {s.name}
           </button>
         ))}
@@ -161,9 +117,9 @@ export function Voyage() {
                   type="button"
                   onClick={() => setDestination(s.id)}
                   aria-pressed={on}
-                  className="group flex items-baseline gap-3 py-1 text-left"
+                  className="group flex items-baseline gap-3 py-1 text-left cursor-pointer"
                 >
-                  <span className={`label w-6 text-[10px] ${on ? 'text-solar' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className={`label w-6 text-[10px] ${on ? 'text-solar font-bold' : 'text-muted'}`}>{String(i + 1).padStart(2, '0')}</span>
                   <span className={`display text-[clamp(1.6rem,2.6vw,2.6rem)] transition-[color,transform] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-2 ${on ? 'text-solar' : 'text-paper/55 group-hover:text-paper'}`}>
                     {s.name}
                   </span>
@@ -175,23 +131,32 @@ export function Voyage() {
         </ol>
 
         {/* Controls */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
+        <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
           <button
             type="button"
             onClick={triggerWarp}
-            className="flex items-center gap-2 rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-solar"
+            disabled={isWarping}
+            className={`flex items-center gap-2 border px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              isWarping
+                ? 'border-lime-signal bg-lime-signal text-ink font-black shadow-[0_0_25px_rgba(212,255,61,0.5)]'
+                : 'border-solar bg-solar text-ink font-bold hover:bg-solar/90 active:scale-95 shadow-[0_0_20px_rgba(255,91,34,0.35)]'
+            }`}
           >
-            <Zap size={13} /> Warp
+            <Zap size={14} className={isWarping ? 'animate-bounce' : 'animate-pulse'} />
+            <span>{isWarping ? 'Warp Aktif' : 'Warp Sıçraması'}</span>
           </button>
           <button
             type="button"
             onClick={toggleAutoPilot}
             aria-pressed={autoPilot}
-            className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs transition-colors ${
-              autoPilot ? 'border-lime bg-lime text-ink' : 'border-paper/30 bg-ink/60 text-paper backdrop-blur hover:border-lime'
+            className={`flex items-center gap-2 border px-4 py-2 font-mono text-xs transition-colors cursor-pointer ${
+              autoPilot
+                ? 'border-lime bg-lime text-ink font-bold'
+                : 'border-line bg-ink/80 text-paper backdrop-blur hover:border-paper/40'
             }`}
           >
-            <span className={`h-1.5 w-1.5 rounded-full ${autoPilot ? 'bg-ink' : 'bg-lime'}`} /> Sinematik tur
+            <span className={`h-2 w-2 rounded-full ${autoPilot ? 'bg-ink animate-ping' : 'bg-lime'}`} />
+            <span>{autoPilot ? 'Otopilot Açık' : 'Sinematik Tur'}</span>
           </button>
         </div>
 
@@ -200,7 +165,12 @@ export function Voyage() {
           <TelemetryBody d={d} slug={slug} index={activeIndex} />
         </div>
 
-        <WarpOverlay warping={isWarping} />
+        {/* Relativistic Hyperspace Warp HUD */}
+        <RelativisticWarpHUD
+          isWarping={isWarping}
+          destinationName={d.name}
+          destinationDistance={d.distance}
+        />
       </div>
 
       <div className="mt-3 border border-line bg-ink-2 md:hidden">

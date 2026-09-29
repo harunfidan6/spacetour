@@ -53,24 +53,33 @@ function FlightCameraController() {
     const driftY = Math.cos(timeRef.current * 0.1) * 0.3;
     const driftZ = Math.sin(timeRef.current * 0.08) * 0.4;
 
-    const lerpFactor = isWarping ? 3.2 * delta : 1.2 * delta;
+    const lerpFactor = isWarping ? Math.min(4.5 * delta, 0.22) : Math.min(1.2 * delta, 0.06);
 
     if (!isWarping) {
       target.x += mouse.current.x * 2.0 + driftX;
       target.y -= mouse.current.y * 1.5 - driftY;
       target.z += driftZ;
     } else {
-      // Warp camera vibration
-      target.x += (Math.random() - 0.5) * 0.5;
-      target.y += (Math.random() - 0.5) * 0.5;
-      target.z += (Math.random() - 0.5) * 0.5;
+      // Relativistic high-speed metric vibration
+      const shake = 0.85;
+      target.x += (Math.random() - 0.5) * shake;
+      target.y += (Math.random() - 0.5) * shake;
+      target.z += (Math.random() - 0.5) * shake;
     }
 
-    currentPos.current.lerp(target, Math.min(lerpFactor, 0.08));
-    lookAtTarget.current.lerp(targetLook, Math.min(lerpFactor * 1.2, 0.1));
+    currentPos.current.lerp(target, lerpFactor);
+    lookAtTarget.current.lerp(targetLook, Math.min(lerpFactor * 1.3, 0.25));
 
     camera.position.copy(currentPos.current);
     camera.lookAt(lookAtTarget.current);
+
+    // Dynamic FOV distortion (warp stretch)
+    if ('fov' in camera) {
+      const persp = camera as THREE.PerspectiveCamera;
+      const targetFov = isWarping ? 82 : 45;
+      persp.fov = THREE.MathUtils.lerp(persp.fov, targetFov, delta * (isWarping ? 6.5 : 3.5));
+      persp.updateProjectionMatrix();
+    }
   });
 
   return null;
@@ -123,7 +132,7 @@ function WarpStars() {
   useFrame((_, delta) => {
     if (!pointsRef.current) return;
     const pos = pointsRef.current.geometry.attributes.position.array as Float32Array;
-    const speedMult = (isWarping ? 28.0 : 0.6) * throttle;
+    const speedMult = (isWarping ? 110.0 : 0.6) * throttle;
 
     for (let i = 0; i < count; i++) {
       pos[i * 3 + 2] += speeds[i] * speedMult * delta * 20;
@@ -140,10 +149,10 @@ function WarpStars() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={isWarping ? 2.0 : 0.8}
-        color={isWarping ? '#80dfff' : '#e6f0ff'}
+        size={isWarping ? 3.2 : 0.8}
+        color={isWarping ? '#d4ff3d' : '#e6f0ff'}
         transparent
-        opacity={isWarping ? 0.9 : 0.6}
+        opacity={isWarping ? 1.0 : 0.6}
         blending={THREE.AdditiveBlending}
       />
     </points>
