@@ -54,12 +54,14 @@ export function getActiveVisitorsCount(): number {
 }
 
 // Generate Aggregate Analytics
-export function computeAnalyticsStats(): AnalyticsStatsResponse {
+export function computeAnalyticsStats(includeDemo: boolean = false): AnalyticsStatsResponse {
   const now = Date.now();
   const activeNow = getActiveVisitorsCount();
 
-  // If there are very few live records (e.g. freshly deployed instance), seed realistic base baseline
-  const effectiveRecords = records.length >= 10 ? records : getBaselineRecords(records);
+  // If includeDemo is true, seed realistic baseline; otherwise use 100% REAL records
+  const effectiveRecords = includeDemo
+    ? (records.length >= 10 ? records : getBaselineRecords(records))
+    : records;
 
   const totalPageviews = effectiveRecords.length;
   const uniqueSet = new Set(effectiveRecords.map((r) => r.ipHash));
@@ -78,7 +80,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
       path,
       title: data.title,
       views: data.count,
-      percentage: Math.round((data.count / totalPageviews) * 100)
+      percentage: Math.round((data.count / (totalPageviews || 1)) * 100)
     }))
     .sort((a, b) => b.views - a.views)
     .slice(0, 8);
@@ -99,7 +101,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
         city,
         country: data.country,
         count: data.count,
-        percentage: Math.round((data.count / totalPageviews) * 100)
+        percentage: Math.round((data.count / (totalPageviews || 1)) * 100)
       };
     })
     .sort((a, b) => b.count - a.count)
@@ -115,7 +117,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
     .map(([country, count]) => ({
       country: country === 'TR' ? 'Türkiye' : country,
       count,
-      percentage: Math.round((count / totalPageviews) * 100)
+      percentage: Math.round((count / (totalPageviews || 1)) * 100)
     }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
@@ -128,7 +130,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
   const deviceBreakdown = Object.entries(devMap).map(([device, count]) => ({
     device,
     count,
-    percentage: Math.round((count / totalPageviews) * 100)
+    percentage: Math.round((count / (totalPageviews || 1)) * 100)
   }));
 
   // 5. Browser Breakdown
@@ -139,7 +141,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
   const browserBreakdown = Object.entries(browMap).map(([browser, count]) => ({
     browser,
     count,
-    percentage: Math.round((count / totalPageviews) * 100)
+    percentage: Math.round((count / (totalPageviews || 1)) * 100)
   })).sort((a, b) => b.count - a.count);
 
   // 6. OS Breakdown
@@ -150,7 +152,7 @@ export function computeAnalyticsStats(): AnalyticsStatsResponse {
   const osBreakdown = Object.entries(osMap).map(([os, count]) => ({
     os,
     count,
-    percentage: Math.round((count / totalPageviews) * 100)
+    percentage: Math.round((count / (totalPageviews || 1)) * 100)
   })).sort((a, b) => b.count - a.count);
 
   // 7. Traffic Sources

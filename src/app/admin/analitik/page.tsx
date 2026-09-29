@@ -32,11 +32,13 @@ export default function AdminAnalyticsPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefreshSecs, setAutoRefreshSecs] = useState<number>(5);
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (demoState?: boolean) => {
     try {
       setIsRefreshing(true);
-      const res = await fetch('/api/analytics/stats', { cache: 'no-store' });
+      const useDemo = typeof demoState === 'boolean' ? demoState : isDemoMode;
+      const res = await fetch(`/api/analytics/stats?demo=${useDemo}`, { cache: 'no-store' });
       if (res.ok) {
         const data: AnalyticsStatsResponse = await res.json();
         setStats(data);
@@ -48,12 +50,12 @@ export default function AdminAnalyticsPage() {
       setLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [isDemoMode]);
 
   // Initial fetch
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    fetchStats(isDemoMode);
+  }, [fetchStats, isDemoMode]);
 
   // Periodic Auto-refresh
   useEffect(() => {
@@ -93,42 +95,99 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Live Controls */}
-        <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-2xl text-xs font-mono">
-          <div className="flex items-center gap-1.5 px-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-neutral-400 text-[11px]">Son Güncelleme:</span>
-            <span className="text-white font-bold">{lastUpdated || 'Yükleniyor...'}</span>
-          </div>
-
-          <div className="flex items-center gap-1 border-l border-white/10 pl-2">
-            {[
-              { label: '5sn', val: 5 },
-              { label: '15sn', val: 15 },
-              { label: 'Durdur', val: 0 }
-            ].map((opt) => (
-              <button
-                key={opt.label}
-                onClick={() => setAutoRefreshSecs(opt.val)}
-                className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  autoRefreshSecs === opt.val
-                    ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Demo vs Real Toggle */}
+          <div className="flex items-center gap-1 bg-white/5 border border-white/10 p-1.5 rounded-2xl text-xs font-mono">
+            <button
+              onClick={() => {
+                setIsDemoMode(false);
+                fetchStats(false);
+              }}
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                !isDemoMode
+                  ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <span className={`h-2 w-2 rounded-full ${!isDemoMode ? 'bg-black' : 'bg-emerald-400'}`} />
+              <span>%100 Gerçek Canlı Veri</span>
+            </button>
 
             <button
-              onClick={() => fetchStats()}
-              disabled={isRefreshing}
-              className="p-1.5 rounded-lg text-neutral-300 hover:text-white hover:bg-white/10 transition-colors ml-1 cursor-pointer"
-              title="Şimdi Yenile"
+              onClick={() => {
+                setIsDemoMode(true);
+                fetchStats(true);
+              }}
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                isDemoMode
+                  ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)]'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
             >
-              <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+              <span>🧪 Örnek Simülasyon</span>
             </button>
           </div>
+
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 rounded-2xl text-xs font-mono">
+            <div className="flex items-center gap-1.5 px-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-neutral-400 text-[11px]">Son Güncelleme:</span>
+              <span className="text-white font-bold">{lastUpdated || 'Yükleniyor...'}</span>
+            </div>
+
+            <div className="flex items-center gap-1 border-l border-white/10 pl-2">
+              {[
+                { label: '5sn', val: 5 },
+                { label: '15sn', val: 15 },
+                { label: 'Durdur', val: 0 }
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  onClick={() => setAutoRefreshSecs(opt.val)}
+                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                    autoRefreshSecs === opt.val
+                      ? 'bg-emerald-500 text-black shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+
+              <button
+                onClick={() => fetchStats()}
+                disabled={isRefreshing}
+                className="p-1.5 rounded-lg text-neutral-300 hover:text-white hover:bg-white/10 transition-colors ml-1 cursor-pointer"
+                title="Şimdi Yenile"
+              >
+                <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Active Mode Notice Banner */}
+      <div
+        className={`p-4 rounded-2xl border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+          !isDemoMode
+            ? 'border-emerald-500/30 bg-emerald-950/20 text-emerald-300'
+            : 'border-purple-500/30 bg-purple-950/20 text-purple-300'
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <span>{!isDemoMode ? '⚡' : '🧪'}</span>
+          <span>
+            {!isDemoMode
+              ? 'CANLI GERÇEK MOD AKTİF: Yalnızca siteye giren GERÇEK ziyaretçi ve IP telemetrisi görüntüleniyor.'
+              : 'SİMÜLASYON MODU AKTİF: Grafikleri ve rapor yapısını incelemek için örnek test verileri görüntüleniyor.'}
+          </span>
+        </div>
+        {!isDemoMode && (
+          <div className="text-neutral-300 text-[11px]">
+            💡 <em>Telefonunuzdan veya başka sekmeden siteye girdiğiniz an canlı akışta anında belireceksiniz!</em>
+          </div>
+        )}
       </div>
 
       {/* 4 Big Real-Time KPI Cards */}
