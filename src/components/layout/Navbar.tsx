@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { LiveClock, RotatingBadge } from '@/components/motion/primitives';
-import { SITE_ROUTES, TELEMETRY_ROUTE } from '@/lib/routes';
+import { SITE_ROUTES } from '@/lib/routes';
 import { Terminal } from 'lucide-react';
 import { CosmicAudioEngine } from '@/components/space/CosmicAudioEngine';
 
@@ -110,12 +110,6 @@ export default function Navbar() {
               <Terminal size={12} className="text-solar" />
               <span>⌘K</span>
             </button>
-            <Link
-              href={TELEMETRY_ROUTE.href}
-              className="hidden h-9 items-center gap-2 rounded-full border border-line px-3 text-[11px] font-mono uppercase tracking-[0.14em] text-paper/80 transition-colors hover:border-lime hover:text-lime 2xl:flex"
-            >
-              <span className="live-dot" /> Telemetri
-            </Link>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
@@ -198,7 +192,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const items = [...SITE_ROUTES, TELEMETRY_ROUTE];
+  const items = SITE_ROUTES;
   const preview = hovered !== null ? items[hovered] : null;
 
   return (

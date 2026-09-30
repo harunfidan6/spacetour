@@ -7,7 +7,7 @@ import { FitText } from '@/components/motion/FitText';
 import { Marquee } from '@/components/motion/Marquee';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { LiveClock, Magnetic } from '@/components/motion/primitives';
-import { SITE_ROUTES, TELEMETRY_ROUTE } from '@/lib/routes';
+import { SITE_ROUTES } from '@/lib/routes';
 
 const SOURCES = [
   { label: 'NASA Open APIs', href: 'https://api.nasa.gov/' },
@@ -64,7 +64,7 @@ export function Footer() {
           <div>
             <div className="label mb-4 text-muted">Keşfet</div>
             <ul className="space-y-2">
-              {[...SITE_ROUTES, TELEMETRY_ROUTE].map((r) => (
+              {SITE_ROUTES.map((r) => (
                 <li key={r.href}>
                   <Link href={r.href} className="group flex items-center gap-2 text-sm text-paper/80">
                     <span className="label text-[9px]" style={{ color: r.accent }}>

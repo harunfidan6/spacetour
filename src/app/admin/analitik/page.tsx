@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Users,
   Eye,
+  EyeOff,
   Compass,
   Clock,
   Globe2,
@@ -15,24 +16,48 @@ import {
   BarChart3,
   TrendingUp,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  Lock,
+  Key,
+  LogOut,
+  AlertCircle
 } from 'lucide-react';
 import { AnalyticsStatsResponse } from '@/types/analytics';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 
-async function requestStats(demo: boolean): Promise<AnalyticsStatsResponse | null> {
+async function requestStats(demo: boolean, secretKey?: string): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
   try {
-    const res = await fetch(`/api/analytics/stats?demo=${demo}`, { cache: 'no-store' });
-    return res.ok ? ((await res.json()) as AnalyticsStatsResponse) : null;
+    const headers: Record<string, string> = {};
+    if (secretKey) {
+      headers['x-admin-key'] = secretKey;
+    }
+    const res = await fetch(`/api/analytics/stats?demo=${demo}`, {
+      cache: 'no-store',
+      headers,
+      credentials: 'include'
+    });
+    if (res.status === 401) {
+      return { data: null, unauthorized: true };
+    }
+    return { data: res.ok ? ((await res.json()) as AnalyticsStatsResponse) : null };
   } catch (err) {
     console.error('Failed to fetch analytics stats:', err);
-    return null;
+    return { data: null };
   }
 }
 
 export default function AdminAnalyticsPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
+  const [secretKey, setSecretKey] = useState<string>('');
+  const [keyInput, setKeyInput] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string>('');
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState<boolean>(false);
+
   const [stats, setStats] = useState<AnalyticsStatsResponse | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefreshSecs, setAutoRefreshSecs] = useState<number>(5);
@@ -40,45 +65,259 @@ export default function AdminAnalyticsPage() {
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   const now = useNow(1000);
 
-  const applyStats = useCallback((data: AnalyticsStatsResponse | null) => {
-    if (data) {
-      setStats(data);
+  // Check initial authentication
+  useEffect(() => {
+    let ignore = false;
+    const checkInitialAuth = async () => {
+      // 1. Check client storage
+      const storedKey = localStorage.getItem('admin_telemetry_key') || sessionStorage.getItem('admin_telemetry_key') || '';
+      
+      // 2. Check server cookie
+      try {
+        const res = await fetch('/api/analytics/auth', {
+          credentials: 'include',
+          headers: storedKey ? { 'x-admin-key': storedKey } : undefined
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!ignore) {
+          if (data.authenticated || storedKey) {
+            setIsAuthenticated(true);
+            setSecretKey(storedKey);
+          } else {
+            setIsAuthenticated(false);
+          }
+        }
+      } catch {
+        if (!ignore && storedKey) {
+          setIsAuthenticated(true);
+          setSecretKey(storedKey);
+        }
+      } finally {
+        if (!ignore) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    checkInitialAuth();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keyInput.trim()) return;
+
+    setIsSubmittingAuth(true);
+    setAuthError('');
+
+    try {
+      const res = await fetch('/api/analytics/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: keyInput.trim(), remember: rememberMe }),
+        credentials: 'include'
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        const validKey = keyInput.trim();
+        if (rememberMe) {
+          localStorage.setItem('admin_telemetry_key', validKey);
+          sessionStorage.removeItem('admin_telemetry_key');
+        } else {
+          sessionStorage.setItem('admin_telemetry_key', validKey);
+          localStorage.removeItem('admin_telemetry_key');
+        }
+        setSecretKey(validKey);
+        setIsAuthenticated(true);
+        setKeyInput('');
+      } else {
+        setAuthError(data?.error || 'Yetki anahtarı geçersiz. Erişim engellendi.');
+      }
+    } catch {
+      setAuthError('Sunucu ile iletişim kurulamadı.');
+    } finally {
+      setIsSubmittingAuth(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/analytics/auth', { method: 'DELETE', credentials: 'include' });
+    } catch {
+      // ignore
+    }
+    localStorage.removeItem('admin_telemetry_key');
+    sessionStorage.removeItem('admin_telemetry_key');
+    setSecretKey('');
+    setIsAuthenticated(false);
+    setStats(null);
+  };
+
+  const applyStats = useCallback((result: { data: AnalyticsStatsResponse | null; unauthorized?: boolean }) => {
+    if (result.unauthorized) {
+      handleLogout();
+      return;
+    }
+    if (result.data) {
+      setStats(result.data);
       setLastUpdated(new Date().toLocaleTimeString('tr-TR'));
     }
     setIsRefreshing(false);
   }, []);
 
-  // Manual / scheduled refresh shows the spinner.
+  // Manual / scheduled refresh
   const refresh = useCallback(() => {
+    if (!isAuthenticated) return;
     setIsRefreshing(true);
-    requestStats(isDemoMode).then(applyStats);
-  }, [isDemoMode, applyStats]);
+    requestStats(isDemoMode, secretKey).then(applyStats);
+  }, [isDemoMode, isAuthenticated, secretKey, applyStats]);
 
-  // Load on mount and whenever the data source (live / demo) changes;
-  // a late response from the previous source is ignored.
+  // Load on mount & source toggle
   useEffect(() => {
+    if (!isAuthenticated) return;
     let ignore = false;
-    requestStats(isDemoMode).then((data) => {
-      if (!ignore) applyStats(data);
+    requestStats(isDemoMode, secretKey).then((result) => {
+      if (!ignore) applyStats(result);
     });
     return () => {
       ignore = true;
     };
-  }, [isDemoMode, applyStats]);
+  }, [isAuthenticated, isDemoMode, secretKey, applyStats]);
 
   // Periodic Auto-refresh
   useEffect(() => {
-    if (autoRefreshSecs <= 0) return;
+    if (!isAuthenticated || autoRefreshSecs <= 0) return;
     const interval = setInterval(refresh, autoRefreshSecs * 1000);
     return () => clearInterval(interval);
-  }, [autoRefreshSecs, refresh]);
+  }, [isAuthenticated, autoRefreshSecs, refresh]);
 
   const deviceIcons = {
-    Mobil: <Smartphone size={14} className="text-gold" />,
+    Mobil: <Smartphone size={14} className="text-solar" />,
     Masaüstü: <Monitor size={14} className="text-primary" />,
     Tablet: <Tablet size={14} className="text-violet" />
   };
 
+  // 1. Initial Auth Check Screen
+  if (isCheckingAuth) {
+    return (
+      <div className="module relative min-h-screen px-[var(--gutter)] flex items-center justify-center text-paper">
+        <div className="flex items-center gap-3 font-mono text-xs text-muted">
+          <RefreshCw size={15} className="animate-spin text-solar" />
+          <span>Güvenlik yetkisi denetleniyor...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Secret Locked Gate (Shown if unauthorized)
+  if (!isAuthenticated) {
+    return (
+      <div className="module relative min-h-screen px-[var(--gutter)] pb-28 pt-28 flex items-center justify-center text-paper sm:pt-32">
+        <div className="relative ticks w-full max-w-md border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
+          <Ticks />
+
+          {/* Header Status Bar */}
+          <div className="flex items-center justify-between border-b border-line pb-4">
+            <div className="flex items-center gap-2">
+              <Lock className="h-4 w-4 text-solar" />
+              <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-widest">
+                KORUMALI SİSTEM · YÖNETİCİ ERİŞİMİ
+              </span>
+            </div>
+            <span className="h-2 w-2 bg-solar animate-ping" />
+          </div>
+
+          <div>
+            <h2 className="display display-tight text-2xl text-paper sm:text-3xl">
+              Kozmik Görev <span className="serif-i text-solar">Kontrolü</span>
+            </h2>
+            <p className="text-xs text-muted mt-1.5 leading-relaxed">
+              Ziyaretçi trafiği, anlık kullanıcılar ve sistem telemetrisi yalnızca site sahibine özeldir.
+            </p>
+          </div>
+
+          <form onSubmit={handleAuthSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="block font-mono text-[10px] uppercase tracking-wider text-muted">
+                Yönetici Erişim Anahtarı (Master Key)
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="Erişim anahtarınızı girin..."
+                  required
+                  autoFocus
+                  className="w-full border border-line bg-ink px-3.5 py-2.5 pr-10 font-mono text-xs text-paper placeholder:text-muted/50 focus:border-solar focus:outline-none transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-muted hover:text-paper transition-colors cursor-pointer"
+                  title={showPassword ? 'Gizle' : 'Göster'}
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-xs font-mono">
+              <label className="flex items-center gap-2 text-muted cursor-pointer select-none hover:text-paper">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="accent-solar cursor-pointer"
+                />
+                <span className="text-[11px]">Bu cihazda 30 gün hatırla</span>
+              </label>
+            </div>
+
+            {authError && (
+              <div className="border border-rose/40 bg-rose/10 p-2.5 text-xs font-mono text-rose flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0" />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmittingAuth || !keyInput.trim()}
+              className="w-full border border-solar bg-solar text-ink py-2.5 font-mono text-xs font-bold uppercase tracking-wider hover:bg-solar/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isSubmittingAuth ? (
+                <>
+                  <RefreshCw size={13} className="animate-spin" />
+                  <span>Doğrulanıyor...</span>
+                </>
+              ) : (
+                <>
+                  <Key size={13} />
+                  <span>Telemetri Kilidini Aç</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="pt-2 border-t border-line flex items-center justify-between text-[11px] font-mono text-muted">
+            <Link href="/" className="hover:text-paper transition-colors">
+              ← Ana Sayfaya Dön
+            </Link>
+            <span className="text-[10px] text-muted/60">
+              ASTRO-TR SECURE TELEMETRY
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Authenticated Telemetry Dashboard
   return (
     <div className="module relative space-y-8 px-[var(--gutter)] pb-28 pt-28 text-paper sm:pt-32" style={{ '--page-accent': 'var(--lime)' } as React.CSSProperties}>
       {/* Mission control title card */}
@@ -86,7 +325,7 @@ export default function AdminAnalyticsPage() {
         <div>
           <div className="mb-6 flex items-center gap-3">
             <span className="label text-lime">(06)</span>
-            <span className="label text-paper">Canlı telemetri</span>
+            <span className="label text-paper">Yönetici telemetrisi</span>
             <span className="live-dot ml-1" />
           </div>
           <SplitReveal as="h1" trigger="intro" effect="tilt" className="display text-[clamp(2.8rem,8vw,8rem)] text-paper">
@@ -97,7 +336,7 @@ export default function AdminAnalyticsPage() {
           </p>
         </div>
 
-        {/* Live Controls */}
+        {/* Live Controls & Logout Button */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Demo vs Real Toggle */}
           <div className="flex items-center gap-1 bg-ink border border-line p-1 text-xs font-mono">
@@ -164,6 +403,17 @@ export default function AdminAnalyticsPage() {
               </button>
             </div>
           </div>
+
+          {/* Secure Logout Button */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 border border-line bg-ink px-3 py-1.5 font-mono text-xs text-muted hover:border-rose/50 hover:text-rose transition-colors cursor-pointer uppercase tracking-wider"
+            title="Güvenli Çıkış Yap"
+          >
+            <LogOut size={13} />
+            <span>Çıkış</span>
+          </button>
         </div>
       </div>
 
@@ -279,40 +529,40 @@ export default function AdminAnalyticsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold text-paper flex items-center gap-2">
-              <BarChart3 className="text-primary" size={18} />
+              <BarChart3 className="text-solar" size={18} />
               24 Saatlik Ziyaret & Trafik Dağılımı
             </h3>
             <p className="text-xs text-muted mt-0.5">
               Günün saatlerine göre sayfa gösterim yoğunluğu.
             </p>
           </div>
-          <span className="text-xs font-mono text-muted">Canlı Zaman Serisi</span>
+          <span className="text-xs font-mono text-muted uppercase">Zaman ekseni (UTC+3)</span>
         </div>
 
-        {/* Bar chart grid */}
-        <div className="h-44 flex items-end gap-1.5 sm:gap-2 pt-6 pb-2 border-b border-paper/10">
-          {stats?.hourlyTimeline?.map((item) => {
-            const maxViews = Math.max(...(stats.hourlyTimeline.map((h) => h.views) || [1]), 1);
-            const heightPct = Math.max(Math.round((item.views / maxViews) * 100), 8);
-            const isPeak = item.views === maxViews && item.views > 0;
+        {/* 24 bar columns */}
+        <div className="flex items-end gap-1.5 h-36 pt-4 border-b border-line px-1">
+          {stats?.hourlyTimeline?.map((bucket) => {
+            const maxViews = Math.max(...(stats.hourlyTimeline?.map((b) => b.views) || [1]), 1);
+            const heightPct = Math.max(Math.round((bucket.views / maxViews) * 100), 6);
+            const currentHourStr = `${String(new Date().getHours()).padStart(2, '0')}:00`;
+            const isCurrentHour = bucket.hour === currentHourStr;
 
             return (
               <div
-                key={item.hour}
-                className="flex-1 flex flex-col items-center gap-2 group relative h-full justify-end"
+                key={bucket.hour}
+                className="flex-1 flex flex-col items-center gap-1 group relative h-full justify-end"
               >
                 {/* Tooltip on hover */}
-                <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-ink-2 border border-paper/20 text-[10px] font-mono px-2 py-1 rounded-lg pointer-events-none whitespace-nowrap z-20 shadow-xl">
-                  {item.hour} • <strong>{item.views} Hit</strong> ({item.uniques} tekil)
+                <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-ink border border-line px-2 py-1 text-[10px] font-mono text-paper whitespace-nowrap pointer-events-none z-10">
+                  {bucket.hour} · {bucket.views} gösterim ({bucket.uniques} tekil)
                 </div>
 
-                {/* Animated Bar */}
                 <div
                   style={{ height: `${heightPct}%` }}
-                  className={`w-full rounded-t-lg transition-all duration-500 ${
-                    isPeak
-                      ? 'bg-gradient-to-t from-primary to-lime shadow-[0_0_15px_rgba(52,211,153,0.5)]'
-                      : 'bg-paper/20 group-hover:bg-primary/80'
+                  className={`w-full transition-all duration-500 ${
+                    isCurrentHour
+                      ? 'bg-solar shadow-[0_0_12px_rgba(255,91,34,0.5)]'
+                      : 'bg-paper/20 group-hover:bg-lime'
                   }`}
                 />
               </div>
@@ -320,8 +570,7 @@ export default function AdminAnalyticsPage() {
           })}
         </div>
 
-        {/* Hours Label Bar */}
-        <div className="flex justify-between text-[9px] font-mono text-muted pt-1">
+        <div className="flex justify-between text-[10px] font-mono text-muted pt-1 px-1">
           <span>00:00</span>
           <span>04:00</span>
           <span>08:00</span>
@@ -488,14 +737,14 @@ export default function AdminAnalyticsPage() {
       {/* Live Activity Stream Terminal */}
       <div className="relative ticks border border-line bg-ink-2 p-6 space-y-4">
         <Ticks />
-        <div className="flex items-center justify-between border-b border-paper/10 pb-3">
+        <div className="flex items-center justify-between border-b border-line pb-3">
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-lime animate-ping" />
+            <span className="h-2.5 w-2.5 bg-lime animate-ping" />
             <h3 className="text-base font-bold text-paper font-mono uppercase tracking-wider">
               Canlı Ziyaretçi Akış Terminali (Live Visitor Feed)
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-muted">
+          <span className="text-[11px] font-mono text-muted uppercase">
             Son 20 İşlem Kaydı
           </span>
         </div>
