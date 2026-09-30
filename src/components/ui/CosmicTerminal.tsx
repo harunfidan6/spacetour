@@ -19,7 +19,7 @@ import {
   Maximize2,
   X
 } from 'lucide-react';
-import { useSpace, DestinationId } from '@/components/space/SpaceContext';
+import { useSpace } from '@/components/space/SpaceContext';
 
 export interface CommandItem {
   id: string;
@@ -41,6 +41,17 @@ export function CosmicTerminal() {
   const { setDestination, triggerWarp, toggleAutoPilot, toggleOrbitMode, orbitMode } = useSpace();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+
+  const navigateTo = (path: string, hash?: string) => {
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname === path && hash) {
+        window.location.hash = hash;
+      } else {
+        router.push(hash ? `${path}${hash}` : path);
+      }
+    }
+    setOpen(false);
+  };
 
   // Define commands
   const commands: CommandItem[] = useMemo(() => [
@@ -138,10 +149,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'NOBEL 2017',
       icon: Activity,
-      action: () => {
-        router.push('/ansiklopedi#L9');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-ligo'),
     },
     {
       id: 'lab-cmb',
@@ -150,10 +158,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'KOZMOLOJİ',
       icon: Globe,
-      action: () => {
-        router.push('/ansiklopedi#L10');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-cmb'),
     },
     {
       id: 'lab-orrery',
@@ -162,10 +167,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L1',
       icon: Orbit,
-      action: () => {
-        router.push('/ansiklopedi#L1');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-orrery'),
     },
     {
       id: 'lab-scale',
@@ -174,10 +176,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L2',
       icon: Maximize2,
-      action: () => {
-        router.push('/ansiklopedi#L2');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-olcek'),
     },
     {
       id: 'lab-gravity',
@@ -186,10 +185,25 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L3',
       icon: Activity,
-      action: () => {
-        router.push('/ansiklopedi#L3');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-kutlecekim'),
+    },
+    {
+      id: 'lab-time',
+      title: 'Laboratuvar: Kozmik Zaman Makinesi',
+      subtitle: 'Büyük Patlama’dan bugüne evrenin kilometre taşları ve ışık gecikmesi',
+      category: 'LAB',
+      badge: 'L4',
+      icon: Sparkles,
+      action: () => navigateTo('/ansiklopedi', '#lab-zaman'),
+    },
+    {
+      id: 'lab-exoplanet',
+      title: 'Laboratuvar: Ötegezegen Gezgini',
+      subtitle: 'Yaşanabilir kuşaktaki ötegezegenlerin atmosferik ve termal karşılaştırması',
+      category: 'LAB',
+      badge: 'L5',
+      icon: Compass,
+      action: () => navigateTo('/ansiklopedi', '#lab-otegezegen'),
     },
     {
       id: 'lab-impact',
@@ -198,10 +212,16 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L6',
       icon: Flame,
-      action: () => {
-        router.push('/ansiklopedi#L6');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-asteroit'),
+    },
+    {
+      id: 'lab-blackhole',
+      title: 'Laboratuvar: Kara Delik & Zaman Genleşmesi',
+      subtitle: 'Olay ufkuna yaklaştıkça yerçekimsel kırmızıya kayma ve saatlerin yavaşlaması',
+      category: 'LAB',
+      badge: 'L7',
+      icon: Sparkles,
+      action: () => navigateTo('/ansiklopedi', '#lab-karadelik'),
     },
     {
       id: 'lab-hohmann',
@@ -210,10 +230,83 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L8',
       icon: Compass,
-      action: () => {
-        router.push('/ansiklopedi#L8');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi', '#lab-hohmann'),
+    },
+
+    // --- OBSERVATORY INSTRUMENTS ---
+    {
+      id: 'inst-webb-hubble',
+      title: 'Gözlem Enstrümanı: Hubble vs James Webb',
+      subtitle: 'Kızılötesi ve optik derin uzay karşılaştırma sürgüsü',
+      category: 'LAB',
+      badge: 'TELESKOP',
+      icon: Eye,
+      action: () => navigateTo('/gozlemevi', '#lab-webb-hubble'),
+    },
+    {
+      id: 'inst-radio',
+      title: 'Gözlem Enstrümanı: Kozmik Radyo & Pulsar Spektrografı',
+      subtitle: 'Pulsar atımlarını ve radyo emisyonlarını sese çevir',
+      category: 'LAB',
+      badge: 'RADYO',
+      icon: Activity,
+      action: () => navigateTo('/gozlemevi', '#lab-radyo'),
+    },
+    {
+      id: 'inst-spectroscopy',
+      title: 'Gözlem Enstrümanı: Yıldız Spektroskopisi & Fraunhofer',
+      subtitle: 'Balmer serisi, tayf sınıfları ve Doppler kayması',
+      category: 'LAB',
+      badge: 'SPEKTRUM',
+      icon: Sparkles,
+      action: () => navigateTo('/gozlemevi', '#lab-spektroskopi'),
+    },
+    {
+      id: 'inst-transit',
+      title: 'Gözlem Enstrümanı: Ötegezegen Transit Fotometrisi',
+      subtitle: 'Işık eğrisi düşüşü ile ötegezegen yarıçapı ölçümü',
+      category: 'LAB',
+      badge: 'FOTOMETRİ',
+      icon: Orbit,
+      action: () => navigateTo('/gozlemevi', '#lab-transit'),
+    },
+
+    // --- SKY MAP TOOLS ---
+    {
+      id: 'tool-bright-stars',
+      title: 'Gök Haritası: En Parlak 8 Yıldız & Kerteriz Radarı',
+      subtitle: 'Kadir, tayf türü, uzaklık ve anlık Alt-Azimuth koordinatları',
+      category: 'LAB',
+      badge: 'KERTERİZ',
+      icon: Sparkles,
+      action: () => navigateTo('/harita', '#lab-parlak-yildizlar'),
+    },
+    {
+      id: 'tool-bortle',
+      title: 'Gök Haritası: Bortle Işık Kirliliği Skalası',
+      subtitle: 'Sınıf 1 (saf karanlık) ile Sınıf 9 (şehir merkezi) simülasyonu',
+      category: 'LAB',
+      badge: 'BORTLE',
+      icon: Eye,
+      action: () => navigateTo('/harita', '#lab-bortle'),
+    },
+    {
+      id: 'tool-messier',
+      title: 'Gök Haritası: Messier Derin Uzay Atlası & Radarı',
+      subtitle: 'Galaksiler, salma bulutsuları ve yıldız kümeleri konumları',
+      category: 'LAB',
+      badge: 'MESSIER',
+      icon: Compass,
+      action: () => navigateTo('/harita', '#lab-messier'),
+    },
+    {
+      id: 'tool-polaris',
+      title: 'Gök Haritası: Kutup Yıldızı & 25.772 Yıllık Presesyon',
+      subtitle: 'Büyük Ayı yıldız atlaması ve Dünya presesyon döngüsü',
+      category: 'LAB',
+      badge: 'POLARİS',
+      icon: Compass,
+      action: () => navigateTo('/harita', '#lab-polaris'),
     },
 
     // --- NAVIGATION ---
@@ -224,10 +317,7 @@ export function CosmicTerminal() {
       category: 'NAV',
       badge: 'GÖKKUBE',
       icon: Compass,
-      action: () => {
-        router.push('/harita');
-        setOpen(false);
-      },
+      action: () => navigateTo('/harita'),
     },
     {
       id: 'nav-calendar',
@@ -236,10 +326,7 @@ export function CosmicTerminal() {
       category: 'NAV',
       badge: 'TAKVİM',
       icon: Calendar,
-      action: () => {
-        router.push('/takvim');
-        setOpen(false);
-      },
+      action: () => navigateTo('/takvim'),
     },
     {
       id: 'nav-encyclopedia',
@@ -248,10 +335,7 @@ export function CosmicTerminal() {
       category: 'NAV',
       badge: 'ANSİKLOPEDİ',
       icon: BookOpen,
-      action: () => {
-        router.push('/ansiklopedi');
-        setOpen(false);
-      },
+      action: () => navigateTo('/ansiklopedi'),
     },
     {
       id: 'nav-observatory',
@@ -260,10 +344,16 @@ export function CosmicTerminal() {
       category: 'NAV',
       badge: 'GÖZLEMEVİ',
       icon: Eye,
-      action: () => {
-        router.push('/gozlemevi');
-        setOpen(false);
-      },
+      action: () => navigateTo('/gozlemevi'),
+    },
+    {
+      id: 'nav-astrology',
+      title: 'Modül: Astroloji & Zodyak Atlası',
+      subtitle: 'Doğum haritası, günlük göksel transitler, sinastri analizi ve kozmik tarot',
+      category: 'NAV',
+      badge: 'ZODYAK',
+      icon: Moon,
+      action: () => navigateTo('/astroloji'),
     },
 
     // --- SYSTEM CONTROLS ---
@@ -305,12 +395,18 @@ export function CosmicTerminal() {
     },
   ], [orbitMode, setDestination, toggleOrbitMode, triggerWarp, toggleAutoPilot, router]);
 
+  const resetSearch = () => {
+    setQuery('');
+    setSelectedIndex(0);
+  };
+
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // ⌘K or Ctrl+K
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
+        if (!open) resetSearch();
         setOpen((prev) => !prev);
       }
       // Escape
@@ -320,7 +416,10 @@ export function CosmicTerminal() {
       }
     };
 
-    const handleCustomOpen = () => setOpen(true);
+    const handleCustomOpen = () => {
+      resetSearch();
+      setOpen(true);
+    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('open-cosmic-terminal', handleCustomOpen);
@@ -332,13 +431,9 @@ export function CosmicTerminal() {
 
   // Focus input when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-      setQuery('');
-      setSelectedIndex(0);
-    }
+    if (!open) return;
+    const id = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(id);
   }, [open]);
 
   // Filter commands

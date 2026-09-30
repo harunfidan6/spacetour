@@ -374,17 +374,16 @@ export function createAccretionDiskTexture(): THREE.CanvasTexture {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Concentric fiery rings with turbulence
-  const ringCount = 180;
   for (let r = 50; r < maxRadius; r += 2) {
     const norm = (r - 50) / (maxRadius - 50); // 0 at inner, 1 at outer
     ctx.beginPath();
     ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
 
     // Color gradient from inner ultra-hot white-blue to bright gold to outer deep red
-    let rCol = 255;
-    let gCol = Math.floor(255 * Math.pow(1 - norm, 0.8));
-    let bCol = Math.floor(180 * Math.pow(1 - norm, 2.5));
-    let alpha = (1 - norm) * 0.85;
+    const rCol = 255;
+    const gCol = Math.floor(255 * Math.pow(1 - norm, 0.8));
+    const bCol = Math.floor(180 * Math.pow(1 - norm, 2.5));
+    const alpha = (1 - norm) * 0.85;
 
     ctx.strokeStyle = `rgba(${rCol}, ${gCol}, ${bCol}, ${alpha})`;
     ctx.lineWidth = 2.5;

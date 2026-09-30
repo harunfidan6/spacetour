@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     recordPageView(record);
 
     return NextResponse.json({ success: true, recorded: record.id });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Bilinmeyen hata' }, { status: 500 });
   }
 }

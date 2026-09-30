@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -8,6 +8,7 @@ import {
   NASA_TEXTURES,
   loadNasaTexture
 } from './nasaTextures';
+import { Ticks } from '@/components/motion/primitives';
 import {
   createSunTexture,
   createEarthTexture,
@@ -23,13 +24,11 @@ import {
   createPlutoTexture
 } from './textures';
 import {
-  RotateCcw,
   Play,
   Pause,
   Layers,
   Sparkles,
-  Eye,
-  Maximize2
+  Eye
 } from 'lucide-react';
 
 interface PlanetHologramProps {
@@ -52,12 +51,9 @@ function HologramMesh({
   const cloudsRef = useRef<THREE.Mesh>(null);
   const atmosphereRef = useRef<THREE.Mesh>(null);
 
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const [cloudsTexture, setCloudsTexture] = useState<THREE.Texture | null>(null);
-  const [ringTexture, setRingTexture] = useState<THREE.Texture | null>(null);
-
-  // Initialize NASA texture with instant procedural fallback
-  useEffect(() => {
+  // NASA map per body with an instant procedural fallback; re-derived whenever
+  // the body changes so clouds/rings never leak from the previous planet.
+  const { texture, cloudsTexture, ringTexture } = useMemo(() => {
     let baseTex: THREE.Texture | null = null;
     let cloudTex: THREE.Texture | null = null;
     let rTex: THREE.Texture | null = null;
@@ -87,15 +83,14 @@ function HologramMesh({
       rTex = loadNasaTexture(NASA_TEXTURES.uranusRing);
     } else if (id === 'neptun') {
       baseTex = loadNasaTexture(NASA_TEXTURES.neptune) || createNeptuneTexture();
-    } else if (id === 'pluto' || id === 'cuce-gezegen') {
-      baseTex = loadNasaTexture(NASA_TEXTURES.pluto) || createPlutoTexture();
+    } else if (id === 'pluton') {
+      // No public Pluto map in the texture set: tinted procedural surface.
+      baseTex = createPlutoTexture();
     } else {
       baseTex = createMercuryTexture();
     }
 
-    setTexture(baseTex);
-    if (cloudTex) setCloudsTexture(cloudTex);
-    if (rTex) setRingTexture(rTex);
+    return { texture: baseTex, cloudsTexture: cloudTex, ringTexture: rTex };
   }, [id]);
 
   useFrame((_, delta) => {
@@ -314,9 +309,15 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   return (
-    <div className="relative h-80 sm:h-[420px] w-full rounded-3xl border border-paper/10 bg-ink/60 backdrop-blur-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    <div className="relative ticks h-80 sm:h-[420px] w-full border border-line bg-ink overflow-hidden">
+      <Ticks />
+
       {/* 3D WebGL Canvas */}
-      <Canvas camera={{ position: [0, 1.2, 5.8], fov: 45 }}>
+      <Canvas
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        camera={{ position: [0, 1.2, 5.8], fov: 45 }}
+      >
         <ambientLight intensity={0.55} />
         {/* Main Sun Key Light */}
         <directionalLight position={[6, 3, 5]} intensity={2.8} color="#fff8e7" />
@@ -342,19 +343,21 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
 
       {/* Top Hologram Telemetry Visor */}
       <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-primary animate-ping" />
-        <span className="font-mono text-[10px] tracking-widest text-primary font-bold uppercase">
-          NASA FOTOGERÇEKÇİ 3D HOLOGRAM • 360° ETKİLEŞİMLİ
+        <span className="h-2 w-2 bg-solar animate-ping" />
+        <span className="font-mono text-[10px] tracking-widest text-solar font-bold uppercase">
+          NASA FOTOGERÇEKÇİ 3D HOLOGRAM · 360° ETKİLEŞİMLİ
         </span>
       </div>
 
-      {/* Interactive Control Pill Bar */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-ink/70 backdrop-blur-xl border border-paper/10 rounded-2xl p-1.5 text-xs font-mono">
+      {/* Interactive Control Bar */}
+      <div className="absolute top-4 right-4 flex items-center gap-1 bg-ink/90 border border-line p-1 text-xs font-mono">
         <button
           onClick={() => setIsPaused(!isPaused)}
           title={isPaused ? 'Döndürmeyi Başlat' : 'Döndürmeyi Duraklat'}
-          className={`p-2 rounded-xl transition-all cursor-pointer ${
-            isPaused ? 'bg-gold text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
+          className={`p-1.5 transition-colors cursor-pointer border ${
+            isPaused
+              ? 'border-solar bg-solar text-ink font-bold'
+              : 'border-transparent text-muted hover:text-paper'
           }`}
         >
           {isPaused ? <Play size={13} /> : <Pause size={13} />}
@@ -363,8 +366,10 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
         <button
           onClick={() => setIsWireframe(!isWireframe)}
           title="3D Tel Kafes (Wireframe) Modu"
-          className={`p-2 rounded-xl transition-all cursor-pointer ${
-            isWireframe ? 'bg-primary text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
+          className={`p-1.5 transition-colors cursor-pointer border ${
+            isWireframe
+              ? 'border-solar bg-solar text-ink font-bold'
+              : 'border-transparent text-muted hover:text-paper'
           }`}
         >
           <Layers size={13} />
@@ -373,8 +378,10 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
         <button
           onClick={() => setShowAtmosphere(!showAtmosphere)}
           title="Atmosfer & Saçılma Efektini Aç/Kapat"
-          className={`p-2 rounded-xl transition-all cursor-pointer ${
-            showAtmosphere ? 'bg-violet text-ink' : 'text-paper/75 hover:text-paper hover:bg-paper/10'
+          className={`p-1.5 transition-colors cursor-pointer border ${
+            showAtmosphere
+              ? 'border-violet bg-violet text-ink font-bold'
+              : 'border-transparent text-muted hover:text-paper'
           }`}
         >
           <Sparkles size={13} />
@@ -383,11 +390,11 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
 
       {/* Bottom Hint */}
       <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono text-muted">
-        <span className="flex items-center gap-1">
-          <Eye size={12} className="text-primary" />
-          <span>Sol tuş ile döndürün • Tekerlek ile yakınlaşın</span>
+        <span className="flex items-center gap-1.5">
+          <Eye size={12} className="text-solar" />
+          <span>Sol tuş ile döndürün · Tekerlek ile yakınlaşın</span>
         </span>
-        <span className="text-muted hidden sm:inline">
+        <span className="hidden sm:inline uppercase tracking-wider">
           USGS / NASA Planetary Science Division
         </span>
       </div>

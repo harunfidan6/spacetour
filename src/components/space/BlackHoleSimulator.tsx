@@ -4,19 +4,10 @@ import React, { useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import {
-  Sparkles,
-  AlertTriangle,
-  Clock,
-  Zap,
-  RotateCcw,
-  Sliders,
-  ShieldAlert,
-  ArrowRight,
-  Info
-} from 'lucide-react';
+import { Clock, Sliders, ShieldAlert } from 'lucide-react';
 import { createAccretionDiskTexture } from './textures';
 import { Ticks } from '@/components/motion/primitives';
+import { seededRandom } from '@/lib/random';
 
 function BlackHole3DMesh({
   distanceRs,
@@ -33,15 +24,16 @@ function BlackHole3DMesh({
 
   // Relativistic relativistic jet particles
   const [jetPositions] = useMemo(() => {
+    const rand = seededRandom(4209);
     const count = 600;
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const isTop = i % 2 === 0;
-      const y = isTop ? Math.random() * 8 + 2 : -(Math.random() * 8 + 2);
+      const y = isTop ? rand() * 8 + 2 : -(rand() * 8 + 2);
       const spread = (Math.abs(y) / 8) * 0.4;
-      pos[i * 3] = (Math.random() - 0.5) * spread;
+      pos[i * 3] = (rand() - 0.5) * spread;
       pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * spread;
+      pos[i * 3 + 2] = (rand() - 0.5) * spread;
     }
     return [pos];
   }, []);
@@ -189,7 +181,7 @@ export function BlackHoleSimulator() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* 3D Black Hole Canvas (7 cols) */}
         <div className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
-          <Canvas camera={{ position: [0, 2.5, 9.5], fov: 45 }}>
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 2.5, 9.5], fov: 45 }} gl={{ powerPreference: 'high-performance' }}>
             <ambientLight intensity={0.2} />
             <directionalLight position={[5, 10, 5]} intensity={1.5} color="#fff" />
 

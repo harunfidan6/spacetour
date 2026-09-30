@@ -1,22 +1,17 @@
 'use client';
 
-import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Search } from 'lucide-react';
 import { planets } from '@/data/planets';
 import { constellations } from '@/data/constellations';
-import { PlanetScaleComparator } from '@/components/space/PlanetScaleComparator';
-import { GravityCalculator } from '@/components/space/GravityCalculator';
-import { CosmicTimeMachine } from '@/components/space/CosmicTimeMachine';
-import { ExoplanetExplorer } from '@/components/space/ExoplanetExplorer';
-import { AsteroidImpactSimulator } from '@/components/space/AsteroidImpactSimulator';
-import { SolarSystemOrrery } from '@/components/space/SolarSystemOrrery';
-import { BlackHoleSimulator } from '@/components/space/BlackHoleSimulator';
-import { HohmannTransferSimulator } from '@/components/space/HohmannTransferSimulator';
-import { GravitationalWaveInterferometer } from '@/components/space/GravitationalWaveInterferometer';
-import { PlanckCMBExplorer } from '@/components/space/PlanckCMBExplorer';
+import dynamic from 'next/dynamic';
+import { LabDeck, type LabEntry } from '@/components/ui/LabDeck';
+import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { Reveal, RotatingBadge } from '@/components/motion/primitives';
+
+
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 
 const TABS = ['Tümü', 'Gezegenler', 'Yıldızlar', 'Diğer'] as const;
@@ -29,17 +24,37 @@ const TYPE_LABEL: Record<string, string> = {
   'cüce-gezegen': 'Cüce gezegen',
 };
 
-function Chapter({ index, title, children }: { index: string; title: string; children: ReactNode }) {
+function LabLoading() {
   return (
-    <section className="module">
-      <div className="mb-5 flex items-center gap-3 border-t border-line pt-4">
-        <span className="label text-violet">({index})</span>
-        <span className="label text-paper">{title}</span>
-      </div>
-      <Reveal mode="clip">{children}</Reveal>
-    </section>
+    <div className="grid h-[420px] place-items-center border border-line bg-ink-2">
+      <span className="label text-muted">Modül yükleniyor…</span>
+    </div>
   );
 }
+
+const SolarSystemOrrery = dynamic(() => import('@/components/space/SolarSystemOrrery').then((m) => m.SolarSystemOrrery), { loading: () => <LabLoading /> });
+const PlanetScaleComparator = dynamic(() => import('@/components/space/PlanetScaleComparator').then((m) => m.PlanetScaleComparator), { loading: () => <LabLoading /> });
+const GravityCalculator = dynamic(() => import('@/components/space/GravityCalculator').then((m) => m.GravityCalculator), { loading: () => <LabLoading /> });
+const CosmicTimeMachine = dynamic(() => import('@/components/space/CosmicTimeMachine').then((m) => m.CosmicTimeMachine), { loading: () => <LabLoading /> });
+const ExoplanetExplorer = dynamic(() => import('@/components/space/ExoplanetExplorer').then((m) => m.ExoplanetExplorer), { loading: () => <LabLoading /> });
+const AsteroidImpactSimulator = dynamic(() => import('@/components/space/AsteroidImpactSimulator').then((m) => m.AsteroidImpactSimulator), { loading: () => <LabLoading /> });
+const BlackHoleSimulator = dynamic(() => import('@/components/space/BlackHoleSimulator').then((m) => m.BlackHoleSimulator), { loading: () => <LabLoading /> });
+const HohmannTransferSimulator = dynamic(() => import('@/components/space/HohmannTransferSimulator').then((m) => m.HohmannTransferSimulator), { loading: () => <LabLoading /> });
+const GravitationalWaveInterferometer = dynamic(() => import('@/components/space/GravitationalWaveInterferometer').then((m) => m.GravitationalWaveInterferometer), { loading: () => <LabLoading /> });
+const PlanckCMBExplorer = dynamic(() => import('@/components/space/PlanckCMBExplorer').then((m) => m.PlanckCMBExplorer), { loading: () => <LabLoading /> });
+
+const LABS: LabEntry[] = [
+  { id: 'orrery', short: 'Kepler orrery’si', title: '3D Kepler orrery’si', blurb: 'Gezegenlerin gerçek oranlı yörünge hızlarıyla dönen üç boyutlu Güneş Sistemi çarkı.', render: () => <SolarSystemOrrery /> },
+  { id: 'olcek', short: 'Ölçek karşılaştırıcı', title: 'Gezegen ölçek karşılaştırıcı', blurb: 'Gezegenleri yan yana koy, çaplarının gerçek oranını gör.', render: () => <PlanetScaleComparator /> },
+  { id: 'kutlecekim', short: 'Kütleçekim', title: 'Kütleçekim hesaplayıcı', blurb: 'Kendi kütlenle her gezegende ne kadar geldiğini ve ne kadar zıplayabileceğini hesapla.', render: () => <GravityCalculator /> },
+  { id: 'zaman', short: 'Zaman makinesi', title: 'Kozmik zaman makinesi', blurb: 'Büyük Patlama’dan bugüne evrenin kilometre taşları.', render: () => <CosmicTimeMachine /> },
+  { id: 'otegezegen', short: 'Ötegezegenler', title: 'Ötegezegen gezgini', blurb: 'Yaşanabilir kuşaktaki en ilginç ötegezegenleri karşılaştır.', render: () => <ExoplanetExplorer /> },
+  { id: 'asteroit', short: 'Asteroit çarpması', title: 'Asteroit çarpışma simülatörü', blurb: 'Çap, hız ve yoğunluğu ayarla; krater ve enerjiyi hesapla.', render: () => <AsteroidImpactSimulator /> },
+  { id: 'karadelik', short: 'Kara delik', title: 'Kara delik & zaman genleşmesi', blurb: 'Olay ufkuna yaklaştıkça saatlerin nasıl yavaşladığını gör.', render: () => <BlackHoleSimulator /> },
+  { id: 'hohmann', short: 'Hohmann transferi', title: 'Hohmann transfer yörüngesi', blurb: 'İki gezegen arasındaki en verimli rotayı ve fırlatma penceresini hesapla.', render: () => <HohmannTransferSimulator /> },
+  { id: 'ligo', short: 'Kütleçekim dalgaları', title: 'LIGO kütleçekim dalgası interferometresi', blurb: 'Çarpışan kara deliklerin uzayzamanda yarattığı dalgalanmayı simüle et.', render: () => <GravitationalWaveInterferometer /> },
+  { id: 'cmb', short: 'Kozmik arka plan', title: 'Planck kozmik mikrodalga arka planı', blurb: 'Evrenin ilk ışığındaki sıcaklık dalgalanmaları ve geometrisi.', render: () => <PlanckCMBExplorer /> },
+];
 
 export default function AnsiklopediPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,12 +93,12 @@ export default function AnsiklopediPage() {
         accent="var(--violet)"
         lines={['Kozmik', <Em key="a">arşiv</Em>]}
         size="clamp(3.4rem, 13vw, 14rem)"
-        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten on Nobel ödüllü astrofizik laboratuvar modülü."
+        lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten on laboratuvar modülü."
         meta={[
           { k: 'Kayıt', v: planets.length },
           { k: 'Gezegen', v: planetCount },
           { k: 'Takımyıldızı', v: constellations.length },
-          { k: 'Laboratuvar', v: 10 },
+          { k: 'Laboratuvar', v: LABS.length },
         ]}
         graphic={
           <RotatingBadge text="Kayıt · Arşiv · Laboratuvar · Orrery · " size={220} className="text-paper/80">
@@ -96,6 +111,7 @@ export default function AnsiklopediPage() {
         ticker={planets.map((p) => p.name)}
       />
 
+      <OrbCanvas />
       <div className="space-y-24 px-[var(--gutter)] pb-28 pt-16">
         {/* Records */}
         <section>
@@ -153,11 +169,11 @@ export default function AnsiklopediPage() {
                 const index = planets.indexOf(p) + 1;
                 return (
                   <li key={p.id} data-row className="overflow-hidden border-b border-line">
-                    <Link href={`/ansiklopedi/${p.id}`} className="group relative grid grid-cols-[3rem_1fr_auto] items-center gap-4 py-4 md:grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] md:py-5" data-cursor="Aç">
+                    <Link href={`/ansiklopedi/${p.id}`} className="group relative grid grid-cols-[3rem_1fr_auto] items-center gap-4 py-4 md:grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] md:py-5">
                       <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-violet transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-x-100" />
                       <span className="label relative text-muted transition-colors group-hover:text-ink">{String(index).padStart(2, '0')}</span>
                       <span className="relative flex items-center gap-4">
-                        <span className="text-3xl transition-transform duration-500 group-hover:rotate-[20deg] group-hover:scale-110 sm:text-4xl">{p.image}</span>
+                        <PlanetOrb id={p.id} className="h-12 w-12 transition-transform duration-500 group-hover:scale-125 sm:h-16 sm:w-16" spin={1.5} />
                         <span className="display display-tight pt-[0.12em] text-[clamp(1.8rem,4vw,3.6rem)] text-paper transition-[color,letter-spacing] duration-500 group-hover:tracking-[0.01em] group-hover:text-ink">
                           {p.name}
                         </span>
@@ -182,7 +198,7 @@ export default function AnsiklopediPage() {
         </section>
 
         {/* Lab */}
-        <section className="space-y-16">
+        <section id="laboratuvar">
           <SectionHead
             index="03.2"
             kicker="Laboratuvar"
@@ -191,38 +207,9 @@ export default function AnsiklopediPage() {
                 Deneyerek <Em>öğren</Em>
               </>
             }
-            lede="Kepler yörüngeleri, ölçek, kütleçekim, zaman ve çarpışma: evrenin kurallarını kaydırıcılarla dene."
+            lede="Kepler yörüngelerinden kütleçekim dalgalarına: evrenin kurallarını kaydırıcılarla dene. Soldan bir modül seç."
           />
-          <Chapter index="L1" title="3D Kepler orrery’si">
-            <SolarSystemOrrery />
-          </Chapter>
-          <Chapter index="L2" title="Gezegen ölçek karşılaştırıcı">
-            <PlanetScaleComparator />
-          </Chapter>
-          <Chapter index="L3" title="Kütleçekim hesaplayıcı">
-            <GravityCalculator />
-          </Chapter>
-          <Chapter index="L4" title="Kozmik zaman makinesi">
-            <CosmicTimeMachine />
-          </Chapter>
-          <Chapter index="L5" title="Ötegezegen gezgini">
-            <ExoplanetExplorer />
-          </Chapter>
-          <Chapter index="L6" title="Asteroit çarpışma simülatörü">
-            <AsteroidImpactSimulator />
-          </Chapter>
-          <Chapter index="L7" title="Kara delik & görelilik zaman genleşmesi (Gargantua)">
-            <BlackHoleSimulator />
-          </Chapter>
-          <Chapter index="L8" title="Hohmann transfer yörüngesi & gezegenlerarası rota">
-            <HohmannTransferSimulator />
-          </Chapter>
-          <Chapter index="L9" title="LIGO / Virgo kütleçekimsel dalga interferometresi & uzayzaman dalgalanması">
-            <GravitationalWaveInterferometer />
-          </Chapter>
-          <Chapter index="L10" title="Planck CMB 3D kozmik arka plan ışıması & evrenin geometrisi">
-            <PlanckCMBExplorer />
-          </Chapter>
+          <LabDeck labs={LABS} accent="var(--violet)" />
         </section>
 
         {/* Constellations */}

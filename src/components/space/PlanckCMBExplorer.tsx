@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Globe, Sparkles, Sliders, Info, RotateCw } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 export function PlanckCMBExplorer() {
   const [omegaB, setOmegaB] = useState<number>(4.9); // Baryon %
   const [omegaC, setOmegaC] = useState<number>(26.8); // Cold Dark Matter %
   const [omegaL, setOmegaL] = useState<number>(68.3); // Dark Energy %
   const [h0, setH0] = useState<number>(67.4); // Hubble constant km/s/Mpc
-  const [activePeak, setActivePeak] = useState<number | null>(null);
 
   const sphereCanvasRef = useRef<HTMLCanvasElement>(null);
   const powerSpectrumCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,6 +18,7 @@ export function PlanckCMBExplorer() {
   const omegaM = (omegaB + omegaC) / 100;
   const omegaLambda = omegaL / 100;
   const omegaTotal = omegaM + omegaLambda;
+  const omegaK = 1 - omegaTotal; // curvature density
 
   // Geometry
   const geometryType = useMemo(() => {
@@ -26,7 +27,7 @@ export function PlanckCMBExplorer() {
     return 'Açık (Hiperbolik, k = -1)';
   }, [omegaTotal]);
 
-  // Universe Age using Friedmann integration: t0 = (1 / H0) * integral[0 to 1] of da / sqrt(omegaM/a + omegaLambda * a^2)
+  // Universe Age using Friedmann integration: t0 = (1 / H0) * integral[0 to 1] of da / sqrt(omegaM/a + omegaK + omegaLambda * a^2)
   const universeAgeGyr = useMemo(() => {
     // 1 / H0 in Gyr: 977.8 / H0
     const hubbleTimeGyr = 977.8 / h0;
@@ -35,11 +36,11 @@ export function PlanckCMBExplorer() {
     for (let i = 1; i <= steps; i++) {
       const a = (i - 0.5) / steps;
       const da = 1 / steps;
-      const integrand = a / Math.sqrt(Math.max(0.0001, omegaM * a + omegaLambda * Math.pow(a, 4)));
+      const integrand = a / Math.sqrt(Math.max(0.0001, omegaM * a + omegaK * a * a + omegaLambda * Math.pow(a, 4)));
       sum += integrand * da;
     }
     return (hubbleTimeGyr * sum).toFixed(2);
-  }, [h0, omegaM, omegaLambda]);
+  }, [h0, omegaM, omegaLambda, omegaK]);
 
   // 3D Celestial CMB Sphere Canvas Render
   useEffect(() => {
@@ -168,56 +169,60 @@ export function PlanckCMBExplorer() {
     ctx.fillText('ℓ = 1500', 440, h - 12);
     ctx.fillText('Dℓ [μK²]', 10, 20);
 
-    // Theoretical acoustic peaks based on parameters
-    // Peak 1 position ell_1 ~ 220 / sqrt(omegaTotal)
-    const peak1X = (220 / Math.sqrt(Math.max(0.5, omegaTotal))) * 0.32;
+    // Theoretical acoustic peaks based on parameters.
+    // Curvature shifts the whole acoustic scale: ell_n ~ ell_n(flat) / sqrt(omegaTotal)
+    const acousticScale = 1 / Math.sqrt(Math.max(0.5, omegaTotal));
+    const ell1 = 220 * acousticScale;
+    const ell2 = 540 * acousticScale;
+    const ell3 = 810 * acousticScale;
     // Peak 1 amplitude depends on omegaM and H0
     const peak1Height = 5800 * (omegaM / 0.31) * Math.pow(h0 / 67.4, 0.5);
+
+    const maxEll = 1800;
+    const toX = (ell: number) => 40 + (ell / maxEll) * (w - 70);
+    const toY = (dEll: number) => h - 35 - (dEll / 6500) * (h - 70);
+
+    // Acoustic oscillations model:
+    // Peak 1 (sound horizon) ~ 220, Peak 2 (baryons) ~ 540, Peak 3 (dark matter) ~ 810
+    const spectrum = (ell: number) => {
+      const peak1 = peak1Height * Math.exp(-Math.pow((ell - ell1) / 120, 2));
+      const peak2 = 2600 * (omegaB / 4.9) * Math.exp(-Math.pow((ell - ell2) / 140, 2));
+      const peak3 = 2400 * (omegaC / 26.8) * Math.exp(-Math.pow((ell - ell3) / 160, 2));
+      const silkDamping = Math.exp(-Math.pow(ell / 1300, 1.4));
+      return (1000 + peak1 + peak2 + peak3) * silkDamping;
+    };
 
     // Draw C_ell curve
     ctx.strokeStyle = '#7a5cff';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-
-    const maxEll = 1800;
     for (let ell = 2; ell < maxEll; ell += 4) {
-      const x = 40 + (ell / maxEll) * (w - 70);
-
-      // Acoustic oscillations model:
-      // Peak 1 (sound horizon) ~ 220, Peak 2 (baryons) ~ 540, Peak 3 (dark matter) ~ 810
-      const theta1 = (ell / (220 / Math.sqrt(omegaTotal))) * Math.PI;
-      const peak1 = peak1Height * Math.exp(-Math.pow((ell - 220) / 120, 2));
-      const peak2 = 2600 * (omegaB / 4.9) * Math.exp(-Math.pow((ell - 540) / 140, 2));
-      const peak3 = 2400 * (omegaC / 26.8) * Math.exp(-Math.pow((ell - 810) / 160, 2));
-      const silkDamping = Math.exp(-Math.pow(ell / 1300, 1.4));
-
-      const dEll = (1000 + peak1 + peak2 + peak3) * silkDamping;
-      const y = h - 35 - (dEll / 6500) * (h - 70);
-
+      const x = toX(ell);
+      const y = toY(spectrum(ell));
       if (ell === 2) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
     ctx.stroke();
 
-    // Highlights for the 3 Acoustic Peaks
+    // Highlights for the 3 Acoustic Peaks, placed on the curve
     const peaks = [
-      { ell: 220, label: '1. Tepe (Düz Geometri)', color: '#d4ff3d', desc: 'Evrenin uzaysal eğriliği' },
-      { ell: 540, label: '2. Tepe (Baryon Yükü)', color: '#ff5b22', desc: 'Normal madde oranı' },
-      { ell: 810, label: '3. Tepe (Soğuk Karanlık Madde)', color: '#7a5cff', desc: 'Karanlık madde kuyuları' },
+      { ell: ell1, color: '#d4ff3d' },
+      { ell: ell2, color: '#ff5b22' },
+      { ell: ell3, color: '#7a5cff' },
     ];
 
     peaks.forEach((p) => {
-      const px = 40 + (p.ell / maxEll) * (w - 70);
       ctx.fillStyle = p.color;
       ctx.beginPath();
-      ctx.arc(px, h - 35 - (p.ell === 220 ? peak1Height : 2500) / 6500 * (h - 70), 4, 0, Math.PI * 2);
+      ctx.arc(toX(p.ell), toY(spectrum(p.ell)), 4, 0, Math.PI * 2);
       ctx.fill();
     });
 
   }, [omegaTotal, omegaM, omegaB, omegaC, h0]);
 
   return (
-    <div className="border border-line bg-ink p-6 sm:p-8">
+    <div className="relative ticks border border-line bg-ink p-6 sm:p-8">
+      <Ticks />
       {/* Header */}
       <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>

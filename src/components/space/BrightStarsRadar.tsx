@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Star, Compass, Sparkles, Eye, Info, ArrowUpRight, Shield } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface BrightStar {

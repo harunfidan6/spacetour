@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Volume2, VolumeX, Play, RotateCcw, Activity, Disc3 } from 'lucide-react';
-import { Scramble } from '@/components/motion/primitives';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Volume2, Play, Activity, Disc3 } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface EventPreset {
   id: string;
@@ -240,7 +240,7 @@ export function GravitationalWaveInterferometer() {
           // Particle beads on the ring
           for (let i = 0; i < 16; i++) {
             const theta = (i / 16) * Math.PI * 2;
-            let rMod = activePolarization === 'plus' ? strainVal * Math.cos(2 * theta) : strainVal * Math.sin(2 * theta);
+            const rMod = activePolarization === 'plus' ? strainVal * Math.cos(2 * theta) : strainVal * Math.sin(2 * theta);
             const currentR = baseRadius * (1 + rMod);
             const px = cx + Math.cos(theta) * currentR;
             const py = cy + Math.sin(theta) * currentR;
@@ -261,7 +261,8 @@ export function GravitationalWaveInterferometer() {
   }, [fStart, fMerge, activePolarization]);
 
   return (
-    <div className="border border-line bg-ink p-6 sm:p-8">
+    <div className="relative ticks border border-line bg-ink p-6 sm:p-8">
+      <Ticks />
       {/* Header bar */}
       <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>

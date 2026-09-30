@@ -4,18 +4,8 @@ import React, { useRef, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import {
-  Orbit,
-  Play,
-  Pause,
-  RotateCcw,
-  Sparkles,
-  Info,
-  Maximize2,
-  Compass,
-  Layers,
-  Eye
-} from 'lucide-react';
+import { Orbit, Play, Pause, Eye } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface OrreryPlanet {
   id: string;
@@ -239,10 +229,10 @@ function PlanetBody({
                   e.stopPropagation();
                   onSelect();
                 }}
-                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider border whitespace-nowrap transition-all ${
+                className={`cursor-pointer pointer-events-auto select-none px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider border whitespace-nowrap transition-all ${
                   isSelected
-                    ? 'border-primary bg-primary/30 text-paper shadow-[0_0_15px_rgba(255,91,34,0.7)] scale-110'
-                    : 'border-card-border/60 bg-background/80 text-text-secondary hover:text-paper'
+                    ? 'border-solar bg-solar/30 text-paper scale-110 shadow-[0_0_12px_rgba(255,91,34,0.5)]'
+                    : 'border-line bg-ink/90 text-muted hover:text-paper'
                 }`}
               >
                 {planet.name}
@@ -300,19 +290,21 @@ export function SolarSystemOrrery() {
   const [showOrbits, setShowOrbits] = useState(true);
 
   return (
-    <div className="rounded-3xl border border-primary/30 bg-card-bg/85 overflow-hidden backdrop-blur-2xl shadow-2xl relative">
+    <div className="relative ticks border border-line bg-ink overflow-hidden">
+      <Ticks />
+
       {/* Top Header & Simulation Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-card-border/60 gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 sm:p-8 border-b border-line gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <Orbit className="h-5 w-5 text-primary animate-spin" />
-            <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-widest">
+            <Orbit className="h-4 w-4 text-solar animate-spin" />
+            <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-widest">
               KEPLERİAN YÖRÜNGE SİMÜLATÖRÜ (ORRERY)
             </span>
           </div>
-          <h3 className="text-2xl font-black text-foreground">3D Güneş Sistemi Çarkı</h3>
-          <p className="text-xs text-text-secondary mt-0.5">
-            Gezegenlerin gerçek bağıl yörünge hızlarını 3D mekanik orrery modelinde inceleyin.
+          <h3 className="display display-tight text-2xl text-paper sm:text-3xl">3D Güneş Sistemi Çarkı</h3>
+          <p className="text-xs text-muted mt-1 leading-relaxed max-w-xl">
+            Gezegenlerin gerçek bağıl yörünge periyotlarını ve açısal hızlarını mekanik orrery modelinde inceleyin.
           </p>
         </div>
 
@@ -321,14 +313,14 @@ export function SolarSystemOrrery() {
           {/* Play/Pause */}
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className={`p-2.5 rounded-xl border font-bold text-xs transition-all cursor-pointer ${
+            className={`p-2 border font-bold text-xs transition-colors cursor-pointer ${
               isPaused
-                ? 'border-accent bg-accent/20 text-accent'
-                : 'border-primary bg-primary/20 text-primary shadow-[0_0_15px_rgba(255,91,34,0.3)]'
+                ? 'border-solar/60 bg-solar/15 text-solar'
+                : 'border-line bg-ink-2 text-paper hover:border-solar/50'
             }`}
             title={isPaused ? 'Oynat' : 'Durdur'}
           >
-            {isPaused ? <Play size={15} /> : <Pause size={15} />}
+            {isPaused ? <Play size={14} /> : <Pause size={14} />}
           </button>
 
           {/* Speed Multipliers */}
@@ -339,41 +331,41 @@ export function SolarSystemOrrery() {
                 setSpeedMultiplier(s);
                 setIsPaused(false);
               }}
-              className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 py-1.5 font-mono text-xs transition-colors cursor-pointer ${
                 speedMultiplier === s && !isPaused
-                  ? 'bg-primary text-background shadow-[0_0_15px_rgba(255,91,34,0.4)]'
-                  : 'border border-card-border/70 bg-background/50 text-text-secondary hover:text-paper'
+                  ? 'border border-solar bg-solar text-ink font-bold'
+                  : 'border border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
               }`}
             >
               {s}x
             </button>
           ))}
 
-          <div className="h-4 w-px bg-card-border/60 mx-1 hidden sm:block" />
+          <div className="h-4 w-px bg-line mx-1 hidden sm:block" />
 
           {/* Toggles */}
           <button
             onClick={() => setShowOrbits(!showOrbits)}
-            className={`p-2 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
+            className={`p-2 border text-xs font-mono transition-colors cursor-pointer ${
               showOrbits
-                ? 'border-secondary/60 bg-secondary/20 text-secondary'
-                : 'border-card-border bg-card-bg/60 text-text-secondary'
+                ? 'border-violet/60 bg-violet/15 text-violet'
+                : 'border-line bg-ink-2 text-muted hover:text-paper'
             }`}
             title="Yörünge İzleri"
           >
-            <Orbit size={15} />
+            <Orbit size={14} />
           </button>
 
           <button
             onClick={() => setShowLabels(!showLabels)}
-            className={`p-2 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
+            className={`p-2 border text-xs font-mono transition-colors cursor-pointer ${
               showLabels
-                ? 'border-primary/60 bg-primary/20 text-primary'
-                : 'border-card-border bg-card-bg/60 text-text-secondary'
+                ? 'border-solar/60 bg-solar/15 text-solar'
+                : 'border-line bg-ink-2 text-muted hover:text-paper'
             }`}
             title="Gezegen İsimleri"
           >
-            <Eye size={15} />
+            <Eye size={14} />
           </button>
         </div>
       </div>
@@ -381,11 +373,13 @@ export function SolarSystemOrrery() {
       {/* 3D Canvas Arena */}
       <div className="relative h-[480px] w-full bg-[#03030a]">
         <Canvas
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 45, 60], fov: 45, near: 0.1, far: 500 }}
           className="h-full w-full cursor-grab active:cursor-grabbing"
         >
           <color attach="background" args={['#03030c']} />
-          <ambientLight intensity={0.2} />
+          <ambientLight intensity={0.25} />
 
           <OrbitControls
             enablePan={true}
@@ -414,27 +408,28 @@ export function SolarSystemOrrery() {
         </Canvas>
 
         {/* Selected Planet HUD Card Overlay */}
-        <div className="absolute bottom-4 left-4 z-10 max-w-xs rounded-2xl border border-primary/30 bg-background/90 p-4 shadow-2xl backdrop-blur-xl transition-all">
-          <div className="flex items-center justify-between border-b border-card-border/60 pb-2 mb-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
+        <div className="relative ticks absolute bottom-4 left-4 z-10 max-w-xs border border-line bg-ink/90 p-4 backdrop-blur-md">
+          <Ticks />
+          <div className="flex items-center justify-between border-b border-line pb-2 mb-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-solar">
               GEZEGEN VERİSİ
             </span>
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: selectedPlanet.color }} />
+            <span className="h-2 w-2" style={{ backgroundColor: selectedPlanet.color }} />
           </div>
 
-          <h4 className="text-xl font-black text-foreground">{selectedPlanet.name}</h4>
-          <p className="text-[11px] text-text-secondary mt-1 leading-relaxed">
+          <h4 className="font-mono text-lg font-bold text-paper">{selectedPlanet.name}</h4>
+          <p className="text-[11px] text-muted mt-1 leading-relaxed">
             {selectedPlanet.description}
           </p>
 
           <div className="grid grid-cols-2 gap-2 mt-3 text-xs font-mono">
-            <div className="p-2 rounded-lg bg-card-bg border border-card-border/60">
-              <span className="text-[9px] text-text-secondary block">Güneş'e Uzaklık</span>
-              <span className="font-bold text-foreground truncate block">{selectedPlanet.actualDistanceAU}</span>
+            <div className="p-2 bg-ink-2 border border-line">
+              <span className="text-[9px] text-muted block uppercase">Güneş’e Uzaklık</span>
+              <span className="font-bold text-paper truncate block">{selectedPlanet.actualDistanceAU}</span>
             </div>
-            <div className="p-2 rounded-lg bg-card-bg border border-card-border/60">
-              <span className="text-[9px] text-text-secondary block">Yıl Süresi</span>
-              <span className="font-bold text-foreground truncate block">{selectedPlanet.periodDays}</span>
+            <div className="p-2 bg-ink-2 border border-line">
+              <span className="text-[9px] text-muted block uppercase">Yıl Süresi</span>
+              <span className="font-bold text-paper truncate block">{selectedPlanet.periodDays}</span>
             </div>
           </div>
         </div>

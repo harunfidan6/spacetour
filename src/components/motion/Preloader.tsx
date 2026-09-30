@@ -98,7 +98,7 @@ export function Preloader() {
         </svg>
       </div>
 
-      <div ref={word} className="display invisible text-[clamp(3rem,15vw,15rem)] leading-[0.8]">
+      <div ref={word} className="display invisible whitespace-nowrap text-[clamp(2.6rem,10.5vw,13rem)] leading-[0.8]">
         Spacetour
       </div>
 

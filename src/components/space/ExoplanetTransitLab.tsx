@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Orbit, Play, Pause, RotateCcw, Sparkles, Activity, Layers, Info } from 'lucide-react';
+import { Orbit, Play, Pause } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface ExoplanetPreset {

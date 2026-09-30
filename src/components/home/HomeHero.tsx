@@ -1,189 +1,136 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useRef, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { gsap, useGsap, prefersReducedMotion, whenIntroDone } from '@/components/motion/gsap';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Magnetic } from '@/components/motion/primitives';
 import { moonPhase, upcomingEvents, daysUntil } from '@/lib/sky';
 import { useNow } from '@/lib/useNow';
+import { HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
+import { MoonOrb } from '@/components/space/PlanetOrb';
 
-const TILT = 0.34;
-/** Shared frame for the orrery and the zoom disc so the two stay registered. */
-const STAGE =
-  'pointer-events-none absolute left-1/2 top-[40%] w-[165vw] max-w-[1500px] -translate-x-1/2 -translate-y-1/2 sm:top-[56%] sm:w-[120vw] lg:w-[92vw]';
-const SUN_R = 64;
-
-const ORBITERS = [
-  { id: 'merkur', name: 'Merkür', au: '0.39 AU', rx: 140, r: 5, color: 'var(--paper)', period: 8, phase: 0.15 },
-  { id: 'venus', name: 'Venüs', au: '0.72 AU', rx: 196, r: 9, color: 'var(--gold)', period: 12, phase: 0.62 },
-  { id: 'dunya', name: 'Dünya', au: '1.00 AU', rx: 256, r: 10, color: 'var(--violet)', period: 17, phase: 0.02, moon: true },
-  { id: 'mars', name: 'Mars', au: '1.52 AU', rx: 318, r: 7, color: 'var(--rose)', period: 24, phase: 0.4 },
-  { id: 'jupiter', name: 'Jüpiter', au: '5.20 AU', rx: 398, r: 22, color: 'var(--paper)', period: 38, phase: 0.78, bands: true },
-  { id: 'saturn', name: 'Satürn', au: '9.58 AU', rx: 478, r: 15, color: 'var(--gold)', period: 56, phase: 0.93, ring: true },
-] as const;
-
-/* Flat-vector orrery: planets travel tilted ellipses, swap depth behind/in front of the sun. */
-function OrbitSystem() {
-  return (
-    <svg viewBox="-520 -260 1040 520" className="block h-full w-full overflow-visible" aria-hidden>
-      <g data-orbits>
-        {ORBITERS.map((p) => (
-          <ellipse key={p.id} rx={p.rx} ry={p.rx * TILT} fill="none" stroke="var(--paper)" strokeOpacity={0.22} strokeWidth={1} vectorEffect="non-scaling-stroke" />
-        ))}
-      </g>
-      <g data-back />
-      <g data-sun>
-        <circle r={SUN_R * 2.3} fill="var(--solar)" opacity={0.08} />
-        <g className="spin-slower">
-          {Array.from({ length: 16 }, (_, i) => (
-            <polygon key={i} points={`-5,-${SUN_R + 6} 5,-${SUN_R + 6} 0,-${SUN_R * 1.85}`} fill="var(--solar)" opacity={0.55} transform={`rotate(${i * 22.5})`} />
-          ))}
-        </g>
-        <g className="spin-rev">
-          {Array.from({ length: 72 }, (_, i) => (
-            <line
-              key={i}
-              y1={-(SUN_R * 2.05)}
-              y2={-(SUN_R * 2.05 + (i % 6 === 0 ? 14 : 6))}
-              stroke="var(--paper)"
-              strokeOpacity={i % 6 === 0 ? 0.6 : 0.25}
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              transform={`rotate(${i * 5})`}
-            />
-          ))}
-        </g>
-        <circle r={SUN_R} fill="var(--solar)" />
-      </g>
-      <g data-front>
-        {ORBITERS.map((p) => (
-          <g key={p.id} data-planet={p.id}>
-            {'ring' in p && <ellipse rx={p.r * 2.2} ry={p.r * 0.6} fill="none" stroke="var(--gold)" strokeWidth={2.5} />}
-            <circle r={p.r} fill={p.color} />
-            {'bands' in p && (
-              <>
-                <rect x={-p.r} y={-p.r * 0.35} width={p.r * 2} height={p.r * 0.18} fill="var(--solar)" opacity={0.7} />
-                <rect x={-p.r} y={p.r * 0.15} width={p.r * 2} height={p.r * 0.12} fill="var(--gold)" opacity={0.8} />
-              </>
-            )}
-            {'moon' in p && <circle data-moon r={3} cx={p.r + 9} fill="var(--lime)" />}
-            <text x={p.r + 10} y={-p.r - 6} fill="var(--paper)" opacity={0.75} style={{ font: '500 11px var(--font-mono)', letterSpacing: '0.12em' }}>
-              {p.name.toLocaleUpperCase('tr-TR')} · {p.au}
-            </text>
-          </g>
-        ))}
-      </g>
-    </svg>
-  );
-}
+const HeroSolarSystem3D = dynamic(() => import('./HeroSolarSystem3D').then((m) => m.HeroSolarSystem3D), { ssr: false });
 
 export function HomeHero() {
   const root = useRef<HTMLElement>(null);
+  const labels = useRef<(HTMLElement | null)[]>([]);
+  const [inView, setInView] = useState(true);
   const now = useNow(60_000);
   const moon = now ? moonPhase(now) : null;
   const next = now ? upcomingEvents(now, 1)[0] : undefined;
 
+  const placeLabel = useCallback((i: number, x: number, y: number, alpha: number) => {
+    const el = labels.current[i];
+    if (!el) return;
+    el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+    el.style.opacity = alpha.toFixed(2);
+  }, []);
+
+  // Stop rendering the WebGL scene once the hero has scrolled away.
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: '100px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const state = heroScene;
+    const move = (e: PointerEvent) => {
+      state.px = e.clientX / window.innerWidth - 0.5;
+      state.py = e.clientY / window.innerHeight - 0.5;
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    return () => window.removeEventListener('pointermove', move);
+  }, []);
+
   useGsap(
     () => {
       const el = root.current!;
-      const reduced = prefersReducedMotion();
-      const planets = ORBITERS.map((p) => ({ p, node: el.querySelector<SVGGElement>(`[data-planet="${p.id}"]`)! }));
-      const back = el.querySelector<SVGGElement>('[data-back]')!;
-      const front = el.querySelector<SVGGElement>('[data-front]')!;
-
-      // Orbital motion on the GSAP ticker
-      let t = 0;
-      const place = () => {
-        for (const { p, node } of planets) {
-          const a = (p.phase + t / p.period) * Math.PI * 2;
-          const x = Math.cos(a) * p.rx;
-          const y = Math.sin(a) * p.rx * TILT;
-          const depth = Math.sin(a);
-          const s = 0.82 + 0.18 * (depth + 1) * 0.5;
-          node.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${s.toFixed(3)})`);
-          const parent = depth < 0 ? back : front;
-          if (node.parentNode !== parent) parent.appendChild(node);
-        }
-      };
-      const tick = (_time: number, dt: number) => {
-        t += dt / 1000;
-        place();
-      };
-      place();
-      if (!reduced) gsap.ticker.add(tick);
-      let cancelIntro = () => {};
-
-      if (!reduced) {
-        // Entrance
-        gsap.set('[data-sun]', { scale: 0, svgOrigin: '0 0' });
-        gsap.set('[data-orbits] ellipse', { drawSVG: '0%' });
-        gsap.set('[data-front], [data-back]', { autoAlpha: 0 });
-        gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 30 });
-        const intro = gsap
-          .timeline({ paused: true })
-          .to('[data-sun]', { scale: 1, duration: 1.6, ease: 'elastic.out(1, 0.55)' })
-          .to('[data-orbits] ellipse', { drawSVG: '100%', duration: 1.6, stagger: 0.08, ease: 'mg.inOut' }, 0.1)
-          .to('[data-front], [data-back]', { autoAlpha: 1, duration: 0.8 }, 0.9)
-          .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.6);
-        cancelIntro = whenIntroDone(() => intro.play());
-
-        // Scroll: the sun swallows the frame and hands over to the manifesto
-        const zoom = el.querySelector<HTMLDivElement>('[data-zoom]')!;
-        gsap.set(zoom, { xPercent: -50, yPercent: -50 });
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: el,
-              start: 'top top',
-              end: '+=110%',
-              pin: true,
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          })
-          .fromTo(zoom, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.02, immediateRender: false }, 0)
-          .to(zoom, { scale: () => (Math.hypot(window.innerWidth, window.innerHeight) / zoom.offsetWidth) * 2.2, ease: 'power2.in', duration: 1 }, 0)
-          .to('[data-hero-title]', { yPercent: -30, letterSpacing: '0.08em', autoAlpha: 0, ease: 'power1.in', duration: 0.7 }, 0)
-          .to('[data-system]', { scale: 1.6, rotate: -8, autoAlpha: 0, ease: 'power1.in', duration: 0.8 }, 0)
-          .to('[data-hero-bottom]', { y: 60, autoAlpha: 0, ease: 'power1.in', duration: 0.4 }, 0);
+      resetHeroScene();
+      const state = heroScene;
+      if (prefersReducedMotion()) {
+        state.intro = 1;
+        state.frozen = true;
+        return;
       }
 
-      return () => {
-        cancelIntro();
-        gsap.ticker.remove(tick);
-      };
+      // Entrance: the Sun pops, planets and orbits follow, copy fades up.
+      gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 30 });
+      const intro = gsap
+        .timeline({ paused: true })
+        .to(state, { intro: 1, duration: 2.4, ease: 'power3.out' })
+        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.6);
+      const cancelIntro = whenIntroDone(() => intro.play());
+
+      // Scroll: the camera dives into the Sun, which hands over to the solar manifesto.
+      const solar = el.querySelector<HTMLElement>('[data-solar]')!;
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: 'top top',
+            end: '+=120%',
+            pin: true,
+            scrub: 0.6,
+            onUpdate: (self) => {
+              state.scroll = self.progress;
+              // Last 30% of the dive: flood to flat solar colour for the manifesto hand-off.
+              const flood = gsap.utils.clamp(0, 1, (self.progress - 0.7) / 0.3);
+              solar.style.opacity = String(flood * flood);
+              solar.style.visibility = flood > 0 ? 'visible' : 'hidden';
+            },
+          },
+        })
+        .to('[data-hero-top]', { autoAlpha: 0, ease: 'power1.in', duration: 0.3 }, 0)
+        .to('[data-hero-title]', { yPercent: -30, letterSpacing: '0.08em', autoAlpha: 0, ease: 'power1.in', duration: 0.6 }, 0)
+        .to('[data-hero-bottom]', { y: 60, autoAlpha: 0, ease: 'power1.in', duration: 0.35 }, 0)
+        .to({}, { duration: 1 }, 0);
+
+      return cancelIntro;
     },
     [],
     root
   );
 
   return (
+    // Stable wrapper: ScrollTrigger re-parents the pinned section into a spacer,
+    // so React siblings must never be inserted relative to the section itself.
+    <div>
     <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden" style={{ '--page-accent': 'var(--solar)' } as CSSProperties}>
-      {/* Orrery */}
-      <div className={STAGE}>
-        <div data-system className="relative aspect-[2/1] w-full">
-          <OrbitSystem />
-        </div>
+      {/* Live 3D solar system */}
+      <div className="pointer-events-none absolute inset-0">
+        <HeroSolarSystem3D project={placeLabel} active={inView} />
+        {HERO_BODIES.map((b, i) => (
+          <span
+            key={b.id}
+            ref={(node) => {
+              labels.current[i] = node;
+            }}
+            aria-hidden
+            className="label absolute left-0 top-0 whitespace-nowrap pl-5 text-[10px] text-paper will-change-transform"
+            style={{ opacity: 0, marginTop: '-1.6em' }}
+          >
+            <span className="mr-1.5 inline-block h-px w-3 bg-paper/60 align-middle" />
+            {b.name.toLocaleUpperCase('tr-TR')} · {b.au}
+          </span>
+        ))}
       </div>
-      {/* Zoom disc — sits exactly on the SVG sun */}
-      <div className={STAGE}>
-        <div className="relative aspect-[2/1] w-full">
-          <div
-            data-zoom
-            className="absolute left-1/2 top-1/2 aspect-square rounded-full bg-solar"
-            style={{ width: `${((SUN_R * 2) / 1040) * 100}%`, visibility: 'hidden' }}
-          />
-        </div>
-      </div>
+      <div data-solar aria-hidden className="pointer-events-none absolute inset-0 bg-solar" style={{ visibility: 'hidden' }} />
 
       {/* Copy */}
       <div className="relative flex h-full flex-col justify-between px-[var(--gutter)] pb-6 pt-24 sm:pt-28">
+        <div data-hero-top>
         <div data-hero-fade className="flex items-center gap-3 border-b border-line pb-4">
           <span className="label text-solar">(00)</span>
           <span className="label text-paper">Kinetik uzay atlası</span>
           <span className="label ml-auto hidden text-muted sm:inline">Sayı 01 · Sezon 2026 · Kuzey yarımküre</span>
+        </div>
         </div>
 
         <h1 data-hero-title className="display mt-6 text-[clamp(3.6rem,11.5vw,13rem)] text-paper mix-blend-difference sm:mt-8">
@@ -229,7 +176,7 @@ export function HomeHero() {
             <div className="bg-ink/85 p-4 backdrop-blur-sm">
               <dt className="label text-muted">Ay evresi</dt>
               <dd className="mt-3 flex items-center gap-3">
-                <MoonGlyph fraction={moon?.fraction ?? 0.5} />
+                <MoonOrb fraction={moon?.fraction ?? 0.5} className="h-10 w-10" />
                 <span>
                   <span className="display display-tight block text-2xl text-paper">%{moon ? Math.round(moon.illumination * 100) : '--'}</span>
                   <span className="text-xs text-paper/60">{moon?.name ?? 'Hesaplanıyor'}</span>
@@ -254,24 +201,6 @@ export function HomeHero() {
         </div>
       </div>
     </section>
-  );
-}
-
-/** Tiny moon phase glyph: lit disc with a terminator ellipse. */
-export function MoonGlyph({ fraction, size = 36 }: { fraction: number; size?: number }) {
-  const phase = fraction * 2 * Math.PI;
-  const k = Math.cos(phase); // 1 → new, -1 → full
-  const waxing = fraction < 0.5;
-  const rx = Math.abs(k) * 16;
-  const lit = 'var(--paper)';
-  const dark = 'var(--ink-3)';
-  return (
-    <svg viewBox="-18 -18 36 36" width={size} height={size} aria-hidden>
-      <circle r={16} fill={dark} stroke="var(--line)" />
-      {/* lit half */}
-      <path d={waxing ? 'M0,-16 A16,16 0 0,1 0,16 Z' : 'M0,-16 A16,16 0 0,0 0,16 Z'} fill={lit} />
-      {/* terminator */}
-      <ellipse rx={rx} ry={16} fill={k > 0 ? dark : lit} />
-    </svg>
+    </div>
   );
 }

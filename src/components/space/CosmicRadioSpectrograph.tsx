@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Volume2, VolumeX, Play, Pause, Radio, Activity, Zap, Info, Waves, Disc } from 'lucide-react';
+import {
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
+  Activity,
+  Zap,
+  Info,
+  Waves,
+  Disc
+} from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface CelestialSignal {
@@ -183,12 +193,12 @@ export function CosmicRadioSpectrograph() {
   }, []);
 
   // Play celestial synthesizer synthesized audio
-  const startAudio = useCallback(() => {
+  const startAudio = useCallback((signal: CelestialSignal = selectedSignal) => {
     stopAudio();
     const ctx = getAudioContext();
     if (!masterGainRef.current) return;
 
-    const { audioParams } = selectedSignal;
+    const { audioParams } = signal;
 
     if (audioParams.pulseInterval > 0) {
       // Pulsar rhythmic trigger
@@ -282,12 +292,6 @@ export function CosmicRadioSpectrograph() {
     };
   }, [stopAudio]);
 
-  useEffect(() => {
-    if (isPlaying) {
-      startAudio();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSignal]);
 
   // Canvas visualizer loop
   useEffect(() => {
@@ -474,7 +478,11 @@ export function CosmicRadioSpectrograph() {
           return (
             <button
               key={sig.id}
-              onClick={() => setSelectedSignal(sig)}
+              onClick={() => {
+                setSelectedSignal(sig);
+                // Retune live: restart the synth on the newly selected source.
+                if (isPlaying) startAudio(sig);
+              }}
               className={`p-4 text-left flex flex-col justify-between transition-colors cursor-pointer ${
                 isSelected
                   ? 'bg-lime text-ink'

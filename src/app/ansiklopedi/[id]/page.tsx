@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { planets } from '@/data/planets';
 import { PlanetHologram3D } from '@/components/space/PlanetHologram3D';
+import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { FitText } from '@/components/motion/FitText';
 import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
@@ -51,6 +52,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
 
   return (
     <div className="relative" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
+      <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
         <div className="flex items-center gap-4 border-b border-line pb-4">
           <Link href="/ansiklopedi" className="label group flex items-center gap-2 text-paper transition-colors hover:text-violet">
@@ -71,7 +73,6 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
           <div className="flex flex-col justify-between gap-8 lg:col-span-5">
             <div>
-              <div className="text-6xl">{planet.image}</div>
               <SplitReveal as="p" by="lines" trigger="intro" delay={0.3} className="mt-6 text-xl leading-snug text-paper/85 sm:text-2xl">
                 {planet.description}
               </SplitReveal>
@@ -139,7 +140,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           </aside>
         </div>
 
-        <nav className="grid gap-px border border-line bg-line sm:grid-cols-2" aria-label="Kayıtlar arasında gezin">
+        <nav className="grid gap-px border border-line bg-line lg:grid-cols-2" aria-label="Kayıtlar arasında gezin">
           {[
             { p: prev, label: 'Önceki kayıt', dir: -1 },
             { p: next, label: 'Sonraki kayıt', dir: 1 },
@@ -149,8 +150,9 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
               <span className={`label relative flex items-center gap-2 text-muted group-hover:text-ink ${dir > 0 ? 'justify-end' : ''}`}>
                 {dir < 0 && <ArrowLeft size={14} />} {label} {dir > 0 && <ArrowRight size={14} />}
               </span>
-              <span className="display relative mt-4 block pt-[0.12em] text-[clamp(2rem,5vw,4.5rem)] text-paper transition-colors group-hover:text-ink">
-                {p.image} {p.name}
+              <span className={`relative mt-4 flex items-center gap-4 ${dir > 0 ? 'flex-row-reverse' : ''}`}>
+                <PlanetOrb id={p.id} className="h-14 w-14 transition-transform duration-500 group-hover:scale-110 sm:h-20 sm:w-20" spin={1.5} />
+                <span className="display min-w-0 break-words pt-[0.12em] text-[clamp(1.8rem,4vw,4rem)] text-paper transition-colors group-hover:text-ink">{p.name}</span>
               </span>
             </Link>
           ))}

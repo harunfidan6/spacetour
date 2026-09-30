@@ -55,7 +55,6 @@ export function getActiveVisitorsCount(): number {
 
 // Generate Aggregate Analytics
 export function computeAnalyticsStats(includeDemo: boolean = false): AnalyticsStatsResponse {
-  const now = Date.now();
   const activeNow = getActiveVisitorsCount();
 
   // If includeDemo is true, seed realistic baseline; otherwise use 100% REAL records
@@ -175,7 +174,7 @@ export function computeAnalyticsStats(includeDemo: boolean = false): AnalyticsSt
     }
   });
   const trafficSources = Object.entries(srcMap)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([source, count]) => ({
       source,
       count,
@@ -240,7 +239,7 @@ function getBaselineRecords(existing: PageViewRecord[]): PageViewRecord[] {
     const ageMs = Math.random() * (24 * 60 * 60 * 1000); // within last 24h
     const p = samplePages[Math.floor(Math.random() * samplePages.length)];
     const dev = sampleDevices[Math.floor(Math.random() * sampleDevices.length)];
-    const os = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
+    const os: PageViewRecord['os'] = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
 
     seed.push({
       id: `seed-${i}`,
@@ -253,7 +252,7 @@ function getBaselineRecords(existing: PageViewRecord[]): PageViewRecord[] {
       city: sampleCities[Math.floor(Math.random() * sampleCities.length)],
       device: dev,
       browser: sampleBrowsers[Math.floor(Math.random() * sampleBrowsers.length)],
-      os: os as any,
+      os,
       screen: dev === 'Mobil' ? '390x844' : '1920x1080',
       sessionId: `sess-${i % 25}`,
       duration: Math.floor(Math.random() * 240 + 30)

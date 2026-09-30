@@ -14,6 +14,7 @@ import { IssTracker } from '@/components/space/IssTracker';
 import { SpaceWeatherWidget } from '@/components/space/SpaceWeatherWidget';
 import { InterstellarProbes } from '@/components/space/InterstellarProbes';
 import { NasaApodSection } from '@/components/space/NasaApodSection';
+import { OrbCanvas } from '@/components/space/PlanetOrb';
 
 export default function Home() {
   const stats = [
@@ -64,6 +65,7 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+      <OrbCanvas />
     </>
   );
 }

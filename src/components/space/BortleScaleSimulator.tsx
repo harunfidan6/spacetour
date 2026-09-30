@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sliders, Eye, Sun, Sparkles, MapPin, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Sliders, Eye, Sparkles, MapPin } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface BortleClass {

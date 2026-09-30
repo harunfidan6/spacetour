@@ -73,7 +73,11 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
       }
       const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
       window.addEventListener('keydown', onKey);
-      return () => window.removeEventListener('keydown', onKey);
+      return () => {
+        window.removeEventListener('keydown', onKey);
+        // Also runs on unmount (e.g. the panel's own link navigates away) — never leave the page scroll-locked.
+        document.documentElement.style.overflow = '';
+      };
     }
     document.documentElement.style.overflow = '';
     if (reduced) {
@@ -270,7 +274,7 @@ export default function AstrolojiPage() {
             {signs.map((s) => {
               const Icon = ELEMENT_ICON[s.element];
               return (
-                <button key={s.id} type="button" data-sign onClick={() => setActive(s)} data-cursor="Dosya" className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left">
+                <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left">
                   <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-y-100" />
                   <span className="relative flex items-start justify-between">
                     <span className="label text-muted group-hover:text-ink">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>

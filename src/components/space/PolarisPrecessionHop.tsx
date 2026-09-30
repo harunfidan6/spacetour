@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Compass, RotateCw, Navigation, Sparkles, HelpCircle, Eye, ArrowRight } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 type Mode = 'hopping' | 'precession';

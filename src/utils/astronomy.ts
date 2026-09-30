@@ -32,7 +32,7 @@ export function getLocalSiderealTime(date: Date, longitude: number): number {
   const d = jd - 2451545.0; // Days from J2000.0 epoch
 
   // Greenwich Mean Sidereal Time (GMST) in degrees
-  let gmst = 280.46061837 + 360.98564736629 * d;
+  const gmst = 280.46061837 + 360.98564736629 * d;
 
   // Local Sidereal Time = GMST + observer's longitude
   let lst = (gmst + longitude) % 360;

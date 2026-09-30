@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera, CameraOff, AlertCircle, RefreshCw, Eye, Sparkles } from 'lucide-react';
+import { CameraOff, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 
 interface ArCameraOverlayProps {
   isActive: boolean;
@@ -17,21 +17,15 @@ export function ArCameraOverlay({
   setOpacity
 }: ArCameraOverlayProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isActive) {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        setStream(null);
-      }
-      return;
-    }
+    if (!isActive) return;
 
     let currentStream: MediaStream | null = null;
+    let cancelled = false;
 
     async function startCamera() {
       setIsLoading(true);
@@ -51,17 +45,21 @@ export function ArCameraOverlay({
           audio: false
         });
 
+        // AR was switched off while the permission prompt was open: release at once.
+        if (cancelled) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+          return;
+        }
         currentStream = mediaStream;
-        setStream(mediaStream);
 
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
-          videoRef.current.play();
+          videoRef.current.play().catch(() => {});
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.warn('Camera access error:', err);
         setError(
-          err.name === 'NotAllowedError'
+          err instanceof DOMException && err.name === 'NotAllowedError'
             ? 'Kamera izni verilmedi. Lütfen tarayıcı ayarlarından kamera iznini onaylayın.'
             : 'Kamera başlatılamadı veya cihazınızda kamera bulunamadı.'
         );
@@ -73,6 +71,10 @@ export function ArCameraOverlay({
     startCamera();
 
     return () => {
+      cancelled = true;
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
       if (currentStream) {
         currentStream.getTracks().forEach((track) => track.stop());
       }
@@ -144,8 +146,8 @@ export function ArCameraOverlay({
       {/* Loading or Error State */}
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-ink/60 backdrop-blur-sm pointer-events-auto">
-          <div className="flex items-center gap-3 rounded-2xl border border-paper/15 bg-ink/80 p-4 text-sm font-mono text-paper">
-            <RefreshCw className="animate-spin text-primary" size={18} />
+          <div className="flex items-center gap-3 border border-line bg-ink-2 p-4 text-sm font-mono text-paper">
+            <RefreshCw className="animate-spin text-solar" size={18} />
             <span>Kamera başlatılıyor...</span>
           </div>
         </div>
@@ -153,13 +155,13 @@ export function ArCameraOverlay({
 
       {error && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-ink/80 backdrop-blur-sm p-4 pointer-events-auto">
-          <div className="max-w-md rounded-3xl border border-red-500/40 bg-red-950/80 p-6 text-center space-y-3">
-            <AlertCircle className="mx-auto text-red-400" size={32} />
-            <h4 className="text-base font-bold text-paper">Kamera Erişilemedi</h4>
-            <p className="text-xs text-red-200 leading-relaxed font-sans">{error}</p>
+          <div className="max-w-md border border-rose/50 bg-ink-2 p-6 text-center space-y-3">
+            <AlertCircle className="mx-auto text-rose" size={28} />
+            <h4 className="font-mono text-base font-bold text-paper uppercase tracking-wider">Kamera Erişilemedi</h4>
+            <p className="text-xs text-muted leading-relaxed font-sans">{error}</p>
             <button
               onClick={onClose}
-              className="mt-2 rounded-xl bg-paper/20 hover:bg-paper/30 text-paper text-xs font-mono font-bold px-4 py-2 transition-colors"
+              className="mt-2 border border-line bg-ink hover:border-paper text-paper text-xs font-mono font-bold px-4 py-2 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Simülasyon Moduna Dön
             </button>

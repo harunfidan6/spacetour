@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Award, CheckCircle2, XCircle, RotateCcw, Sparkles, ChevronRight, HelpCircle, Shield, FileText, Download, Share2 } from 'lucide-react';
+import { Award, CheckCircle2, XCircle, RotateCcw, Sparkles, ChevronRight, Shield, Download } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface QuizQuestion {
@@ -255,7 +255,7 @@ export function CosmicAcademyQuiz() {
             Astrofizik <span className="serif-i text-violet">& yetkinlik testi</span>
           </h3>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            10 soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza onaylı resmi AstroTR Kozmik Kaşif Sertifikası kazanın.
+            10 soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza kişisel bir Kozmik Kaşif sertifikası oluşturun.
           </p>
         </div>
 
@@ -401,7 +401,7 @@ export function CosmicAcademyQuiz() {
 
             {/* Corner Accents */}
             <div className="absolute top-4 left-4 label text-muted">CERT-ID: {verificationHash}</div>
-            <div className="absolute top-4 right-4 label text-muted">Gözlemevi Onaylı</div>
+            <div className="absolute top-4 right-4 label text-muted">Kişisel başarı belgesi</div>
             <div className="absolute bottom-4 left-4 label text-muted">Tarih: {new Date().toLocaleDateString('tr-TR')}</div>
             <div className="absolute bottom-4 right-4 label text-lime">Durum: Onaylandı</div>
 

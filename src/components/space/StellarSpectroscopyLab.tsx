@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Sparkles, Activity, Gauge, Compass, Zap, HelpCircle, Layers, Sliders } from 'lucide-react';
+import { Activity, Zap, Sliders } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface SpectralClass {

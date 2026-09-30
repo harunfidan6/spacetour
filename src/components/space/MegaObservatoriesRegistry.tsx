@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, Compass, Mountain, Orbit, Layers, Sparkles, Zap, Info, ArrowUpRight } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface Observatory {

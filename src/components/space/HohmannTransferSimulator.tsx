@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Rocket, Sliders, Play, Pause, RotateCcw, Compass, ArrowRight, Gauge, Info, Zap } from 'lucide-react';
+import {
+  Rocket,
+  Sliders,
+  Play,
+  Pause,
+  RotateCcw,
+  Compass
+} from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface TargetDestination {
@@ -91,7 +98,6 @@ export function HohmannTransferSimulator() {
   const [flightProgress, setFlightProgress] = useState<number>(35); // 0 to 100%
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animFrameRef = useRef<number | null>(null);
 
   // Total delta-V
   const totalDeltaV = useMemo(() => {

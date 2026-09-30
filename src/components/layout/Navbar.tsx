@@ -42,7 +42,9 @@ export default function Navbar() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (progress.current) progress.current.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
       setScrolled(y > 40);
-      if (y > 200 && y > last + 2) setHidden(true);
+      // Always visible near the top (also after a route change lands at y = 0).
+      if (y < 120) setHidden(false);
+      else if (y > last + 2) setHidden(true);
       else if (y < last - 2) setHidden(false);
       last = y;
     };
@@ -79,11 +81,11 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <div className="ml-auto hidden items-center gap-7 lg:flex">
+          <div className="ml-auto hidden items-center gap-5 lg:flex xl:gap-7">
             {SITE_ROUTES.slice(1).map((r) => {
               const active = isActive(pathname, r.href);
               return (
-                <Link key={r.href} href={r.href} className="group flex items-start gap-1.5 text-[13px] font-medium" aria-current={active ? 'page' : undefined}>
+                <Link key={r.href} href={r.href} className="group flex items-start gap-1.5 whitespace-nowrap text-[13px] font-medium" aria-current={active ? 'page' : undefined}>
                   <span className="label mt-[1px] text-[9px]" style={{ color: active ? r.accent : 'var(--muted)' }}>
                     {r.index}
                   </span>
@@ -96,20 +98,21 @@ export default function Navbar() {
             })}
           </div>
 
-          <div className="ml-auto flex items-center gap-3 lg:ml-6">
+          <div className="ml-auto flex items-center gap-2 lg:ml-6">
             <CosmicAudioEngine />
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('open-cosmic-terminal'))}
-              className="hidden items-center gap-2 rounded-full border border-line bg-ink/60 px-3 py-1.5 font-mono text-[11px] text-paper/80 transition-colors hover:border-solar hover:text-solar sm:flex cursor-pointer"
-              title="Kozmik Kumanda Terminali (⌘K / Ctrl+K)"
+              className="hidden h-9 items-center gap-1.5 rounded-full border border-line bg-ink/60 px-3 font-mono text-[11px] text-paper/80 transition-colors hover:border-solar hover:text-solar sm:flex cursor-pointer"
+              title="Kozmik kumanda terminali (⌘K / Ctrl+K)"
+              aria-label="Kozmik kumanda terminalini aç"
             >
               <Terminal size={12} className="text-solar" />
               <span>⌘K</span>
             </button>
             <Link
               href={TELEMETRY_ROUTE.href}
-              className="hidden items-center gap-2 rounded-full border border-line px-3 py-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-paper/80 transition-colors hover:border-lime hover:text-lime xl:flex"
+              className="hidden h-9 items-center gap-2 rounded-full border border-line px-3 text-[11px] font-mono uppercase tracking-[0.14em] text-paper/80 transition-colors hover:border-lime hover:text-lime 2xl:flex"
             >
               <span className="live-dot" /> Telemetri
             </Link>

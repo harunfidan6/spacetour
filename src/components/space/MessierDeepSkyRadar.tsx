@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Telescope, Compass, Eye, Sparkles, Layers, Info, ArrowUpRight } from 'lucide-react';
+import { Telescope } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface MessierObject {

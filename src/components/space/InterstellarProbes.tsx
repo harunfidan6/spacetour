@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Rocket, Radio, Signal, ArrowUpRight, Clock, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { Rocket, Radio } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface Probe {
   id: string;
@@ -83,36 +84,40 @@ export function InterstellarProbes() {
   const [selectedProbe, setSelectedProbe] = useState<Probe>(PROBES_DATA[0]);
 
   return (
-    <div className="rounded-3xl border border-card-border bg-card-bg/75 p-6 backdrop-blur-md shadow-2xl space-y-5">
+    <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
+      <Ticks />
+
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-card-border pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-4">
         <div className="flex items-center gap-2">
-          <Rocket className="h-5 w-5 text-secondary animate-pulse" />
+          <Rocket className="h-4 w-4 text-violet animate-pulse" />
           <div>
-            <h3 className="font-bold text-foreground text-sm uppercase tracking-wider font-mono">
+            <h3 className="display display-tight text-xl text-paper sm:text-2xl">
               Yıldızlararası Sondalar & Uzay Araçları
             </h3>
-            <span className="text-[10px] text-text-secondary font-mono">DERİN UZAY İLETİŞİM AĞI (NASA DSN)</span>
+            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
+              DERİN UZAY İLETİŞİM AĞI (NASA DSN)
+            </span>
           </div>
         </div>
-        <span className="flex items-center gap-1.5 text-[10px] font-mono text-primary font-bold">
-          <Radio size={12} className="animate-spin text-primary" style={{ animationDuration: '4s' }} />
+        <span className="flex items-center gap-1.5 border border-violet/30 bg-violet/10 px-2.5 py-1 text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
+          <Radio size={12} className="animate-spin text-violet" style={{ animationDuration: '4s' }} />
           CANLI SİNYAL TAKİBİ
         </span>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
         {PROBES_DATA.map((probe) => {
           const isActive = selectedProbe.id === probe.id;
           return (
             <button
               key={probe.id}
               onClick={() => setSelectedProbe(probe)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
                 isActive
-                  ? 'bg-secondary/20 text-secondary border border-secondary/40 shadow-[0_0_15px_rgba(122,92,255,0.3)] scale-102 font-bold'
-                  : 'bg-background/50 text-text-secondary border border-card-border/60 hover:text-paper'
+                  ? 'border-violet bg-violet text-ink font-bold'
+                  : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
               }`}
             >
               {probe.name}
@@ -122,50 +127,50 @@ export function InterstellarProbes() {
       </div>
 
       {/* Detail Showcase */}
-      <div className="rounded-2xl bg-background/50 p-5 border border-card-border/60 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border/40 pb-3">
+      <div className="border border-line bg-ink-2 p-5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
           <div>
-            <span className="text-xs text-text-secondary font-mono">{selectedProbe.mission}</span>
-            <h4 className="text-xl font-black text-foreground font-mono">{selectedProbe.name}</h4>
+            <span className="text-[10px] text-muted font-mono uppercase tracking-wider">{selectedProbe.mission}</span>
+            <h4 className="text-xl font-bold text-paper font-mono mt-0.5">{selectedProbe.name}</h4>
           </div>
-          <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold border ${selectedProbe.badgeColor}`}>
+          <span className={`px-2.5 py-1 text-[10px] font-mono font-bold border uppercase tracking-wider ${selectedProbe.badgeColor}`}>
             {selectedProbe.status}
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="p-3 rounded-xl bg-card-bg/60 border border-card-border/40">
-            <span className="text-[10px] text-text-secondary block">DÜNYA'YA UZAKLIK</span>
-            <span className="text-base font-bold text-foreground">
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">DÜNYA’YA UZAKLIK</span>
+            <span className="text-base font-bold text-paper mt-0.5 block">
               {selectedProbe.distanceAu >= 1 ? `${selectedProbe.distanceAu} AU` : `${(selectedProbe.distanceKm / 1000000).toFixed(2)} Milyon km`}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">
+            <span className="text-[10px] text-muted block mt-1">
               {(selectedProbe.distanceKm / 1000000000).toFixed(2)} Milyar km
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-card-bg/60 border border-card-border/40">
-            <span className="text-[10px] text-text-secondary block">MEVCUT HIZ</span>
-            <span className="text-base font-bold text-accent">
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">MEVCUT HIZ</span>
+            <span className="text-base font-bold text-solar mt-0.5 block">
               {selectedProbe.speedKmH.toLocaleString()} km/s
             </span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">
+            <span className="text-[10px] text-muted block mt-1">
               {(selectedProbe.speedKmH / 3600).toFixed(1)} km/saniye
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-card-bg/60 border border-card-border/40">
-            <span className="text-[10px] text-text-secondary block">SİNYAL GECİKMESİ</span>
-            <span className="text-base font-bold text-primary truncate block" title={selectedProbe.signalDelay}>
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">SİNYAL GECİKMESİ</span>
+            <span className="text-base font-bold text-paper truncate block mt-0.5" title={selectedProbe.signalDelay}>
               {selectedProbe.signalDelay.split(' ')[0]} {selectedProbe.signalDelay.split(' ')[1]}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">Işık hızı telsiz süresi</span>
+            <span className="text-[10px] text-muted block mt-1">Işık hızı telsiz süresi</span>
           </div>
 
-          <div className="p-3 rounded-xl bg-card-bg/60 border border-card-border/40">
-            <span className="text-[10px] text-text-secondary block">FIRLATILIŞ YILI</span>
-            <span className="text-base font-bold text-star-gold">{selectedProbe.launchYear}</span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">FIRLATILIŞ YILI</span>
+            <span className="text-base font-bold text-paper mt-0.5 block">{selectedProbe.launchYear}</span>
+            <span className="text-[10px] text-muted block mt-1">
               {2026 - selectedProbe.launchYear} yıldır görevde
             </span>
           </div>

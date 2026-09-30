@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Users,
   Eye,
-  Activity,
   Compass,
   Clock,
   Globe2,
@@ -13,12 +12,6 @@ import {
   Monitor,
   Tablet,
   RefreshCw,
-  Sparkles,
-  ArrowUpRight,
-  Shield,
-  Layers,
-  Flame,
-  Radio,
   BarChart3,
   TrendingUp,
   MapPin,
@@ -26,46 +19,59 @@ import {
 } from 'lucide-react';
 import { AnalyticsStatsResponse } from '@/types/analytics';
 import { SplitReveal } from '@/components/motion/SplitReveal';
+import { Ticks } from '@/components/motion/primitives';
+import { useNow } from '@/lib/useNow';
+
+async function requestStats(demo: boolean): Promise<AnalyticsStatsResponse | null> {
+  try {
+    const res = await fetch(`/api/analytics/stats?demo=${demo}`, { cache: 'no-store' });
+    return res.ok ? ((await res.json()) as AnalyticsStatsResponse) : null;
+  } catch (err) {
+    console.error('Failed to fetch analytics stats:', err);
+    return null;
+  }
+}
 
 export default function AdminAnalyticsPage() {
   const [stats, setStats] = useState<AnalyticsStatsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefreshSecs, setAutoRefreshSecs] = useState<number>(5);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+  const now = useNow(1000);
 
-  const fetchStats = useCallback(async (demoState?: boolean) => {
-    try {
-      setIsRefreshing(true);
-      const useDemo = typeof demoState === 'boolean' ? demoState : isDemoMode;
-      const res = await fetch(`/api/analytics/stats?demo=${useDemo}`, { cache: 'no-store' });
-      if (res.ok) {
-        const data: AnalyticsStatsResponse = await res.json();
-        setStats(data);
-        setLastUpdated(new Date().toLocaleTimeString('tr-TR'));
-      }
-    } catch (err) {
-      console.error('Failed to fetch analytics stats:', err);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
+  const applyStats = useCallback((data: AnalyticsStatsResponse | null) => {
+    if (data) {
+      setStats(data);
+      setLastUpdated(new Date().toLocaleTimeString('tr-TR'));
     }
-  }, [isDemoMode]);
+    setIsRefreshing(false);
+  }, []);
 
-  // Initial fetch
+  // Manual / scheduled refresh shows the spinner.
+  const refresh = useCallback(() => {
+    setIsRefreshing(true);
+    requestStats(isDemoMode).then(applyStats);
+  }, [isDemoMode, applyStats]);
+
+  // Load on mount and whenever the data source (live / demo) changes;
+  // a late response from the previous source is ignored.
   useEffect(() => {
-    fetchStats(isDemoMode);
-  }, [fetchStats, isDemoMode]);
+    let ignore = false;
+    requestStats(isDemoMode).then((data) => {
+      if (!ignore) applyStats(data);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [isDemoMode, applyStats]);
 
   // Periodic Auto-refresh
   useEffect(() => {
     if (autoRefreshSecs <= 0) return;
-    const interval = setInterval(() => {
-      fetchStats();
-    }, autoRefreshSecs * 1000);
+    const interval = setInterval(refresh, autoRefreshSecs * 1000);
     return () => clearInterval(interval);
-  }, [autoRefreshSecs, fetchStats]);
+  }, [autoRefreshSecs, refresh]);
 
   const deviceIcons = {
     Mobil: <Smartphone size={14} className="text-gold" />,
@@ -94,45 +100,41 @@ export default function AdminAnalyticsPage() {
         {/* Live Controls */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Demo vs Real Toggle */}
-          <div className="flex items-center gap-1 bg-paper/5 border border-paper/10 p-1.5 rounded-2xl text-xs font-mono">
+          <div className="flex items-center gap-1 bg-ink border border-line p-1 text-xs font-mono">
             <button
-              onClick={() => {
-                setIsDemoMode(false);
-                fetchStats(false);
-              }}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              onClick={() => setIsDemoMode(false)}
+              aria-pressed={!isDemoMode}
+              className={`px-3 py-1.5 font-bold transition-colors cursor-pointer flex items-center gap-1.5 border uppercase tracking-wider ${
                 !isDemoMode
-                  ? 'bg-lime text-ink shadow-[0_0_15px_rgba(212,255,61,0.3)]'
-                  : 'text-muted hover:text-paper'
+                  ? 'border-lime bg-lime text-ink'
+                  : 'border-transparent text-muted hover:text-paper'
               }`}
             >
-              <span className={`h-2 w-2 rounded-full ${!isDemoMode ? 'bg-ink' : 'bg-lime'}`} />
+              <span className={`h-2 w-2 ${!isDemoMode ? 'bg-ink' : 'bg-lime'}`} />
               <span>%100 Gerçek Canlı Veri</span>
             </button>
 
             <button
-              onClick={() => {
-                setIsDemoMode(true);
-                fetchStats(true);
-              }}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              onClick={() => setIsDemoMode(true)}
+              aria-pressed={isDemoMode}
+              className={`px-3 py-1.5 font-bold transition-colors cursor-pointer flex items-center gap-1.5 border uppercase tracking-wider ${
                 isDemoMode
-                  ? 'bg-violet text-paper shadow-[0_0_15px_rgba(122,92,255,0.3)]'
-                  : 'text-muted hover:text-paper'
+                  ? 'border-violet bg-violet text-ink'
+                  : 'border-transparent text-muted hover:text-paper'
               }`}
             >
               <span>🧪 Örnek Simülasyon</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2 bg-paper/5 border border-paper/10 p-2 rounded-2xl text-xs font-mono">
+          <div className="flex items-center gap-2 bg-ink border border-line p-1.5 text-xs font-mono">
             <div className="flex items-center gap-1.5 px-2">
-              <span className="h-2 w-2 rounded-full bg-lime animate-ping" />
-              <span className="text-muted text-[11px]">Son Güncelleme:</span>
+              <span className="h-2 w-2 bg-lime animate-ping" />
+              <span className="text-muted text-[11px] uppercase">Güncelleme:</span>
               <span className="text-paper font-bold">{lastUpdated || 'Yükleniyor...'}</span>
             </div>
 
-            <div className="flex items-center gap-1 border-l border-paper/10 pl-2">
+            <div className="flex items-center gap-1 border-l border-line pl-2">
               {[
                 { label: '5sn', val: 5 },
                 { label: '15sn', val: 15 },
@@ -141,10 +143,10 @@ export default function AdminAnalyticsPage() {
                 <button
                   key={opt.label}
                   onClick={() => setAutoRefreshSecs(opt.val)}
-                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                  className={`px-2 py-1 text-[10px] font-bold transition-colors cursor-pointer border ${
                     autoRefreshSecs === opt.val
-                      ? 'bg-lime text-ink shadow-[0_0_10px_rgba(212,255,61,0.3)]'
-                      : 'text-muted hover:text-paper'
+                      ? 'border-lime bg-lime text-ink'
+                      : 'border-transparent text-muted hover:text-paper'
                   }`}
                 >
                   {opt.label}
@@ -152,12 +154,13 @@ export default function AdminAnalyticsPage() {
               ))}
 
               <button
-                onClick={() => fetchStats()}
+                onClick={refresh}
                 disabled={isRefreshing}
-                className="p-1.5 rounded-lg text-paper/75 hover:text-paper hover:bg-paper/10 transition-colors ml-1 cursor-pointer"
+                aria-label="Şimdi yenile"
+                className="p-1 border border-line text-muted hover:text-paper hover:border-paper transition-colors ml-1 cursor-pointer"
                 title="Şimdi Yenile"
               >
-                <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+                <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-solar' : ''} />
               </button>
             </div>
           </div>
@@ -166,7 +169,7 @@ export default function AdminAnalyticsPage() {
 
       {/* Active Mode Notice Banner */}
       <div
-        className={`p-4 rounded-2xl border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+        className={`p-4 border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
           !isDemoMode
             ? 'border-lime/30 bg-lime/10 text-lime'
             : 'border-violet/30 bg-violet/10 text-violet'
@@ -190,16 +193,17 @@ export default function AdminAnalyticsPage() {
       {/* 4 Big Real-Time KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Active Visitors Now */}
-        <div className="rounded-3xl border border-lime/30 bg-gradient-to-br from-lime/10 via-ink/40 to-ink/60 p-6 backdrop-blur-xl relative overflow-hidden group">
+        <div className="relative ticks border border-lime/30 bg-ink-2 p-6">
+          <Ticks />
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] font-mono text-lime font-bold uppercase tracking-wider">
               ŞU AN CANLI (ONLINE)
             </span>
-            <span className="h-3 w-3 rounded-full bg-lime animate-ping" />
+            <span className="h-2 w-2 bg-lime animate-ping" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl sm:text-5xl font-black text-paper font-mono">
-              {stats?.activeVisitorsNow ?? 1}
+            <span className="text-4xl sm:text-5xl font-bold text-paper font-mono">
+              {stats ? stats.activeVisitorsNow : '—'}
             </span>
             <span className="text-xs font-mono text-lime font-bold">Kişi Sitede</span>
           </div>
@@ -209,18 +213,19 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* KPI 2: Total Pageviews */}
-        <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-ink/40 to-ink/60 p-6 backdrop-blur-xl relative overflow-hidden group">
+        <div className="relative ticks border border-solar/30 bg-ink-2 p-6">
+          <Ticks />
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-solar font-bold uppercase tracking-wider">
               TOPLAM SAYFA GÖRÜNTÜLEME
             </span>
-            <Eye size={18} className="text-primary" />
+            <Eye size={16} className="text-solar" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl sm:text-5xl font-black text-paper font-mono">
-              {stats?.totalPageviews ?? 0}
+            <span className="text-4xl sm:text-5xl font-bold text-paper font-mono">
+              {stats ? stats.totalPageviews : '—'}
             </span>
-            <span className="text-xs font-mono text-primary font-bold">Hit</span>
+            <span className="text-xs font-mono text-solar font-bold">Hit</span>
           </div>
           <p className="text-xs text-muted mt-2">
             Tüm modüller ve sayfalar genelinde kaydedilen toplam gösterim.
@@ -228,16 +233,17 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* KPI 3: Unique Visitors */}
-        <div className="rounded-3xl border border-violet/30 bg-gradient-to-br from-violet/10 via-ink/40 to-ink/60 p-6 backdrop-blur-xl relative overflow-hidden group">
+        <div className="relative ticks border border-violet/30 bg-ink-2 p-6">
+          <Ticks />
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
               TEKİL ZİYARETÇİ
             </span>
-            <Users size={18} className="text-violet" />
+            <Users size={16} className="text-violet" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl sm:text-5xl font-black text-paper font-mono">
-              {stats?.uniqueVisitors ?? 0}
+            <span className="text-4xl sm:text-5xl font-bold text-paper font-mono">
+              {stats ? stats.uniqueVisitors : '—'}
             </span>
             <span className="text-xs font-mono text-violet font-bold">Benzersiz Kişi</span>
           </div>
@@ -247,18 +253,19 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* KPI 4: Avg Dwell Time */}
-        <div className="rounded-3xl border border-gold/30 bg-gradient-to-br from-gold/10 via-ink/40 to-ink/60 p-6 backdrop-blur-xl relative overflow-hidden group">
+        <div className="relative ticks border border-solar/30 bg-ink-2 p-6">
+          <Ticks />
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-mono text-gold font-bold uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-solar font-bold uppercase tracking-wider">
               ORTALAMA SÜRE
             </span>
-            <Clock size={18} className="text-gold" />
+            <Clock size={16} className="text-solar" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl sm:text-5xl font-black text-paper font-mono">
-              {Math.floor((stats?.avgDurationSeconds ?? 142) / 60)}d {(stats?.avgDurationSeconds ?? 142) % 60}s
+            <span className="text-4xl sm:text-5xl font-bold text-paper font-mono">
+              {stats ? `${Math.floor(stats.avgDurationSeconds / 60)}d ${stats.avgDurationSeconds % 60}s` : '—'}
             </span>
-            <span className="text-xs font-mono text-gold font-bold">Derin Odak</span>
+            <span className="text-xs font-mono text-solar font-bold">Derin Odak</span>
           </div>
           <p className="text-xs text-muted mt-2">
             Kullanıcıların 3D planetaryum ve astrolojide geçirdiği süre.
@@ -267,7 +274,8 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* 24-Hour Timeline Visualizer */}
-      <div className="rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-4">
+      <div className="relative ticks border border-line bg-ink-2 p-6 space-y-4">
+        <Ticks />
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold text-paper flex items-center gap-2">
@@ -283,7 +291,7 @@ export default function AdminAnalyticsPage() {
 
         {/* Bar chart grid */}
         <div className="h-44 flex items-end gap-1.5 sm:gap-2 pt-6 pb-2 border-b border-paper/10">
-          {stats?.hourlyTimeline?.map((item, idx) => {
+          {stats?.hourlyTimeline?.map((item) => {
             const maxViews = Math.max(...(stats.hourlyTimeline.map((h) => h.views) || [1]), 1);
             const heightPct = Math.max(Math.round((item.views / maxViews) * 100), 8);
             const isPeak = item.views === maxViews && item.views > 0;
@@ -327,18 +335,19 @@ export default function AdminAnalyticsPage() {
       {/* Main Grid: Top Pages & Geographic Cities */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Top Pages (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-paper/10 pb-3">
+        <div className="lg:col-span-7 relative ticks border border-line bg-ink-2 p-6 space-y-4">
+          <Ticks />
+          <div className="flex items-center justify-between border-b border-line pb-3">
             <div>
               <h3 className="text-base font-bold text-paper flex items-center gap-2">
-                <Compass className="text-gold" size={16} />
+                <Compass className="text-solar" size={16} />
                 En Çok Ziyaret Edilen Sayfalar
               </h3>
               <p className="text-xs text-muted mt-0.5">
                 Kullanıcıların en fazla ilgi gösterdiği modüller.
               </p>
             </div>
-            <span className="text-xs font-mono text-muted">Sıralama</span>
+            <span className="text-xs font-mono text-muted uppercase">Sıralama</span>
           </div>
 
           <div className="space-y-3">
@@ -346,13 +355,13 @@ export default function AdminAnalyticsPage() {
               <div key={page.path} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="flex items-center gap-2 truncate pr-2">
-                    <span className="h-5 w-5 rounded-md bg-paper/5 border border-paper/10 flex items-center justify-center font-bold text-[10px] text-gold">
+                    <span className="h-5 w-5 bg-ink border border-line flex items-center justify-center font-bold text-[10px] text-solar">
                       {idx + 1}
                     </span>
                     <Link
                       href={page.path}
                       target="_blank"
-                      className="text-paper hover:text-primary transition-colors truncate flex items-center gap-1"
+                      className="text-paper hover:text-solar transition-colors truncate flex items-center gap-1"
                     >
                       <span>{page.path}</span>
                       <ExternalLink size={10} className="text-muted" />
@@ -360,15 +369,15 @@ export default function AdminAnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="text-muted">{page.views} hit</span>
-                    <span className="font-bold text-gold w-9 text-right">%{page.percentage}</span>
+                    <span className="font-bold text-solar w-9 text-right">%{page.percentage}</span>
                   </div>
                 </div>
 
                 {/* Progress track */}
-                <div className="h-1.5 w-full bg-paper/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
                   <div
                     style={{ width: `${page.percentage}%` }}
-                    className="h-full bg-gradient-to-r from-gold to-primary rounded-full"
+                    className="h-full bg-solar"
                   />
                 </div>
               </div>
@@ -377,18 +386,19 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Right: Geolocation Cities & Countries (5 cols) */}
-        <div className="lg:col-span-5 rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-paper/10 pb-3">
+        <div className="lg:col-span-5 relative ticks border border-line bg-ink-2 p-6 space-y-4">
+          <Ticks />
+          <div className="flex items-center justify-between border-b border-line pb-3">
             <div>
               <h3 className="text-base font-bold text-paper flex items-center gap-2">
-                <MapPin className="text-rose-signal" size={16} />
+                <MapPin className="text-rose" size={16} />
                 Şehir & Coğrafi Dağılım
               </h3>
               <p className="text-xs text-muted mt-0.5">
                 Ziyaretçilerin bağlandığı iller ve ülkeler.
               </p>
             </div>
-            <span className="text-xs font-mono text-muted">Konum</span>
+            <span className="text-xs font-mono text-muted uppercase">Konum</span>
           </div>
 
           <div className="space-y-3">
@@ -402,14 +412,14 @@ export default function AdminAnalyticsPage() {
                   </span>
                   <div className="flex items-center gap-2">
                     <span className="text-muted">{loc.count} kişi</span>
-                    <span className="font-bold text-rose-signal w-8 text-right">%{loc.percentage}</span>
+                    <span className="font-bold text-rose w-8 text-right">%{loc.percentage}</span>
                   </div>
                 </div>
 
-                <div className="h-1.5 w-full bg-paper/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
                   <div
                     style={{ width: `${loc.percentage}%` }}
-                    className="h-full bg-gradient-to-r from-rose-signal to-violet rounded-full"
+                    className="h-full bg-rose"
                   />
                 </div>
               </div>
@@ -421,51 +431,54 @@ export default function AdminAnalyticsPage() {
       {/* Device, Browser & Traffic Source 3-Col Deck */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* 1. Devices */}
-        <div className="rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-3">
+        <div className="relative ticks border border-line bg-ink-2 p-6 space-y-3">
+          <Ticks />
           <h4 className="text-sm font-bold text-paper flex items-center gap-2 font-mono uppercase tracking-wider">
-            <Smartphone size={16} className="text-gold" />
+            <Smartphone size={16} className="text-solar" />
             Cihaz Türü
           </h4>
           <div className="space-y-2 pt-2">
             {stats?.deviceBreakdown?.map((d) => (
-              <div key={d.device} className="flex items-center justify-between text-xs font-mono bg-paper/5 p-2.5 rounded-xl border border-paper/5">
+              <div key={d.device} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
                 <div className="flex items-center gap-2">
                   {deviceIcons[d.device as keyof typeof deviceIcons] || <Monitor size={14} />}
                   <span>{d.device}</span>
                 </div>
-                <span className="font-bold text-gold">%{d.percentage} ({d.count})</span>
+                <span className="font-bold text-solar">%{d.percentage} ({d.count})</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 2. Browsers */}
-        <div className="rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-3">
+        <div className="relative ticks border border-line bg-ink-2 p-6 space-y-3">
+          <Ticks />
           <h4 className="text-sm font-bold text-paper flex items-center gap-2 font-mono uppercase tracking-wider">
-            <Globe2 size={16} className="text-primary" />
+            <Globe2 size={16} className="text-lime" />
             Tarayıcı Dağılımı
           </h4>
           <div className="space-y-2 pt-2">
             {stats?.browserBreakdown?.map((b) => (
-              <div key={b.browser} className="flex items-center justify-between text-xs font-mono bg-paper/5 p-2.5 rounded-xl border border-paper/5">
+              <div key={b.browser} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
                 <span>{b.browser}</span>
-                <span className="font-bold text-primary">%{b.percentage} ({b.count})</span>
+                <span className="font-bold text-lime">%{b.percentage} ({b.count})</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 3. Traffic Sources */}
-        <div className="rounded-3xl border border-paper/10 bg-ink/60 p-6 backdrop-blur-2xl space-y-3">
+        <div className="relative ticks border border-line bg-ink-2 p-6 space-y-3">
+          <Ticks />
           <h4 className="text-sm font-bold text-paper flex items-center gap-2 font-mono uppercase tracking-wider">
-            <TrendingUp size={16} className="text-lime" />
+            <TrendingUp size={16} className="text-violet" />
             Trafik Kaynakları
           </h4>
           <div className="space-y-2 pt-2">
             {stats?.trafficSources?.map((src) => (
-              <div key={src.source} className="flex items-center justify-between text-xs font-mono bg-paper/5 p-2.5 rounded-xl border border-paper/5">
+              <div key={src.source} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
                 <span className="truncate pr-2">{src.source}</span>
-                <span className="font-bold text-lime shrink-0">%{src.percentage} ({src.count})</span>
+                <span className="font-bold text-violet shrink-0">%{src.percentage} ({src.count})</span>
               </div>
             ))}
           </div>
@@ -473,7 +486,8 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Live Activity Stream Terminal */}
-      <div className="rounded-3xl border border-paper/10 bg-ink/80 p-6 backdrop-blur-2xl space-y-4">
+      <div className="relative ticks border border-line bg-ink-2 p-6 space-y-4">
+        <Ticks />
         <div className="flex items-center justify-between border-b border-paper/10 pb-3">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-lime animate-ping" />
@@ -488,21 +502,21 @@ export default function AdminAnalyticsPage() {
 
         <div className="space-y-2 max-h-80 overflow-y-auto font-mono text-xs pr-2">
           {stats?.recentStream?.map((item) => {
-            const timeAgo = Math.max(Math.floor((Date.now() - item.timestamp) / 1000), 1);
+            const timeAgo = Math.max(Math.floor(((now?.getTime() ?? item.timestamp) - item.timestamp) / 1000), 1);
             let timeStr = `${timeAgo} sn önce`;
             if (timeAgo > 60) timeStr = `${Math.floor(timeAgo / 60)} dk önce`;
 
             return (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-paper/[0.03] border border-paper/5 hover:border-paper/15 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-ink border border-line hover:border-solar/40 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] text-muted w-16 shrink-0">{timeStr}</span>
-                  <span className="px-2 py-0.5 rounded-md bg-paper/5 text-[10px] text-paper/75">
+                  <span className="px-2 py-0.5 border border-line text-[10px] text-paper">
                     {item.city}, {item.country}
                   </span>
-                  <span className="text-primary font-bold truncate max-w-xs">{item.path}</span>
+                  <span className="text-solar font-bold truncate max-w-xs">{item.path}</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-[10px] text-muted shrink-0">

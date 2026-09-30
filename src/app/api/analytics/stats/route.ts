@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         'Cache-Control': 'no-store, max-age=0'
       }
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Bilinmeyen hata' }, { status: 500 });
   }
 }

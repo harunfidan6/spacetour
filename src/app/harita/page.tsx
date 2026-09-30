@@ -1,13 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useRef, type CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
-import { LiveClock, RotatingBadge, Ticks } from '@/components/motion/primitives';
-import { BrightStarsRadar } from '@/components/space/BrightStarsRadar';
-import { BortleScaleSimulator } from '@/components/space/BortleScaleSimulator';
-import { MessierDeepSkyRadar } from '@/components/space/MessierDeepSkyRadar';
-import { PolarisPrecessionHop } from '@/components/space/PolarisPrecessionHop';
+import { RotatingBadge, Ticks } from '@/components/motion/primitives';
+import { LabDeck, type LabEntry } from '@/components/ui/LabDeck';
 import { HaritaGraphic } from '@/components/home/ModuleGraphics';
 
 const Planetarium3D = dynamic(() => import('@/components/space/Planetarium3D').then((mod) => mod.Planetarium3D), {
@@ -18,6 +15,26 @@ const Planetarium3D = dynamic(() => import('@/components/space/Planetarium3D').t
     </div>
   ),
 });
+
+function ToolLoading() {
+  return (
+    <div className="grid h-[420px] place-items-center border border-line bg-ink-2">
+      <span className="label text-muted">Araç yükleniyor…</span>
+    </div>
+  );
+}
+
+const BrightStarsRadar = dynamic(() => import('@/components/space/BrightStarsRadar').then((m) => m.BrightStarsRadar), { loading: () => <ToolLoading /> });
+const BortleScaleSimulator = dynamic(() => import('@/components/space/BortleScaleSimulator').then((m) => m.BortleScaleSimulator), { loading: () => <ToolLoading /> });
+const MessierDeepSkyRadar = dynamic(() => import('@/components/space/MessierDeepSkyRadar').then((m) => m.MessierDeepSkyRadar), { loading: () => <ToolLoading /> });
+const PolarisPrecessionHop = dynamic(() => import('@/components/space/PolarisPrecessionHop').then((m) => m.PolarisPrecessionHop), { loading: () => <ToolLoading /> });
+
+const TOOLS: LabEntry[] = [
+  { id: 'parlak-yildizlar', short: 'En parlak 8 yıldız', title: 'Gökkubbe kerterizleri', blurb: 'Kadir, tayf türü, uzaklık ve anlık Alt-Az koordinatlarıyla gece göğünün devleri.', render: () => <BrightStarsRadar /> },
+  { id: 'bortle', short: 'Bortle skalası', title: 'Işık kirliliği & gökyüzü karanlığı', blurb: 'Sınıf 1 (saf karanlık) ile Sınıf 9 (şehir merkezi) arasında kaybolan yıldızları gör.', render: () => <BortleScaleSimulator /> },
+  { id: 'messier', short: 'Messier hedefleri', title: 'Messier derin uzay hedefleri', blurb: 'Kuzey göğünün en görkemli galaksileri, bulutsuları ve yıldız kümeleri.', render: () => <MessierDeepSkyRadar /> },
+  { id: 'polaris', short: 'Kutup yıldızı & presesyon', title: 'Kutup yıldızı & presesyon çemberi', blurb: 'Büyük Ayı’dan Polaris’e yıldız atlama ve 25.772 yıllık presesyon döngüsü.', render: () => <PolarisPrecessionHop /> },
+];
 
 export default function HaritaPage() {
   return (
@@ -70,64 +87,18 @@ export default function HaritaPage() {
           </div>
         </section>
 
-        {/* 01.2 - Brightest 8 Stars Radar */}
         <section>
           <SectionHead
             index="01.2"
-            kicker="Gökkubbe kerterizleri"
+            kicker="Gözlem araçları"
             title={
               <>
-                En parlak <Em>sekiz yıldız</Em>
+                Gözlemcinin <Em>alet çantası</Em>
               </>
             }
-            lede="Kuzey yarımkürenin gece göğünde ilk göze çarpan devleri. Kadir, tayf türü, uzaklık ve Alt-Azimuth koordinatları."
+            lede="Parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi. Soldan birini seç."
           />
-          <BrightStarsRadar />
-        </section>
-
-        {/* 01.3 - Light Pollution & Bortle Scale Simulator */}
-        <section>
-          <SectionHead
-            index="01.3"
-            kicker="Atmosferik görüş analizi"
-            title={
-              <>
-                Bortle skalası <Em>& gökyüzü karanlığı</Em>
-              </>
-            }
-            lede="Kentsel aydınlatmanın gökyüzünü nasıl sildiğini interaktif ölçekle incele: Sınıf 1 (saf karanlık) ile Sınıf 9 (şehir merkezi) arası yıldız kaybı."
-          />
-          <BortleScaleSimulator />
-        </section>
-
-        {/* 01.4 - Messier Deep Sky Radar */}
-        <section>
-          <SectionHead
-            index="01.4"
-            kicker="Derin uzay atlası"
-            title={
-              <>
-                Messier <Em>derin uzay hedefleri</Em>
-              </>
-            }
-            lede="Charles Messier’in 110 nesnelik kataloğundan kuzey göğünün en görkemli 6 derin uzay hedefi: galaksiler, gaz bulutsuları ve yıldız kümeleri."
-          />
-          <MessierDeepSkyRadar />
-        </section>
-
-        {/* 01.5 - Polaris Navigation & Axial Precession */}
-        <section>
-          <SectionHead
-            index="01.5"
-            kicker="Gök kutbu & zamansal yalpalama"
-            title={
-              <>
-                Kutup yıldızı & <Em>presesyon çemberi</Em>
-              </>
-            }
-            lede="Büyük Ayı üzerinden 5x yıldız atlama (star-hopping) kılavuzu ve Dünyanın 25.772 yıllık presesyon döngüsünde kutup yıldızlarının değişimi."
-          />
-          <PolarisPrecessionHop />
+          <LabDeck labs={TOOLS} prefix="A" accent="var(--lime)" />
         </section>
       </div>
     </div>

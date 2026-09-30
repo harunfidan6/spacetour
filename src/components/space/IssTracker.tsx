@@ -3,15 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Satellite,
-  Radio,
   Compass,
-  ArrowUpRight,
   Activity,
   Eye,
-  MapPin,
   Clock,
   Sparkles
 } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface IssData {
   latitude: number;
@@ -113,54 +111,56 @@ export function IssTracker() {
   }, []);
 
   return (
-    <div className="rounded-3xl border border-primary/30 bg-card-bg/75 p-6 backdrop-blur-md shadow-2xl space-y-5">
+    <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
+      <Ticks />
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-card-border pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-4">
         <div className="flex items-center gap-2">
-          <Satellite className="h-5 w-5 text-primary animate-pulse" />
-          <h3 className="font-bold text-foreground text-sm uppercase tracking-wider font-mono">
-            ISS • Uluslararası Uzay İstasyonu Canlı Yörüngesi
+          <Satellite className="h-4 w-4 text-solar animate-pulse" />
+          <h3 className="display display-tight text-xl text-paper sm:text-2xl">
+            ISS · Uluslararası Uzay İstasyonu Canlı Yörüngesi
           </h3>
         </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-lime/10 border border-lime/20 px-2.5 py-0.5 text-[10px] font-mono text-lime font-bold">
-          <span className="h-1.5 w-1.5 rounded-full bg-lime animate-ping" />
+        <span className="flex items-center gap-1.5 border border-lime/30 bg-lime/10 px-2.5 py-1 text-[10px] font-mono text-lime font-bold uppercase tracking-wider">
+          <span className="h-1.5 w-1.5 bg-lime animate-ping" />
           YÖRÜNGEDE 7 ASTRONOT
         </span>
       </div>
 
       {/* Real-time Telemetry Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-        <div className="rounded-2xl bg-background/50 p-3 border border-card-border/60">
-          <span className="text-[10px] text-text-secondary block">ENLEM</span>
-          <span className="text-base font-black text-foreground">
+        <div className="bg-ink-2 p-3 border border-line">
+          <span className="text-[10px] text-muted block uppercase tracking-wider">ENLEM</span>
+          <span className="text-base font-bold text-paper mt-0.5 block">
             {data.latitude >= 0 ? `${data.latitude}° K` : `${Math.abs(data.latitude)}° G`}
           </span>
         </div>
 
-        <div className="rounded-2xl bg-background/50 p-3 border border-card-border/60">
-          <span className="text-[10px] text-text-secondary block">BOYLAM</span>
-          <span className="text-base font-black text-foreground">
+        <div className="bg-ink-2 p-3 border border-line">
+          <span className="text-[10px] text-muted block uppercase tracking-wider">BOYLAM</span>
+          <span className="text-base font-bold text-paper mt-0.5 block">
             {data.longitude >= 0 ? `${data.longitude}° D` : `${Math.abs(data.longitude)}° B`}
           </span>
         </div>
 
-        <div className="rounded-2xl bg-background/50 p-3 border border-card-border/60">
-          <span className="text-[10px] text-text-secondary block">İRTİFA</span>
-          <span className="text-base font-black text-primary">{data.altitude} km</span>
+        <div className="bg-ink-2 p-3 border border-line">
+          <span className="text-[10px] text-muted block uppercase tracking-wider">İRTİFA</span>
+          <span className="text-base font-bold text-solar mt-0.5 block">{data.altitude} km</span>
         </div>
 
-        <div className="rounded-2xl bg-background/50 p-3 border border-card-border/60">
-          <span className="text-[10px] text-text-secondary block">HIZ</span>
-          <span className="text-base font-black text-accent">{data.velocity.toLocaleString()} km/s</span>
+        <div className="bg-ink-2 p-3 border border-line">
+          <span className="text-[10px] text-muted block uppercase tracking-wider">HIZ</span>
+          <span className="text-base font-bold text-paper mt-0.5 block">{data.velocity.toLocaleString()} km/s</span>
         </div>
       </div>
 
       {/* Visible Passes for Turkish Cities Section */}
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/5 pb-2">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-white">
-            <Eye size={14} className="text-cyan-400" />
-            <span>Türkiye Üzerinden Çıplak Gözle Geçiş Tahmini</span>
+      <div className="border border-line bg-ink-2 p-4 space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-line pb-2.5">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-paper">
+            <Eye size={14} className="text-solar" />
+            <span className="uppercase tracking-wider">Türkiye Üzerinden Çıplak Gözle Geçiş Tahmini</span>
           </div>
 
           {/* City selector pills */}
@@ -169,10 +169,10 @@ export function IssTracker() {
               <button
                 key={cityName}
                 onClick={() => setSelectedCity(cityName)}
-                className={`px-2 py-0.5 rounded-lg transition-colors cursor-pointer ${
+                className={`px-2 py-0.5 border text-xs uppercase tracking-wider transition-colors cursor-pointer ${
                   selectedCity === cityName
-                    ? 'bg-primary text-black font-bold'
-                    : 'text-text-secondary hover:text-white'
+                    ? 'border-solar bg-solar text-ink font-bold'
+                    : 'border-transparent text-muted hover:text-paper'
                 }`}
               >
                 {cityName}
@@ -183,43 +183,43 @@ export function IssTracker() {
 
         {/* Selected City Pass Card */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-          <div className="p-2.5 rounded-xl bg-background/60 border border-white/5">
-            <span className="text-[10px] text-text-secondary block">SIRADAKİ GÖRÜNÜR GEÇİŞ</span>
-            <span className="text-sm font-bold text-white flex items-center gap-1 mt-0.5">
-              <Clock size={12} className="text-primary" />
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">SIRADAKİ GÖRÜNÜR GEÇİŞ</span>
+            <span className="text-sm font-bold text-paper flex items-center gap-1.5 mt-1">
+              <Clock size={12} className="text-solar" />
               {cityPass.nextPassTime}
             </span>
-            <span className="text-[10px] text-primary block mt-0.5">Süre: {cityPass.duration}</span>
+            <span className="text-[10px] text-solar block mt-1">Süre: {cityPass.duration}</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-background/60 border border-white/5">
-            <span className="text-[10px] text-text-secondary block">GÖRÜNÜR PARLAKLIK</span>
-            <span className="text-sm font-bold text-amber-300 flex items-center gap-1 mt-0.5">
-              <Sparkles size={12} />
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">GÖRÜNÜR PARLAKLIK</span>
+            <span className="text-sm font-bold text-paper flex items-center gap-1.5 mt-1">
+              <Sparkles size={12} className="text-solar" />
               {cityPass.brightness}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">Yükseklik: {cityPass.maxElevation}</span>
+            <span className="text-[10px] text-muted block mt-1">Yükseklik: {cityPass.maxElevation}</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-background/60 border border-white/5">
-            <span className="text-[10px] text-text-secondary block">GÖKYÜZÜ ROTASI</span>
-            <span className="text-xs font-bold text-cyan-300 flex items-center gap-1 mt-0.5">
-              <Compass size={12} />
+          <div className="p-3 bg-ink border border-line">
+            <span className="text-[10px] text-muted block uppercase tracking-wider">GÖKYÜZÜ ROTASI</span>
+            <span className="text-xs font-bold text-paper flex items-center gap-1.5 mt-1">
+              <Compass size={12} className="text-lime" />
               {cityPass.direction}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-0.5">Işıksız gökyüzünde net izlenir</span>
+            <span className="text-[10px] text-muted block mt-1">Işıksız gökyüzünde net izlenir</span>
           </div>
         </div>
       </div>
 
       {/* Footer Info */}
-      <div className="flex flex-wrap items-center justify-between text-xs text-text-secondary pt-1 font-mono">
+      <div className="flex flex-wrap items-center justify-between text-xs text-muted pt-1 font-mono">
         <div className="flex items-center gap-2">
-          <Activity size={14} className="text-primary" />
-          <span>Optik Durum: <strong className="text-foreground">{data.visibility}</strong></span>
+          <Activity size={14} className="text-solar" />
+          <span>Optik Durum: <strong className="text-paper">{data.visibility}</strong></span>
         </div>
         <div>
-          Dünya çevresinde bir tur: <strong className="text-foreground">~92.7 dakika (Günde 16 gün doğumu)</strong>
+          Dünya çevresinde bir tur: <strong className="text-paper">~92.7 dakika (Günde 16 gün doğumu)</strong>
         </div>
       </div>
     </div>

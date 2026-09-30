@@ -1,7 +1,13 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Eye, Sparkles, Sliders, Info, Zap, Shield, Compass, ArrowLeftRight } from 'lucide-react';
+import {
+  Eye,
+  Sparkles,
+  Sliders,
+  Info,
+  ArrowLeftRight
+} from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface ComparisonTarget {
@@ -135,19 +141,25 @@ export function WebbHubbleCompareSlider() {
     []
   );
 
-  const onMouseDown = () => setIsDragging(true);
-  const onMouseUp = () => setIsDragging(false);
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+    setIsDragging(true);
+    handlePointerMove(e.clientX);
+  };
 
-  const onMouseMove = (e: React.MouseEvent) => {
+  const handlePointerMoveEvent = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isDragging) {
       handlePointerMove(e.clientX);
     }
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-      handlePointerMove(e.touches[0].clientX);
-    }
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
+    setIsDragging(false);
   };
 
   return (
@@ -218,12 +230,11 @@ export function WebbHubbleCompareSlider() {
       {/* Split Comparison Interactive Slider Container */}
       <div
         ref={containerRef}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
-        onMouseMove={onMouseMove}
-        onTouchMove={onTouchMove}
-        className="relative h-[380px] sm:h-[480px] md:h-[560px] w-full overflow-hidden cursor-ew-resize select-none border border-line bg-black"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMoveEvent}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        className="relative h-[380px] sm:h-[480px] md:h-[560px] w-full overflow-hidden cursor-ew-resize select-none border border-line bg-black touch-none"
       >
         {/* Layer 1: Right Side - James Webb (Infrared) Background */}
         <div className="absolute inset-0 w-full h-full">

@@ -21,7 +21,7 @@ export interface CustomEventRecord {
   type: string;
   label: string;
   path: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   sessionId: string;
 }
 

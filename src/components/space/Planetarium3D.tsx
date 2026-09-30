@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { stars, constellationLines, deepSkyObjects, StarData, DeepSkyObject } from '@/data/stars';
@@ -16,18 +16,15 @@ import { ArCameraOverlay } from './ArCameraOverlay';
 import { Ticks } from '@/components/motion/primitives';
 import {
   Compass,
-  Sparkles,
   Layers,
   Search,
-  Eye,
   Camera,
   MapPin,
-  Clock,
   Play,
   Pause,
   RefreshCw,
-  Sliders,
-  ChevronDown
+  ChevronDown,
+  Moon
 } from 'lucide-react';
 
 const SPHERE_RADIUS = 90;
@@ -148,17 +145,20 @@ function RealTimeStars({
               opacity={isSelected ? 0.95 : 0.4}
             />
 
-            {/* Star Name Label */}
-            {isSelected && (
-              <Html distanceFactor={40} center>
-                <div className="pointer-events-none select-none rounded-full border border-primary/80 bg-ink/80 px-2.5 py-0.5 text-[10px] font-mono font-bold text-primary shadow-[0_0_15px_rgba(255,91,34,0.6)] backdrop-blur-md">
-                  {star.turkishName || star.name}
-                </div>
-              </Html>
-            )}
           </mesh>
         );
       })}
+
+      {/* Selected star label — one persistent label that follows the selection */}
+      <Html position={(selectedStar && starPositionsMap.get(selectedStar.name)) || [0, 0, 0]} distanceFactor={40} center>
+        <div
+          className={`pointer-events-none select-none rounded-full border border-primary/80 bg-ink/80 px-2.5 py-0.5 text-[10px] font-mono font-bold text-primary shadow-[0_0_15px_rgba(255,91,34,0.6)] backdrop-blur-md ${
+            selectedStar ? '' : 'hidden'
+          }`}
+        >
+          {selectedStar ? selectedStar.turkishName || selectedStar.name : ''}
+        </div>
+      </Html>
     </>
   );
 }
@@ -181,8 +181,6 @@ function RealTimeConstellationLines({
   nightVision: boolean;
   opacity: number;
 }) {
-  if (!visible) return null;
-
   const linesGeometry = useMemo(() => {
     const points: THREE.Vector3[] = [];
 
@@ -220,8 +218,11 @@ function RealTimeConstellationLines({
     return new THREE.BufferGeometry().setFromPoints(points);
   }, [location, lst, useLocalHorizon]);
 
+  // lst ticks every second: free each superseded geometry's GPU buffers.
+  useEffect(() => () => linesGeometry.dispose(), [linesGeometry]);
+
   return (
-    <lineSegments geometry={linesGeometry}>
+    <lineSegments geometry={linesGeometry} visible={visible}>
       <lineBasicMaterial
         color={nightVision ? '#880000' : '#4da6ff'}
         transparent
@@ -241,8 +242,6 @@ function LocalGroundHorizon({
   visible: boolean;
   nightVision: boolean;
 }) {
-  if (!visible) return null;
-
   const cardinals = [
     { label: 'K (0°)', az: 0, color: '#00e5ff' },
     { label: 'D (90°)', az: 90, color: '#ffffff' },
@@ -251,7 +250,7 @@ function LocalGroundHorizon({
   ];
 
   return (
-    <group>
+    <group visible={visible}>
       {/* 1. Ground Disk (Horizon Mask below feet) */}
       <mesh position={[0, -0.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[SPHERE_RADIUS * 0.98, 64]} />
@@ -279,7 +278,7 @@ function LocalGroundHorizon({
         const [x, y, z] = altAzToCartesian(1.2, c.az, SPHERE_RADIUS * 0.92);
         return (
           <Html key={c.label} position={[x, y, z]} center>
-            <div className={`pointer-events-none select-none rounded-md px-2 py-0.5 text-xs font-mono font-bold tracking-widest border backdrop-blur-md ${
+            <div className={`pointer-events-none select-none rounded-md px-2 py-0.5 text-xs font-mono font-bold tracking-widest border backdrop-blur-md ${visible ? '' : 'hidden'} ${
               nightVision
                 ? 'border-red-800 bg-red-950/80 text-red-400'
                 : 'border-paper/10 bg-ink/60 text-paper shadow-[0_0_10px_rgba(0,0,0,0.8)]'
@@ -456,11 +455,12 @@ export function Planetarium3D() {
 
       {/* 2. 3D WebGL Canvas */}
       <Canvas
+        dpr={[1, 1.5]}
         camera={{ position: [0, 0, 0.1], fov: 65, near: 0.1, far: 300 }}
         className="h-full w-full cursor-grab active:cursor-grabbing z-10"
-        gl={{ alpha: true }}
+        gl={{ alpha: true, powerPreference: 'high-performance' }}
       >
-        <color attach="background" args={[isArActive ? 'transparent' : (nightVision ? '#090002' : '#020206')]} />
+        {!isArActive && <color attach="background" args={[nightVision ? '#090002' : '#020206']} />}
 
         {/* Look-around Orbit Controls */}
         <OrbitControls
@@ -640,6 +640,8 @@ export function Planetarium3D() {
 
           {/* Horizon Toggle */}
           <button
+            type="button"
+            aria-pressed={useLocalHorizon}
             onClick={() => setUseLocalHorizon(!useLocalHorizon)}
             className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
               useLocalHorizon
@@ -654,6 +656,9 @@ export function Planetarium3D() {
 
           {/* Constellation Toggle */}
           <button
+            type="button"
+            aria-pressed={showConstellations}
+            aria-label="Takımyıldız çizgileri"
             onClick={() => setShowConstellations(!showConstellations)}
             className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
               showConstellations
@@ -665,8 +670,26 @@ export function Planetarium3D() {
             <Layers size={13} />
           </button>
 
+          {/* Red night-vision mode (preserves dark adaptation at the eyepiece) */}
+          <button
+            type="button"
+            aria-pressed={nightVision}
+            aria-label="Kırmızı gece görüş modu"
+            onClick={() => setNightVision(!nightVision)}
+            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
+              nightVision
+                ? 'border-rose-signal bg-rose-signal/25 text-rose-signal font-bold'
+                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            }`}
+            title="Kırmızı Gece Görüş Modu"
+          >
+            <Moon size={13} />
+          </button>
+
           {/* Time Flow Speed */}
           <button
+            type="button"
+            aria-label="Zaman hızı: canlı, 60 kat hızlı veya duraklatılmış"
             onClick={() => setTimeFlowRate((prev) => (prev === 1 ? 60 : prev === 60 ? 0 : 1))}
             className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
               timeFlowRate > 1

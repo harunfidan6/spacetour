@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 // Exportable custom event tracking utility
-export function trackEvent(eventName: string, metadata?: Record<string, any>) {
+export function trackEvent(eventName: string, metadata?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
   try {
     const sessionId = getOrCreateSessionId();

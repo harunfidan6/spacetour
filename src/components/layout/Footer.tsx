@@ -43,7 +43,7 @@ export function Footer() {
             <Magnetic>
               <Link
                 href="/harita"
-                data-cursor="Aç"
+               
                 className="grid h-32 w-32 place-items-center rounded-full bg-paper text-center text-ink transition-colors hover:bg-lime"
               >
                 <span className="label font-semibold leading-snug">

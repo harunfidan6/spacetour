@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX, Radio, Activity } from 'lucide-react';
+import { VolumeX } from 'lucide-react';
 
 export function CosmicAudioEngine() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const droneOscRef = useRef<OscillatorNode | null>(null);
-  const pulsarOscRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
 
   const toggleSound = () => {
@@ -21,7 +20,7 @@ export function CosmicAudioEngine() {
     } else {
       // Start procedural ambient space drone
       try {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext!;
         const ctx = new AudioContextClass();
         audioCtxRef.current = ctx;
 
@@ -71,27 +70,25 @@ export function CosmicAudioEngine() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={toggleSound}
-        className={`flex items-center gap-2 rounded-2xl border px-3.5 py-1.5 text-xs font-mono font-bold backdrop-blur-md transition-all cursor-pointer ${
-          isPlaying
-            ? 'border-primary bg-primary/20 text-primary shadow-[0_0_20px_rgba(255,91,34,0.4)]'
-            : 'border-card-border bg-background/80 text-text-secondary hover:text-paper hover:border-primary/40'
-        }`}
-        title={isPlaying ? 'Kozmik Ambiyansı Durdur' : 'Kozmik Frekans Ambiyansını Başlat'}
-      >
-        {isPlaying ? <Volume2 size={15} className="animate-pulse" /> : <VolumeX size={15} />}
-        <span>{isPlaying ? 'Kozmik Ses Aktif' : 'Uzay Sesi'}</span>
-
-        {isPlaying && (
-          <span className="flex items-center gap-0.5 ml-1">
-            <span className="h-2 w-0.5 bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="h-3.5 w-0.5 bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="h-2 w-0.5 bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
-          </span>
-        )}
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={toggleSound}
+      aria-pressed={isPlaying}
+      aria-label={isPlaying ? 'Uzay sesini kapat' : 'Uzay sesini aç'}
+      title={isPlaying ? 'Kozmik ambiyansı durdur' : 'Kozmik frekans ambiyansını başlat'}
+      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-colors cursor-pointer ${
+        isPlaying ? 'border-solar bg-solar text-ink' : 'border-line bg-ink/60 text-paper/70 hover:border-paper/50 hover:text-paper'
+      }`}
+    >
+      {isPlaying ? (
+        <span className="flex h-3.5 items-end gap-[2px]" aria-hidden>
+          <span className="w-[2px] animate-[eq_0.9s_ease-in-out_infinite_alternate] bg-ink" style={{ height: '100%' }} />
+          <span className="w-[2px] animate-[eq_0.7s_ease-in-out_infinite_alternate] bg-ink" style={{ height: '100%', animationDelay: '-0.3s' }} />
+          <span className="w-[2px] animate-[eq_1.1s_ease-in-out_infinite_alternate] bg-ink" style={{ height: '100%', animationDelay: '-0.6s' }} />
+        </span>
+      ) : (
+        <VolumeX size={15} />
+      )}
+    </button>
   );
 }

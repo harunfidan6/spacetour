@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Flame, AlertTriangle, ShieldAlert, Sparkles, Activity, Crosshair } from 'lucide-react';
+import { Flame } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface PresetAsteroid {
   name: string;
@@ -110,25 +111,31 @@ export function AsteroidImpactSimulator() {
   }, [diameter, speed, megatonsTNT]);
 
   return (
-    <div className="rounded-3xl border border-accent/30 bg-card-bg/75 p-6 backdrop-blur-md shadow-2xl space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-card-border pb-3">
-        <div className="flex items-center gap-2">
-          <Flame className="h-5 w-5 text-accent animate-pulse" />
-          <div>
-            <h3 className="font-bold text-foreground text-sm uppercase tracking-wider font-mono">
-              Kozmik Çarpışma & Asteroit Etki Simülatörü
-            </h3>
-            <span className="text-[10px] text-text-secondary font-mono">KİNETİK ENERJİ & KRATER HESAPLAYICI</span>
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
+        <div>
+          <div className="label flex items-center gap-2 text-solar">
+            <Flame className="h-4 w-4 animate-pulse" />
+            <span>KİNETİK ENERJİ & KRATER HESAPLAYICI</span>
           </div>
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
+            Asteroit <span className="serif-i text-solar">Çarpışma Simülatörü</span>
+          </h3>
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
+            Farklı çap ve hızlardaki göktaşlarının Dünya atmosferine girişinde açığa çıkaracağı nükleer eşdeğer enerjiyi ve şok dalgasını hesaplayın.
+          </p>
         </div>
-        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20 font-bold">
+        <span className="label text-solar bg-ink-2 border border-line px-3 py-1.5 shrink-0">
           GEZEGEN SAVUNMA BİLİMİ (NASA DART)
         </span>
       </div>
 
       {/* Preset Buttons */}
-      <div className="space-y-1.5 font-mono text-xs">
-        <span className="text-[10px] text-text-secondary uppercase">TARİHİ VE POTANSİYEL ASTEROİT SENARYOLARI:</span>
+      <div className="space-y-2 font-mono text-xs">
+        <span className="label text-muted">TARİHİ VE POTANSİYEL ASTEROİT SENARYOLARI:</span>
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {PRESETS.map((p) => (
             <button
@@ -137,7 +144,7 @@ export function AsteroidImpactSimulator() {
                 setDiameter(p.diameterM);
                 setSpeed(p.speedKmS);
               }}
-              className="px-3 py-1.5 rounded-xl bg-background/60 border border-card-border/60 hover:border-accent/50 text-text-secondary hover:text-paper whitespace-nowrap transition-all cursor-pointer"
+              className="px-3 py-1.5 border border-line bg-ink-2 hover:bg-ink-3 text-paper/80 hover:text-paper whitespace-nowrap transition-colors cursor-pointer text-xs"
             >
               {p.name} ({p.diameterM}m)
             </button>
@@ -146,11 +153,11 @@ export function AsteroidImpactSimulator() {
       </div>
 
       {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-mono text-xs">
-        <div className="p-4 rounded-2xl bg-background/50 border border-card-border/60 space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px border border-line bg-line font-mono text-xs">
+        <div className="p-5 bg-ink-2 space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-text-secondary">ASTEROİT ÇAPI</span>
-            <span className="text-base font-bold text-accent">
+            <span className="label text-muted">ASTEROİT ÇAPI</span>
+            <span className="display display-tight text-base font-bold text-solar">
               {diameter >= 1000 ? `${(diameter / 1000).toFixed(1)} km` : `${diameter} metre`}
             </span>
           </div>
@@ -161,15 +168,15 @@ export function AsteroidImpactSimulator() {
             step="10"
             value={diameter}
             onChange={(e) => setDiameter(Number(e.target.value))}
-            className="w-full accent-accent bg-accent/20 h-2 rounded-lg cursor-pointer"
+            className="w-full accent-solar bg-ink h-1.5 cursor-pointer"
           />
-          <span className="text-[10px] text-text-secondary block">Min: 10m • Max: 10 km (Küresel Yok Oluş)</span>
+          <span className="label text-[10px] text-muted block">Min: 10m • Max: 10 km (Küresel Yok Oluş)</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-background/50 border border-card-border/60 space-y-2">
+        <div className="p-5 bg-ink-2 space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-text-secondary">GİRİŞ HIZI</span>
-            <span className="text-base font-bold text-primary">{speed} km/s</span>
+            <span className="label text-muted">GİRİŞ HIZI</span>
+            <span className="display display-tight text-base font-bold text-paper">{speed} km/s</span>
           </div>
           <input
             type="range"
@@ -178,60 +185,60 @@ export function AsteroidImpactSimulator() {
             step="1"
             value={speed}
             onChange={(e) => setSpeed(Number(e.target.value))}
-            className="w-full accent-primary bg-primary/20 h-2 rounded-lg cursor-pointer"
+            className="w-full accent-paper bg-ink h-1.5 cursor-pointer"
           />
-          <span className="text-[10px] text-text-secondary block">Tipik Yörünge Hızı: 15-30 km/s</span>
+          <span className="label text-[10px] text-muted block">Tipik Yörünge Hızı: 15-30 km/s</span>
         </div>
       </div>
 
       {/* Impact Visualizer & Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        <div className="lg:col-span-6 rounded-2xl overflow-hidden border border-card-border/60 relative">
+        <div className="lg:col-span-6 border border-line bg-black relative overflow-hidden">
           <canvas ref={canvasRef} className="w-full h-[220px] block" />
-          <div className="pointer-events-none absolute top-3 left-4 flex items-center gap-1.5 text-[10px] font-mono text-accent bg-ink/60 px-2 py-0.5 rounded backdrop-blur-xs">
+          <div className="pointer-events-none absolute top-3 left-4 flex items-center gap-1.5 label text-solar bg-ink/80 px-2 py-0.5 border border-line backdrop-blur-xs">
             <Flame size={12} />
             <span>KİNETİK PATLAMA ANİMASYONU</span>
           </div>
         </div>
 
-        <div className="lg:col-span-6 grid grid-cols-2 gap-3 text-xs font-mono">
-          <div className="p-3.5 rounded-2xl bg-background/60 border border-card-border/60">
-            <span className="text-[10px] text-text-secondary block">AÇIĞA ÇIKAN ENERJİ</span>
-            <span className="text-lg font-black text-accent block mt-0.5">
+        <div className="lg:col-span-6 grid grid-cols-2 gap-px border border-line bg-line text-xs font-mono">
+          <div className="p-4 bg-ink space-y-1">
+            <span className="label text-muted block">AÇIĞA ÇIKAN ENERJİ</span>
+            <span className="display display-tight text-lg font-black text-solar block">
               {megatonsTNT < 0.01 ? '<0.01 MT' : megatonsTNT.toLocaleString(undefined, { maximumFractionDigits: 1 })} Megaton
             </span>
-            <span className="text-[10px] text-text-secondary block mt-1">
-              ~{hiroshimaEquiv.toLocaleString()}x Hiroşima Bombası
+            <span className="label text-[10px] text-muted block">
+              ~{hiroshimaEquiv.toLocaleString()}x Hiroşima
             </span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-background/60 border border-card-border/60">
-            <span className="text-[10px] text-text-secondary block">KRATER ÇAPI</span>
-            <span className="text-lg font-black text-foreground block mt-0.5">
+          <div className="p-4 bg-ink space-y-1">
+            <span className="label text-muted block">KRATER ÇAPI</span>
+            <span className="display display-tight text-lg font-black text-paper block">
               {craterDiameterKm < 1 ? `${Math.round(craterDiameterKm * 1000)} metre` : `${craterDiameterKm} km`}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-1">Oluşacak kalıcı krater</span>
+            <span className="label text-[10px] text-muted block">Oluşacak kalıcı krater</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-background/60 border border-card-border/60">
-            <span className="text-[10px] text-text-secondary block">ŞOK DALGASI MENZİLİ</span>
-            <span className="text-lg font-black text-yellow-400 block mt-0.5">
+          <div className="p-4 bg-ink space-y-1">
+            <span className="label text-muted block">ŞOK DALGASI MENZİLİ</span>
+            <span className="display display-tight text-lg font-black text-gold block">
               {shockwaveRadiusKm} km
             </span>
-            <span className="text-[10px] text-text-secondary block mt-1">Binaları yıkan hava şoku</span>
+            <span className="label text-[10px] text-muted block">Binaları yıkan hava şoku</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-background/60 border border-card-border/60">
-            <span className="text-[10px] text-text-secondary block">KÜRESEL TEHLİKE DÜZEYİ</span>
+          <div className="p-4 bg-ink space-y-1">
+            <span className="label text-muted block">KÜRESEL TEHLİKE DÜZEYİ</span>
             <span
-              className={`text-sm font-bold block mt-1 ${
+              className={`display display-tight text-sm font-bold block ${
                 diameter < 50
                   ? 'text-lime'
                   : diameter < 500
-                  ? 'text-yellow-400'
+                  ? 'text-gold'
                   : diameter < 2000
-                  ? 'text-accent'
-                  : 'text-red-500 animate-pulse'
+                  ? 'text-solar'
+                  : 'text-rose-signal animate-pulse'
               }`}
             >
               {diameter < 50
@@ -242,7 +249,7 @@ export function AsteroidImpactSimulator() {
                 ? 'Kıtasal Felaket'
                 : 'KÜRESEL YOK OLUŞ'}
             </span>
-            <span className="text-[10px] text-text-secondary block mt-1">Torino Ölçeği Analizi</span>
+            <span className="label text-[10px] text-muted block">Torino Ölçeği Analizi</span>
           </div>
         </div>
       </div>

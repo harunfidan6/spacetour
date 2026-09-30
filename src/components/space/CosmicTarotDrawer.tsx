@@ -4,18 +4,15 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   Shuffle,
-  Eye,
   Flame,
   Globe2,
   Wind,
   Droplets,
-  RotateCw,
-  Compass,
-  Star,
   Shield,
   Lightbulb,
   HeartHandshake
 } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 export interface CosmicCard {
   id: string;
@@ -233,20 +230,20 @@ export function CosmicTarotDrawer() {
   };
 
   return (
-    <div id="kozmik-tarot" className="rounded-3xl border border-paper/10 bg-ink/60 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-8">
+    <div id="kozmik-tarot" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-paper/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Sparkles className="h-5 w-5 text-gold animate-pulse" />
-            <span className="text-[10px] font-mono text-gold font-bold uppercase tracking-widest">
-              GÜNÜN KOZMİK ARKETİP KARTI
-            </span>
+          <div className="label flex items-center gap-2 text-gold">
+            <Sparkles className="h-4 w-4 animate-pulse" />
+            <span>GÜNÜN KOZMİK ARKETİP KARTI</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-paper">
-            Kozmik Tarot & Bilinçaltı Rehberi
+          <h2 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
+            Kozmik Tarot <span className="serif-i text-gold">& Bilinçaltı Rehberi</span>
           </h2>
-          <p className="text-xs text-muted mt-1 max-w-xl">
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
             Carl Gustav Jung&apos;un arketip psikolojisi ve kadim Zodyak sembolizmiyle harmanlanan günlük kozmik kartınızı çekin ve bugüne dair ilhamınızı keşfedin.
           </p>
         </div>
@@ -254,7 +251,7 @@ export function CosmicTarotDrawer() {
         <button
           onClick={handleDrawCard}
           disabled={isFlipping}
-          className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-gold via-primary to-rose-signal hover:from-gold hover:to-rose-signal text-ink font-bold text-xs font-mono shadow-[0_0_20px_rgba(251,191,36,0.3)] transition-all cursor-pointer transform active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-3 border border-line bg-gold hover:bg-paper text-ink font-bold text-xs font-mono transition-colors cursor-pointer disabled:opacity-50 shrink-0"
         >
           <Shuffle size={16} className={isFlipping ? 'animate-spin' : ''} />
           <span>{hasDrawn ? 'YENİ BİR KART ÇEK' : 'GÜNÜN KARTINI ÇEK'}</span>
@@ -266,7 +263,7 @@ export function CosmicTarotDrawer() {
         {/* Visual Tarot Card Deck (3D perspective feel) */}
         <div className="lg:col-span-5 flex justify-center">
           <div
-            className={`w-64 sm:w-72 h-96 sm:h-[420px] rounded-3xl border-2 border-gold/40 bg-gradient-to-br ${card.cardColor} p-6 flex flex-col justify-between shadow-[0_0_40px_rgba(251,191,36,0.15)] relative overflow-hidden transition-all duration-500 transform ${
+            className={`w-64 sm:w-72 h-96 sm:h-[420px] border border-gold/40 bg-gradient-to-br ${card.cardColor} p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(251,191,36,0.12)] relative overflow-hidden transition-all duration-500 transform ${
               isFlipping ? 'scale-90 rotate-6 opacity-30 blur-sm' : 'scale-100 rotate-0 opacity-100'
             }`}
           >
@@ -277,59 +274,59 @@ export function CosmicTarotDrawer() {
             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-gold/60">✦</div>
 
             {/* Card Top: Number & Symbol */}
-            <div className="flex items-center justify-between border-b border-paper/10 pb-3">
+            <div className="flex items-center justify-between border-b border-line pb-3">
               <span className="font-mono text-lg font-black text-gold tracking-widest">
                 {card.number}
               </span>
-              <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">
+              <span className="glyph text-3xl text-gold">
                 {card.symbol}
               </span>
             </div>
 
             {/* Card Middle: Archetype Title & Emblem */}
             <div className="text-center space-y-3 my-auto">
-              <div className="h-20 w-20 mx-auto rounded-full bg-paper/5 border border-paper/15 flex items-center justify-center text-4xl shadow-inner">
+              <div className="h-20 w-20 mx-auto rounded-full bg-ink/60 border border-line flex items-center justify-center text-4xl shadow-inner glyph text-gold">
                 {card.symbol}
               </div>
-              <h3 className="text-2xl font-black text-paper tracking-wide">
+              <h3 className="display display-tight text-2xl font-black text-paper tracking-wide">
                 {card.name}
               </h3>
-              <p className="text-xs font-mono text-gold/90 uppercase tracking-wider">
+              <p className="label text-gold/90 uppercase tracking-wider">
                 {card.archetype}
               </p>
             </div>
 
             {/* Card Bottom: Element & Astro Link */}
-            <div className="border-t border-paper/10 pt-3 flex items-center justify-between text-[11px] font-mono text-paper/75">
+            <div className="border-t border-line pt-3 flex items-center justify-between text-[11px] font-mono text-paper/75">
               <span className="flex items-center gap-1 font-bold">
                 {elementIcons[card.element]}
                 {card.element}
               </span>
-              <span className="text-muted">{card.associatedZodiacOrPlanet}</span>
+              <span className="label text-muted">{card.associatedZodiacOrPlanet}</span>
             </div>
           </div>
         </div>
 
         {/* Card Guidance & Psycho-Astrological Reading */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-gold uppercase tracking-widest">
-                KART ARMETİPİ & ANLAMI
+              <span className="label text-gold">
+                KART ARKETİPİ & ANLAMI
               </span>
-              <span className="text-[10px] font-mono bg-paper/10 px-2 py-0.5 rounded-full text-paper/75">
-                {card.associatedZodiacOrPlanet}
+              <span className="label text-muted">
+                · {card.associatedZodiacOrPlanet}
               </span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-paper">
-              {card.name} — {card.archetype}
+            <h3 className="display display-tight text-2xl sm:text-3xl font-black text-paper">
+              {card.name} — <span className="serif-i text-gold">{card.archetype}</span>
             </h3>
           </div>
 
           {/* 1. Main Daily Guidance */}
-          <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 space-y-2">
-            <div className="flex items-center gap-2 text-gold font-mono text-xs font-bold uppercase tracking-wider">
-              <Lightbulb size={16} className="text-gold" />
+          <div className="border border-line bg-ink-2 p-5 space-y-2">
+            <div className="label text-gold flex items-center gap-2">
+              <Lightbulb size={14} className="text-gold" />
               <span>Günün Kozmik Rehberliği</span>
             </div>
             <p className="text-sm text-paper/85 leading-relaxed font-sans">
@@ -338,29 +335,29 @@ export function CosmicTarotDrawer() {
           </div>
 
           {/* 2. Shadow Warning */}
-          <div className="rounded-2xl border border-rose-signal/20 bg-rose-signal/10 p-4 space-y-1">
-            <div className="flex items-center gap-2 text-rose-signal font-mono text-xs font-bold uppercase tracking-wider">
+          <div className="border border-line bg-ink-2 p-5 space-y-1">
+            <div className="label text-rose-signal flex items-center gap-2">
               <Shield size={14} className="text-rose-signal" />
               <span>Gölge Yüzü & Dikkat Edilmesi Gerekenler</span>
             </div>
-            <p className="text-xs text-paper/75 leading-relaxed font-sans">
+            <p className="text-xs text-paper/75 leading-relaxed font-sans pt-1">
               {card.shadowWarning}
             </p>
           </div>
 
           {/* 3. Daily Affirmation / Mantra */}
-          <div className="rounded-2xl border border-violet/20 bg-violet/10 p-4 space-y-1">
-            <div className="flex items-center gap-2 text-violet font-mono text-xs font-bold uppercase tracking-wider">
+          <div className="border border-line bg-ink-2 p-5 space-y-1">
+            <div className="label text-violet flex items-center gap-2">
               <HeartHandshake size={14} className="text-violet" />
               <span>Günün Olumlaması / Mantrası</span>
             </div>
-            <p className="text-xs sm:text-sm text-violet font-sans italic font-medium leading-relaxed">
+            <p className="text-sm text-paper font-sans serif-i leading-relaxed pt-1">
               &quot;{card.affirmation}&quot;
             </p>
           </div>
 
-          <div className="pt-2 flex items-center justify-between text-xs font-mono text-muted">
-            <span>Toplam Deste: <strong>{COSMIC_TAROT_DECK.length} Kozmik Arketip</strong></span>
+          <div className="pt-2 flex items-center justify-between label text-muted">
+            <span>Toplam Deste: <strong className="text-paper">{COSMIC_TAROT_DECK.length} Kozmik Arketip</strong></span>
             <button
               onClick={handleDrawCard}
               className="text-gold hover:text-paper transition-colors cursor-pointer flex items-center gap-1 font-bold"

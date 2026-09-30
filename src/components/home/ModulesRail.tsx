@@ -116,7 +116,7 @@ export function ModulesRail() {
                 key={m.href}
                 href={m.href}
                 data-rail-card
-                data-cursor="Aç"
+               
                 className="group relative flex shrink-0 flex-col overflow-hidden text-ink md:h-[72svh] md:max-h-[680px] md:min-h-[480px] md:w-[min(76vw,1080px)] lg:flex-row"
                 style={{ background: r.accent }}
               >

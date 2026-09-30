@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Zap, Activity, ShieldAlert, Compass, Gauge } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
 interface RelativisticWarpHUDProps {
@@ -106,11 +106,7 @@ export function RelativisticWarpHUD({
 
   // Telemetry updates and relativistic calculation
   useEffect(() => {
-    if (!isWarping) {
-      setProgressPercent(0);
-      setWarpFactor(0.1);
-      return;
-    }
+    if (!isWarping) return;
 
     const startTime = performance.now();
     const duration = 2200; // ms
@@ -139,7 +135,12 @@ export function RelativisticWarpHUD({
       }
     }, 45);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Drop back to sub-light readouts once the jump ends.
+      setProgressPercent(0);
+      setWarpFactor(0.1);
+    };
   }, [isWarping]);
 
   // Relativistic Hyperspace Streak Canvas

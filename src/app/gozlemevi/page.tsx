@@ -6,12 +6,32 @@ import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { GozlemeviGraphic } from '@/components/home/ModuleGraphics';
 import { Scramble, Ticks } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
-import { WebbHubbleCompareSlider } from '@/components/space/WebbHubbleCompareSlider';
-import { CosmicRadioSpectrograph } from '@/components/space/CosmicRadioSpectrograph';
-import { MegaObservatoriesRegistry } from '@/components/space/MegaObservatoriesRegistry';
-import { StellarSpectroscopyLab } from '@/components/space/StellarSpectroscopyLab';
-import { ExoplanetTransitLab } from '@/components/space/ExoplanetTransitLab';
-import { CosmicAcademyQuiz } from '@/components/space/CosmicAcademyQuiz';
+import dynamic from 'next/dynamic';
+import { LabDeck, type LabEntry } from '@/components/ui/LabDeck';
+
+function LabLoading() {
+  return (
+    <div className="grid h-[420px] place-items-center border border-line bg-ink-2">
+      <span className="label text-muted">Modül yükleniyor…</span>
+    </div>
+  );
+}
+
+const WebbHubbleCompareSlider = dynamic(() => import('@/components/space/WebbHubbleCompareSlider').then((m) => m.WebbHubbleCompareSlider), { loading: () => <LabLoading /> });
+const CosmicRadioSpectrograph = dynamic(() => import('@/components/space/CosmicRadioSpectrograph').then((m) => m.CosmicRadioSpectrograph), { loading: () => <LabLoading /> });
+const MegaObservatoriesRegistry = dynamic(() => import('@/components/space/MegaObservatoriesRegistry').then((m) => m.MegaObservatoriesRegistry), { loading: () => <LabLoading /> });
+const StellarSpectroscopyLab = dynamic(() => import('@/components/space/StellarSpectroscopyLab').then((m) => m.StellarSpectroscopyLab), { loading: () => <LabLoading /> });
+const ExoplanetTransitLab = dynamic(() => import('@/components/space/ExoplanetTransitLab').then((m) => m.ExoplanetTransitLab), { loading: () => <LabLoading /> });
+const CosmicAcademyQuiz = dynamic(() => import('@/components/space/CosmicAcademyQuiz').then((m) => m.CosmicAcademyQuiz), { loading: () => <LabLoading /> });
+
+const INSTRUMENTS: LabEntry[] = [
+  { id: 'webb-hubble', short: 'Hubble vs Webb', title: 'Hubble vs James Webb', blurb: 'Toz bulutlarının ardındaki proto-yıldızları ve ilk galaksileri kaydırıcıyla karşılaştır.', render: () => <WebbHubbleCompareSlider /> },
+  { id: 'radyo', short: 'Radyo spektrografı', title: 'Kozmik radyo & pulsar spektrografı', blurb: 'Pulsar atımlarını ve Satürn’ün auroral ıslıklarını sese çevir.', render: () => <CosmicRadioSpectrograph /> },
+  { id: 'gozlemevleri', short: 'Mega gözlemevleri', title: 'Dev teleskoplar atlası', blurb: 'Webb’den ELT’ye, DAG Erzurum’dan ALMA’ya insanlığın en büyük gözleri.', render: () => <MegaObservatoriesRegistry /> },
+  { id: 'spektroskopi', short: 'Yıldız spektroskopisi', title: 'Fraunhofer çizgileri & spektral sınıflar', blurb: 'O’dan M’ye tayf tipleri, Balmer serisi ve Doppler kayması.', render: () => <StellarSpectroscopyLab /> },
+  { id: 'transit', short: 'Transit fotometrisi', title: 'Ötegezegen transit ışık eğrisi', blurb: 'Bir gezegen yıldızının önünden geçerken ışıktaki düşüşü ölç.', render: () => <ExoplanetTransitLab /> },
+  { id: 'akademi', short: 'Astrofizik sınavı', title: 'Astrofizik akademisi', blurb: '10 soruluk sınavla bilgini test et, kişisel sertifikanı oluştur.', render: () => <CosmicAcademyQuiz /> },
+];
 
 /* Long → short wavelength, left to right, like a real EM spectrum chart. */
 const BANDS: { id: WavelengthMode; label: string; band: string; desc: string; stop: number }[] = [
@@ -56,7 +76,7 @@ export default function GozlemeviPage() {
         section="Gözlemevi"
         accent="var(--rose)"
         lines={['Spektrum', <Em key="a">gözlemevi</Em>]}
-        size="clamp(3.2rem, 11.5vw, 12rem)"
+        size="clamp(3rem, 9vw, 10.5rem)"
         lede="Evreni yalnızca gözün gördüğü dar bantta değil; Webb’in kızılötesi, Chandra’nın X-ışını ve dev radyo çanaklarının gözünden izle."
         meta={[
           { k: 'Hedef', v: DEEP_SKY_TARGETS.length },
@@ -134,7 +154,7 @@ export default function GozlemeviPage() {
 
         {/* Observation */}
         <div className="grid gap-px border border-line bg-line lg:grid-cols-12">
-          <div ref={viewport} className="ticks relative min-h-[360px] overflow-hidden bg-black sm:min-h-[520px] lg:col-span-7" data-cursor="Gözlem">
+          <div ref={viewport} className="ticks relative min-h-[360px] overflow-hidden bg-black sm:min-h-[520px] lg:col-span-7">
             <Ticks />
             {previous && (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -187,94 +207,18 @@ export default function GozlemeviPage() {
           </div>
         </div>
 
-        {/* 05.2 - Webb vs Hubble Infrared Comparison Deck */}
         <section className="pt-16">
           <SectionHead
             index="05.2"
-            kicker="Kızılötesi derin uzay devrimi"
+            kicker="Gözlem araçları"
             title={
               <>
-                Hubble <Em>vs</Em> James Webb
+                Altı <Em>enstrüman</Em>
               </>
             }
-            lede="Toz bulutlarının ardındaki proto-yıldızları ve 13.1 milyar yıl önceki bebek galaksileri interaktif kaydırıcıyla keşfet."
+            lede="Karşılaştırma kaydırıcısı, radyo spektrografı, dev teleskoplar, yıldız tayfları, ötegezegen avı ve bir sınav. Soldan birini seç."
           />
-          <WebbHubbleCompareSlider />
-        </section>
-
-        {/* 05.3 - Cosmic Radio Spectrograph & Pulsar Audio */}
-        <section className="pt-16">
-          <SectionHead
-            index="05.3"
-            kicker="Elektromanyetik ses laboratuvarı"
-            title={
-              <>
-                Kozmik radyo & <Em>pulsar akustik spektrografı</Em>
-              </>
-            }
-            lede="Nötron yıldızlarının periyodik radyo atımlarını, Satürn’ün auroral ıslıklarını ve yıldızlararası plazmayı canlı dinle."
-          />
-          <CosmicRadioSpectrograph />
-        </section>
-
-        {/* 05.4 - Mega Observatories & Optical Aperture Scale */}
-        <section className="pt-16">
-          <SectionHead
-            index="05.4"
-            kicker="Dev diyaframlar & aynalar atlası"
-            title={
-              <>
-                Karasal & uzay konuşlu <Em>mega gözlemevleri</Em>
-              </>
-            }
-            lede="Webb'in altın berilyum altıgenlerinden ELT'nin 39 metrelik dev aynasına, DAG Erzurum'dan ALMA radyo interferometresine insanlığın en büyük gözleri."
-          />
-          <MegaObservatoriesRegistry />
-        </section>
-
-        {/* 05.5 - Stellar Spectroscopy & Fraunhofer Lines */}
-        <section className="pt-16">
-          <SectionHead
-            index="05.5"
-            kicker="Yıldızların kimyasal parmak izleri"
-            title={
-              <>
-                Fraunhofer soğurma & <Em>spektral sınıflar</Em>
-              </>
-            }
-            lede="O'dan M'ye Harvard tayf tipleri, canlı spektrogram çubuğu, hidrojen Balmer serisi ve Doppler radyal hız kayması simülatörü."
-          />
-          <StellarSpectroscopyLab />
-        </section>
-
-        {/* 05.6 - Exoplanet Transit Photometry & Kepler Light Curves */}
-        <section className="pt-16">
-          <SectionHead
-            index="05.6"
-            kicker="Ötegezegen avı & fotometrik eğriler"
-            title={
-              <>
-                Transit ışık eğrisi & <Em>ötegezegen fotometrisi</Em>
-              </>
-            }
-            lede="Kepler ve TESS yöntemleriyle bir gezegen yıldızının önünden geçerken ışık akısındaki düşüşü (ΔF/F) ve yaşanabilir kuşağı hesapla."
-          />
-          <ExoplanetTransitLab />
-        </section>
-
-        {/* 05.7 - Cosmic Academy & Astrophysics Certification */}
-        <section className="pt-16">
-          <SectionHead
-            index="05.7"
-            kicker="AstroTR Gözlemevi Değerlendirmesi"
-            title={
-              <>
-                Astrofizik akademisi & <Em>unvan sertifikası</Em>
-              </>
-            }
-            lede="10 soruluk interaktif sınavla evrenin fiziksel yasalarındaki yetkinliğini test et ve onaylı resmi sertifikanı oluştur."
-          />
-          <CosmicAcademyQuiz />
+          <LabDeck labs={INSTRUMENTS} prefix="G" accent="var(--rose)" />
         </section>
       </div>
     </div>

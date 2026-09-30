@@ -1,6 +1,8 @@
 'use client';
+/* eslint-disable react-hooks/immutability -- the R3F frame loop mutates three.js objects (uniforms, lerped vectors, cameras) by design */
 
-import React, { useRef, useMemo, useEffect, useState } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
+import { seededRandom } from '@/lib/random';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSpace, DESTINATIONS, DestinationId } from './SpaceContext';
@@ -128,12 +130,7 @@ function FlightCameraController() {
 // 2. REAL MILKY WAY SKYBOX & DEEP SPACE PANORAMA
 // -------------------------------------------------------------
 function DeepSpaceMilkyWay() {
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-
-  useEffect(() => {
-    const tex = loadNasaTexture(NASA_TEXTURES.milkyWay);
-    if (tex) setTexture(tex);
-  }, []);
+  const texture = useMemo(() => loadNasaTexture(NASA_TEXTURES.milkyWay), []);
 
   return (
     <mesh scale={[-1, 1, 1]}>
@@ -156,11 +153,12 @@ function WarpStars() {
   const count = 1800;
 
   const positions = useMemo(() => {
+    const rand = seededRandom(1804);
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 360;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 360;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 360;
+      pos[i * 3] = (rand() - 0.5) * 360;
+      pos[i * 3 + 1] = (rand() - 0.5) * 360;
+      pos[i * 3 + 2] = (rand() - 0.5) * 360;
     }
     return pos;
   }, [count]);
@@ -199,26 +197,18 @@ function Sun() {
   const sunMesh = useRef<THREE.Mesh>(null);
   const innerCoronaRef = useRef<THREE.Mesh>(null);
   const outerCoronaRef = useRef<THREE.Mesh>(null);
-  const [sunTex, setSunTex] = useState<THREE.Texture | null>(null);
+  const sunTex = useMemo(() => loadNasaTexture(NASA_TEXTURES.sun), []);
 
   const sunShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        sunMap: { value: null },
+        sunMap: { value: sunTex },
       },
       vertexShader: SolarGranulationShader.vertexShader,
       fragmentShader: SolarGranulationShader.fragmentShader,
     });
-  }, []);
-
-  useEffect(() => {
-    const tex = loadNasaTexture(NASA_TEXTURES.sun);
-    if (tex) {
-      setSunTex(tex);
-      sunShaderMaterial.uniforms.sunMap.value = tex;
-    }
-  }, [sunShaderMaterial]);
+  }, [sunTex]);
 
   useFrame((_, delta) => {
     sunShaderMaterial.uniforms.time.value += delta;
@@ -346,48 +336,30 @@ function Earth() {
   }, []);
   const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.earth.coords), []);
 
-  const [textures, setTextures] = useState<{
-    map: THREE.Texture | null;
-    night: THREE.Texture | null;
-    clouds: THREE.Texture | null;
-    specular: THREE.Texture | null;
-    normal: THREE.Texture | null;
-    moon: THREE.Texture | null;
-  }>({
-    map: null,
-    night: null,
-    clouds: null,
-    specular: null,
-    normal: null,
-    moon: null,
-  });
+  const textures = useMemo(
+    () => ({
+      map: loadNasaTexture(NASA_TEXTURES.earthMap),
+      night: loadNasaTexture(NASA_TEXTURES.earthNight),
+      clouds: loadNasaTexture(NASA_TEXTURES.earthClouds),
+      specular: loadNasaTexture(NASA_TEXTURES.earthSpecular),
+      normal: loadNasaTexture(NASA_TEXTURES.earthNormal),
+      moon: loadNasaTexture(NASA_TEXTURES.moon),
+    }),
+    []
+  );
 
   const earthMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
-        dayMap: { value: null },
-        nightMap: { value: null },
-        specularMap: { value: null },
+        dayMap: { value: textures.map },
+        nightMap: { value: textures.night },
+        specularMap: { value: textures.specular },
         sunDirection: { value: new THREE.Vector3(-1, 0, 0) },
       },
       vertexShader: EarthDayNightShader.vertexShader,
       fragmentShader: EarthDayNightShader.fragmentShader,
     });
-  }, []);
-
-  useEffect(() => {
-    const map = loadNasaTexture(NASA_TEXTURES.earthMap);
-    const night = loadNasaTexture(NASA_TEXTURES.earthNight);
-    const clouds = loadNasaTexture(NASA_TEXTURES.earthClouds);
-    const specular = loadNasaTexture(NASA_TEXTURES.earthSpecular);
-    const normal = loadNasaTexture(NASA_TEXTURES.earthNormal);
-    const moon = loadNasaTexture(NASA_TEXTURES.moon);
-
-    setTextures({ map, night, clouds, specular, normal, moon });
-    if (map) earthMaterial.uniforms.dayMap.value = map;
-    if (night) earthMaterial.uniforms.nightMap.value = night;
-    if (specular) earthMaterial.uniforms.specularMap.value = specular;
-  }, [earthMaterial]);
+  }, [textures]);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -472,7 +444,6 @@ function Earth() {
 function Mars() {
   const groupRef = useRef<THREE.Group>(null);
   const marsRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const { orbitMode } = useSpace();
 
   const j2000Pos = useMemo(() => {
@@ -481,10 +452,7 @@ function Mars() {
   }, []);
   const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.mars.coords), []);
 
-  useEffect(() => {
-    const tex = loadNasaTexture(NASA_TEXTURES.mars);
-    if (tex) setTexture(tex);
-  }, []);
+  const texture = useMemo(() => loadNasaTexture(NASA_TEXTURES.mars), []);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -526,7 +494,6 @@ function Mars() {
 function Jupiter() {
   const groupRef = useRef<THREE.Group>(null);
   const jupiterRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
   const { orbitMode } = useSpace();
 
   const j2000Pos = useMemo(() => {
@@ -535,10 +502,7 @@ function Jupiter() {
   }, []);
   const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.jupiter.coords), []);
 
-  useEffect(() => {
-    const tex = loadNasaTexture(NASA_TEXTURES.jupiter);
-    if (tex) setTexture(tex);
-  }, []);
+  const texture = useMemo(() => loadNasaTexture(NASA_TEXTURES.jupiter), []);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -589,18 +553,15 @@ function Saturn() {
   }, []);
   const didacticPos = useMemo(() => new THREE.Vector3(...DESTINATIONS.saturn.coords), []);
 
-  const [textures, setTextures] = useState<{
-    planet: THREE.Texture | null;
-    ring: THREE.Texture | null;
-  }>({
-    planet: null,
-    ring: null,
-  });
+  const textures = useMemo(
+    () => ({ planet: loadNasaTexture(NASA_TEXTURES.saturn), ring: loadNasaTexture(NASA_TEXTURES.saturnRing) }),
+    []
+  );
 
   const saturnGlobeMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
-        planetMap: { value: null },
+        planetMap: { value: textures.planet },
         sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
         ringInner: { value: 3.1 },
         ringOuter: { value: 7.2 },
@@ -608,12 +569,12 @@ function Saturn() {
       vertexShader: SaturnGlobeShader.vertexShader,
       fragmentShader: SaturnGlobeShader.fragmentShader,
     });
-  }, []);
+  }, [textures]);
 
   const saturnRingMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
-        ringMap: { value: null },
+        ringMap: { value: textures.ring },
         sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
         saturnRadius: { value: 2.5 },
       },
@@ -622,15 +583,7 @@ function Saturn() {
       side: THREE.DoubleSide,
       transparent: true,
     });
-  }, []);
-
-  useEffect(() => {
-    const planet = loadNasaTexture(NASA_TEXTURES.saturn);
-    const ring = loadNasaTexture(NASA_TEXTURES.saturnRing);
-    setTextures({ planet, ring });
-    if (planet) saturnGlobeMaterial.uniforms.planetMap.value = planet;
-    if (ring) saturnRingMaterial.uniforms.ringMap.value = ring;
-  }, [saturnGlobeMaterial, saturnRingMaterial]);
+  }, [textures]);
 
   useFrame((_, delta) => {
     if (groupRef.current) {

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Fingerprint, ArrowUp, Zap, Target } from 'lucide-react';
+import { Ticks } from '@/components/motion/primitives';
 
 interface GravityBody {
   id: string;
@@ -29,29 +30,30 @@ export function GravityCalculator() {
   const [earthWeight, setEarthWeight] = useState<number>(70);
 
   return (
-    <div className="rounded-3xl border border-secondary/40 bg-card-bg/85 p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-8 relative overflow-hidden">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+      <Ticks />
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-secondary/20 rounded-2xl border border-secondary/40 backdrop-blur-md">
-            <Target className="h-6 w-6 text-secondary animate-spin" style={{ animationDuration: '6s' }} />
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
+        <div>
+          <div className="label flex items-center gap-2 text-violet">
+            <Target className="h-4 w-4 animate-spin-slow" />
+            <span>NEWTON ÇEKİM KANUNLARI LABORATUVARI</span>
           </div>
-          <div>
-            <h3 className="font-bold text-paper text-lg tracking-widest font-mono uppercase">
-              Yerçekimi Alan Odası
-            </h3>
-            <span className="text-xs text-secondary font-mono tracking-widest flex items-center gap-2">
-              <Zap size={10} className="animate-pulse" /> NEWTON ÇEKİM KANUNLARI LABORATUVARI
-            </span>
-          </div>
+          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
+            Kütleçekim <span className="serif-i text-violet">Hesaplayıcı</span>
+          </h3>
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
+            Kendi kütlenizle Güneş Sistemi&apos;nin farklı gök cisimlerinde ne kadar ağır geleceğinizi ve ne kadar yükseğe zıplayabileceğinizi hesaplayın.
+          </p>
         </div>
 
         {/* Weight Input Box */}
-        <div className="flex items-center gap-3 font-mono bg-background/80 p-2 pr-4 rounded-2xl border border-secondary/30 shadow-inner">
-          <div className="p-2 bg-secondary/10 rounded-xl">
-            <Fingerprint className="text-secondary h-4 w-4" />
+        <div className="flex items-center gap-3 font-mono bg-ink-2 p-2 pr-4 border border-line shrink-0">
+          <div className="p-2 bg-ink border border-line">
+            <Fingerprint className="text-violet h-4 w-4" />
           </div>
-          <span className="text-xs text-muted">REFERANS KÜTLE:</span>
+          <span className="label text-muted">REFERANS KÜTLE:</span>
           <div className="relative group">
             <input
               type="number"
@@ -59,15 +61,15 @@ export function GravityCalculator() {
               max="250"
               value={earthWeight}
               onChange={(e) => setEarthWeight(Math.max(1, Number(e.target.value)))}
-              className="w-24 rounded-lg bg-card-bg border border-secondary/50 px-3 py-1.5 text-center text-lg font-black text-paper focus:outline-none focus:border-secondary transition-all"
+              className="w-24 bg-ink border border-line px-3 py-1.5 text-center text-lg font-black text-paper focus:outline-none focus:border-violet transition-colors"
             />
-            <span className="absolute right-2 top-2 text-xs text-secondary font-bold">kg</span>
+            <span className="absolute right-2 top-2 text-xs text-violet font-bold">kg</span>
           </div>
         </div>
       </div>
 
       {/* Grid of Celestial Bodies */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border border-line bg-line">
         {BODIES.map((body) => {
           const weightOnBody = (earthWeight * body.gravityRatio).toFixed(1);
           const jumpHeightCm = Math.round(50 * body.jumpMultiplier);
@@ -76,15 +78,15 @@ export function GravityCalculator() {
           return (
             <div
               key={body.id}
-              className="group p-5 rounded-2xl bg-background/50 border border-secondary/20 hover:border-secondary hover:bg-card-bg/90 transition-all duration-300 flex flex-col space-y-4 hover:shadow-[0_0_20px_rgba(122,92,255,0.2)] hover:-translate-y-1"
+              className="p-5 bg-ink-2 hover:bg-ink-3 transition-colors flex flex-col space-y-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl drop-shadow-lg group-hover:scale-110 transition-transform">{body.emoji}</span>
+                  <span className="text-3xl select-none">{body.emoji}</span>
                   <div>
-                    <h4 className="font-bold text-paper text-base tracking-wide">{body.name}</h4>
+                    <h4 className="display display-tight text-paper text-base font-bold">{body.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] font-mono bg-secondary/20 text-secondary px-1.5 py-0.5 rounded border border-secondary/30">
+                      <span className="label text-[10px] text-violet bg-ink px-1.5 py-0.5 border border-line">
                         {body.gravityRatio}G
                       </span>
                     </div>
@@ -92,33 +94,33 @@ export function GravityCalculator() {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-xl font-black font-mono text-paper tracking-wider">
-                    {weightOnBody} <span className="text-xs text-secondary font-normal">kg</span>
+                  <div className="display display-tight text-xl font-black text-paper">
+                    {weightOnBody} <span className="label text-xs text-violet font-normal">kg</span>
                   </div>
                 </div>
               </div>
 
               {/* Gravity Wave Bar */}
-              <div className="h-1.5 w-full bg-background rounded-full overflow-hidden border border-secondary/20">
+              <div className="h-1 w-full bg-ink border border-line">
                 <div 
-                  className="h-full bg-gradient-to-r from-secondary/50 to-secondary rounded-full shadow-[0_0_10px_#a855f7] transition-all duration-1000 ease-out"
+                  className="h-full bg-violet transition-all duration-700 ease-out"
                   style={{ width: `${barWidth}%` }}
                 />
               </div>
 
-              <div className="pt-3 border-t border-secondary/20 flex items-center justify-between">
+              <div className="pt-3 border-t border-line flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-blue-500/10 rounded-md border border-blue-500/30">
-                    <ArrowUp size={14} className="text-blue-400 group-hover:-translate-y-1 transition-transform" />
+                  <div className="p-1 bg-ink border border-line">
+                    <ArrowUp size={12} className="text-paper" />
                   </div>
-                  <span className="text-[11px] font-mono text-muted">Zıplama İrtifası</span>
+                  <span className="label text-[10px] text-muted">Zıplama İrtifası</span>
                 </div>
-                <span className="font-bold text-blue-400 font-mono text-sm bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
+                <span className="label font-bold text-paper text-xs bg-ink px-2 py-0.5 border border-line">
                   {jumpHeightCm >= 100 ? `${(jumpHeightCm / 100).toFixed(1)} m` : `${jumpHeightCm} cm`}
                 </span>
               </div>
 
-              <p className="text-[11px] text-muted leading-relaxed italic bg-ink/20 p-2 rounded-lg border border-paper/5">
+              <p className="label text-muted leading-relaxed serif-i pt-1">
                 {body.funFact}
               </p>
             </div>

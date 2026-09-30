@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { EventType } from '@/data/events';
-import { Play, Sparkles, Moon, Sun, Orbit } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface SimulatorProps {
   type: EventType;
@@ -19,8 +19,8 @@ export function CosmicEventSimulator({ type, title }: SimulatorProps) {
     if (!ctx) return;
 
     let animId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || 600);
-    let height = (canvas.height = 200);
+    const width = (canvas.width = canvas.parentElement?.clientWidth || 600);
+    const height = (canvas.height = 200);
 
     let progress = 0;
 
@@ -199,11 +199,11 @@ export function CosmicEventSimulator({ type, title }: SimulatorProps) {
   }, [type]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-background/60 backdrop-blur-md shadow-xl">
+    <div className="relative overflow-hidden border border-line bg-ink">
       <div className="absolute top-3 left-4 z-10 flex items-center gap-2">
-        <Sparkles size={14} className="text-primary animate-pulse" />
-        <span className="text-[10px] font-mono font-bold tracking-widest text-primary uppercase">
-          KOZMİK SİMÜLASYON • {title}
+        <Sparkles size={13} className="text-solar animate-pulse" />
+        <span className="text-[10px] font-mono font-bold tracking-widest text-solar uppercase">
+          KOZMİK SİMÜLASYON · {title}
         </span>
       </div>
 
