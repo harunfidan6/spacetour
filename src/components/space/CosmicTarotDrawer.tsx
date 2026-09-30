@@ -4,15 +4,20 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   Shuffle,
-  Flame,
-  Globe2,
-  Wind,
-  Droplets,
   Shield,
   Lightbulb,
   HeartHandshake
 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import {
+  ZodiacGlyph,
+  PlanetGlyph,
+  FireElementGlyph,
+  EarthElementGlyph,
+  AirElementGlyph,
+  WaterElementGlyph,
+  AstrolabeGlyph
+} from '@/components/ui/CosmicGlyphs';
 
 export interface CosmicCard {
   id: string;
@@ -21,9 +26,9 @@ export interface CosmicCard {
   archetype: string;
   associatedZodiacOrPlanet: string;
   element: 'Ateş' | 'Toprak' | 'Hava' | 'Su' | 'Eter';
-  symbol: string;
-  imagePrompt: string;
-  cardColor: string; // Tailwind gradient
+  glyphType: 'zodiac' | 'planet';
+  glyphId: string;
+  cardColor: string;
   message: string;
   shadowWarning: string;
   affirmation: string;
@@ -37,9 +42,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Egemen Lider & İnşa Edici İrade',
     associatedZodiacOrPlanet: 'Koç Burcu (Mars)',
     element: 'Ateş',
-    symbol: '♈',
-    imagePrompt: 'A majestic emperor on a carved stone throne with ram heads',
-    cardColor: 'from-gold/40 via-red-900/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'koc',
+    cardColor: 'from-gold/30 via-red-950/20 to-ink',
     message: 'Bugün hayatınızda düzen ve disiplin kurma günü. Fikirlerinizi somut kurallarla koruyun, sınırlarınızı net çizin ve liderlik etmekten çekinmeyin.',
     shadowWarning: 'Aşırı katılık, inatçılık ve başkalarının fikirlerine alan tanımama riskine dikkat edin.',
     affirmation: 'Kendi hayatımın egemen mimarıyım; kararlarımı cesaret ve bilgelikle alıyorum.'
@@ -51,9 +56,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Kadim Bilgelik & Ruhsal Rehber',
     associatedZodiacOrPlanet: 'Boğa Burcu (Venüs)',
     element: 'Toprak',
-    symbol: '♉',
-    imagePrompt: 'Ancient priest holding keys of wisdom in a celestial temple',
-    cardColor: 'from-lime/40 via-green-950/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'boga',
+    cardColor: 'from-lime/30 via-green-950/20 to-ink',
     message: 'Geleneksel bilgi, derin ahlaki değerler ve sabır bugün size en büyük gücü verecektir. Güvendiğiniz mentörlerin sözlerine kulak verin.',
     shadowWarning: 'Değişime kapalı dogmatik inançlara ve geçmişin kalıplarına takılı kalmayın.',
     affirmation: 'Doğanın ve kadim bilgeliğin sessiz rehberliğine güveniyorum.'
@@ -65,9 +70,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Kozmik Birlik & Kalp Seçimi',
     associatedZodiacOrPlanet: 'İkizler Burcu (Merkür)',
     element: 'Hava',
-    symbol: '♊',
-    imagePrompt: 'Two souls reaching out under the wings of an angel',
-    cardColor: 'from-primary/40 via-blue-950/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'ikizler',
+    cardColor: 'from-primary/30 via-blue-950/20 to-ink',
     message: 'Önemli bir yol ayrımında kalbinizin pusulasını takip edin. Zihinsel çelişkileri bir kenara bırakıp içsel bütünlüğünüzle uyumlu olan seçimi yapın.',
     shadowWarning: 'Kararsızlık, yüzeysellik veya başkalarını memnun etmek için kendi değerlerinizden ödün verme.',
     affirmation: 'Her seçimimde sevgi, dürüstlük ve ruhsal uyumu temel alıyorum.'
@@ -79,9 +84,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Zafer & Odaklanmış Kararlılık',
     associatedZodiacOrPlanet: 'Yengeç Burcu (Ay)',
     element: 'Su',
-    symbol: '♋',
-    imagePrompt: 'A celestial chariot steered by an armored navigator across stars',
-    cardColor: 'from-blue-600/40 via-indigo-950/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'yengec',
+    cardColor: 'from-blue-600/30 via-indigo-950/20 to-ink',
     message: 'Zıt duyguları ve farklı güçleri tek bir amaca yönlendirerek zafere ulaşabilirsiniz. Duygusal disiplininiz sizi istediğiniz menzile taşıyacak.',
     shadowWarning: 'Agresif hırs, kontrolü kaybetme korkusu veya çevrenizdekileri ezerek ilerleme tehlikesi.',
     affirmation: 'İçsel dengemle rotamı çiziyor, tüm fırtınalara rağmen hedefime güvenle ilerliyorum.'
@@ -93,9 +98,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Şefkatli Cesaret & İçsel Ehlileştirme',
     associatedZodiacOrPlanet: 'Aslan Burcu (Güneş)',
     element: 'Ateş',
-    symbol: '♌',
-    imagePrompt: 'A gentle woman closing the jaws of a golden lion with tenderness',
-    cardColor: 'from-gold/40 via-yellow-900/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'aslan',
+    cardColor: 'from-gold/30 via-yellow-950/20 to-ink',
     message: 'Gerçek güç kaslarda veya kaba kuvvette değil, kalbinizin sabrında ve şefkatindedir. Karşınıza çıkan agresif enerjileri nezaketle dönüştürün.',
     shadowWarning: 'Kibir, ego çatışması veya öfkeyi bastırıp aniden patlama riski.',
     affirmation: 'En vahşi engelleri bile sakinliğimin ve koşulsuz sevgimin gücüyle aşıyorum.'
@@ -107,9 +112,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'İçsel Işık & Hakikat Arayışı',
     associatedZodiacOrPlanet: 'Başak Burcu (Merkür)',
     element: 'Toprak',
-    symbol: '♍',
-    imagePrompt: 'An elder on a mountain holding a lantern illuminating the path',
-    cardColor: 'from-teal-600/40 via-neutral-900/50 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'basak',
+    cardColor: 'from-teal-600/30 via-neutral-900/30 to-ink',
     message: 'Gürültülü dünyadan bir anlığına geri çekilip iç sesinizi dinleme zamanı. İhtiyacınız olan bütün cevaplar zaten kendi derinliklerinizde gizli.',
     shadowWarning: 'Aşırı izolasyon, insanlardan kopma ve aşırı eleştirel bir zihne hapsolma.',
     affirmation: 'Kendi içsel fenerimle karanlık yolları aydınlatıyor, hakikate doğru yürüyorum.'
@@ -121,9 +126,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Kozmik Döngüler & Büyük Şans',
     associatedZodiacOrPlanet: 'Jüpiter (Bolluk & Şans)',
     element: 'Eter',
-    symbol: '♃',
-    imagePrompt: 'A great glowing cosmic wheel spinning in the center of the universe',
-    cardColor: 'from-violet/40 via-violet/10 to-ink',
+    glyphType: 'planet',
+    glyphId: 'jupiter',
+    cardColor: 'from-violet/30 via-violet/10 to-ink',
     message: 'Evrenin çarkı lehinize dönüyor! Beklenmedik fırsatlara, şanslı tesadüflere ve yeni kapılara açık olun. Değişime direnmek yerine akışa güvenin.',
     shadowWarning: 'Her şeyi şansa bırakıp emek vermeyi unutmak veya geçici zorlukları felaket saymak.',
     affirmation: 'Hayatın mucizevi ritmine güveniyorum; evren benim en yüksek hayrıma çalışıyor.'
@@ -135,9 +140,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Kozmik Denge & Sebep-Sonuç',
     associatedZodiacOrPlanet: 'Terazi Burcu (Venüs)',
     element: 'Hava',
-    symbol: '♎',
-    imagePrompt: 'A blindfolded deity holding balanced scales and an upright sword',
-    cardColor: 'from-primary/40 via-indigo-950/30 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'terazi',
+    cardColor: 'from-primary/30 via-indigo-950/20 to-ink',
     message: 'Ektiğinizi biçeceğiniz bir gündesiniz. Kararlarınızı objektif gerçeklere, dürüstlüğe ve etik değerlere dayandırın. Denge ve adalet er ya da geç tecelli eder.',
     shadowWarning: 'Önyargılar, aşırı katı hükümler verme veya kendi hatalarından kaçınma.',
     affirmation: 'Dürüstlük ve hakkaniyetle hareket ediyor, hayatımın sorumluluğunu üstleniyorum.'
@@ -149,9 +154,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Karmik Arınma & Metamorfoz',
     associatedZodiacOrPlanet: 'Akrep Burcu (Mars/Plüton)',
     element: 'Su',
-    symbol: '♏',
-    imagePrompt: 'A dark armored knight on a white horse, a black rose, sunrise behind',
-    cardColor: 'from-rose-signal/10 via-violet/10 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'akrep',
+    cardColor: 'from-rose-signal/20 via-violet/10 to-ink',
     message: 'Eski olanın sona ermesine izin verin. Hizmet etmeyen alışkanlıkları, toksik bağları veya eski kimliğinizi geride bıraktığınızda muazzam bir yeniden doğuş başlar.',
     shadowWarning: 'Biten şeylere umutsuzca tutunmak ve değişimin kaçınılmaz doğasından korkmak.',
     affirmation: 'Eskiye veda ediyor, ruhumun küllerinden daha güçlü ve aydınlık doğuyorum.'
@@ -163,9 +168,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Ruhsal Simya & Uyum',
     associatedZodiacOrPlanet: 'Yay Burcu (Jüpiter)',
     element: 'Ateş',
-    symbol: '♐',
-    imagePrompt: 'An angel pouring glowing water between two golden chalices',
-    cardColor: 'from-gold/40 via-violet/10 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'yay',
+    cardColor: 'from-gold/30 via-violet/10 to-ink',
     message: 'Aşırılıklardan kaçının ve zıtlıkları altın bir oranda birleştirin. Sabırlı, ölçülü ve sakin bir yaklaşım karmaşık krizleri mucizevi bir uyuma çevirir.',
     shadowWarning: 'Sabırsızlık, doyumsuzluk veya kutuplaşmış siyah-beyaz bakış açısı.',
     affirmation: 'Ruhumu sevgi, sabır ve ılımlılıkla besliyorum; her koşulda merkezimde kalıyorum.'
@@ -177,9 +182,9 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     archetype: 'Kozmik Umut & İlahi İlham',
     associatedZodiacOrPlanet: 'Kova Burcu (Uranüs)',
     element: 'Hava',
-    symbol: '♒',
-    imagePrompt: 'A maiden under seven bright stars pouring crystal water into a pool',
-    cardColor: 'from-blue-500/40 via-primary/10 to-ink',
+    glyphType: 'zodiac',
+    glyphId: 'kova',
+    cardColor: 'from-blue-500/30 via-primary/10 to-ink',
     message: 'Karanlık gecenin ardından parlayan en parlak kutup yıldızı sizin için doğuyor. Geleceğe güvenle bakın, ilham dolu projelere başlayın ve şifalanın.',
     shadowWarning: 'Aşırı hayalperestlik veya pratik eylemler yerine sadece hayallerde yaşamak.',
     affirmation: 'Yıldızların parlak ışığı yolumu aydınlatıyor; umut ve şifa doluyum.'
@@ -188,12 +193,12 @@ export const COSMIC_TAROT_DECK: CosmicCard[] = [
     id: 'gunes',
     number: 'XIX',
     name: 'Güneş (The Sun)',
-    archetype: 'Kozmik Aydınlanma & Saf Yaşam Coşkusu',
+    archetype: 'Kozmik Aydınlanma & Yaşam Coşkusu',
     associatedZodiacOrPlanet: 'Güneş (Sol)',
     element: 'Ateş',
-    symbol: '☉',
-    imagePrompt: 'A radiant golden child on a white steed under a blazing smiling sun',
-    cardColor: 'from-gold/40 via-yellow-950/30 to-ink',
+    glyphType: 'planet',
+    glyphId: 'sun',
+    cardColor: 'from-gold/30 via-yellow-950/20 to-ink',
     message: 'Tam bir berraklık, neşe ve başarı kartı! Kendinizi saklamayın, ışığınızı tüm dünyaya yansıtın. Bugün başladığınız her iş bereket ve neşeyle sonuçlanacaktır.',
     shadowWarning: 'Aşırı kibir, kendini beğenmişlik veya başkalarının başarısını gölgeleme dürtüsü.',
     affirmation: 'İçimdeki yaşam enerjisini neşeyle paylaşıyorum; hayatım ışık ve başarıyla dolu.'
@@ -210,7 +215,6 @@ export function CosmicTarotDrawer() {
   const handleDrawCard = () => {
     setIsFlipping(true);
     setTimeout(() => {
-      // Pick random card different from current
       let nextIndex = Math.floor(Math.random() * COSMIC_TAROT_DECK.length);
       if (nextIndex === currentCardIndex) {
         nextIndex = (currentCardIndex + 1) % COSMIC_TAROT_DECK.length;
@@ -218,15 +222,15 @@ export function CosmicTarotDrawer() {
       setCurrentCardIndex(nextIndex);
       setHasDrawn(true);
       setIsFlipping(false);
-    }, 400);
+    }, 350);
   };
 
   const elementIcons = {
-    Ateş: <Flame className="text-gold" size={14} />,
-    Toprak: <Globe2 className="text-lime" size={14} />,
-    Hava: <Wind className="text-primary" size={14} />,
-    Su: <Droplets className="text-blue-400" size={14} />,
-    Eter: <Sparkles className="text-violet" size={14} />
+    Ateş: <FireElementGlyph size={14} className="text-gold" />,
+    Toprak: <EarthElementGlyph size={14} className="text-lime" />,
+    Hava: <AirElementGlyph size={14} className="text-primary" />,
+    Su: <WaterElementGlyph size={14} className="text-blue-400" />,
+    Eter: <AstrolabeGlyph size={14} className="text-violet" />
   };
 
   return (
@@ -260,45 +264,54 @@ export function CosmicTarotDrawer() {
 
       {/* Main Interactive Card Showcase */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        {/* Visual Tarot Card Deck (3D perspective feel) */}
+        {/* Visual Tarot Card Deck with Sacred Geometry Frame */}
         <div className="lg:col-span-5 flex justify-center">
           <div
-            className={`w-64 sm:w-72 h-96 sm:h-[420px] border border-gold/40 bg-gradient-to-br ${card.cardColor} p-6 flex flex-col justify-between shadow-[0_0_30px_rgba(251,191,36,0.12)] relative overflow-hidden transition-all duration-500 transform ${
+            className={`w-64 sm:w-72 h-96 sm:h-[420px] border border-gold/40 bg-gradient-to-br ${card.cardColor} p-6 flex flex-col justify-between shadow-[0_0_35px_rgba(229,193,88,0.15)] relative overflow-hidden transition-all duration-500 transform ${
               isFlipping ? 'scale-90 rotate-6 opacity-30 blur-sm' : 'scale-100 rotate-0 opacity-100'
             }`}
           >
-            {/* Cosmic Card Corner Accents */}
-            <div className="absolute top-2 left-2 text-[10px] font-mono text-gold/60">✦</div>
-            <div className="absolute top-2 right-2 text-[10px] font-mono text-gold/60">✦</div>
-            <div className="absolute bottom-2 left-2 text-[10px] font-mono text-gold/60">✦</div>
-            <div className="absolute bottom-2 right-2 text-[10px] font-mono text-gold/60">✦</div>
+            {/* Sacred Geometry Corner Accents */}
+            <div className="absolute top-2.5 left-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
+            <div className="absolute top-2.5 right-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
+            <div className="absolute bottom-2.5 left-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
+            <div className="absolute bottom-2.5 right-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
 
-            {/* Card Top: Number & Symbol */}
-            <div className="flex items-center justify-between border-b border-line pb-3">
+            {/* Inner Engraved Border */}
+            <div className="absolute inset-2 border border-gold/20 pointer-events-none" />
+
+            {/* Card Top: Number & Mini Emblem */}
+            <div className="flex items-center justify-between border-b border-gold/30 pb-3 relative z-10">
               <span className="font-mono text-lg font-black text-gold tracking-widest">
                 {card.number}
               </span>
-              <span className="glyph text-3xl text-gold">
-                {card.symbol}
-              </span>
+              {card.glyphType === 'zodiac' ? (
+                <ZodiacGlyph sign={card.glyphId} size={24} className="text-gold" />
+              ) : (
+                <PlanetGlyph planet={card.glyphId} size={24} className="text-gold" />
+              )}
             </div>
 
-            {/* Card Middle: Archetype Title & Emblem */}
-            <div className="text-center space-y-3 my-auto">
-              <div className="h-20 w-20 mx-auto rounded-full bg-ink/60 border border-line flex items-center justify-center text-4xl shadow-inner glyph text-gold">
-                {card.symbol}
+            {/* Card Middle: Archetype Title & Large Vector Emblem */}
+            <div className="text-center space-y-3 my-auto relative z-10">
+              <div className="h-24 w-24 mx-auto rounded-full bg-ink/70 border border-gold/40 flex items-center justify-center shadow-inner">
+                {card.glyphType === 'zodiac' ? (
+                  <ZodiacGlyph sign={card.glyphId} size={48} className="text-gold" />
+                ) : (
+                  <PlanetGlyph planet={card.glyphId} size={48} className="text-gold" />
+                )}
               </div>
               <h3 className="display display-tight text-2xl font-black text-paper tracking-wide">
                 {card.name}
               </h3>
-              <p className="label text-gold/90 uppercase tracking-wider">
+              <p className="label text-gold/90 uppercase tracking-wider text-[10px]">
                 {card.archetype}
               </p>
             </div>
 
             {/* Card Bottom: Element & Astro Link */}
-            <div className="border-t border-line pt-3 flex items-center justify-between text-[11px] font-mono text-paper/75">
-              <span className="flex items-center gap-1 font-bold">
+            <div className="border-t border-gold/30 pt-3 flex items-center justify-between text-[11px] font-mono text-paper/75 relative z-10">
+              <span className="flex items-center gap-1.5 font-bold">
                 {elementIcons[card.element]}
                 {card.element}
               </span>

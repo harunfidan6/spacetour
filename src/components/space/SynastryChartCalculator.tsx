@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Heart, Sparkles } from 'lucide-react';
+import { Heart, Sparkles, Flame, Globe2, Wind, Droplets } from 'lucide-react';
 import {
   ZODIAC_SIGNS,
   getSunSign,
@@ -9,6 +9,11 @@ import {
   calculateMoonSign
 } from '@/data/zodiac';
 import { Ticks } from '@/components/motion/primitives';
+import {
+  ZodiacGlyph,
+  PlanetGlyph,
+  AscendantGlyph
+} from '@/components/ui/CosmicGlyphs';
 
 export function SynastryChartCalculator() {
   // Person 1 State
@@ -30,10 +35,8 @@ export function SynastryChartCalculator() {
   const p1SunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === p1Sun.id);
   const p1Rising = calculateAscendant(p1SunIdx, p1Hour);
   const p1Moon = calculateMoonSign(p1SunIdx, p1Day);
-  // Venus approx (within ±2 signs of Sun)
   const p1VenusIdx = ((p1SunIdx + ((p1Day % 3) - 1)) + 12) % 12;
   const p1Venus = ZODIAC_SIGNS[p1VenusIdx];
-  // Mars approx
   const p1MarsIdx = ((p1SunIdx + (p1Day % 5) - 2) + 12) % 12;
   const p1Mars = ZODIAC_SIGNS[p1MarsIdx];
 
@@ -42,10 +45,8 @@ export function SynastryChartCalculator() {
   const p2SunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === p2Sun.id);
   const p2Rising = calculateAscendant(p2SunIdx, p2Hour);
   const p2Moon = calculateMoonSign(p2SunIdx, p2Day);
-  // Venus approx
   const p2VenusIdx = ((p2SunIdx + ((p2Day % 3) - 1)) + 12) % 12;
   const p2Venus = ZODIAC_SIGNS[p2VenusIdx];
-  // Mars approx
   const p2MarsIdx = ((p2SunIdx + (p2Day % 5) - 2) + 12) % 12;
   const p2Mars = ZODIAC_SIGNS[p2MarsIdx];
 
@@ -59,7 +60,7 @@ export function SynastryChartCalculator() {
     (p1Sun.element === 'Toprak' && p2Moon.element === 'Su') ||
     (p1Sun.element === 'Su' && p2Moon.element === 'Toprak');
 
-  // 2. Venus-Mars Passion & Erotic Chemistry
+  // 2. Venus-Mars Passion & Chemistry
   const isVenusMarsFiery =
     p1Venus.element === p2Mars.element ||
     p2Venus.element === p1Mars.element ||
@@ -97,7 +98,7 @@ export function SynastryChartCalculator() {
             Sinastri <span className="serif-i text-rose-signal">& Kozmik İlişki Uyumu</span>
           </h2>
           <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            İki kişinin doğum tarihlerini ve saatlerini karşılaştırarak Güneş-Ay ruh bağı, Venüs-Mars çekimi ve karmik ilişki dinamiğini hesaplayın.
+            İki kişinin doğum anlarındaki Güneş, Ay, Yükselen ve Venüs-Mars fasetlerini karşılaştırarak ruhsal çekim ve uzun vadeli dinamikleri hesaplayın.
           </p>
         </div>
 
@@ -107,7 +108,7 @@ export function SynastryChartCalculator() {
         </div>
       </div>
 
-      {/* Input Columns for Both Persons */}
+      {/* Input Columns for Both Partners */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Person 1 Inputs */}
         <div className="border border-line bg-ink-2 p-5 space-y-4">
@@ -121,9 +122,10 @@ export function SynastryChartCalculator() {
                 className="bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-gold"
               />
             </div>
-            <span className="label text-gold font-bold">
-              {p1Sun.symbol} {p1Sun.name} Burcu
-            </span>
+            <div className="flex items-center gap-2 label text-gold font-bold">
+              <ZodiacGlyph sign={p1Sun.id} size={16} className="text-gold" />
+              <span>{p1Sun.name} Burcu</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-4 gap-px border border-line bg-line text-xs font-mono">
@@ -177,19 +179,37 @@ export function SynastryChartCalculator() {
             </div>
           </div>
 
-          {/* Person 1 Planetary Snapshot */}
+          {/* Person 1 Planetary Snapshot with Bespoke Glyphs */}
           <div className="grid grid-cols-3 gap-px border border-line bg-line pt-0 text-[11px] font-mono">
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">☉ Güneş</span>
-              <span className="font-bold text-gold">{p1Sun.symbol} {p1Sun.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <PlanetGlyph planet="sun" size={11} className="text-gold" />
+                Güneş
+              </span>
+              <span className="font-bold text-gold flex items-center gap-1">
+                <ZodiacGlyph sign={p1Sun.id} size={13} />
+                {p1Sun.name}
+              </span>
             </div>
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">☽ Ay</span>
-              <span className="font-bold text-violet">{p1Moon.symbol} {p1Moon.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <PlanetGlyph planet="moon" size={11} className="text-violet" />
+                Ay
+              </span>
+              <span className="font-bold text-violet flex items-center gap-1">
+                <ZodiacGlyph sign={p1Moon.id} size={13} />
+                {p1Moon.name}
+              </span>
             </div>
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">↑ Yükselen</span>
-              <span className="font-bold text-paper">{p1Rising.symbol} {p1Rising.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <AscendantGlyph size={11} className="text-paper" />
+                Yükselen
+              </span>
+              <span className="font-bold text-paper flex items-center gap-1">
+                <ZodiacGlyph sign={p1Rising.id} size={13} />
+                {p1Rising.name}
+              </span>
             </div>
           </div>
         </div>
@@ -206,9 +226,10 @@ export function SynastryChartCalculator() {
                 className="bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-rose-signal"
               />
             </div>
-            <span className="label text-rose-signal font-bold">
-              {p2Sun.symbol} {p2Sun.name} Burcu
-            </span>
+            <div className="flex items-center gap-2 label text-rose-signal font-bold">
+              <ZodiacGlyph sign={p2Sun.id} size={16} className="text-rose-signal" />
+              <span>{p2Sun.name} Burcu</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-4 gap-px border border-line bg-line text-xs font-mono">
@@ -262,19 +283,37 @@ export function SynastryChartCalculator() {
             </div>
           </div>
 
-          {/* Person 2 Planetary Snapshot */}
+          {/* Person 2 Planetary Snapshot with Bespoke Glyphs */}
           <div className="grid grid-cols-3 gap-px border border-line bg-line pt-0 text-[11px] font-mono">
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">☉ Güneş</span>
-              <span className="font-bold text-rose-signal">{p2Sun.symbol} {p2Sun.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <PlanetGlyph planet="sun" size={11} className="text-gold" />
+                Güneş
+              </span>
+              <span className="font-bold text-rose-signal flex items-center gap-1">
+                <ZodiacGlyph sign={p2Sun.id} size={13} />
+                {p2Sun.name}
+              </span>
             </div>
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">☽ Ay</span>
-              <span className="font-bold text-violet">{p2Moon.symbol} {p2Moon.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <PlanetGlyph planet="moon" size={11} className="text-violet" />
+                Ay
+              </span>
+              <span className="font-bold text-violet flex items-center gap-1">
+                <ZodiacGlyph sign={p2Moon.id} size={13} />
+                {p2Moon.name}
+              </span>
             </div>
-            <div className="p-2.5 bg-ink text-center">
-              <span className="label text-[9px] text-muted block">↑ Yükselen</span>
-              <span className="font-bold text-paper">{p2Rising.symbol} {p2Rising.name}</span>
+            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
+              <span className="label text-[9px] text-muted flex items-center gap-1">
+                <AscendantGlyph size={11} className="text-paper" />
+                Yükselen
+              </span>
+              <span className="font-bold text-paper flex items-center gap-1">
+                <ZodiacGlyph sign={p2Rising.id} size={13} />
+                {p2Rising.name}
+              </span>
             </div>
           </div>
         </div>
@@ -307,17 +346,21 @@ export function SynastryChartCalculator() {
 
         <div className="text-right shrink-0 font-mono text-xs text-muted bg-ink p-4 border border-line space-y-1">
           <div>Güneş-Güneş: <strong className="text-paper">{p1Sun.element} + {p2Sun.element}</strong></div>
-          <div>Ay Uyumu: <strong className="text-violet">{isSunMoonHarmonious ? '✓ Yüksek Rezonans' : 'Dengeli'}</strong></div>
-          <div>Venüs-Mars: <strong className="text-rose-signal">{isVenusMarsFiery ? '🔥 Yoğun Tutku' : 'Duygusal Uyum'}</strong></div>
+          <div>Ay Uyumu: <strong className="text-violet">{isSunMoonHarmonious ? 'Yüksek Rezonans' : 'Dengeli'}</strong></div>
+          <div>Venüs-Mars: <strong className="text-rose-signal">{isVenusMarsFiery ? 'Yoğun Tutku' : 'Duygusal Uyum'}</strong></div>
         </div>
       </div>
 
-      {/* 4 Deep Synastry Aspect Cards */}
+      {/* 4 Deep Synastry Aspect Cards with Bespoke Glyphs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px border border-line bg-line">
         {/* Aspect 1: Sun-Moon Soul Accord */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="label text-gold">☉ - ☽ RUH BAĞI</span>
+            <span className="label text-gold flex items-center gap-1.5">
+              <PlanetGlyph planet="sun" size={13} className="text-gold" />
+              <PlanetGlyph planet="moon" size={13} className="text-violet" />
+              RUH BAĞI
+            </span>
             <span className="label text-muted">Güneş / Ay</span>
           </div>
           <h4 className="display display-tight text-sm font-bold text-paper">
@@ -333,7 +376,11 @@ export function SynastryChartCalculator() {
         {/* Aspect 2: Venus-Mars Chemistry */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="label text-rose-signal">♀ - ♂ ÇEKİM GÜCÜ</span>
+            <span className="label text-rose-signal flex items-center gap-1.5">
+              <PlanetGlyph planet="venus" size={13} className="text-pink-400" />
+              <PlanetGlyph planet="mars" size={13} className="text-rose-signal" />
+              ÇEKİM GÜCÜ
+            </span>
             <span className="label text-muted">Venüs / Mars</span>
           </div>
           <h4 className="display display-tight text-sm font-bold text-paper">
@@ -349,7 +396,10 @@ export function SynastryChartCalculator() {
         {/* Aspect 3: Mercury Communication */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="label text-paper">☿ - ☿ İLETİŞİM DİLİ</span>
+            <span className="label text-primary flex items-center gap-1.5">
+              <PlanetGlyph planet="mercury" size={13} className="text-primary" />
+              İLETİŞİM DİLİ
+            </span>
             <span className="label text-muted">Merkür Ahengi</span>
           </div>
           <h4 className="display display-tight text-sm font-bold text-paper">
@@ -363,7 +413,11 @@ export function SynastryChartCalculator() {
         {/* Aspect 4: Long-term Jupiter/Saturn */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="label text-violet">♃ - ♄ KARMİK GELECEK</span>
+            <span className="label text-violet flex items-center gap-1.5">
+              <PlanetGlyph planet="jupiter" size={13} className="text-lime" />
+              <PlanetGlyph planet="saturn" size={13} className="text-violet" />
+              KARMİK GELECEK
+            </span>
             <span className="label text-muted">Jüpiter / Satürn</span>
           </div>
           <h4 className="display display-tight text-sm font-bold text-paper">

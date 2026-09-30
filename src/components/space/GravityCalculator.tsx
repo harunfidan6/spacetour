@@ -1,29 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Fingerprint, ArrowUp, Zap, Target } from 'lucide-react';
+import { Fingerprint, ArrowUp, Target } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { PlanetGlyph } from '@/components/ui/CosmicGlyphs';
 
 interface GravityBody {
   id: string;
   name: string;
   gravityRatio: number;
-  emoji: string;
   jumpMultiplier: number;
   funFact: string;
   color: string;
 }
 
 const BODIES: GravityBody[] = [
-  { id: 'moon', name: 'Ay', gravityRatio: 0.166, emoji: '🌕', jumpMultiplier: 6.0, funFact: 'Apollo astronotlarının kanguru gibi zıplamasının nedeni budur.', color: 'text-paper/75' },
-  { id: 'mercury', name: 'Merkür', gravityRatio: 0.38, emoji: '🪨', jumpMultiplier: 2.6, funFact: 'Kütlesi küçük olmasına rağmen demir çekirdeği çok yoğundur.', color: 'text-gold' },
-  { id: 'venus', name: 'Venüs', gravityRatio: 0.91, emoji: '✨', jumpMultiplier: 1.1, funFact: 'Dünya’ya yerçekimi olarak en çok benzeyen ikiz gezegendir.', color: 'text-yellow-400' },
-  { id: 'earth', name: 'Dünya', gravityRatio: 1.0, emoji: '🌍', jumpMultiplier: 1.0, funFact: 'Alıştığınız 1g (9.81 m/s²) standart yerçekimi.', color: 'text-primary' },
-  { id: 'mars', name: 'Mars', gravityRatio: 0.38, emoji: '🔴', jumpMultiplier: 2.6, funFact: 'Olimpos Dağı gibi devasa yanardağlar düşük yerçekimi sayesinde yükseldi.', color: 'text-[#ff5722]' },
-  { id: 'jupiter', name: 'Jüpiter', gravityRatio: 2.53, emoji: '🟠', jumpMultiplier: 0.39, funFact: 'Vücudunuz 2.5 kat ağırlaşır, ayakta durmak dahi muazzam efor gerektirir.', color: 'text-[#ff9800]' },
-  { id: 'saturn', name: 'Satürn', gravityRatio: 1.06, emoji: '🪐', jumpMultiplier: 0.94, funFact: 'Devasa boyutuna rağmen gaz yoğunluğu sudan az olduğu için yerçekimi Dünya’ya yakındır.', color: 'text-yellow-200' },
-  { id: 'pluto', name: 'Plüton', gravityRatio: 0.063, emoji: '🌑', jumpMultiplier: 15.8, funFact: 'Hafif bir zıplamayla 2 katlı bir binanın üzerine çıkabilirsiniz!', color: 'text-[#a855f7]' },
-  { id: 'sun', name: 'Güneş', gravityRatio: 27.9, emoji: '☀️', jumpMultiplier: 0.03, funFact: 'Kemikleriniz kendi ağırlığınızı taşıyamaz ve anında ezilirdiniz.', color: 'text-yellow-500' },
+  { id: 'moon', name: 'Ay', gravityRatio: 0.166, jumpMultiplier: 6.0, funFact: 'Apollo astronotlarının kanguru gibi zıplamasının nedeni budur.', color: 'text-paper/75' },
+  { id: 'mercury', name: 'Merkür', gravityRatio: 0.38, jumpMultiplier: 2.6, funFact: 'Kütlesi küçük olmasına rağmen demir çekirdeği çok yoğundur.', color: 'text-gold' },
+  { id: 'venus', name: 'Venüs', gravityRatio: 0.91, jumpMultiplier: 1.1, funFact: 'Dünya’ya yerçekimi olarak en çok benzeyen ikiz gezegendir.', color: 'text-yellow-400' },
+  { id: 'earth', name: 'Dünya', gravityRatio: 1.0, jumpMultiplier: 1.0, funFact: 'Alıştığınız 1g (9.81 m/s²) standart yerçekimi.', color: 'text-primary' },
+  { id: 'mars', name: 'Mars', gravityRatio: 0.38, jumpMultiplier: 2.6, funFact: 'Olimpos Dağı gibi devasa yanardağlar düşük yerçekimi sayesinde yükseldi.', color: 'text-[#ff5722]' },
+  { id: 'jupiter', name: 'Jüpiter', gravityRatio: 2.53, jumpMultiplier: 0.39, funFact: 'Vücudunuz 2.5 kat ağırlaşır, ayakta durmak dahi muazzam efor gerektirir.', color: 'text-[#ff9800]' },
+  { id: 'saturn', name: 'Satürn', gravityRatio: 1.06, jumpMultiplier: 0.94, funFact: 'Devasa boyutuna rağmen gaz yoğunluğu sudan az olduğu için yerçekimi Dünya’ya yakındır.', color: 'text-yellow-200' },
+  { id: 'pluto', name: 'Plüton', gravityRatio: 0.063, jumpMultiplier: 15.8, funFact: 'Hafif bir zıplamayla 2 katlı bir binanın üzerine çıkabilirsiniz!', color: 'text-[#a855f7]' },
+  { id: 'sun', name: 'Güneş', gravityRatio: 27.9, jumpMultiplier: 0.03, funFact: 'Kemikleriniz kendi ağırlığınızı taşıyamaz ve anında ezilirdiniz.', color: 'text-yellow-500' },
 ];
 
 export function GravityCalculator() {
@@ -82,7 +82,9 @@ export function GravityCalculator() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl select-none">{body.emoji}</span>
+                  <div className="h-10 w-10 rounded-full bg-ink border border-line flex items-center justify-center">
+                    <PlanetGlyph planet={body.id} size={22} className="text-violet" />
+                  </div>
                   <div>
                     <h4 className="display display-tight text-paper text-base font-bold">{body.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">

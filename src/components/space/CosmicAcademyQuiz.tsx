@@ -207,7 +207,7 @@ export function CosmicAcademyQuiz() {
         title: 'Galaktik Baş Astrofizikçi',
         grade: 'Kozmik Seviye V (Mükemmel)',
         color: 'text-amber-400',
-        badge: '👑 ASTRO-PH-ALPHA',
+        badge: '⟦★⟧ ASTRO-PH-ALPHA',
         desc: 'Genel Görelilik, erken evren kozmolojisi ve derin uzay fiziğinde en yüksek yetkinlik derecesi.'
       };
     } else if (percentage >= 70) {
@@ -215,7 +215,7 @@ export function CosmicAcademyQuiz() {
         title: 'Derin Uzay Keşif Pilotu',
         grade: 'Kozmik Seviye IV (İleri Düzey)',
         color: 'text-emerald-400',
-        badge: '🚀 DEEP-SPACE-CADET',
+        badge: '⟦▲⟧ DEEP-SPACE-CADET',
         desc: 'Yıldız evrimi ve orbital mekanik konularında güçlü teorik ve operasyonel bilgiye sahip.'
       };
     } else if (percentage >= 50) {
@@ -223,7 +223,7 @@ export function CosmicAcademyQuiz() {
         title: 'Yörünge Görev Uzmanı',
         grade: 'Kozmik Seviye III (Orta Seviye)',
         color: 'text-cyan-400',
-        badge: '🛰 ORBIT-SPECIALIST',
+        badge: '⟦◆⟧ ORBIT-SPECIALIST',
         desc: 'Güneş sistemi ve gezegen bilimleri temellerinde başarılı kavrayış.'
       };
     } else {
@@ -231,7 +231,7 @@ export function CosmicAcademyQuiz() {
         title: 'Gözlemevi Asistanı & Kaşif',
         grade: 'Kozmik Seviye II (Başlangıç)',
         color: 'text-violet',
-        badge: '🔭 OBSERVER-INITIATE',
+        badge: '⟦●⟧ OBSERVER-INITIATE',
         desc: 'Evrenin gizemlerini keşfetme yolunda harika bir ilk adım. Tekrar deneyerek unvanını yükselt!'
       };
     }

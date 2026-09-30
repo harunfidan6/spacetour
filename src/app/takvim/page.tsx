@@ -23,6 +23,7 @@ import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { Reveal, Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 import { upcomingEvents } from '@/lib/sky';
+import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
 
 const ALL_TYPES = Object.keys(eventTypeLabels) as EventType[];
 
@@ -57,11 +58,13 @@ function NextEventCountdown({ activeTypes, onPick }: { activeTypes: Set<EventTyp
         <div className="label flex items-center gap-2 text-solar">
           <span className="live-dot" /> Sıradaki gök olayı
         </div>
-        <h2 className="display display-tight mt-5 text-[clamp(2rem,4.4vw,4rem)] text-paper">
+        <h2 className="display display-tight mt-5 text-[clamp(2rem,4.4vw,4rem)] text-paper flex items-center">
           {next ? (
             <>
-              <span className="mr-3">{next.emoji}</span>
-              {next.title}
+              <span className="w-12 h-12 rounded-full border border-line bg-ink flex items-center justify-center p-2 mr-3 shrink-0">
+                <AstronomicalEventGlyph type={next.type} size={26} className="text-solar" />
+              </span>
+              <span>{next.title}</span>
             </>
           ) : (
             'Hesaplanıyor…'
@@ -307,8 +310,9 @@ export default function CalendarPage() {
                             <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[e.type] === 'var(--paper)' ? 'var(--ink)' : eventTypeTones[e.type] }} />
                             {eventTypeLabels[e.type]} {e.time ? `· ${e.time}` : ''}
                           </div>
-                          <h4 className="mt-2 text-lg font-semibold">
-                            {e.emoji} {e.title}
+                          <h4 className="mt-2 text-lg font-semibold flex items-center gap-2">
+                            <AstronomicalEventGlyph type={e.type} size={20} className="text-ink shrink-0" />
+                            <span>{e.title}</span>
                           </h4>
                           <p className="mt-2 text-sm leading-relaxed text-ink/75">{e.description}</p>
                           <p className="mt-3 border-l-2 border-solar pl-3 text-sm leading-relaxed text-ink/75">{e.details}</p>
@@ -340,8 +344,9 @@ export default function CalendarPage() {
                       >
                         <span className="label text-muted">{pad(i + 1)}</span>
                         <span className="min-w-0">
-                          <span className="block truncate text-sm text-paper group-hover:text-solar">
-                            {e.emoji} {e.title}
+                          <span className="flex items-center gap-2 truncate text-sm text-paper group-hover:text-solar">
+                            <AstronomicalEventGlyph type={e.type} size={15} className="text-solar shrink-0" />
+                            <span className="truncate">{e.title}</span>
                           </span>
                           <span className="label mt-1 block text-[10px]" style={{ color: eventTypeTones[e.type] }}>
                             {format(parseISO(e.date), 'd MMM yyyy', { locale: tr })}

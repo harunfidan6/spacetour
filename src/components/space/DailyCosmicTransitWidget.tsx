@@ -2,15 +2,21 @@
 
 import React, { useState } from 'react';
 import {
-  Sparkles,
   Clock,
   Zap,
   ShieldCheck,
   Calendar,
-  Hourglass
+  Hourglass,
+  Heart,
+  Briefcase
 } from 'lucide-react';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { Ticks } from '@/components/motion/primitives';
+import {
+  VectorMoonPhase,
+  ZodiacGlyph,
+  PlanetGlyph
+} from '@/components/ui/CosmicGlyphs';
 
 export function DailyCosmicTransitWidget() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
@@ -29,66 +35,53 @@ export function DailyCosmicTransitWidget() {
   const dayName = dayOfWeekNames[today.getDay()];
 
   // Traditional Chaldean Planetary Ruler of Day
-  // Sunday = Sun, Monday = Moon, Tuesday = Mars, Wednesday = Mercury, Thursday = Jupiter, Friday = Venus, Saturday = Saturn
-  const planetaryRulersOfDay: Record<number, { planet: string; symbol: string; focus: string; color: string }> = {
-    0: { planet: 'Güneş (Sol)', symbol: '☉', focus: 'Yaratıcılık, Liderlik & Özgüven', color: 'text-gold' },
-    1: { planet: 'Ay (Luna)', symbol: '☽', focus: 'Sezgiler, Ev & Duygusal Denge', color: 'text-violet' },
-    2: { planet: 'Mars (Ares)', symbol: '♂', focus: 'Eylem, Cesaret, Spor & Girişimcilik', color: 'text-rose-signal' },
-    3: { planet: 'Merkür (Hermes)', symbol: '☿', focus: 'İletişim, Sözleşmeler, Zihin & Ticaret', color: 'text-primary' },
-    4: { planet: 'Jüpiter (Zeus)', symbol: '♃', focus: 'Bolluk, Felsefe, Şans & Genişleme', color: 'text-lime' },
-    5: { planet: 'Venüs (Afrodit)', symbol: '♀', focus: 'Aşk, Sanat, Uyum, Sosyalleşme & Estetik', color: 'text-pink-400' },
-    6: { planet: 'Satürn (Kronos)', symbol: '♄', focus: 'Disiplin, Sorumluluk, Sabır & Planlama', color: 'text-indigo-400' }
+  const planetaryRulersOfDay: Record<number, { planet: string; planetId: string; focus: string; color: string }> = {
+    0: { planet: 'Güneş (Sol)', planetId: 'sun', focus: 'Yaratıcılık, Liderlik & Özgüven', color: 'text-gold' },
+    1: { planet: 'Ay (Luna)', planetId: 'moon', focus: 'Sezgiler, Ev & Duygusal Denge', color: 'text-violet' },
+    2: { planet: 'Mars (Ares)', planetId: 'mars', focus: 'Eylem, Cesaret, Spor & Girişimcilik', color: 'text-rose-signal' },
+    3: { planet: 'Merkür (Hermes)', planetId: 'mercury', focus: 'İletişim, Sözleşmeler, Zihin & Ticaret', color: 'text-primary' },
+    4: { planet: 'Jüpiter (Zeus)', planetId: 'jupiter', focus: 'Bolluk, Felsefe, Şans & Genişleme', color: 'text-lime' },
+    5: { planet: 'Venüs (Afrodit)', planetId: 'venus', focus: 'Aşk, Sanat, Uyum, Sosyalleşme & Estetik', color: 'text-pink-400' },
+    6: { planet: 'Satürn (Kronos)', planetId: 'saturn', focus: 'Disiplin, Sorumluluk, Sabır & Planlama', color: 'text-indigo-400' }
   };
 
   const dayRuler = planetaryRulersOfDay[today.getDay()];
 
-  // Approximate Lunar Cycle calculation
-  // Synodic month is 29.530588 days
+  // Accurate Lunar Cycle calculation
   const knownNewMoon = new Date('2026-01-18T16:53:00Z').getTime();
   const diffDays = (today.getTime() - knownNewMoon) / (1000 * 60 * 60 * 24);
   const lunarAge = ((diffDays % 29.530588) + 29.530588) % 29.530588;
 
   let moonPhaseName = 'Yeni Ay';
-  let moonPhaseIcon = '🌑';
   let moonPhaseDesc = 'Yeni niyetler ve başlangıçlar tohumlama dönemi.';
   const illuminationPct = Math.round((1 - Math.cos((lunarAge / 29.530588) * 2 * Math.PI)) * 50);
 
   if (lunarAge < 3.7) {
     moonPhaseName = 'Yeni Ay';
-    moonPhaseIcon = '🌑';
     moonPhaseDesc = 'Yeni niyetler ve başlangıçlar ekme vakti.';
   } else if (lunarAge < 7.4) {
     moonPhaseName = 'Büyüyen Hilal';
-    moonPhaseIcon = '🌒';
     moonPhaseDesc = 'Fikirlerin filizlenmesi, motivasyon artışı.';
   } else if (lunarAge < 11.1) {
     moonPhaseName = 'İlk Dördün';
-    moonPhaseIcon = '🌓';
     moonPhaseDesc = 'Kararlılık, engelleri aşma ve harekete geçiş.';
   } else if (lunarAge < 14.8) {
     moonPhaseName = 'Şişkin Ay';
-    moonPhaseIcon = '🌔';
     moonPhaseDesc = 'Olgunlaşma, detayları tamamlama ve odak.';
   } else if (lunarAge < 18.5) {
     moonPhaseName = 'Dolunay';
-    moonPhaseIcon = '🌕';
     moonPhaseDesc = 'Aydınlanma, hasat, duygusal zirve ve netlik.';
   } else if (lunarAge < 22.2) {
     moonPhaseName = 'Küçülen Şişkin Ay';
-    moonPhaseIcon = '🌖';
     moonPhaseDesc = 'Bilgeliği paylaşma, şükran duyma.';
   } else if (lunarAge < 25.8) {
     moonPhaseName = 'Son Dördün';
-    moonPhaseIcon = '🌗';
     moonPhaseDesc = 'Bırakma, affetme, yüklerden arınma.';
   } else {
     moonPhaseName = 'Küçülen Hilal (Balsamik)';
-    moonPhaseIcon = '🌘';
     moonPhaseDesc = 'İçsel dinlenme, arınma ve meditasyon.';
   }
 
-  // Mercury Retrograde status check (2026 standard windows)
-  // Feb 25 - Mar 20, Jun 29 - Jul 23, Oct 24 - Nov 13
   const isMercuryRetro = false; // direct in current window
 
   return (
@@ -118,13 +111,13 @@ export function DailyCosmicTransitWidget() {
 
       {/* Cosmic Weather Telemetry Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px border border-line bg-line">
-        {/* 1. Moon Phase */}
+        {/* 1. Moon Phase (Bespoke Vector Moon) */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between">
             <span className="label text-violet">
               GÜNCEL AY FAZI
             </span>
-            <span className="text-2xl">{moonPhaseIcon}</span>
+            <VectorMoonPhase illumination={illuminationPct} size={30} className="text-paper" />
           </div>
           <div className="display display-tight text-lg font-bold text-paper">
             {moonPhaseName} (%{illuminationPct} Aydınlık)
@@ -140,7 +133,7 @@ export function DailyCosmicTransitWidget() {
             <span className="label text-gold">
               GÜNÜN GEZEGENSEL YÖNETİCİSİ
             </span>
-            <span className={`text-2xl font-bold ${dayRuler.color}`}>{dayRuler.symbol}</span>
+            <PlanetGlyph planet={dayRuler.planetId} size={22} className={dayRuler.color} />
           </div>
           <div className="display display-tight text-lg font-bold text-paper">
             {dayRuler.planet}
@@ -156,7 +149,7 @@ export function DailyCosmicTransitWidget() {
             <span className="label text-primary">
               MERKÜR İLETİŞİM DÖNGÜSÜ
             </span>
-            <span className="text-2xl">☿</span>
+            <PlanetGlyph planet="mercury" size={20} className="text-primary" />
           </div>
           <div className="display display-tight text-lg font-bold text-paper flex items-center gap-2">
             <ShieldCheck className="text-lime" size={18} />
@@ -172,15 +165,15 @@ export function DailyCosmicTransitWidget() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="label text-paper flex items-center gap-2">
-            <Sparkles size={14} className="text-gold" />
+            <PlanetGlyph planet="sun" size={14} className="text-gold" />
             Burcunuzu Seçin & Günlük Yorumu Okuyun
           </h3>
           <span className="label text-muted">
-            Seçili: <strong className="text-paper">{selectedSign.name} ({selectedSign.symbol})</strong>
+            Seçili: <strong className="text-paper">{selectedSign.name}</strong>
           </span>
         </div>
 
-        {/* Horizontal Zodiac Selector Buttons */}
+        {/* Horizontal Zodiac Selector Buttons with Bespoke Glyphs */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-px border border-line bg-line">
           {ZODIAC_SIGNS.map((s) => {
             const isSelected = s.id === selectedSignId;
@@ -194,7 +187,11 @@ export function DailyCosmicTransitWidget() {
                     : 'bg-ink-2 text-muted hover:text-paper hover:bg-ink-3'
                 }`}
               >
-                <span className="text-xl mb-1">{s.symbol}</span>
+                <ZodiacGlyph
+                  sign={s.id}
+                  size={20}
+                  className={`mb-1.5 ${isSelected ? 'text-ink' : 'text-paper/70'}`}
+                />
                 <span className="text-xs font-bold font-sans">{s.name}</span>
                 <span className="label text-[9px] mt-0.5 opacity-70">{s.element}</span>
               </button>
@@ -206,7 +203,7 @@ export function DailyCosmicTransitWidget() {
         <div className="border border-line bg-ink-2 p-6 sm:p-8 relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-line pb-6">
             <div className="flex items-center gap-4">
-              <span className="glyph text-5xl text-gold">{selectedSign.symbol}</span>
+              <ZodiacGlyph sign={selectedSign.id} size={48} className="text-gold shrink-0" />
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <h3 className="display display-tight text-2xl sm:text-3xl font-black text-paper">
@@ -247,7 +244,7 @@ export function DailyCosmicTransitWidget() {
             {/* Love & Relations */}
             <div className="bg-ink p-5 space-y-2">
               <div className="label text-rose-signal flex items-center gap-2">
-                <span className="text-rose-signal">❤️</span>
+                <Heart size={14} className="text-rose-signal" />
                 <span>Aşk & İlişkiler</span>
               </div>
               <p className="text-xs text-paper/75 leading-relaxed font-sans">
@@ -258,7 +255,7 @@ export function DailyCosmicTransitWidget() {
             {/* Career & Wealth */}
             <div className="bg-ink p-5 space-y-2">
               <div className="label text-paper flex items-center gap-2">
-                <span className="text-paper">💼</span>
+                <Briefcase size={14} className="text-paper" />
                 <span>Kariyer & Maddiyat</span>
               </div>
               <p className="text-xs text-paper/75 leading-relaxed font-sans">
@@ -270,10 +267,8 @@ export function DailyCosmicTransitWidget() {
           {/* Cosmic Tip Footer */}
           <div className="mt-6 pt-4 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-2 text-paper/75">
-              <Sparkles size={14} className="text-gold shrink-0" />
-              <span>
-                <strong className="text-paper">Günün Kozmik Tavsiyesi:</strong> {selectedSign.dailyHoroscope.cosmicTip}
-              </span>
+              <span className="text-gold font-bold">Rehber Not:</span>
+              <span>{selectedSign.dailyHoroscope.cosmicTip}</span>
             </div>
 
             <div className="label text-muted serif-i">

@@ -36,10 +36,8 @@ const ENCYCLOPEDIA: Partial<Record<DestinationId, string>> = {
   saturn: 'saturn',
 };
 
-import { RelativisticWarpHUD } from '@/components/space/RelativisticWarpHUD';
-
 export function Voyage() {
-  const { currentDestination, setDestination, isWarping, autoPilot, toggleAutoPilot, triggerWarp, orbitMode, toggleOrbitMode } = useSpace();
+  const { currentDestination, setDestination, isTransitioning, autoPilot, toggleAutoPilot, focusCurrentDestination, orbitMode, toggleOrbitMode } = useSpace();
   const stage = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [inView, setInView] = useState(false);
@@ -66,14 +64,14 @@ export function Voyage() {
     <section id="yolculuk" className="relative scroll-mt-0 bg-ink px-[var(--gutter)] pb-24 pt-24 sm:pt-32" style={{ '--page-accent': 'var(--solar)' } as CSSProperties}>
       <SectionHead
         index="02"
-        kicker="Yolculuk"
+        kicker="Güneş Sistemi"
         aside="WebGL · NASA dokuları · J2000 Efemeris"
         title={
           <>
-            Warp&apos;a <Em>hazır</Em>
+            Göklerde <Em>yolculuk</Em>
           </>
         }
-        lede="Gerçek NASA yüzey haritaları ve J2000 Keplerian yörünge mekaniğiyle simüle edilen Güneş Sistemi. Bir durak seç, kamera oraya uçsun; yörünge modunu değiştirerek gerçek göksel dizilimi izle."
+        lede="Gerçek NASA yüzey haritaları ve J2000 Keplerian yörünge mekaniğiyle simüle edilen Güneş Sistemi. Bir gök cismi seç, kamera hedefe odaklansın; yörünge modunu değiştirerek gerçek göksel dizilimi izle."
       />
 
       {/* Mobile stop rail */}
@@ -139,19 +137,19 @@ export function Voyage() {
             <span>{orbitMode === 'j2000' ? 'J2000 Canlı Efemeris' : 'Didaktik Sıralama'}</span>
           </button>
 
-          {/* Warp Trigger */}
+          {/* Target Focus Trigger */}
           <button
             type="button"
-            onClick={triggerWarp}
-            disabled={isWarping}
+            onClick={focusCurrentDestination}
+            disabled={isTransitioning}
             className={`flex items-center gap-2 border px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
-              isWarping
-                ? 'border-lime-signal bg-lime-signal text-ink font-black shadow-[0_0_25px_rgba(212,255,61,0.5)]'
-                : 'border-solar bg-solar text-ink font-bold hover:bg-solar/90 active:scale-95 shadow-[0_0_20px_rgba(255,91,34,0.35)]'
+              isTransitioning
+                ? 'border-solar bg-solar text-ink font-bold shadow-[0_0_20px_rgba(255,91,34,0.35)]'
+                : 'border-line bg-ink/80 text-paper backdrop-blur hover:border-paper/40'
             }`}
           >
-            <Zap size={14} className={isWarping ? 'animate-bounce' : 'animate-pulse'} />
-            <span>{isWarping ? 'Warp Aktif' : 'Warp Sıçraması'}</span>
+            <Orbit size={14} className={isTransitioning ? 'animate-spin' : ''} />
+            <span>{isTransitioning ? 'Hedefe Kilitleniyor' : 'Hedefe Odaklan'}</span>
           </button>
 
           {/* Cinematic Autopilot */}
@@ -174,13 +172,6 @@ export function Voyage() {
         <div className="absolute bottom-4 right-4 z-10 hidden w-[min(380px,42%)] border border-line bg-ink/90 backdrop-blur-md md:block">
           <TelemetryBody d={d} slug={slug} index={activeIndex} orbitMode={orbitMode} />
         </div>
-
-        {/* Relativistic Hyperspace Warp HUD */}
-        <RelativisticWarpHUD
-          isWarping={isWarping}
-          destinationName={d.name}
-          destinationDistance={d.distance}
-        />
       </div>
 
       <div className="mt-3 border border-line bg-ink-2 md:hidden">

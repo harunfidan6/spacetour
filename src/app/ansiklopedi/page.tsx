@@ -10,6 +10,7 @@ import { LabDeck, type LabEntry } from '@/components/ui/LabDeck';
 import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { Reveal, RotatingBadge } from '@/components/motion/primitives';
+import { ConstellationGlyph } from '@/components/ui/CosmicGlyphs';
 
 
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
@@ -229,7 +230,9 @@ export default function AnsiklopediPage() {
               <article key={c.id} data-card className="group relative flex flex-col bg-ink p-6 transition-colors duration-500 hover:bg-ink-3">
                 <div className="flex items-start justify-between">
                   <span className="label text-muted">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-5xl transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-rotate-12 group-hover:scale-110">{c.emoji}</span>
+                  <div className="w-12 h-12 rounded-full border border-line/60 bg-ink-2 flex items-center justify-center p-2 transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-110 group-hover:border-solar/60">
+                    <ConstellationGlyph id={c.id} size={30} className="text-solar group-hover:text-paper transition-colors" />
+                  </div>
                 </div>
                 <h3 className="display display-tight mt-8 pt-[0.12em] text-3xl text-paper">{c.name}</h3>
                 <p className="serif-i text-xl text-violet">{c.latinName}</p>

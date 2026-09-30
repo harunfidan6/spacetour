@@ -29,7 +29,7 @@ const _zeroVec = new THREE.Vector3(0, 0, 0);
 // 1. CINEMATIC FLIGHT CONTROLLER (Smooth Lerp + Dynamic Orbit Drift)
 // -------------------------------------------------------------
 function FlightCameraController() {
-  const { currentDestination, isWarping, autoPilot, setDestination, orbitMode } = useSpace();
+  const { currentDestination, isTransitioning, autoPilot, setDestination, orbitMode } = useSpace();
   const { camera } = useThree();
   const lookAtTarget = useRef(new THREE.Vector3(0, 0, 0));
   const currentPos = useRef(new THREE.Vector3(0, 40, 70));
@@ -92,33 +92,26 @@ function FlightCameraController() {
     _scratchVecB.set(...lookBase);
 
     // Natural subtle space float (orbital drift)
-    const driftX = Math.sin(timeRef.current * 0.12) * 0.5;
-    const driftY = Math.cos(timeRef.current * 0.1) * 0.3;
-    const driftZ = Math.sin(timeRef.current * 0.08) * 0.4;
+    const driftX = Math.sin(timeRef.current * 0.12) * 0.4;
+    const driftY = Math.cos(timeRef.current * 0.1) * 0.25;
+    const driftZ = Math.sin(timeRef.current * 0.08) * 0.35;
 
-    const lerpFactor = isWarping ? Math.min(4.5 * delta, 0.22) : Math.min(1.2 * delta, 0.06);
+    _scratchVecA.x += mouse.current.x * 1.5 + driftX;
+    _scratchVecA.y -= mouse.current.y * 1.2 - driftY;
+    _scratchVecA.z += driftZ;
 
-    if (!isWarping) {
-      _scratchVecA.x += mouse.current.x * 2.0 + driftX;
-      _scratchVecA.y -= mouse.current.y * 1.5 - driftY;
-      _scratchVecA.z += driftZ;
-    } else {
-      const shake = 0.6;
-      _scratchVecA.x += (Math.random() - 0.5) * shake;
-      _scratchVecA.y += (Math.random() - 0.5) * shake;
-      _scratchVecA.z += (Math.random() - 0.5) * shake;
-    }
+    const lerpFactor = isTransitioning ? Math.min(2.5 * delta, 0.12) : Math.min(1.2 * delta, 0.06);
 
     currentPos.current.lerp(_scratchVecA, lerpFactor);
-    lookAtTarget.current.lerp(_scratchVecB, Math.min(lerpFactor * 1.3, 0.25));
+    lookAtTarget.current.lerp(_scratchVecB, Math.min(lerpFactor * 1.25, 0.15));
 
     camera.position.copy(currentPos.current);
     camera.lookAt(lookAtTarget.current);
 
     if ('fov' in camera) {
       const persp = camera as THREE.PerspectiveCamera;
-      const targetFov = isWarping ? 82 : 45;
-      persp.fov = THREE.MathUtils.lerp(persp.fov, targetFov, delta * (isWarping ? 6.5 : 3.5));
+      const targetFov = isTransitioning ? 48 : 45;
+      persp.fov = THREE.MathUtils.lerp(persp.fov, targetFov, delta * 3.0);
       persp.updateProjectionMatrix();
     }
   });
@@ -145,30 +138,30 @@ function DeepSpaceMilkyWay() {
 }
 
 // -------------------------------------------------------------
-// 3. ZERO-CPU WARP STARFIELD (GPU-optimized transform)
+// 3. REALISTIC INTERPLANETARY DUST & MICRO-METEOROIDS
 // -------------------------------------------------------------
-function WarpStars() {
-  const { isWarping, throttle } = useSpace();
+function OrbitalDust() {
+  const { throttle } = useSpace();
   const groupRef = useRef<THREE.Group>(null);
-  const count = 1800;
+  const count = 1200;
 
   const positions = useMemo(() => {
     const rand = seededRandom(1804);
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (rand() - 0.5) * 360;
-      pos[i * 3 + 1] = (rand() - 0.5) * 360;
-      pos[i * 3 + 2] = (rand() - 0.5) * 360;
+      pos[i * 3] = (rand() - 0.5) * 320;
+      pos[i * 3 + 1] = (rand() - 0.5) * 200;
+      pos[i * 3 + 2] = (rand() - 0.5) * 320;
     }
     return pos;
   }, [count]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-    const speedMult = (isWarping ? 140.0 : 1.2) * throttle;
-    groupRef.current.position.z += speedMult * delta * 12;
-    if (groupRef.current.position.z > 180) {
-      groupRef.current.position.z = -180;
+    const speed = 0.8 * throttle;
+    groupRef.current.position.z += speed * delta * 2.5;
+    if (groupRef.current.position.z > 160) {
+      groupRef.current.position.z = -160;
     }
   });
 
@@ -179,10 +172,10 @@ function WarpStars() {
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={isWarping ? 2.4 : 0.8}
-          color={isWarping ? '#d4ff3d' : '#e6f0ff'}
+          size={0.65}
+          color="#dbeafe"
           transparent
-          opacity={isWarping ? 0.9 : 0.6}
+          opacity={0.45}
           blending={THREE.AdditiveBlending}
         />
       </points>
@@ -792,8 +785,8 @@ export function SpaceJourneyEngine({ active = true, className = '' }: { active?:
         {/* Dynamic Keplerian Orbit Guides */}
         <OrbitLines />
 
-        {/* Relativistic Starfield */}
-        <WarpStars />
+        {/* Interplanetary Orbital Dust */}
+        <OrbitalDust />
 
         {/* Smooth Cinematic Orbit Controller */}
         <FlightCameraController />

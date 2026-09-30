@@ -107,13 +107,17 @@ export function ExoplanetExplorer() {
             <button
               key={planet.id}
               onClick={() => setSelectedPlanet(planet)}
-              className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
+              className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider flex items-center ${
                 isActive
                   ? 'border-solar bg-solar text-ink font-bold'
                   : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
               }`}
             >
-              <span className="mr-1.5">{planet.emoji}</span> {planet.name}
+              <span
+                className="w-2 h-2 rounded-full mr-2 shrink-0 border border-paper/40"
+                style={{ backgroundColor: planet.color }}
+              />
+              <span>{planet.name}</span>
             </button>
           );
         })}

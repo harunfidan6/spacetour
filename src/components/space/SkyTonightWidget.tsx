@@ -2,17 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Telescope, ArrowRight } from 'lucide-react';
+import { Sparkles, Telescope, ArrowRight, Clock } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { PlanetGlyph, VectorMoonPhase } from '@/components/ui/CosmicGlyphs';
 
 interface VisiblePlanet {
   name: string;
+  planetKey: string;
   constellation: string;
   magnitude: string;
   bestTime: string;
   visibility: 'Mükemmel' | 'İyi' | 'Orta';
   color: string;
-  emoji: string;
 }
 
 export function SkyTonightWidget() {
@@ -21,39 +22,39 @@ export function SkyTonightWidget() {
   const visiblePlanets: VisiblePlanet[] = [
     {
       name: 'Jüpiter',
+      planetKey: 'jupiter',
       constellation: 'Boğa (Taurus)',
       magnitude: '-2.4 m (Çok Parlak)',
       bestTime: 'Gün batımından gece yarısına kadar',
       visibility: 'Mükemmel',
-      color: '#e5c158',
-      emoji: '🪐'
+      color: '#e5c158'
     },
     {
       name: 'Venüs',
+      planetKey: 'venus',
       constellation: 'Balıklar (Pisces)',
       magnitude: '-4.1 m (Akşam Yıldızı)',
       bestTime: 'Batı ufkunda gün batımından hemen sonra',
       visibility: 'Mükemmel',
-      color: '#fff0cc',
-      emoji: '✨'
+      color: '#fff0cc'
     },
     {
       name: 'Mars',
+      planetKey: 'mars',
       constellation: 'İkizler (Gemini)',
       magnitude: '+0.5 m (Kızıl Parıltı)',
       bestTime: 'Gece 22:00 sonrası doğu ufkunda',
       visibility: 'İyi',
-      color: '#ff4422',
-      emoji: '🔴'
+      color: '#ff4422'
     },
     {
       name: 'Satürn',
+      planetKey: 'saturn',
       constellation: 'Kova (Aquarius)',
       magnitude: '+0.8 m (Sarımsı Ton)',
       bestTime: 'Akşamın ilk saatleri güneybatıda',
       visibility: 'Orta',
-      color: '#e2c58a',
-      emoji: '🪐'
+      color: '#e2c58a'
     }
   ];
 
@@ -121,7 +122,9 @@ export function SkyTonightWidget() {
                 className="group border border-line bg-ink-2 p-4 hover:border-solar/50 transition-colors"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">{planet.emoji}</span>
+                  <div className="w-8 h-8 rounded-full border border-line/60 bg-ink flex items-center justify-center p-1.5 shadow-inner">
+                    <PlanetGlyph planet={planet.planetKey} size={18} className="text-solar group-hover:text-paper transition-colors" />
+                  </div>
                   <span
                     className={`text-[9px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${
                       planet.visibility === 'Mükemmel'
@@ -145,8 +148,9 @@ export function SkyTonightWidget() {
                     <span>Parlaklık:</span>
                     <span className="text-paper font-bold">{planet.magnitude}</span>
                   </div>
-                  <div className="text-muted leading-snug pt-1 text-[10px]">
-                    🕒 {planet.bestTime}
+                  <div className="text-muted leading-snug pt-1 text-[10px] flex items-center gap-1.5">
+                    <Clock size={11} className="text-solar shrink-0" />
+                    <span>{planet.bestTime}</span>
                   </div>
                 </div>
               </div>
@@ -174,8 +178,8 @@ export function SkyTonightWidget() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <div className="md:col-span-4 flex flex-col items-center justify-center p-6 border border-line bg-ink-2 text-center">
             <div className="relative mb-3">
-              <div className="w-20 h-20 border border-line bg-ink flex items-center justify-center text-4xl">
-                🌔
+              <div className="w-20 h-20 border border-line bg-ink rounded-full flex items-center justify-center p-3 shadow-inner">
+                <VectorMoonPhase illumination={78} size={54} className="text-paper" />
               </div>
             </div>
             <div className="font-mono text-base font-bold text-paper">Büyüyen Şişkin Ay</div>

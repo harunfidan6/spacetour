@@ -560,8 +560,9 @@ export function PolarisPrecessionHop() {
               </div>
             </div>
 
-            <div className="border-t border-line pt-3 font-mono text-[11px] text-muted">
-              💡 <em>İpucu: Eğer Büyük Ayı binaların ardında kalmışsa, karşı taraftaki &quot;W&quot; şeklindeki Kraliçe (Cassiopeia) takımyıldızının kollarından da Polaris’e ulaşabilirsiniz.</em>
+            <div className="border-t border-line pt-3 font-mono text-[11px] text-muted flex items-start gap-2">
+              <span className="text-solar font-bold text-[10px] tracking-wider border border-solar/40 px-1 py-0.2 shrink-0">İPUCU</span>
+              <em>Eğer Büyük Ayı binaların ardında kalmışsa, karşı taraftaki &quot;W&quot; şeklindeki Kraliçe (Cassiopeia) takımyıldızının kollarından da Polaris’e ulaşabilirsiniz.</em>
             </div>
           </div>
         </div>

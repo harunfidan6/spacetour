@@ -12,12 +12,10 @@ import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { AstrolojiGraphic } from '@/components/home/ModuleGraphics';
 import { Reveal, Ticks } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
+import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 
 const ELEMENTS = ['Tümü', 'Ateş', 'Toprak', 'Hava', 'Su'] as const;
 const ELEMENT_ICON: Record<ZodiacElement, typeof Flame> = { Ateş: Flame, Toprak: Globe2, Hava: Wind, Su: Droplets };
-
-/** Text-presentation zodiac glyph. */
-const glyph = (symbol: string) => `${symbol}︎`;
 
 const CHAPTERS = [
   { href: '#dogum-haritasi', label: 'Doğum haritası' },
@@ -55,7 +53,6 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
   const [shown, setShown] = useState<ZodiacSign | null>(sign);
   const closeBtn = useRef<HTMLButtonElement>(null);
 
-  // Keep the last sign rendered while the panel animates out.
   if (sign && sign !== shown) setShown(sign);
 
   useEffect(() => {
@@ -75,7 +72,6 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
       window.addEventListener('keydown', onKey);
       return () => {
         window.removeEventListener('keydown', onKey);
-        // Also runs on unmount (e.g. the panel's own link navigates away) — never leave the page scroll-locked.
         document.documentElement.style.overflow = '';
       };
     }
@@ -120,7 +116,7 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
                   <div className="serif-i text-2xl text-gold">{s.latinName}</div>
                   <div className="label mt-2 text-muted">{s.dates}</div>
                 </div>
-                <div className="glyph text-[clamp(4rem,12vw,8rem)] leading-none text-gold">{glyph(s.symbol)}</div>
+                <ZodiacGlyph sign={s.id} size={88} className="text-gold shrink-0" />
               </div>
               <p data-in className="text-lg leading-relaxed text-paper/80">{s.overview}</p>
               <dl data-in className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4">
@@ -222,7 +218,7 @@ export default function AstrolojiPage() {
             <AstrolojiGraphic />
           </div>
         }
-        ticker={ZODIAC_SIGNS.map((s) => `${glyph(s.symbol)} ${s.name}`)}
+        ticker={ZODIAC_SIGNS.map((s) => `${s.name} (${s.latinName})`)}
       />
 
       <div className="space-y-24 px-[var(--gutter)] pb-28 pt-12">
@@ -274,7 +270,7 @@ export default function AstrolojiPage() {
             {signs.map((s) => {
               const Icon = ELEMENT_ICON[s.element];
               return (
-                <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left">
+                <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left cursor-pointer">
                   <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-y-100" />
                   <span className="relative flex items-start justify-between">
                     <span className="label text-muted group-hover:text-ink">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
@@ -282,7 +278,13 @@ export default function AstrolojiPage() {
                       <Icon size={11} /> {s.element}
                     </span>
                   </span>
-                  <span className="relative mt-4 text-7xl leading-none text-gold transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:text-ink"><span className="glyph">{glyph(s.symbol)}</span></span>
+                  <div className="relative mt-6">
+                    <ZodiacGlyph
+                      sign={s.id}
+                      size={54}
+                      className="text-gold transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:text-ink"
+                    />
+                  </div>
                   <span className="display display-tight relative mt-6 pt-[0.12em] text-4xl text-paper group-hover:text-ink">{s.name}</span>
                   <span className="label relative mt-1 text-muted group-hover:text-ink/70">{s.dates}</span>
                   <span className="relative mt-4 line-clamp-2 text-sm leading-relaxed text-paper/60 group-hover:text-ink/80">{s.overview}</span>
@@ -316,9 +318,9 @@ export default function AstrolojiPage() {
             ].map((side, i) => (
               <label key={side.label} className={`flex flex-col items-center text-center lg:col-span-4 ${i === 1 ? 'lg:order-3' : ''}`}>
                 <span className="label text-muted">{side.label}</span>
-                <span key={side.sign.id} className="glyph mt-4 text-[clamp(5rem,12vw,9rem)] leading-none text-gold">
-                  {glyph(side.sign.symbol)}
-                </span>
+                <div className="mt-4 h-24 flex items-center justify-center">
+                  <ZodiacGlyph sign={side.sign.id} size={80} className="text-gold" />
+                </div>
                 <select
                   value={side.value}
                   onChange={(e) => side.set(e.target.value)}
@@ -326,7 +328,7 @@ export default function AstrolojiPage() {
                 >
                   {ZODIAC_SIGNS.map((s) => (
                     <option key={s.id} value={s.id} className="bg-ink font-sans text-base normal-case">
-                      {glyph(s.symbol)} {s.name}
+                      {s.name} ({s.latinName})
                     </option>
                   ))}
                 </select>

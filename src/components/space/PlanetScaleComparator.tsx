@@ -1,28 +1,28 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Layers } from 'lucide-react';
+import { Layers } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { PlanetGlyph } from '@/components/ui/CosmicGlyphs';
 
 interface ScaleItem {
   id: string;
   name: string;
   diameterKm: number;
   color: string;
-  image: string;
 }
 
 const SCALE_DATA: ScaleItem[] = [
-  { id: 'ay', name: 'Ay', diameterKm: 3474, color: '#b0b5bc', image: '🌕' },
-  { id: 'merkur', name: 'Merkür', diameterKm: 4879, color: '#9e9e9e', image: '🪨' },
-  { id: 'mars', name: 'Mars', diameterKm: 6779, color: '#ff5722', image: '🔴' },
-  { id: 'venus', name: 'Venüs', diameterKm: 12104, color: '#ffb74d', image: '✨' },
-  { id: 'dunya', name: 'Dünya', diameterKm: 12742, color: '#00d4ff', image: '🌍' },
-  { id: 'neptun', name: 'Neptün', diameterKm: 49244, color: '#2979ff', image: '🔵' },
-  { id: 'uranus', name: 'Uranüs', diameterKm: 50724, color: '#00e5ff', image: '🧊' },
-  { id: 'saturn', name: 'Satürn', diameterKm: 116460, color: '#ffd54f', image: '🪐' },
-  { id: 'jupiter', name: 'Jüpiter', diameterKm: 139820, color: '#ff9800', image: '🟠' },
-  { id: 'gunes', name: 'Güneş', diameterKm: 1392700, color: '#ffeb3b', image: '☀️' },
+  { id: 'ay', name: 'Ay', diameterKm: 3474, color: '#b0b5bc' },
+  { id: 'merkur', name: 'Merkür', diameterKm: 4879, color: '#9e9e9e' },
+  { id: 'mars', name: 'Mars', diameterKm: 6779, color: '#ff5722' },
+  { id: 'venus', name: 'Venüs', diameterKm: 12104, color: '#ffb74d' },
+  { id: 'dunya', name: 'Dünya', diameterKm: 12742, color: '#00d4ff' },
+  { id: 'neptun', name: 'Neptün', diameterKm: 49244, color: '#2979ff' },
+  { id: 'uranus', name: 'Uranüs', diameterKm: 50724, color: '#00e5ff' },
+  { id: 'saturn', name: 'Satürn', diameterKm: 116460, color: '#ffd54f' },
+  { id: 'jupiter', name: 'Jüpiter', diameterKm: 139820, color: '#ff9800' },
+  { id: 'gunes', name: 'Güneş', diameterKm: 1392700, color: '#ffeb3b' },
 ];
 
 export function PlanetScaleComparator() {
@@ -36,7 +36,7 @@ export function PlanetScaleComparator() {
   const ratioVisual = targetA.diameterKm / targetB.diameterKm;
 
   const sizeB = maxDisplayPx;
-  const sizeA = Math.max(16, Math.min(maxDisplayPx, maxDisplayPx * ratioVisual));
+  const sizeA = Math.max(20, Math.min(maxDisplayPx, maxDisplayPx * ratioVisual));
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -58,24 +58,24 @@ export function PlanetScaleComparator() {
 
         <div className="flex items-center gap-2 label text-paper bg-ink-2 border border-line px-4 py-2 shrink-0">
           <span>Lazer Kumpas Kalibrasyonu:</span>
-          <span className="text-violet font-bold">1:1 HASSASİYET</span>
+          <span className="text-violet font-bold font-mono">1:1 Hacim Metriği</span>
         </div>
       </div>
 
-      {/* Selectors */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px border border-line bg-line font-mono">
+      {/* Target Selectors */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-ink-2 space-y-2">
-          <label className="label text-paper flex items-center gap-2 text-xs">
-            <span className="h-2 w-2 rounded-full bg-paper" /> 1. CİSİM (REFERANS KÜTLE)
+          <label className="label text-gold flex items-center gap-2 text-xs">
+            <span className="h-2 w-2 rounded-full bg-gold" /> 1. CİSİM (BAZ ALINAN)
           </label>
           <select
             value={targetA.id}
             onChange={(e) => setTargetA(SCALE_DATA.find((x) => x.id === e.target.value) || targetA)}
-            className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-paper transition-colors cursor-pointer"
+            className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-gold transition-colors cursor-pointer"
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id} className="bg-ink-2 text-paper">
-                {item.image} {item.name} ({item.diameterKm.toLocaleString()} km)
+                {item.name} ({item.diameterKm.toLocaleString()} km)
               </option>
             ))}
           </select>
@@ -92,7 +92,7 @@ export function PlanetScaleComparator() {
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id} className="bg-ink-2 text-paper">
-                {item.image} {item.name} ({item.diameterKm.toLocaleString()} km)
+                {item.name} ({item.diameterKm.toLocaleString()} km)
               </option>
             ))}
           </select>
@@ -112,7 +112,11 @@ export function PlanetScaleComparator() {
               boxShadow: `0 0 30px ${targetA.color}44`
             }}
           >
-            <span className="text-2xl select-none">{targetA.image}</span>
+            <PlanetGlyph
+              planet={targetA.id}
+              size={Math.max(12, Math.min(sizeA * 0.45, 42))}
+              className="text-ink"
+            />
           </div>
 
           <div className="text-center bg-ink border border-line px-4 py-2">
@@ -132,7 +136,7 @@ export function PlanetScaleComparator() {
           <div className="h-px w-full bg-line" />
           <p className="label text-muted max-w-[200px] leading-relaxed">
             <strong className="text-paper">{targetB.name}</strong> içine tam <br />
-            <strong className="text-violet text-sm">{volumeRatio}</strong><br />
+            <strong className="text-violet text-sm font-mono">{volumeRatio}</strong><br />
             adet <strong className="text-paper">{targetA.name}</strong> sığar
           </p>
         </div>
@@ -145,10 +149,14 @@ export function PlanetScaleComparator() {
               width: `${sizeB}px`,
               height: `${sizeB}px`,
               backgroundColor: targetB.color,
-              boxShadow: `0 0 40px ${targetB.color}66`
+              boxShadow: `0 0 40px ${targetB.color}55`
             }}
           >
-            <span className="text-5xl select-none">{targetB.image}</span>
+            <PlanetGlyph
+              planet={targetB.id}
+              size={Math.max(18, Math.min(sizeB * 0.45, 48))}
+              className="text-ink"
+            />
           </div>
 
           <div className="text-center bg-ink border border-line px-4 py-2">

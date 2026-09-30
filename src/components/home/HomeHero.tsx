@@ -11,6 +11,7 @@ import { moonPhase, upcomingEvents, daysUntil } from '@/lib/sky';
 import { useNow } from '@/lib/useNow';
 import { HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
 import { MoonOrb } from '@/components/space/PlanetOrb';
+import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
 
 const HeroSolarSystem3D = dynamic(() => import('./HeroSolarSystem3D').then((m) => m.HeroSolarSystem3D), { ssr: false });
 
@@ -187,7 +188,16 @@ export function HomeHero() {
               <dt className="label text-muted">Sıradaki olay</dt>
               <dd className="mt-3">
                 <span className="display display-tight block text-2xl text-solar">{next && now ? `${daysUntil(next.date, now)} gün` : '—'}</span>
-                <span className="line-clamp-1 text-xs text-paper/60">{next ? `${next.emoji} ${next.title}` : 'Takvim yükleniyor'}</span>
+                <span className="flex items-center gap-1.5 text-xs text-paper/60 mt-0.5">
+                  {next ? (
+                    <>
+                      <AstronomicalEventGlyph type={next.type} size={13} className="text-solar shrink-0" />
+                      <span className="truncate">{next.title}</span>
+                    </>
+                  ) : (
+                    'Takvim yükleniyor'
+                  )}
+                </span>
               </dd>
             </div>
           </dl>

@@ -358,87 +358,88 @@ export default function AdminAnalyticsPage() {
               aria-pressed={isDemoMode}
               className={`px-3 py-1.5 font-bold transition-colors cursor-pointer flex items-center gap-1.5 border uppercase tracking-wider ${
                 isDemoMode
-                  ? 'border-violet bg-violet text-ink'
-                  : 'border-transparent text-muted hover:text-paper'
-              }`}
-            >
-              <span>🧪 Örnek Simülasyon</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 bg-ink border border-line p-1.5 text-xs font-mono">
-            <div className="flex items-center gap-1.5 px-2">
-              <span className="h-2 w-2 bg-lime animate-ping" />
-              <span className="text-muted text-[11px] uppercase">Güncelleme:</span>
-              <span className="text-paper font-bold">{lastUpdated || 'Yükleniyor...'}</span>
-            </div>
-
-            <div className="flex items-center gap-1 border-l border-line pl-2">
-              {[
-                { label: '5sn', val: 5 },
-                { label: '15sn', val: 15 },
-                { label: 'Durdur', val: 0 }
-              ].map((opt) => (
-                <button
-                  key={opt.label}
-                  onClick={() => setAutoRefreshSecs(opt.val)}
-                  className={`px-2 py-1 text-[10px] font-bold transition-colors cursor-pointer border ${
-                    autoRefreshSecs === opt.val
-                      ? 'border-lime bg-lime text-ink'
-                      : 'border-transparent text-muted hover:text-paper'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-
-              <button
-                onClick={refresh}
-                disabled={isRefreshing}
-                aria-label="Şimdi yenile"
-                className="p-1 border border-line text-muted hover:text-paper hover:border-paper transition-colors ml-1 cursor-pointer"
-                title="Şimdi Yenile"
-              >
-                <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-solar' : ''} />
-              </button>
-            </div>
-          </div>
-
-          {/* Secure Logout Button */}
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 border border-line bg-ink px-3 py-1.5 font-mono text-xs text-muted hover:border-rose/50 hover:text-rose transition-colors cursor-pointer uppercase tracking-wider"
-            title="Güvenli Çıkış Yap"
+                ? 'border-violet bg-violet text-ink font-bold'
+                : 'border-transparent text-muted hover:text-paper'
+            }`}
           >
-            <LogOut size={13} />
-            <span>Çıkış</span>
+            <span>Örnek Simülasyon</span>
           </button>
         </div>
-      </div>
 
-      {/* Active Mode Notice Banner */}
-      <div
-        className={`p-4 border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
-          !isDemoMode
-            ? 'border-lime/30 bg-lime/10 text-lime'
-            : 'border-violet/30 bg-violet/10 text-violet'
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <span>{!isDemoMode ? '⚡' : '🧪'}</span>
-          <span>
-            {!isDemoMode
-              ? 'CANLI GERÇEK MOD AKTİF: Yalnızca siteye giren GERÇEK ziyaretçi ve IP telemetrisi görüntüleniyor.'
-              : 'SİMÜLASYON MODU AKTİF: Grafikleri ve rapor yapısını incelemek için örnek test verileri görüntüleniyor.'}
-          </span>
-        </div>
-        {!isDemoMode && (
-          <div className="text-paper/75 text-[11px]">
-            💡 <em>Telefonunuzdan veya başka sekmeden siteye girdiğiniz an canlı akışta anında belireceksiniz!</em>
+        <div className="flex items-center gap-2 bg-ink border border-line p-1.5 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-2">
+            <span className="h-2 w-2 bg-lime animate-ping" />
+            <span className="text-muted text-[11px] uppercase">Güncelleme:</span>
+            <span className="text-paper font-bold">{lastUpdated || 'Yükleniyor...'}</span>
           </div>
-        )}
+
+          <div className="flex items-center gap-1 border-l border-line pl-2">
+            {[
+              { label: '5sn', val: 5 },
+              { label: '15sn', val: 15 },
+              { label: 'Durdur', val: 0 }
+            ].map((opt) => (
+              <button
+                key={opt.label}
+                onClick={() => setAutoRefreshSecs(opt.val)}
+                className={`px-2 py-1 text-[10px] font-bold transition-colors cursor-pointer border ${
+                  autoRefreshSecs === opt.val
+                    ? 'border-lime bg-lime text-ink'
+                    : 'border-transparent text-muted hover:text-paper'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+
+            <button
+              onClick={refresh}
+              disabled={isRefreshing}
+              aria-label="Şimdi yenile"
+              className="p-1 border border-line text-muted hover:text-paper hover:border-paper transition-colors ml-1 cursor-pointer"
+              title="Şimdi Yenile"
+            >
+              <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-solar' : ''} />
+            </button>
+          </div>
+        </div>
+
+        {/* Secure Logout Button */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex items-center gap-1.5 border border-line bg-ink px-3 py-1.5 font-mono text-xs text-muted hover:border-rose/50 hover:text-rose transition-colors cursor-pointer uppercase tracking-wider"
+          title="Güvenli Çıkış Yap"
+        >
+          <LogOut size={13} />
+          <span>Çıkış</span>
+        </button>
       </div>
+    </div>
+
+    {/* Active Mode Notice Banner */}
+    <div
+      className={`p-4 border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+        !isDemoMode
+          ? 'border-lime/30 bg-lime/10 text-lime'
+          : 'border-violet/30 bg-violet/10 text-violet'
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-current shrink-0" />
+        <span>
+          {!isDemoMode
+            ? 'CANLI GERÇEK MOD AKTİF: Yalnızca siteye giren GERÇEK ziyaretçi ve IP telemetrisi görüntüleniyor.'
+            : 'SİMÜLASYON MODU AKTİF: Grafikleri ve rapor yapısını incelemek için örnek test verileri görüntüleniyor.'}
+        </span>
+      </div>
+      {!isDemoMode && (
+        <div className="text-paper/75 text-[11px] flex items-center gap-1.5">
+          <span className="text-solar font-bold border border-solar/40 px-1 py-0.2 text-[9px] shrink-0">BİLGİ</span>
+          <em>Telefonunuzdan veya başka sekmeden siteye girdiğiniz an canlı akışta anında belireceksiniz!</em>
+        </div>
+      )}
+    </div>
 
       {/* 4 Big Real-Time KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -655,7 +656,7 @@ export default function AdminAnalyticsPage() {
               <div key={loc.city} className="space-y-1">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-paper font-medium flex items-center gap-1.5">
-                    <span>📍</span>
+                    <MapPin size={13} className="text-solar shrink-0" />
                     <span>{loc.city}</span>
                     <span className="text-[10px] text-muted">({loc.country})</span>
                   </span>

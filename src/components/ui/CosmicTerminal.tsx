@@ -25,7 +25,7 @@ export interface CommandItem {
   id: string;
   title: string;
   subtitle: string;
-  category: 'WARP' | 'LAB' | 'NAV' | 'SYSTEM';
+  category: 'ORBIT' | 'LAB' | 'NAV' | 'SYSTEM';
   icon: React.ComponentType<{ size?: number; className?: string }>;
   badge?: string;
   action: () => void;
@@ -35,10 +35,10 @@ export function CosmicTerminal() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'WARP' | 'LAB' | 'NAV' | 'SYSTEM'>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'ORBIT' | 'LAB' | 'NAV' | 'SYSTEM'>('ALL');
   
   const router = useRouter();
-  const { setDestination, triggerWarp, toggleAutoPilot, toggleOrbitMode, orbitMode } = useSpace();
+  const { setDestination, focusCurrentDestination, toggleAutoPilot, toggleOrbitMode, orbitMode } = useSpace();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -55,12 +55,12 @@ export function CosmicTerminal() {
 
   // Define commands
   const commands: CommandItem[] = useMemo(() => [
-    // --- WARP COMMANDS ---
+    // --- ORBIT & CELESTIAL DESTINATIONS ---
     {
-      id: 'warp-sun',
-      title: 'Warp: Güneş (Sol)',
+      id: 'nav-dest-sun',
+      title: 'Hedef: Güneş (Sol)',
       subtitle: 'Sarı cüce yıldız · Plazma granülasyonu · 0.00 AU',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'YILDIZ',
       icon: Flame,
       action: () => {
@@ -69,10 +69,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-earth',
-      title: 'Warp: Dünya (Terra) & ISS Yörüngesi',
+      id: 'nav-dest-earth',
+      title: 'Hedef: Dünya (Terra) & ISS Yörüngesi',
       subtitle: 'NASA Gece/Gündüz haritası · 420 km ISS uydusu · 1.00 AU',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'YAŞAM ALANI',
       icon: Globe,
       action: () => {
@@ -81,10 +81,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-mars',
-      title: 'Warp: Mars (Kızıl Gezegen)',
+      id: 'nav-dest-mars',
+      title: 'Hedef: Mars (Kızıl Gezegen)',
       subtitle: 'Demir oksit regolit · Olympus Mons · 1.52 AU',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'KOLONİ',
       icon: Compass,
       action: () => {
@@ -93,10 +93,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-jupiter',
-      title: 'Warp: Jüpiter (Gaz Devi)',
+      id: 'nav-dest-jupiter',
+      title: 'Hedef: Jüpiter (Gaz Devi)',
       subtitle: 'Büyük Kırmızı Leke · NASA Cassini zonel bantları · 5.20 AU',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'GAZ DEVİ',
       icon: Orbit,
       action: () => {
@@ -105,10 +105,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-saturn',
-      title: 'Warp: Satürn (Halkalı Dev)',
+      id: 'nav-dest-saturn',
+      title: 'Hedef: Satürn (Halkalı Dev)',
       subtitle: 'Analitik halka ve küre gölge iz düşümü · 9.58 AU',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'HALKALI DEV',
       icon: Moon,
       action: () => {
@@ -117,10 +117,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-blackhole',
-      title: 'Warp: Gargantua (Tekillik & Olay Ufku)',
+      id: 'nav-dest-blackhole',
+      title: 'Hedef: Gargantua (Tekillik & Olay Ufku)',
       subtitle: 'Göreli Doppler akresyon diski · Işık bükülmesi',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'KARA DELİK',
       icon: Sparkles,
       action: () => {
@@ -129,10 +129,10 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'warp-overview',
-      title: 'Warp: Güneş Sistemi Genel Görünümü',
+      id: 'nav-dest-overview',
+      title: 'Hedef: Güneş Sistemi Genel Görünümü',
       subtitle: 'Tüm gezegen yörüngelerinin heliosferik perspektifi',
-      category: 'WARP',
+      category: 'ORBIT',
       badge: 'SİSTEM',
       icon: Maximize2,
       action: () => {
@@ -370,14 +370,14 @@ export function CosmicTerminal() {
       },
     },
     {
-      id: 'sys-warp',
-      title: 'Kumanda: Relativistik Warp Sıçraması',
-      subtitle: 'Hiperuzay FOV distorsiyonu ve maviye kayma parçacık akışı',
+      id: 'sys-focus',
+      title: 'Kumanda: Seçili Hedefe Odaklan',
+      subtitle: 'Kamerayı seçili gök cismine doğru yumuşak açıyla hizalar',
       category: 'SYSTEM',
-      badge: 'HİPERUZAY',
-      icon: Zap,
+      badge: 'KAMERA',
+      icon: Orbit,
       action: () => {
-        triggerWarp();
+        focusCurrentDestination();
         setOpen(false);
       },
     },
@@ -393,7 +393,7 @@ export function CosmicTerminal() {
         setOpen(false);
       },
     },
-  ], [orbitMode, setDestination, toggleOrbitMode, triggerWarp, toggleAutoPilot, router]);
+  ], [orbitMode, setDestination, toggleOrbitMode, focusCurrentDestination, toggleAutoPilot, router]);
 
   const resetSearch = () => {
     setQuery('');
@@ -528,7 +528,7 @@ export function CosmicTerminal() {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Bir warp hedefi, laboratuvar veya sistem komutu arayın..."
+            placeholder="Bir yörünge hedefi, laboratuvar veya sistem komutu arayın..."
             className="w-full bg-transparent font-mono text-sm text-paper placeholder:text-paper/30 focus:outline-none"
           />
           {query && (
@@ -547,7 +547,7 @@ export function CosmicTerminal() {
 
         {/* Filter Category Pills */}
         <div className="no-scrollbar flex items-center gap-1.5 border-b border-line bg-ink-2 px-4 py-2 overflow-x-auto">
-          {(['ALL', 'WARP', 'LAB', 'NAV', 'SYSTEM'] as const).map((cat) => (
+          {(['ALL', 'ORBIT', 'LAB', 'NAV', 'SYSTEM'] as const).map((cat) => (
             <button
               key={cat}
               type="button"
@@ -561,7 +561,7 @@ export function CosmicTerminal() {
                   : 'text-muted hover:text-paper'
               }`}
             >
-              {cat === 'ALL' ? 'Tümü' : cat}
+              {cat === 'ALL' ? 'Tümü' : cat === 'ORBIT' ? 'Yörünge' : cat}
             </button>
           ))}
           <span className="ml-auto font-mono text-[10px] text-muted">

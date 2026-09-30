@@ -101,7 +101,7 @@ export const DESTINATIONS: Record<DestinationId, DestinationInfo> = {
     id: 'blackhole',
     name: 'Gargantua (Singularity)',
     tag: 'SÜPER KÜTLELİ KARADELİK',
-    distance: '124.5 AU (Warp Sıçraması)',
+    distance: '124.5 AU (Heliopoz Ötesi)',
     coords: [0, 0, -110],
     targetPosition: [0, 8, -80],
     lookAt: [0, 0, -110],
@@ -119,7 +119,7 @@ export const DESTINATIONS: Record<DestinationId, DestinationInfo> = {
     targetPosition: [0, 45, -20],
     lookAt: [0, 0, -100],
     description: 'Güneş rüzgarının bittiği heliopoz ötesi yıldızlararası gaz ve nebula ortamı.',
-    speed: 'Warp 8.4',
+    speed: 'Relativistik 0.15c',
     temperature: '2.7 K',
     gravity: '0.00 m/s²'
   }
@@ -130,53 +130,43 @@ export type OrbitMode = 'didactic' | 'j2000';
 interface SpaceContextType {
   currentDestination: DestinationInfo;
   setDestination: (id: DestinationId) => void;
-  isWarping: boolean;
-  warpSpeed: number; // 0 to 1
+  isTransitioning: boolean;
   autoPilot: boolean;
   toggleAutoPilot: () => void;
   hudVisible: boolean;
   toggleHud: () => void;
   throttle: number; // 1 to 10
   setThrottle: (val: number) => void;
-  triggerWarp: () => void;
   orbitMode: OrbitMode;
   toggleOrbitMode: () => void;
+  focusCurrentDestination: () => void;
 }
 
 const SpaceContext = createContext<SpaceContextType | undefined>(undefined);
 
 export function SpaceProvider({ children }: { children: ReactNode }) {
   const [currentDestination, setCurrentDest] = useState<DestinationInfo>(DESTINATIONS['solar-overview']);
-  const [isWarping, setIsWarping] = useState<boolean>(false);
-  const [warpSpeed, setWarpSpeed] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [autoPilot, setAutoPilot] = useState<boolean>(false);
   const [hudVisible, setHudVisible] = useState<boolean>(true);
   const [throttle, setThrottle] = useState<number>(1);
   const [orbitMode, setOrbitMode] = useState<OrbitMode>('didactic');
 
-  const triggerWarp = () => {
-    setIsWarping(true);
-    setWarpSpeed(1.0);
+  const focusCurrentDestination = () => {
+    setIsTransitioning(true);
     setTimeout(() => {
-      setWarpSpeed(0);
-      setIsWarping(false);
-    }, 2400);
+      setIsTransitioning(false);
+    }, 1800);
   };
 
   const setDestination = (id: DestinationId) => {
-    if (id === currentDestination.id && !isWarping) {
-      triggerWarp();
-      return;
-    }
-    setIsWarping(true);
-    setWarpSpeed(1.0);
+    setIsTransitioning(true);
     setCurrentDest(DESTINATIONS[id]);
 
-    // Warp duration
+    // Smooth orbital transfer transition time
     setTimeout(() => {
-      setWarpSpeed(0);
-      setIsWarping(false);
-    }, 2200);
+      setIsTransitioning(false);
+    }, 1800);
   };
 
   const toggleAutoPilot = () => {
@@ -196,17 +186,16 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
       value={{
         currentDestination,
         setDestination,
-        isWarping,
-        warpSpeed,
+        isTransitioning,
         autoPilot,
         toggleAutoPilot,
         hudVisible,
         toggleHud,
         throttle,
         setThrottle,
-        triggerWarp,
         orbitMode,
         toggleOrbitMode,
+        focusCurrentDestination,
       }}
     >
       {children}
