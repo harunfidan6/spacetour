@@ -3,10 +3,18 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useInView } from '@/lib/useInView';
 import { matchesQuery } from '@/lib/text';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { stars, constellationLines, deepSkyObjects, StarData, DeepSkyObject } from '@/data/stars';
+import {
+  stars,
+  constellationLines,
+  deepSkyObjects,
+  StarData,
+  DeepSkyObject,
+  DetailedConstellation,
+  DETAILED_CONSTELLATIONS
+} from '@/data/stars';
 import {
   UserLocation,
   POPULAR_LOCATIONS,
@@ -24,7 +32,8 @@ import {
   PlanetGlyph,
   TelescopeGlyph,
   GalaxySpiralGlyph,
-  VectorMoonPhase
+  VectorMoonPhase,
+  ConstellationGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { ArCameraOverlay } from './ArCameraOverlay';
 import { Ticks } from '@/components/motion/primitives';
@@ -44,6 +53,64 @@ import {
 } from 'lucide-react';
 
 const SPHERE_RADIUS = 90;
+
+let cachedStarTexture: THREE.Texture | null = null;
+function getStarTexture(): THREE.Texture {
+  if (cachedStarTexture) return cachedStarTexture;
+  if (typeof document === 'undefined') return new THREE.Texture();
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  gradient.addColorStop(0.12, 'rgba(255, 255, 255, 0.98)');
+  gradient.addColorStop(0.32, 'rgba(235, 245, 255, 0.6)');
+  gradient.addColorStop(0.65, 'rgba(180, 220, 255, 0.18)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(32, 10);
+  ctx.lineTo(32, 54);
+  ctx.moveTo(10, 32);
+  ctx.lineTo(54, 32);
+  ctx.stroke();
+
+  cachedStarTexture = new THREE.CanvasTexture(canvas);
+  cachedStarTexture.needsUpdate = true;
+  return cachedStarTexture;
+}
+
+let cachedMwTexture: THREE.Texture | null = null;
+function getMilkyWayTexture(): THREE.Texture {
+  if (cachedMwTexture) return cachedMwTexture;
+  if (typeof document === 'undefined') return new THREE.Texture();
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
+  gradient.addColorStop(0.35, 'rgba(210, 230, 255, 0.35)');
+  gradient.addColorStop(0.7, 'rgba(160, 190, 255, 0.1)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+
+  cachedMwTexture = new THREE.CanvasTexture(canvas);
+  cachedMwTexture.needsUpdate = true;
+  return cachedMwTexture;
+}
 
 // -------------------------------------------------------------
 // 1. REAL-TIME STARS WITH ATMOSPHERIC EXTINCTION
@@ -126,6 +193,8 @@ function RealTimeStars({
     return { positions: pos, colors: col, starPositionsMap: map };
   }, [location, lst, useLocalHorizon, nightVision]);
 
+  const starTexture = useMemo(() => getStarTexture(), []);
+
   return (
     <>
       <points ref={pointsRef}>
@@ -134,10 +203,13 @@ function RealTimeStars({
           <bufferAttribute attach="attributes-color" args={[colors, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={1.9}
+          map={starTexture}
+          size={3.6}
           vertexColors
           transparent
           opacity={opacity}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
           sizeAttenuation={true}
         />
       </points>
@@ -246,6 +318,8 @@ function MilkyWayDustBelt({
     return { positions: pos, colors: col };
   }, [mwData, location, lst, useLocalHorizon, nightVision]);
 
+  const mwTexture = useMemo(() => getMilkyWayTexture(), []);
+
   if (!visible) return null;
 
   return (
@@ -255,10 +329,12 @@ function MilkyWayDustBelt({
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={2.3}
+        map={mwTexture}
+        size={5.2}
         vertexColors
         transparent
-        opacity={opacity * 0.72}
+        opacity={opacity * 0.75}
+        depthWrite={false}
         blending={THREE.AdditiveBlending}
         sizeAttenuation={true}
       />
@@ -326,12 +402,248 @@ function RealTimeConstellationLines({
   return (
     <lineSegments geometry={linesGeometry} visible={visible}>
       <lineBasicMaterial
-        color={nightVision ? '#880000' : '#4da6ff'}
+        color={nightVision ? '#ff4444' : '#38bdf8'}
         transparent
-        opacity={nightVision ? 0.35 : 0.28 * opacity}
+        opacity={nightVision ? 0.45 : 0.42 * opacity}
       />
     </lineSegments>
   );
+}
+
+// -------------------------------------------------------------
+// 3.5 ANIMATED CONSTELLATION TRACER & STAR-HOPPING ENGINE
+// -------------------------------------------------------------
+function AnimatedConstellationTracer({
+  constellation,
+  location,
+  lst,
+  useLocalHorizon,
+  nightVision,
+  showGuide,
+  animTrigger
+}: {
+  constellation: DetailedConstellation | null;
+  location: UserLocation;
+  lst: number;
+  useLocalHorizon: boolean;
+  nightVision: boolean;
+  showGuide: boolean;
+  animTrigger: number;
+}) {
+  const [animProgress, setAnimProgress] = useState(0);
+
+  useEffect(() => {
+    if (!constellation) {
+      setAnimProgress(0);
+      return;
+    }
+    setAnimProgress(0);
+    let startTime: number | null = null;
+    const duration = 2200; // 2.2s smooth laser stroke
+
+    let reqId: number;
+    const animate = (time: number) => {
+      if (!startTime) startTime = time;
+      const elapsed = time - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      setAnimProgress(progress);
+      if (progress < 1) {
+        reqId = requestAnimationFrame(animate);
+      }
+    };
+    reqId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(reqId);
+  }, [constellation?.id, animTrigger]);
+
+  const getCoords = (starIdx: number): THREE.Vector3 => {
+    const star = stars[starIdx] ?? stars[0];
+    if (useLocalHorizon) {
+      const { alt, az } = raDecToAltAz(star.ra, star.dec, location.latitude, lst);
+      const [x, y, z] = altAzToCartesian(alt, az, SPHERE_RADIUS * 0.985);
+      return new THREE.Vector3(x, y, z);
+    } else {
+      const raRad = (star.ra * Math.PI) / 180;
+      const decRad = (star.dec * Math.PI) / 180;
+      return new THREE.Vector3(
+        SPHERE_RADIUS * 0.985 * Math.cos(decRad) * Math.cos(raRad),
+        SPHERE_RADIUS * 0.985 * Math.sin(decRad),
+        SPHERE_RADIUS * 0.985 * Math.cos(decRad) * Math.sin(raRad)
+      );
+    }
+  };
+
+  const { linePoints, starNodes, centroid, guideLinePoints } = useMemo(() => {
+    if (!constellation) {
+      return { linePoints: [], starNodes: [], centroid: new THREE.Vector3(), guideLinePoints: [] };
+    }
+
+    const nodes = constellation.starIndices.map((idx) => ({
+      idx,
+      star: stars[idx],
+      pos: getCoords(idx)
+    }));
+
+    const sum = nodes.reduce((acc, n) => acc.add(n.pos.clone()), new THREE.Vector3());
+    const center = sum.divideScalar(nodes.length || 1);
+
+    const fullPathPoints: THREE.Vector3[] = constellation.animatedPath.map((idx) => getCoords(idx));
+    const numSegments = fullPathPoints.length - 1;
+    const currentSegmentIndex = Math.min(numSegments - 1, Math.floor(animProgress * numSegments));
+    const segmentFraction = (animProgress * numSegments) - currentSegmentIndex;
+
+    const drawnPoints: THREE.Vector3[] = [];
+    for (let i = 0; i < currentSegmentIndex; i++) {
+      drawnPoints.push(fullPathPoints[i], fullPathPoints[i + 1]);
+    }
+    if (currentSegmentIndex >= 0 && currentSegmentIndex < numSegments) {
+      const pA = fullPathPoints[currentSegmentIndex];
+      const pB = fullPathPoints[currentSegmentIndex + 1];
+      const interpolated = pA.clone().lerp(pB, segmentFraction);
+      drawnPoints.push(pA, interpolated);
+    }
+
+    const guidePoints: THREE.Vector3[] = [];
+    if (showGuide && constellation.pointerGuide) {
+      const gPath = constellation.pointerGuide.path;
+      for (let i = 0; i < gPath.length - 1; i++) {
+        guidePoints.push(getCoords(gPath[i]), getCoords(gPath[i + 1]));
+      }
+    }
+
+    return {
+      linePoints: drawnPoints,
+      starNodes: nodes,
+      centroid: center,
+      guideLinePoints: guidePoints
+    };
+  }, [constellation, animProgress, location, lst, useLocalHorizon, showGuide]);
+
+  const lineGeometry = useMemo(() => {
+    return new THREE.BufferGeometry().setFromPoints(linePoints);
+  }, [linePoints]);
+
+  const guideGeometry = useMemo(() => {
+    return new THREE.BufferGeometry().setFromPoints(guideLinePoints);
+  }, [guideLinePoints]);
+
+  if (!constellation) return null;
+
+  return (
+    <group>
+      {/* 1. Animated Glowing Constellation Lines */}
+      {linePoints.length > 0 && (
+        <lineSegments geometry={lineGeometry}>
+          <lineBasicMaterial
+            color={nightVision ? '#ff2222' : '#00e5ff'}
+            transparent
+            opacity={0.95}
+          />
+        </lineSegments>
+      )}
+
+      {/* 2. Star-Hopping Guide Line (Merak -> Dubhe -> Polaris) */}
+      {showGuide && guideLinePoints.length > 0 && (
+        <group>
+          <lineSegments geometry={guideGeometry}>
+            <lineBasicMaterial
+              color="#ffd700"
+              transparent
+              opacity={0.85}
+            />
+          </lineSegments>
+          {guideLinePoints[1] && guideLinePoints[2] && (
+            <Html position={guideLinePoints[1].clone().lerp(guideLinePoints[2], 0.5)} center distanceFactor={45}>
+              <div className="pointer-events-none select-none rounded-full border border-gold/80 bg-ink/90 px-2.5 py-1 text-[9px] font-mono font-bold text-gold shadow-[0_0_15px_rgba(255,215,0,0.5)] backdrop-blur-md whitespace-nowrap animate-pulse">
+                5x Kılavuz Doğrusu → Polaris
+              </div>
+            </Html>
+          )}
+        </group>
+      )}
+
+      {/* 3. Glowing Target Rings around each Star in the Constellation */}
+      {starNodes.map(({ star, pos }) => (
+        <group key={star.name} position={pos}>
+          <mesh>
+            <ringGeometry args={[1.2, 1.8, 24]} />
+            <meshBasicMaterial
+              color={nightVision ? '#ff3333' : star.name === 'Polaris' ? '#ffd700' : '#00e5ff'}
+              transparent
+              opacity={0.85}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          <Html center distanceFactor={42}>
+            <div className={`pointer-events-none select-none rounded px-1.5 py-0.5 text-[8px] font-mono font-bold whitespace-nowrap mt-4 ${
+              star.name === 'Polaris'
+                ? 'bg-gold text-ink border border-gold font-extrabold shadow-[0_0_12px_rgba(255,215,0,0.9)]'
+                : 'bg-ink/85 text-paper/90 border border-line'
+            }`}>
+              {star.turkishName || star.name}
+            </div>
+          </Html>
+        </group>
+      ))}
+
+      {/* 4. Constellation Title Badge at Centroid */}
+      <Html position={centroid} center distanceFactor={50}>
+        <div className="pointer-events-none select-none flex flex-col items-center gap-1">
+          <div className="rounded-full border border-primary/80 bg-ink/95 px-4 py-1 text-xs font-mono font-bold text-primary shadow-[0_0_20px_rgba(0,229,255,0.6)] backdrop-blur-md uppercase tracking-widest whitespace-nowrap">
+            {constellation.name} · {constellation.latinName}
+          </div>
+          <span className="label text-[9px] text-paper/70 font-mono">
+            {constellation.starIndices.length} Ana Yıldız
+          </span>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// -------------------------------------------------------------
+// 3.6 CAMERA CONSTELLATION DIRECTOR (Orient Camera to Constellation)
+// -------------------------------------------------------------
+function CameraConstellationDirector({
+  targetConstellation,
+  location,
+  lst,
+  useLocalHorizon
+}: {
+  targetConstellation: DetailedConstellation | null;
+  location: UserLocation;
+  lst: number;
+  useLocalHorizon: boolean;
+}) {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    if (!targetConstellation) return;
+
+    let targetDir: THREE.Vector3;
+    if (useLocalHorizon) {
+      const { alt, az } = raDecToAltAz(
+        targetConstellation.centerRa,
+        targetConstellation.centerDec,
+        location.latitude,
+        lst
+      );
+      const [x, y, z] = altAzToCartesian(alt, az, 1);
+      targetDir = new THREE.Vector3(x, y, z).normalize();
+    } else {
+      const raRad = (targetConstellation.centerRa * Math.PI) / 180;
+      const decRad = (targetConstellation.centerDec * Math.PI) / 180;
+      targetDir = new THREE.Vector3(
+        Math.cos(decRad) * Math.cos(raRad),
+        Math.sin(decRad),
+        Math.cos(decRad) * Math.sin(raRad)
+      ).normalize();
+    }
+
+    camera.position.set(-targetDir.x * 0.1, -targetDir.y * 0.1, -targetDir.z * 0.1);
+    camera.lookAt(targetDir.x * 10, targetDir.y * 10, targetDir.z * 10);
+  }, [targetConstellation?.id, location, lst, useLocalHorizon, camera]);
+
+  return null;
 }
 
 // -------------------------------------------------------------
@@ -626,6 +938,11 @@ export function Planetarium3D() {
   const [selectedStar, setSelectedStar] = useState<StarData | null>(null);
   const [selectedDso, setSelectedDso] = useState<DeepSkyObject | null>(null);
   const [selectedBody, setSelectedBody] = useState<CelestialBodyDomeState | null>(null);
+  const [activeConstellation, setActiveConstellation] = useState<DetailedConstellation | null>(
+    DETAILED_CONSTELLATIONS[0] // Default to Küçük Ayı (Ursa Minor) with animated 7-star tracer
+  );
+  const [showStarHoppingGuide, setShowStarHoppingGuide] = useState(true);
+  const [animTrigger, setAnimTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLocDropdownOpen, setIsLocDropdownOpen] = useState(false);
 
@@ -766,6 +1083,25 @@ export function Planetarium3D() {
           useLocalHorizon={useLocalHorizon}
           nightVision={nightVision}
           opacity={isArActive ? arOpacity : 1.0}
+        />
+
+        {/* Animated Constellation Tracer & Star-Hopping Guide */}
+        <AnimatedConstellationTracer
+          constellation={activeConstellation}
+          location={selectedLocation}
+          lst={currentLst}
+          useLocalHorizon={useLocalHorizon}
+          nightVision={nightVision}
+          showGuide={showStarHoppingGuide}
+          animTrigger={animTrigger}
+        />
+
+        {/* Camera Director: Orient camera to selected constellation */}
+        <CameraConstellationDirector
+          targetConstellation={activeConstellation}
+          location={selectedLocation}
+          lst={currentLst}
+          useLocalHorizon={useLocalHorizon}
         />
 
         {/* Ground Horizon & Compass Cardinals */}
@@ -1028,6 +1364,57 @@ export function Planetarium3D() {
         </div>
       </div>
 
+      {/* 3.1 CONSTELLATION QUICK-SELECTION PILLS BAR */}
+      <div className="absolute top-16 left-4 right-4 z-20 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 pointer-events-auto">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveConstellation(null);
+          }}
+          className={`label px-3 py-1 border rounded-full backdrop-blur-xl transition-all cursor-pointer whitespace-nowrap text-xs ${
+            !activeConstellation
+              ? 'border-lime bg-lime text-ink font-bold'
+              : 'border-line bg-ink/90 text-paper/70 hover:text-paper'
+          }`}
+        >
+          ⭐ Serbest Bakış
+        </button>
+
+        {DETAILED_CONSTELLATIONS.map((c) => {
+          const isSelected = activeConstellation?.id === c.id;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => {
+                setActiveConstellation(c);
+                setSelectedStar(null);
+                setSelectedDso(null);
+                setSelectedBody(null);
+                setAnimTrigger((t) => t + 1);
+              }}
+              className={`label px-3.5 py-1 border rounded-full backdrop-blur-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 text-xs ${
+                isSelected
+                  ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(255,215,0,0.5)]'
+                  : 'border-line bg-ink/90 text-paper/80 hover:border-gold/50 hover:text-gold'
+              }`}
+            >
+              <ConstellationGlyph id={c.glyphId} size={14} className={isSelected ? 'text-ink' : 'text-gold'} />
+              <span>{c.name}</span>
+              {c.id === 'ursa-minor' && (
+                <span className={`label text-[9px] px-1.5 py-0.2 rounded border ${
+                  isSelected
+                    ? 'bg-ink text-gold border-gold/60'
+                    : 'bg-rose-signal/20 text-rose-signal border-rose-signal/40'
+                }`}>
+                  Kutup Yıldızı
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* 4. STAR INSPECTION PANEL */}
       {selectedStar && (
         <div className="ticks absolute bottom-6 left-6 z-20 max-w-sm border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
@@ -1153,6 +1540,115 @@ export function Planetarium3D() {
           </div>
         </div>
       )}
+
+      {/* 7. CONSTELLATION DETAILED INSPECTION DOSSIER */}
+      {activeConstellation && (
+        <div className="ticks absolute bottom-6 right-6 z-20 max-w-sm sm:max-w-md border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
+          <Ticks />
+          <div className="flex items-center justify-between border-b border-line pb-2 mb-3">
+            <div className="flex items-center gap-2">
+              <ConstellationGlyph id={activeConstellation.glyphId} size={16} className="text-gold" />
+              <span className="label text-gold">Takımyıldız Çizimi & Kılavuzu</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveConstellation(null)}
+              className="label text-muted hover:text-paper cursor-pointer"
+              title="Serbest Bakışa Dön"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="display display-tight text-xl font-bold text-paper">
+              {activeConstellation.name}
+            </h2>
+            <span className="label text-muted italic text-xs">{activeConstellation.latinName}</span>
+          </div>
+
+          <div className="label text-gold/90 text-xs mb-3 flex items-center gap-1.5">
+            <Sparkles size={12} className="text-gold" />
+            <span>Ana Yıldız: {activeConstellation.mainStar}</span>
+          </div>
+
+          <p className="text-xs text-paper/85 leading-relaxed mb-3">
+            {activeConstellation.description}
+          </p>
+
+          <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs mb-3">
+            <div className="bg-ink p-2">
+              <span className="label text-muted block text-[10px]">Çizilen Yıldız</span>
+              <span className="font-bold text-gold">{activeConstellation.starIndices.length} Yıldız</span>
+            </div>
+            <div className="bg-ink p-2">
+              <span className="label text-muted block text-[10px]">Merkez Sağ Açıklık</span>
+              <span className="font-bold text-paper">{(activeConstellation.centerRa / 15).toFixed(1)}h</span>
+            </div>
+            <div className="bg-ink p-2">
+              <span className="label text-muted block text-[10px]">Merkez Dik Açıklık</span>
+              <span className="font-bold text-paper">+{activeConstellation.centerDec.toFixed(1)}°</span>
+            </div>
+            <div className="bg-ink p-2">
+              <span className="label text-muted block text-[10px]">Gözlem Durumu</span>
+              <span className="font-bold text-lime">Sirkumpolar</span>
+            </div>
+          </div>
+
+          {/* Star-Hopping Guide for Ursa Minor / Polaris */}
+          {activeConstellation.pointerGuide && (
+            <div className="border border-gold/30 bg-gold/5 p-3 mb-3 text-xs">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="label text-gold font-bold flex items-center gap-1.5">
+                  <Orbit size={12} className="text-gold" />
+                  Yıldız Atlama (Star-Hopping)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowStarHoppingGuide(!showStarHoppingGuide)}
+                  className={`label text-[10px] px-2 py-0.5 border rounded cursor-pointer transition-colors ${
+                    showStarHoppingGuide
+                      ? 'border-gold bg-gold text-ink font-bold'
+                      : 'border-line bg-ink text-muted hover:text-paper'
+                  }`}
+                >
+                  {showStarHoppingGuide ? 'Kılavuz Açık' : 'Kılavuzu Aç'}
+                </button>
+              </div>
+              <p className="text-[11px] text-paper/75 leading-relaxed">
+                {activeConstellation.pointerGuide.description}
+              </p>
+            </div>
+          )}
+
+          {/* Observation & Mythology Tips */}
+          <div className="border border-line bg-ink-2 p-2.5 mb-3 text-[11px] text-paper/75 leading-snug">
+            <span className="label text-muted block text-[9px] mb-1 uppercase tracking-wider">Mitoloji & Gözlem</span>
+            {activeConstellation.observationTip}
+          </div>
+
+          {/* Re-trigger animation button */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAnimTrigger((t) => t + 1)}
+              className="flex-1 flex items-center justify-center gap-2 border border-line bg-ink-2 hover:bg-gold hover:text-ink hover:border-gold py-2 text-xs font-bold transition-all cursor-pointer"
+            >
+              <RefreshCw size={13} />
+              <span>Çizim Animasyonunu Yeniden Başlat</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveConstellation(null)}
+              className="border border-line bg-ink-2 hover:bg-ink-3 px-3 py-2 text-xs text-muted hover:text-paper transition-all cursor-pointer"
+              title="Serbest Bakışa Dön"
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

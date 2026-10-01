@@ -111,6 +111,12 @@ export const stars: StarData[] = [
   { name: "Al Niyat", ra: 245.334, dec: -28.214, magnitude: 2.90, color: "#d1dfff", constellation: "Scorpius" }, // 83
   { name: "Dschubba", ra: 240.083, dec: -22.621, magnitude: 2.29, color: "#d1dfff", constellation: "Scorpius" }, // 84
   { name: "Acrab", ra: 241.341, dec: -19.805, magnitude: 2.56, color: "#d1dfff", constellation: "Scorpius" }, // 85
+  // --- Ursa Minor (Küçük Ayı) Complete 7-Star Asterism ---
+  { name: "Pherkad", turkishName: "Ferkad", ra: 234.204, dec: 71.834, magnitude: 3.00, color: "#d1dfff", constellation: "Ursa Minor" }, // 86
+  { name: "Yildun", turkishName: "Yıldun", ra: 260.071, dec: 86.586, magnitude: 4.35, color: "#ffffff", constellation: "Ursa Minor" }, // 87
+  { name: "Urodelus", turkishName: "Urodelus", ra: 254.891, dec: 82.037, magnitude: 4.21, color: "#ffffdd", constellation: "Ursa Minor" }, // 88
+  { name: "Ahfa al Farkadain", turkishName: "Ahfa", ra: 236.432, dec: 77.794, magnitude: 4.28, color: "#ffffff", constellation: "Ursa Minor" }, // 89
+  { name: "Anwar al Farkadain", turkishName: "Enver", ra: 244.601, dec: 75.762, magnitude: 4.95, color: "#ffffdd", constellation: "Ursa Minor" }, // 90
 ];
 
 export const constellationLines: ConstellationLine[] = [
@@ -131,7 +137,15 @@ export const constellationLines: ConstellationLine[] = [
     constellation: "Ursa Minor",
     turkishName: "Küçük Ayı",
     lines: [
-      [43, 52], // Polaris - Kochab (simplified)
+      // Handle (Kutup Yıldızı'ndan kepçeye inen sap)
+      [43, 87], // Polaris -> Yildun
+      [87, 88], // Yildun -> Urodelus
+      [88, 89], // Urodelus -> Ahfa al Farkadain
+      // Bowl (Dörtgen Kepçe Haznesi)
+      [89, 90], // Ahfa al Farkadain -> Anwar al Farkadain
+      [90, 52], // Anwar al Farkadain -> Kochab
+      [52, 86], // Kochab -> Pherkad
+      [86, 89], // Pherkad -> Ahfa al Farkadain (Kepçeyi kapat)
     ]
   },
   {
@@ -221,6 +235,118 @@ export const constellationLines: ConstellationLine[] = [
       [14, 84], // Antares - Dschubba
       [84, 85], // Dschubba - Acrab
     ]
+  }
+];
+
+export interface DetailedConstellation {
+  id: string;
+  name: string;
+  latinName: string;
+  glyphId: string;
+  centerRa: number;
+  centerDec: number;
+  mainStar: string;
+  starIndices: number[];
+  animatedPath: number[];
+  pointerGuide?: {
+    sourceConstellation: string;
+    description: string;
+    path: number[];
+  };
+  description: string;
+  mythology: string;
+  observationTip: string;
+}
+
+export const DETAILED_CONSTELLATIONS: DetailedConstellation[] = [
+  {
+    id: 'ursa-minor',
+    name: 'Küçük Ayı',
+    latinName: 'Ursa Minor',
+    glyphId: 'ursa-minor',
+    centerRa: 235.0,
+    centerDec: 78.0,
+    mainStar: 'Polaris (Kutup Yıldızı)',
+    starIndices: [43, 87, 88, 89, 90, 52, 86],
+    animatedPath: [43, 87, 88, 89, 90, 52, 86, 89],
+    pointerGuide: {
+      sourceConstellation: 'Büyük Ayı (Ursa Major)',
+      description: 'Büyük Kepçe’nin dış iki yıldızı Merak ve Dubhe arasındaki mesafeyi yukarı doğru 5 kat uzatın; tam Polaris’e (Küçük Ayı’nın kuyruğuna) ulaşırsınız.',
+      path: [68, 29, 43]
+    },
+    description: 'Kuzey Gök Kutbu’nu ve Kutup Yıldızı’nı (Polaris) barındıran, antik çağlardan beri gezginlerin ve denizcilerin yön pusulası olan kutsal takımyıldız.',
+    mythology: 'Kallisto’nun oğlu Arkas’ı simgeler. Zeus tarafından annesiyle birlikte göğe kaldırılarak kutup etrafında hiç batmayan ebedi bir nöbetçi yapılmıştır.',
+    observationTip: 'Türkiye’den yılın 365 günü batmadan (dairesel/circumpolar) görünür. Polaris gökte hiç yer değiştirmez, daima gerçek kuzeyi gösterir.'
+  },
+  {
+    id: 'ursa-major',
+    name: 'Büyük Ayı',
+    latinName: 'Ursa Major',
+    glyphId: 'ursa-major',
+    centerRa: 175.0,
+    centerDec: 55.0,
+    mainStar: 'Alioth / Dubhe',
+    starIndices: [29, 68, 69, 70, 28, 47, 35],
+    animatedPath: [35, 47, 28, 70, 29, 68, 69, 70],
+    description: 'Gece göğünün en kolay tanınan 7 parlak yıldızlı Büyük Kepçe (Big Dipper) şeklini barındıran efsanevi takımyıldız.',
+    mythology: 'Kıskanç tanrıça Hera tarafından cezalandırılıp ayıya dönüştürülen orman perisi Kallisto’nun göksel ebediyetidir.',
+    observationTip: 'Kepçenin Merak ve Dubhe yıldızları, doğrudan Kutup Yıldızı’nı işaret eden göksel kılavuz yıldızlardır.'
+  },
+  {
+    id: 'cassiopeia',
+    name: 'Kraliçe',
+    latinName: 'Cassiopeia',
+    glyphId: 'cassiopeia',
+    centerRa: 15.0,
+    centerDec: 60.0,
+    mainStar: 'Schedar',
+    starIndices: [66, 64, 71, 72, 73],
+    animatedPath: [66, 64, 71, 72, 73],
+    description: 'Gökyüzünde belirgin bir “W” (veya mevsime göre “M”) harfi çizen, Samanyolu bandı üzerinde parıldayan asil takımyıldız.',
+    mythology: 'Kibirli güzelliğiyle deniz perilerini kızdıran ve gökte tahtına baş aşağı asılmaya mahkûm edilen Etiyopya Kraliçesi.',
+    observationTip: 'Büyük Ayı ufukta alçaldığında Kraliçe W harfiyle göğün tepesine yükselir; Kutup Yıldızı’nın karşı dengesidir.'
+  },
+  {
+    id: 'orion',
+    name: 'Avcı',
+    latinName: 'Orion',
+    glyphId: 'orion',
+    centerRa: 84.0,
+    centerDec: 0.0,
+    mainStar: 'Rigel & Betelgeuse',
+    starIndices: [8, 23, 26, 61, 27, 5, 53],
+    animatedPath: [8, 23, 26, 61, 26, 27, 53, 5, 26, 8, 27],
+    description: 'Kış göğünün tartışmasız en görkemli efendisi. Üçlü Orion Kuşağı ve dev gaz bulutsusu M42’yi kalbinde taşır.',
+    mythology: 'Yenilmez dev avcı Orion; gökte Boğa ve Akrep takımyıldızlarıyla ebedi bir av ve mücadele döngüsündedir.',
+    observationTip: 'Kuşaktaki üç yıldız (Alnitak, Alnilam, Mintaka) kusursuz bir doğru üzerindedir ve güney yönünde Sirius’a işaret eder.'
+  },
+  {
+    id: 'cygnus',
+    name: 'Kuğu (Kuzey Haçı)',
+    latinName: 'Cygnus',
+    glyphId: 'cygnus',
+    centerRa: 308.0,
+    centerDec: 42.0,
+    mainStar: 'Deneb',
+    starIndices: [17, 62, 78, 79, 80],
+    animatedPath: [78, 62, 17, 62, 79, 62, 80],
+    description: 'Samanyolu’nun ışıklı nehrinde kanat açmış uçan kuğu figürü; Kuzey Haçı (Northern Cross) olarak da anılır.',
+    mythology: 'Zeus’un Leda’ya görünmek için büründüğü kutsal beyaz kuğu formu.',
+    observationTip: 'Kuyruğundaki Deneb yıldızı, Yaz Üçgeni’nin (Vega, Altair, Deneb) en kuzeydeki devasa feneridir.'
+  },
+  {
+    id: 'leo',
+    name: 'Aslan',
+    latinName: 'Leo',
+    glyphId: 'leo',
+    centerRa: 160.0,
+    centerDec: 15.0,
+    mainStar: 'Regulus (Kral Yıldızı)',
+    starIndices: [19, 45, 81, 54, 82],
+    animatedPath: [19, 45, 81, 54, 82, 19],
+    description: 'Ters soru işareti (Orak) ve gövdesiyle ilkbahar göğünün hükümdarı olan zodyak takımyıldızı.',
+    mythology: 'Herkül’ün ilk vazifesinde alt ettiği ve kürkünü zırh yaptığı efsanevi Nemea Aslanı.',
+    observationTip: 'Regulus, göğün kalbinde bir elmas gibi parıldayan Perslerin kuzey kraliyet gözcüsüdür.'
   }
 ];
 
