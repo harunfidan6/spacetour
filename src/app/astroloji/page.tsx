@@ -205,7 +205,62 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
   );
 }
 
+type AstroWorkspace = 'charts' | 'divination' | 'transits' | 'archetypes' | 'all';
+
+interface WorkspaceTab {
+  id: AstroWorkspace;
+  title: string;
+  badge: string;
+  count: number;
+  description: string;
+  submodules: string[];
+}
+
+const WORKSPACES: WorkspaceTab[] = [
+  {
+    id: 'charts',
+    title: 'Doğum & Sinastri',
+    badge: '01',
+    count: 3,
+    description: 'Bireysel doğum haritası, eşzamanlı sinastri analizi ve burçlar arası çekim kimyası.',
+    submodules: ['Doğum Haritası', 'Sinastri Analizi', 'Burç Uyumu']
+  },
+  {
+    id: 'divination',
+    title: 'Tarot & Kehanet',
+    badge: '02',
+    count: 3,
+    description: '22 Majör Arkana kozmik tarot açılımı, 12 burç günlük falı ve Keldani gezegen saatleri.',
+    submodules: ['Kozmik Tarot', 'Günlük Burç Falı', 'Yıldız Falı & Saatler']
+  },
+  {
+    id: 'transits',
+    title: 'Transitler & Ay',
+    badge: '03',
+    count: 3,
+    description: 'Canlı efemeris transitleri, Ay fazları & Boşluktaki Ay (VoC) ritüelleri ve retro radarı.',
+    submodules: ['Canlı Transitler', 'Ay Fazları & VoC', 'Gezegen Retroları']
+  },
+  {
+    id: 'archetypes',
+    title: 'Numeroloji & Zodyak',
+    badge: '04',
+    count: 2,
+    description: 'Pisagor 4 sütunlu kozmik numeroloji matrisi ve 12 zodyak takımyıldızının derin arşivi.',
+    submodules: ['Numeroloji Matrisi', '12 Arketip Arşivi']
+  },
+  {
+    id: 'all',
+    title: 'Tüm Modüller',
+    badge: 'ALL',
+    count: 11,
+    description: 'Astroloji stüdyosundaki tüm modülleri eksiksiz tek bir akışta görüntüle.',
+    submodules: ['11 Modül Sıralı']
+  }
+];
+
 export default function AstrolojiPage() {
+  const [workspace, setWorkspace] = useState<AstroWorkspace>('charts');
   const [element, setElement] = useState<(typeof ELEMENTS)[number]>('Tümü');
   const [active, setActive] = useState<ZodiacSign | null>(null);
   const [signA, setSignA] = useState('koc');
@@ -223,10 +278,12 @@ export default function AstrolojiPage() {
       if (prefersReducedMotion() || !grid.current) return;
       gsap.from(grid.current.querySelectorAll('[data-sign]'), { y: 40, autoAlpha: 0, rotate: 2, duration: 0.8, stagger: 0.04, ease: 'mg.out' });
     },
-    [element]
+    [element, workspace]
   );
 
   const ringLength = 2 * Math.PI * 88;
+
+  const currentWorkspace = WORKSPACES.find((w) => w.id === workspace) || WORKSPACES[0];
 
   return (
     <div className="relative" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
@@ -251,187 +308,239 @@ export default function AstrolojiPage() {
         ticker={ZODIAC_SIGNS.map((s) => `${s.name} (${s.latinName})`)}
       />
 
-      <div className="space-y-24 px-[var(--gutter)] pb-28 pt-12">
-        <nav aria-label="Bölümler" className="flex flex-wrap gap-2">
-          {CHAPTERS.map((c, i) => (
-            <a key={c.href} href={c.href} className="label group flex items-center gap-2 rounded-full border border-line px-4 py-2 text-paper/80 transition-colors hover:border-gold hover:bg-gold hover:text-ink">
-              <span className="text-gold group-hover:text-ink">{String(i + 1).padStart(2, '0')}</span> {c.label}
-            </a>
-          ))}
-        </nav>
-
-        <div id="dogum-haritasi">
-          <Chapter index="04.1" title="Doğum haritası, gezegenler & açı şebekesi">
-            <NatalChartCalculator />
-          </Chapter>
-        </div>
-
-        <div id="gunluk-burc-fali">
-          <Chapter index="04.2" title="Günlük burç falı & yaşam enerjisi radarı">
-            <DailyHoroscopeDeck />
-          </Chapter>
-        </div>
-
-        <div id="yildiz-fali">
-          <Chapter index="04.3" title="Yıldız falı, Keldani gezegen saatleri & kraliyet yıldızları">
-            <StarOracleWidget />
-          </Chapter>
-        </div>
-
-        <div id="kozmik-tarot">
-          <Chapter index="04.4" title="Kozmik tarot açılımı (22 majör arkana & 3 açılım düzeni)">
-            <CosmicTarotDrawer />
-          </Chapter>
-        </div>
-
-        <div id="ay-takvimi">
-          <Chapter index="04.5" title="Ay evreleri, boşluktaki ay (VoC) & kozmik niyet ritüelleri">
-            <LunarPhaseTracker />
-          </Chapter>
-        </div>
-
-        <div id="gezegen-retrolari">
-          <Chapter index="04.6" title="Gezegen retroları, gölge periyotları & astrolojik koruma radarı">
-            <CosmicRetrogradeRadar />
-          </Chapter>
-        </div>
-
-        <div id="kozmik-numeroloji">
-          <Chapter index="04.7" title="Pisagor kozmik numeroloji matrisi & 4 sütun yaşam yolu">
-            <CosmicNumerologyMatrix />
-          </Chapter>
-        </div>
-
-        <div id="gunluk-transitler">
-          <Chapter index="04.8" title="Canlı efemeris transitleri & gökyüzü nabzı">
-            <DailyCosmicTransitWidget />
-          </Chapter>
-        </div>
-
-        {/* Zodiac directory */}
-        <section id="zodyak-atlasi">
-          <SectionHead
-            index="04.9"
-            kicker="12 zodyak takımyıldızı"
-            title={
-              <>
-                On iki <Em>arketip</Em>
-              </>
-            }
-            lede="Her burcun elementi, yönetici gezegeni, mitolojik arketipi ve tarot karşılığı. Bir karta dokun, dosyası açılsın."
-          />
-          <div className="mb-6 flex w-fit gap-1 rounded-full border border-line p-1" role="group" aria-label="Element filtresi">
-            {ELEMENTS.map((el) => (
-              <button
-                key={el}
-                type="button"
-                aria-pressed={element === el}
-                onClick={() => setElement(el)}
-                className={`label rounded-full px-4 py-2 transition-colors ${element === el ? 'bg-gold text-ink' : 'text-paper/70 hover:text-paper'}`}
-              >
-                {el}
-              </button>
-            ))}
-          </div>
-          <div ref={grid} className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {signs.map((s) => {
-              const Icon = ELEMENT_ICON[s.element];
-              return (
-                <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left cursor-pointer">
-                  <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-y-100" />
-                  <span className="relative flex items-start justify-between">
-                    <span className="label text-muted group-hover:text-ink">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
-                    <span className="label flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-paper/70 group-hover:border-ink/30 group-hover:text-ink">
-                      <Icon size={11} /> {s.element}
+      <div className="space-y-16 px-[var(--gutter)] pb-28 pt-8">
+        {/* WORKSPACE SELECTOR CONSOLE */}
+        <section aria-label="Astroloji Çalışma Alanı" className="sticky top-16 z-30 -mx-[var(--gutter)] px-[var(--gutter)] py-3 bg-ink/90 backdrop-blur-2xl border-y border-line">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              {WORKSPACES.map((w) => {
+                const isSelected = workspace === w.id;
+                return (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => {
+                      setWorkspace(w.id);
+                      window.scrollTo({ top: 400, behavior: 'smooth' });
+                    }}
+                    className={`label whitespace-nowrap px-3.5 py-2 rounded-full border transition-all flex items-center gap-2 cursor-pointer text-xs ${
+                      isSelected
+                        ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(255,197,61,0.25)]'
+                        : 'border-line bg-ink-2/80 text-paper/70 hover:border-paper/40 hover:text-paper'
+                    }`}
+                  >
+                    <span className={`text-[10px] px-1 py-0.2 rounded font-mono ${
+                      isSelected ? 'bg-ink text-gold' : 'bg-line text-muted'
+                    }`}>
+                      {w.badge}
                     </span>
-                  </span>
-                  <div className="relative mt-6">
-                    <ZodiacGlyph
-                      sign={s.id}
-                      size={54}
-                      className="text-gold transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:text-ink"
-                    />
-                  </div>
-                  <span className="display display-tight relative mt-6 pt-[0.12em] text-4xl text-paper group-hover:text-ink">{s.name}</span>
-                  <span className="label relative mt-1 text-muted group-hover:text-ink/70">{s.dates}</span>
-                  <span className="relative mt-4 line-clamp-2 text-sm leading-relaxed text-paper/60 group-hover:text-ink/80">{s.overview}</span>
-                  <span className="label relative mt-auto flex items-center justify-between border-t border-line pt-4 text-[10px] text-muted group-hover:border-ink/20 group-hover:text-ink">
-                    <span>Yönetici · {s.rulingPlanet}</span>
-                    <ArrowUpRight size={14} />
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+                    <span>{w.title}</span>
+                    <span className="text-[10px] opacity-70">({w.count})</span>
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* Compatibility */}
-        <section id="burc-uyumu">
-          <SectionHead
-            index="04.10"
-            kicker="Kozmik kimya"
-            title={
-              <>
-                Burç <Em>uyumu</Em>
-              </>
-            }
-            lede="İki burç seç: element sinerjisi, nitelik dengesi ve kadim uyum tablolarına göre bir çekim skoru hesaplıyoruz."
-          />
-          <div className="ticks relative grid items-center gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12">
-            <Ticks />
-            {[
-              { value: signA, set: setSignA, sign: a, label: '1. burç' },
-              { value: signB, set: setSignB, sign: b, label: '2. burç' },
-            ].map((side, i) => (
-              <label key={side.label} className={`flex flex-col items-center text-center lg:col-span-4 ${i === 1 ? 'lg:order-3' : ''}`}>
-                <span className="label text-muted">{side.label}</span>
-                <div className="mt-4 h-24 flex items-center justify-center">
-                  <ZodiacGlyph sign={side.sign.id} size={80} className="text-gold" />
-                </div>
-                <select
-                  value={side.value}
-                  onChange={(e) => side.set(e.target.value)}
-                  className="display display-tight mt-4 w-full max-w-[16rem] cursor-pointer appearance-none border-b-2 border-line bg-transparent py-2 text-center text-3xl text-paper focus:border-gold focus:outline-none"
-                >
-                  {ZODIAC_SIGNS.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-ink font-sans text-base normal-case">
-                      {s.name} ({s.latinName})
-                    </option>
-                  ))}
-                </select>
-                <span className="label mt-3 text-muted">
-                  {side.sign.element} · {side.sign.modality}
-                </span>
-              </label>
-            ))}
-            <div className="relative mx-auto grid aspect-square w-full max-w-[240px] place-items-center lg:order-2 lg:col-span-4">
-              <svg viewBox="-100 -100 200 200" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
-                <circle r="88" fill="none" stroke="var(--line)" strokeWidth="6" />
-                <circle
-                  r="88"
-                  fill="none"
-                  stroke="var(--gold)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={ringLength}
-                  strokeDashoffset={ringLength * (1 - score / 100)}
-                  style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.76,0,.24,1)' }}
-                />
-              </svg>
-              <div className="text-center">
-                <div className="label text-muted">Uyum skoru</div>
-                <div className="display display-tight mt-2 text-6xl text-paper">%{score}</div>
-                <div className="label mt-2 text-gold">{score >= 90 ? 'Kozmik çekim' : score >= 80 ? 'Güçlü ahenk' : 'Öğretici gerilim'}</div>
-              </div>
+            <div className="hidden lg:flex items-center gap-2 text-xs text-muted">
+              <span className="text-gold">✦</span>
+              <span className="truncate max-w-sm">{currentWorkspace.description}</span>
             </div>
           </div>
         </section>
 
-        <div id="sinastri-analizi">
-          <Chapter index="04.11" title="Sinastri & ikili doğum haritası">
-            <SynastryChartCalculator />
-          </Chapter>
-        </div>
+
+        {/* 1. CHARTS & SYNASTRY WORKSPACE */}
+        {(workspace === 'charts' || workspace === 'all') && (
+          <div className="space-y-16">
+            <div id="dogum-haritasi">
+              <Chapter index="04.1" title="Doğum haritası, gezegenler & açı şebekesi">
+                <NatalChartCalculator />
+              </Chapter>
+            </div>
+
+            <div id="sinastri-analizi">
+              <Chapter index="04.2" title="Sinastri & ikili doğum haritası karşılaştırması">
+                <SynastryChartCalculator />
+              </Chapter>
+            </div>
+
+            {/* Compatibility */}
+            <section id="burc-uyumu">
+              <SectionHead
+                index="04.3"
+                kicker="Kozmik kimya"
+                title={
+                  <>
+                    Burç <Em>uyumu</Em>
+                  </>
+                }
+                lede="İki burç seç: element sinerjisi, nitelik dengesi ve kadim uyum tablolarına göre bir çekim skoru hesaplıyoruz."
+              />
+              <div className="ticks relative grid items-center gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12">
+                <Ticks />
+                {[
+                  { value: signA, set: setSignA, sign: a, label: '1. burç' },
+                  { value: signB, set: setSignB, sign: b, label: '2. burç' },
+                ].map((side, i) => (
+                  <label key={side.label} className={`flex flex-col items-center text-center lg:col-span-4 ${i === 1 ? 'lg:order-3' : ''}`}>
+                    <span className="label text-muted">{side.label}</span>
+                    <div className="mt-4 h-24 flex items-center justify-center">
+                      <ZodiacGlyph sign={side.sign.id} size={80} className="text-gold" />
+                    </div>
+                    <select
+                      value={side.value}
+                      onChange={(e) => side.set(e.target.value)}
+                      className="display display-tight mt-4 w-full max-w-[16rem] cursor-pointer appearance-none border-b-2 border-line bg-transparent py-2 text-center text-3xl text-paper focus:border-gold focus:outline-none"
+                    >
+                      {ZODIAC_SIGNS.map((s) => (
+                        <option key={s.id} value={s.id} className="bg-ink font-sans text-base normal-case">
+                          {s.name} ({s.latinName})
+                        </option>
+                      ))}
+                    </select>
+                    <span className="label mt-3 text-muted">
+                      {side.sign.element} · {side.sign.modality}
+                    </span>
+                  </label>
+                ))}
+                <div className="relative mx-auto grid aspect-square w-full max-w-[240px] place-items-center lg:order-2 lg:col-span-4">
+                  <svg viewBox="-100 -100 200 200" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
+                    <circle r="88" fill="none" stroke="var(--line)" strokeWidth="6" />
+                    <circle
+                      r="88"
+                      fill="none"
+                      stroke="var(--gold)"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      strokeDasharray={ringLength}
+                      strokeDashoffset={ringLength * (1 - score / 100)}
+                      style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.76,0,.24,1)' }}
+                    />
+                  </svg>
+                  <div className="text-center">
+                    <div className="label text-muted">Uyum skoru</div>
+                    <div className="display display-tight mt-2 text-6xl text-paper">%{score}</div>
+                    <div className="label mt-2 text-gold">{score >= 90 ? 'Kozmik çekim' : score >= 80 ? 'Güçlü ahenk' : 'Öğretici gerilim'}</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* 2. DIVINATION & TAROT WORKSPACE */}
+        {(workspace === 'divination' || workspace === 'all') && (
+          <div className="space-y-16">
+            <div id="kozmik-tarot">
+              <Chapter index={workspace === 'all' ? '04.4' : '04.1'} title="Kozmik tarot açılımı (22 majör arkana & 3 açılım düzeni)">
+                <CosmicTarotDrawer />
+              </Chapter>
+            </div>
+
+            <div id="gunluk-burc-fali">
+              <Chapter index={workspace === 'all' ? '04.5' : '04.2'} title="Günlük burç falı & yaşam enerjisi radarı">
+                <DailyHoroscopeDeck />
+              </Chapter>
+            </div>
+
+            <div id="yildiz-fali">
+              <Chapter index={workspace === 'all' ? '04.6' : '04.3'} title="Yıldız falı, Keldani gezegen saatleri & kraliyet yıldızları">
+                <StarOracleWidget />
+              </Chapter>
+            </div>
+          </div>
+        )}
+
+        {/* 3. TRANSITS & LUNAR WORKSPACE */}
+        {(workspace === 'transits' || workspace === 'all') && (
+          <div className="space-y-16">
+            <div id="gunluk-transitler">
+              <Chapter index={workspace === 'all' ? '04.7' : '04.1'} title="Canlı efemeris transitleri & gökyüzü nabzı">
+                <DailyCosmicTransitWidget />
+              </Chapter>
+            </div>
+
+            <div id="ay-takvimi">
+              <Chapter index={workspace === 'all' ? '04.8' : '04.2'} title="Ay evreleri, boşluktaki ay (VoC) & kozmik niyet ritüelleri">
+                <LunarPhaseTracker />
+              </Chapter>
+            </div>
+
+            <div id="gezegen-retrolari">
+              <Chapter index={workspace === 'all' ? '04.9' : '04.3'} title="Gezegen retroları, gölge periyotları & astrolojik koruma radarı">
+                <CosmicRetrogradeRadar />
+              </Chapter>
+            </div>
+          </div>
+        )}
+
+        {/* 4. NUMEROLOGY & ARCHETYPES WORKSPACE */}
+        {(workspace === 'archetypes' || workspace === 'all') && (
+          <div className="space-y-16">
+            <div id="kozmik-numeroloji">
+              <Chapter index={workspace === 'all' ? '04.10' : '04.1'} title="Pisagor kozmik numeroloji matrisi & 4 sütun yaşam yolu">
+                <CosmicNumerologyMatrix />
+              </Chapter>
+            </div>
+
+            {/* Zodiac directory */}
+            <section id="zodyak-atlasi">
+              <SectionHead
+                index={workspace === 'all' ? '04.11' : '04.2'}
+                kicker="12 zodyak takımyıldızı"
+                title={
+                  <>
+                    On iki <Em>arketip</Em>
+                  </>
+                }
+                lede="Her burcun elementi, yönetici gezegeni, mitolojik arketipi ve tarot karşılığı. Bir karta dokun, dosyası açılsın."
+              />
+              <div className="mb-6 flex w-fit gap-1 rounded-full border border-line p-1" role="group" aria-label="Element filtresi">
+                {ELEMENTS.map((el) => (
+                  <button
+                    key={el}
+                    type="button"
+                    aria-pressed={element === el}
+                    onClick={() => setElement(el)}
+                    className={`label rounded-full px-4 py-2 transition-colors ${element === el ? 'bg-gold text-ink' : 'text-paper/70 hover:text-paper'}`}
+                  >
+                    {el}
+                  </button>
+                ))}
+              </div>
+              <div ref={grid} className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {signs.map((s) => {
+                  const Icon = ELEMENT_ICON[s.element];
+                  return (
+                    <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left cursor-pointer">
+                      <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-y-100" />
+                      <span className="relative flex items-start justify-between">
+                        <span className="label text-muted group-hover:text-ink">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
+                        <span className="label flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-paper/70 group-hover:border-ink/30 group-hover:text-ink">
+                          <Icon size={11} /> {s.element}
+                        </span>
+                      </span>
+                      <div className="relative mt-6">
+                        <ZodiacGlyph
+                          sign={s.id}
+                          size={54}
+                          className="text-gold transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:text-ink"
+                        />
+                      </div>
+                      <span className="display display-tight relative mt-6 pt-[0.12em] text-4xl text-paper group-hover:text-ink">{s.name}</span>
+                      <span className="label relative mt-1 text-muted group-hover:text-ink/70">{s.dates}</span>
+                      <span className="relative mt-4 line-clamp-2 text-sm leading-relaxed text-paper/60 group-hover:text-ink/80">{s.overview}</span>
+                      <span className="label relative mt-auto flex items-center justify-between border-t border-line pt-4 text-[10px] text-muted group-hover:border-ink/20 group-hover:text-ink">
+                        <span>Yönetici · {s.rulingPlanet}</span>
+                        <ArrowUpRight size={14} />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+        )}
       </div>
 
       <SignPanel sign={active} onClose={closePanel} />

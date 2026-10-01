@@ -945,6 +945,15 @@ export function Planetarium3D() {
   const [animTrigger, setAnimTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLocDropdownOpen, setIsLocDropdownOpen] = useState(false);
+  const [showConstellationPicker, setShowConstellationPicker] = useState(false);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+
+  const clearAllSelection = () => {
+    setSelectedStar(null);
+    setSelectedBody(null);
+    setSelectedDso(null);
+    setActiveConstellation(null);
+  };
 
   // Live Time Tick
   useEffect(() => {
@@ -1125,32 +1134,28 @@ export function Planetarium3D() {
         />
       </Canvas>
 
-      {/* 3. TOP TELEMETRY & LOCATION CONTROL BAR */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-        {/* Location & Real-Time Sidereal Indicator */}
+      {/* 3. MINIMAL TOP BAR */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between gap-3 pointer-events-none">
+        {/* Location & Sidereal Time Selector */}
         <div className="pointer-events-auto relative">
           <button
             type="button"
             aria-expanded={isLocDropdownOpen}
             aria-haspopup="true"
             onClick={() => setIsLocDropdownOpen(!isLocDropdownOpen)}
-            className="flex items-center gap-2.5 border border-line bg-ink/90 px-3.5 py-2 text-xs font-mono backdrop-blur-xl shadow-2xl hover:border-paper/40 transition-colors text-left cursor-pointer"
+            className="flex items-center gap-2.5 border border-line bg-ink/90 px-3.5 py-1.5 text-xs font-mono backdrop-blur-xl shadow-xl hover:border-paper/40 transition-colors text-left cursor-pointer rounded-full"
           >
             <MapPin size={13} className="text-lime animate-pulse" />
-            <div>
-              <div className="font-bold text-paper flex items-center gap-1.5">
-                <span>{selectedLocation.city}</span>
-                <ChevronDown size={11} className="text-muted" />
-              </div>
-              <div className="label text-[9px] text-muted">
-                {Math.abs(selectedLocation.latitude)}°{selectedLocation.latitude >= 0 ? 'K' : 'G'} · LST: {(currentLst / 15).toFixed(1)}h
-              </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-paper">{selectedLocation.city}</span>
+              <span className="text-[10px] text-muted hidden sm:inline">({(currentLst / 15).toFixed(1)}h LST)</span>
+              <ChevronDown size={11} className="text-muted" />
             </div>
           </button>
 
           {/* Location Selector Dropdown */}
           {isLocDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1 w-64 border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1 font-mono text-xs">
+            <div className="absolute top-full left-0 mt-2 w-64 border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-50 space-y-1 font-mono text-xs">
               <button
                 type="button"
                 onClick={handleAutoGps}
@@ -1193,10 +1198,11 @@ export function Planetarium3D() {
         </div>
 
         {/* Search Bar */}
-        <div className="pointer-events-auto relative w-60 sm:w-72">
-          <div className="flex items-center gap-2 border border-line bg-ink/90 px-3 py-1.5 backdrop-blur-xl text-xs">
+        <div className="pointer-events-auto relative w-52 sm:w-64">
+          <div className="flex items-center gap-2 border border-line bg-ink/90 px-3 py-1.5 backdrop-blur-xl text-xs rounded-full">
             <Search size={13} className="text-muted" />
-            <input aria-label="Yıldız veya derin uzay nesnesi ara"
+            <input
+              aria-label="Yıldız veya derin uzay nesnesi ara"
               type="text"
               placeholder="Yıldız veya Bulutsu ara..."
               value={searchQuery}
@@ -1212,7 +1218,7 @@ export function Planetarium3D() {
 
           {/* Search Dropdown */}
           {searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 font-mono text-xs">
+            <div className="absolute top-full left-0 right-0 mt-2 max-h-60 overflow-y-auto border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-50 font-mono text-xs">
               {searchResults.map((res) => (
                 <button
                   type="button"
@@ -1222,11 +1228,14 @@ export function Planetarium3D() {
                       setSelectedStar(res.data);
                       setSelectedDso(null);
                       setSelectedBody(null);
+                      setActiveConstellation(null);
                     } else {
                       setSelectedDso(res.data);
                       setSelectedStar(null);
                       setSelectedBody(null);
+                      setActiveConstellation(null);
                     }
+                    setIsInspectorOpen(true);
                     setSearchQuery('');
                   }}
                   className="flex w-full items-center justify-between p-2 text-left cursor-pointer hover:bg-ink-2 focus-visible:bg-ink-2 text-paper transition-colors"
@@ -1248,52 +1257,400 @@ export function Planetarium3D() {
           )}
         </div>
 
-        {/* Feature & AR Camera Toggles */}
-        <div className="pointer-events-auto flex items-center gap-1.5">
-          {/* AR Camera Toggle Button */}
+        {/* Selection Status & Inspector Toggle */}
+        <div className="pointer-events-auto flex items-center gap-2">
+          {(selectedStar || selectedBody || selectedDso || activeConstellation) ? (
+            <div className="flex items-center gap-1 bg-ink/90 border border-line rounded-full p-0.5 backdrop-blur-xl">
+              <button
+                type="button"
+                onClick={() => setIsInspectorOpen(!isInspectorOpen)}
+                className={`label px-3 py-1 rounded-full text-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  isInspectorOpen
+                    ? 'bg-gold text-ink font-bold'
+                    : 'bg-ink text-gold hover:text-paper'
+                }`}
+                title="İnceleme Panelini Aç/Kapat"
+              >
+                <span>✦</span>
+                <span className="max-w-[120px] truncate">
+                  {selectedStar
+                    ? selectedStar.turkishName || selectedStar.name
+                    : selectedBody
+                    ? selectedBody.name
+                    : selectedDso
+                    ? selectedDso.name
+                    : activeConstellation
+                    ? activeConstellation.name
+                    : 'İnceleme'}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={clearAllSelection}
+                className="px-2 py-1 text-muted hover:text-paper text-xs cursor-pointer"
+                title="Seçimi Temizle"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-1.5 border border-line bg-ink/80 px-3 py-1 rounded-full text-[11px] text-muted font-mono backdrop-blur-xl">
+              <span className="live-dot" />
+              <span>360° Planetaryum</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. UNIFIED RIGHT INSPECTOR DRAWER */}
+      {isInspectorOpen && (selectedStar || selectedBody || selectedDso || activeConstellation) && (
+        <aside
+          aria-label="Gök Cismi İnceleme Paneli"
+          className="ticks absolute top-0 right-0 bottom-0 w-full max-w-sm sm:max-w-md z-40 border-l border-line bg-ink/95 p-6 shadow-2xl backdrop-blur-2xl flex flex-col font-mono text-paper overflow-y-auto"
+        >
+          <Ticks />
+
+          {/* Drawer Top Header */}
+          <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
+            <div className="flex items-center gap-2">
+              {activeConstellation ? (
+                <>
+                  <ConstellationGlyph id={activeConstellation.glyphId} size={16} className="text-gold" />
+                  <span className="label text-gold">Takımyıldız Dosyası</span>
+                </>
+              ) : selectedStar ? (
+                <>
+                  <TelescopeGlyph size={15} className="text-lime" />
+                  <span className="label text-lime">Yıldız Spektrumu</span>
+                </>
+              ) : selectedBody ? (
+                <>
+                  <PlanetGlyph planet={selectedBody.id} size={16} className="text-gold" />
+                  <span className="label text-gold">Güneş Sistemi Cismi</span>
+                </>
+              ) : selectedDso ? (
+                <>
+                  <GalaxySpiralGlyph size={15} className="text-lime" />
+                  <span className="label text-lime">Derin Uzay Cismi</span>
+                </>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsInspectorOpen(false)}
+              className="label text-muted hover:text-paper px-2 py-1 cursor-pointer transition-colors text-sm"
+              title="Paneli Gizle"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* A. CONSTELLATION DOSSIER VIEW */}
+          {activeConstellation && (
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <h2 className="display display-tight text-2xl font-bold text-paper">
+                  {activeConstellation.name}
+                </h2>
+                <span className="label text-muted italic text-xs">{activeConstellation.latinName}</span>
+              </div>
+
+              <div className="label text-gold text-xs flex items-center gap-1.5 bg-gold/10 border border-gold/20 p-2 rounded">
+                <Sparkles size={12} className="text-gold shrink-0" />
+                <span>Ana Yıldız: <strong className="text-paper">{activeConstellation.mainStar}</strong></span>
+              </div>
+
+              <p className="text-xs text-paper/85 leading-relaxed">
+                {activeConstellation.description}
+              </p>
+
+              <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs">
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Çizilen Yıldız</span>
+                  <span className="font-bold text-gold">{activeConstellation.starIndices.length} Yıldız</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Merkez Sağ Açıklık</span>
+                  <span className="font-bold text-paper">{(activeConstellation.centerRa / 15).toFixed(1)}h</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Merkez Dik Açıklık</span>
+                  <span className="font-bold text-paper">+{activeConstellation.centerDec.toFixed(1)}°</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Gözlem Durumu</span>
+                  <span className="font-bold text-lime">Sirkumpolar</span>
+                </div>
+              </div>
+
+              {/* Star-Hopping Guide */}
+              {activeConstellation.pointerGuide && (
+                <div className="border border-gold/30 bg-gold/5 p-3 text-xs">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="label text-gold font-bold flex items-center gap-1.5">
+                      <Orbit size={12} className="text-gold" />
+                      Yıldız Atlama Kılavuzu
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowStarHoppingGuide(!showStarHoppingGuide)}
+                      className={`label text-[10px] px-2 py-0.5 border rounded cursor-pointer transition-colors ${
+                        showStarHoppingGuide
+                          ? 'border-gold bg-gold text-ink font-bold'
+                          : 'border-line bg-ink text-muted hover:text-paper'
+                      }`}
+                    >
+                      {showStarHoppingGuide ? 'Açık' : 'Kapalı'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-paper/75 leading-relaxed">
+                    {activeConstellation.pointerGuide.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Observation & Mythology Tips */}
+              <div className="border border-line bg-ink-2 p-3 text-[11px] text-paper/75 leading-relaxed">
+                <span className="label text-muted block text-[9px] mb-1 uppercase tracking-wider">Mitoloji & Gözlem</span>
+                {activeConstellation.observationTip}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setAnimTrigger((t) => t + 1)}
+                  className="flex-1 flex items-center justify-center gap-2 border border-gold bg-gold text-ink py-2 text-xs font-bold transition-all cursor-pointer hover:bg-gold/90"
+                >
+                  <RefreshCw size={13} />
+                  <span>Çizimi Yeniden Oynat</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAllSelection}
+                  className="border border-line bg-ink-2 hover:bg-ink-3 px-3 py-2 text-xs text-muted hover:text-paper transition-all cursor-pointer"
+                >
+                  Serbest Bakış
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* B. STAR INSPECTOR VIEW */}
+          {selectedStar && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="display display-tight text-2xl font-bold text-paper">
+                  {selectedStar.turkishName || selectedStar.name}
+                </h2>
+                <div className="label text-muted mt-1">{selectedStar.constellation} Takımyıldızı</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs">
+                <div className="bg-ink p-3">
+                  <span className="label text-muted block text-[10px]">Görünür Kadir</span>
+                  <span className="font-bold text-lime text-base">{selectedStar.magnitude} mag</span>
+                </div>
+                <div className="bg-ink p-3">
+                  <span className="label text-muted block text-[10px]">Sağ Açıklık (RA)</span>
+                  <span className="font-bold text-paper text-base">{selectedStar.ra.toFixed(1)}°</span>
+                </div>
+                <div className="bg-ink p-3">
+                  <span className="label text-muted block text-[10px]">Dik Açıklık (Dec)</span>
+                  <span className="font-bold text-paper text-base">+{selectedStar.dec.toFixed(1)}°</span>
+                </div>
+                <div className="bg-ink p-3">
+                  <span className="label text-muted block text-[10px]">Tayf Rengi</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="h-3 w-3 rounded-full border border-line" style={{ backgroundColor: selectedStar.color }} />
+                    <span className="font-bold text-paper">{selectedStar.color}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-line bg-ink-2 p-3 text-xs text-paper/80 leading-relaxed">
+                Bu yıldız Dünya’dan çıplak göz veya amatör teleskopla gözlemlenebilen önemli gökyüzü kerterizlerinden biridir.
+              </div>
+            </div>
+          )}
+
+          {/* C. SOLAR SYSTEM BODY VIEW */}
+          {selectedBody && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="display display-tight text-2xl font-bold text-paper">{selectedBody.name}</h2>
+                <div className="label text-muted mt-1">
+                  {selectedBody.isVisible ? '🟢 Ufkun Üzerinde (Gözlemlenebilir)' : '🔴 Ufkun Altında'}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs">
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">İrtifa (Alt)</span>
+                  <span className={`font-bold ${selectedBody.alt > 0 ? 'text-lime' : 'text-rose-signal'}`}>
+                    {selectedBody.alt.toFixed(1)}°
+                  </span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Azimut (Az)</span>
+                  <span className="font-bold text-paper">{selectedBody.az.toFixed(1)}°</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Sağ Açıklık (RA)</span>
+                  <span className="font-bold text-paper">{(selectedBody.ra / 15).toFixed(2)}h</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Görünür Kadir</span>
+                  <span className="font-bold text-gold">{selectedBody.magnitude.toFixed(1)} mag</span>
+                </div>
+              </div>
+
+              {selectedBody.type === 'moon' && selectedBody.phaseFraction !== undefined && (
+                <div className="border border-line bg-ink-2 p-3 flex items-center justify-between">
+                  <div className="text-xs">
+                    <span className="label text-muted block text-[10px]">Ay Aydınlanma Oranı</span>
+                    <span className="font-bold text-paper text-lg">%{Math.round(selectedBody.phaseFraction * 100)}</span>
+                  </div>
+                  <VectorMoonPhase illumination={Math.round(selectedBody.phaseFraction * 100)} waning={(selectedBody.phaseAngle ?? 0) > 180} size={36} className="text-paper" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* D. DSO VIEW */}
+          {selectedDso && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="display display-tight text-2xl font-bold text-paper">{selectedDso.name}</h2>
+                <div className="label text-muted mt-1">{selectedDso.distanceLightYears}</div>
+              </div>
+
+              {selectedDso.image && (
+                <div className="relative h-36 w-full border border-line overflow-hidden bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selectedDso.image.src}
+                    alt={selectedDso.name}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute bottom-1 right-1 label px-2 py-0.5 bg-ink/80 border border-line text-[9px] text-paper/80">
+                    Hubble / JWST
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs text-paper/75 leading-relaxed">
+                {selectedDso.description}
+              </p>
+
+              <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs">
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Tür</span>
+                  <span className="font-bold capitalize text-paper">{selectedDso.type}</span>
+                </div>
+                <div className="bg-ink p-2.5">
+                  <span className="label text-muted block text-[10px]">Katalog</span>
+                  <span className="font-bold text-lime">{selectedDso.catalog}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </aside>
+      )}
+
+      {/* 5. CENTERED BOTTOM OBSERVATORY CONTROL DOCK */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-auto max-w-[95vw]">
+        {/* Constellation Selector Popover Strip */}
+        {showConstellationPicker && (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-2 border border-line bg-ink/95 backdrop-blur-2xl rounded-full shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveConstellation(null);
+                setShowConstellationPicker(false);
+              }}
+              className={`label px-3 py-1 rounded-full border text-xs whitespace-nowrap cursor-pointer transition-all ${
+                !activeConstellation
+                  ? 'border-lime bg-lime text-ink font-bold'
+                  : 'border-line bg-ink text-paper/70 hover:text-paper'
+              }`}
+            >
+              ⭐ Serbest Bakış
+            </button>
+
+            {DETAILED_CONSTELLATIONS.map((c) => {
+              const isSelected = activeConstellation?.id === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveConstellation(c);
+                    setSelectedStar(null);
+                    setSelectedDso(null);
+                    setSelectedBody(null);
+                    setIsInspectorOpen(true);
+                    setAnimTrigger((t) => t + 1);
+                    setShowConstellationPicker(false);
+                  }}
+                  className={`label px-3 py-1 rounded-full border text-xs whitespace-nowrap flex items-center gap-1.5 cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_12px_rgba(255,215,0,0.4)]'
+                      : 'border-line bg-ink text-paper/80 hover:border-gold/50 hover:text-gold'
+                  }`}
+                >
+                  <ConstellationGlyph id={c.glyphId} size={13} className={isSelected ? 'text-ink' : 'text-gold'} />
+                  <span>{c.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Main Floating Dock Bar */}
+        <div className="flex items-center gap-1 sm:gap-1.5 border border-line bg-ink/90 px-3 py-1.5 rounded-full shadow-2xl backdrop-blur-2xl text-xs font-mono">
+          {/* Constellation Picker Trigger */}
           <button
-            onClick={() => setIsArActive(!isArActive)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              isArActive
-                ? 'border-lime bg-lime text-ink font-bold'
-                : 'border-line bg-ink/90 text-paper/75 hover:bg-ink-3'
+            type="button"
+            onClick={() => setShowConstellationPicker(!showConstellationPicker)}
+            className={`label flex items-center gap-1.5 px-3 py-1 rounded-full transition-colors cursor-pointer border ${
+              activeConstellation
+                ? 'border-gold bg-gold/15 text-gold font-bold'
+                : 'border-transparent text-paper/80 hover:text-paper'
             }`}
-            title="Kamerayı Aç / AR Moduna Geç"
+            title="Takımyıldız Seçici"
           >
-            <Camera size={13} className={isArActive ? 'animate-bounce' : ''} />
-            <span className="hidden sm:inline">{isArActive ? 'AR Açık' : 'AR Kamera'}</span>
+            <ConstellationGlyph id={activeConstellation?.glyphId || 'ursa-minor'} size={14} className="text-gold" />
+            <span className="hidden sm:inline">{activeConstellation ? activeConstellation.name : 'Takımyıldız'}</span>
+            <ChevronDown size={11} className={showConstellationPicker ? 'rotate-180 transition-transform' : 'transition-transform'} />
           </button>
+
+          <span className="h-4 w-px bg-line" />
 
           {/* Milky Way Toggle */}
           <button
             type="button"
             aria-pressed={showMilkyWay}
             onClick={() => setShowMilkyWay(!showMilkyWay)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              showMilkyWay
-                ? 'border-line bg-paper text-ink font-bold'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              showMilkyWay ? 'text-paper bg-paper/10' : 'text-muted hover:text-paper'
             }`}
             title="Samanyolu Toz Kuşağı"
           >
-            <Sparkles size={13} />
-            <span className="hidden lg:inline">Samanyolu</span>
+            <Sparkles size={14} />
           </button>
 
-          {/* Solar System Bodies Toggle */}
+          {/* Planets Toggle */}
           <button
             type="button"
             aria-pressed={showPlanets}
             onClick={() => setShowPlanets(!showPlanets)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              showPlanets
-                ? 'border-gold bg-gold text-ink font-bold'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              showPlanets ? 'text-gold bg-gold/10' : 'text-muted hover:text-paper'
             }`}
             title="Güneş & Gezegenler"
           >
-            <Orbit size={13} />
-            <span className="hidden lg:inline">Gezegenler</span>
+            <Orbit size={14} />
           </button>
 
           {/* Horizon Toggle */}
@@ -1301,354 +1658,77 @@ export function Planetarium3D() {
             type="button"
             aria-pressed={useLocalHorizon}
             onClick={() => setUseLocalHorizon(!useLocalHorizon)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              useLocalHorizon
-                ? 'border-line bg-paper text-ink font-bold'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              useLocalHorizon ? 'text-lime bg-lime/10' : 'text-muted hover:text-paper'
             }`}
-            title="Yerel Ufuk / Tüm Gök Küre"
+            title={useLocalHorizon ? 'Ufuk Modu: Yerel Ufuk Aktif' : 'Ufuk Modu: Tüm Gök Küresi'}
           >
-            <Compass size={13} />
-            <span className="hidden md:inline">{useLocalHorizon ? 'Ufuk Aktif' : 'Tüm Küre'}</span>
+            <Compass size={14} />
           </button>
 
-          {/* Constellation Toggle */}
+          {/* Constellation Lines Toggle */}
           <button
             type="button"
             aria-pressed={showConstellations}
-            aria-label="Takımyıldız çizgileri"
             onClick={() => setShowConstellations(!showConstellations)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              showConstellations
-                ? 'border-line bg-paper text-ink font-bold'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              showConstellations ? 'text-paper bg-paper/10' : 'text-muted hover:text-paper'
             }`}
             title="Takımyıldız Çizgileri"
           >
-            <Layers size={13} />
+            <Layers size={14} />
           </button>
 
-          {/* Red night-vision mode */}
+          <span className="h-4 w-px bg-line" />
+
+          {/* Red Night Vision Mode */}
           <button
             type="button"
             aria-pressed={nightVision}
-            aria-label="Kırmızı gece görüş modu"
             onClick={() => setNightVision(!nightVision)}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
-              nightVision
-                ? 'border-rose-signal bg-rose-signal/25 text-rose-signal font-bold'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              nightVision ? 'bg-rose-signal text-ink font-bold' : 'text-muted hover:text-paper'
             }`}
             title="Kırmızı Gece Görüş Modu"
           >
-            <Moon size={13} />
+            <Moon size={14} />
           </button>
 
-          {/* Time Flow Speed */}
+          {/* Time Flow Speed Toggle */}
           <button
             type="button"
-            aria-label="Zaman hızı: canlı, 60 kat hızlı veya duraklatılmış"
             onClick={() => setTimeFlowRate((prev) => (prev === 1 ? 60 : prev === 60 ? 0 : 1))}
-            className={`label flex items-center gap-1.5 border px-3 py-1.5 backdrop-blur-xl transition-colors cursor-pointer ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-full transition-colors cursor-pointer ${
               timeFlowRate > 1
-                ? 'border-lime bg-lime text-ink font-bold'
+                ? 'bg-lime text-ink font-bold'
                 : timeFlowRate === 0
-                ? 'border-rose-signal bg-rose-signal/20 text-rose-signal'
-                : 'border-line bg-ink/90 text-muted hover:text-paper'
+                ? 'bg-rose-signal/20 text-rose-signal'
+                : 'text-muted hover:text-paper'
             }`}
-            title="Zaman Hızı (Canlı / Hızlı / Duraklat)"
+            title="Zaman Akışı (Canlı / 60x Hızlı / Duraklat)"
           >
             {timeFlowRate === 0 ? <Pause size={12} /> : <Play size={12} />}
-            <span className="hidden sm:inline">{timeFlowRate === 0 ? 'Durduruldu' : timeFlowRate > 1 ? '60x Hızlı' : 'Canlı'}</span>
+            <span className="text-[10px] hidden md:inline">{timeFlowRate === 0 ? 'Durduruldu' : timeFlowRate > 1 ? '60x' : 'Canlı'}</span>
+          </button>
+
+          {/* AR Camera Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsArActive(!isArActive)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
+              isArActive
+                ? 'bg-lime text-ink font-bold'
+                : 'text-muted hover:text-paper hover:bg-ink-2'
+            }`}
+            title="AR Kamera Modu"
+          >
+            <Camera size={13} />
+            <span className="text-[10px] hidden md:inline">AR</span>
           </button>
         </div>
       </div>
-
-      {/* 3.1 CONSTELLATION QUICK-SELECTION PILLS BAR */}
-      <div className="absolute top-16 left-4 right-4 z-20 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 pointer-events-auto">
-        <button
-          type="button"
-          onClick={() => {
-            setActiveConstellation(null);
-          }}
-          className={`label px-3 py-1 border rounded-full backdrop-blur-xl transition-all cursor-pointer whitespace-nowrap text-xs ${
-            !activeConstellation
-              ? 'border-lime bg-lime text-ink font-bold'
-              : 'border-line bg-ink/90 text-paper/70 hover:text-paper'
-          }`}
-        >
-          ⭐ Serbest Bakış
-        </button>
-
-        {DETAILED_CONSTELLATIONS.map((c) => {
-          const isSelected = activeConstellation?.id === c.id;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => {
-                setActiveConstellation(c);
-                setSelectedStar(null);
-                setSelectedDso(null);
-                setSelectedBody(null);
-                setAnimTrigger((t) => t + 1);
-              }}
-              className={`label px-3.5 py-1 border rounded-full backdrop-blur-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 text-xs ${
-                isSelected
-                  ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(255,215,0,0.5)]'
-                  : 'border-line bg-ink/90 text-paper/80 hover:border-gold/50 hover:text-gold'
-              }`}
-            >
-              <ConstellationGlyph id={c.glyphId} size={14} className={isSelected ? 'text-ink' : 'text-gold'} />
-              <span>{c.name}</span>
-              {c.id === 'ursa-minor' && (
-                <span className={`label text-[9px] px-1.5 py-0.2 rounded border ${
-                  isSelected
-                    ? 'bg-ink text-gold border-gold/60'
-                    : 'bg-rose-signal/20 text-rose-signal border-rose-signal/40'
-                }`}>
-                  Kutup Yıldızı
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 4. STAR INSPECTION PANEL */}
-      {selectedStar && (
-        <div className="ticks absolute bottom-6 left-6 z-20 max-w-sm border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
-          <Ticks />
-          <div className="flex items-center justify-between border-b border-line pb-2 mb-3">
-            <span className="label text-lime flex items-center gap-1.5">
-              <TelescopeGlyph size={14} />
-              Yıldız Spektrumu
-            </span>
-            <button onClick={() => setSelectedStar(null)} className="label text-muted hover:text-paper cursor-pointer">✕</button>
-          </div>
-
-          <h2 className="display display-tight text-xl font-bold">{selectedStar.turkishName || selectedStar.name}</h2>
-          <div className="label text-muted mb-3">{selectedStar.constellation} Takımyıldızı</div>
-
-          <div className="grid grid-cols-2 gap-px border border-line bg-line">
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block">Görünür Kadir</span>
-              <span className="font-bold text-lime">{selectedStar.magnitude} mag</span>
-            </div>
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block">Sağ Açıklık (RA)</span>
-              <span className="font-bold text-paper">{selectedStar.ra.toFixed(1)}°</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. SOLAR SYSTEM BODY INSPECTION PANEL */}
-      {selectedBody && (
-        <div className="ticks absolute bottom-6 left-6 z-20 max-w-sm border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
-          <Ticks />
-          <div className="flex items-center justify-between border-b border-line pb-2 mb-3">
-            <div className="flex items-center gap-2">
-              <PlanetGlyph planet={selectedBody.id} size={16} className="text-gold" />
-              <span className="label text-gold">Güneş Sistemi Cismi</span>
-            </div>
-            <button onClick={() => setSelectedBody(null)} className="label text-muted hover:text-paper cursor-pointer">✕</button>
-          </div>
-
-          <h2 className="display display-tight text-xl font-bold mb-1">{selectedBody.name}</h2>
-          <div className="label text-muted mb-3">
-            {selectedBody.isVisible ? 'Ufkun Üzerinde (Gözlemlenebilir)' : 'Ufkun Altında'}
-          </div>
-
-          <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs">
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block text-[10px]">İrtifa (Alt)</span>
-              <span className={`font-bold ${selectedBody.alt > 0 ? 'text-lime' : 'text-rose-signal'}`}>
-                {selectedBody.alt.toFixed(1)}°
-              </span>
-            </div>
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block text-[10px]">Azimut (Az)</span>
-              <span className="font-bold text-paper">{selectedBody.az.toFixed(1)}°</span>
-            </div>
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block text-[10px]">Sağ Açıklık (RA)</span>
-              <span className="font-bold text-paper">{(selectedBody.ra / 15).toFixed(2)}h</span>
-            </div>
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block text-[10px]">Görünür Kadir</span>
-              <span className="font-bold text-gold">{selectedBody.magnitude.toFixed(1)} mag</span>
-            </div>
-          </div>
-
-          {selectedBody.type === 'moon' && selectedBody.phaseFraction !== undefined && (
-            <div className="mt-3 border border-line bg-ink-2 p-3 flex items-center justify-between">
-              <div className="text-xs">
-                <span className="label text-muted block text-[10px]">Ay Aydınlanma Oranı</span>
-                <span className="font-bold text-paper">%{Math.round(selectedBody.phaseFraction * 100)}</span>
-              </div>
-              <VectorMoonPhase illumination={Math.round(selectedBody.phaseFraction * 100)} waning={(selectedBody.phaseAngle ?? 0) > 180} size={32} className="text-paper" />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 6. DSO INSPECTION PANEL */}
-      {selectedDso && (
-        <div className="ticks absolute bottom-6 left-6 z-20 max-w-sm border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper">
-          <Ticks />
-          <div className="flex items-center justify-between border-b border-line pb-2 mb-3">
-            <div className="flex items-center gap-2">
-              <GalaxySpiralGlyph size={14} className="text-lime" />
-              <span className="label text-lime">
-                Derin Uzay Cismi
-              </span>
-            </div>
-            <button onClick={() => setSelectedDso(null)} className="label text-muted hover:text-paper cursor-pointer">✕</button>
-          </div>
-
-          <h2 className="display display-tight text-xl font-bold mb-1">{selectedDso.name}</h2>
-          <div className="label text-muted mb-3">{selectedDso.distanceLightYears}</div>
-
-          {selectedDso.image && (
-            <div className="relative h-32 w-full border border-line overflow-hidden mb-3 bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={selectedDso.image.src}
-                alt={selectedDso.name}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute bottom-1 right-1 label px-2 py-0.5 bg-ink/80 border border-line text-[9px] text-paper/80">
-                Hubble / JWST
-              </div>
-            </div>
-          )}
-
-          <p className="text-xs text-paper/75 leading-relaxed mb-3">
-            {selectedDso.description}
-          </p>
-
-          <div className="grid grid-cols-2 gap-px border border-line bg-line font-mono text-xs">
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block">Tür</span>
-              <span className="font-bold capitalize text-paper">{selectedDso.type}</span>
-            </div>
-            <div className="bg-ink p-2.5">
-              <span className="label text-muted block">Katalog</span>
-              <span className="font-bold text-lime">{selectedDso.catalog}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 7. CONSTELLATION DETAILED INSPECTION DOSSIER */}
-      {activeConstellation && (
-        <div className="ticks absolute bottom-6 right-6 z-20 max-w-sm sm:max-w-md border border-line bg-ink/95 p-5 shadow-2xl backdrop-blur-2xl transition-all text-paper font-mono">
-          <Ticks />
-          <div className="flex items-center justify-between border-b border-line pb-2 mb-3">
-            <div className="flex items-center gap-2">
-              <ConstellationGlyph id={activeConstellation.glyphId} size={16} className="text-gold" />
-              <span className="label text-gold">Takımyıldız Çizimi & Kılavuzu</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveConstellation(null)}
-              className="label text-muted hover:text-paper cursor-pointer"
-              title="Serbest Bakışa Dön"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className="display display-tight text-xl font-bold text-paper">
-              {activeConstellation.name}
-            </h2>
-            <span className="label text-muted italic text-xs">{activeConstellation.latinName}</span>
-          </div>
-
-          <div className="label text-gold/90 text-xs mb-3 flex items-center gap-1.5">
-            <Sparkles size={12} className="text-gold" />
-            <span>Ana Yıldız: {activeConstellation.mainStar}</span>
-          </div>
-
-          <p className="text-xs text-paper/85 leading-relaxed mb-3">
-            {activeConstellation.description}
-          </p>
-
-          <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs mb-3">
-            <div className="bg-ink p-2">
-              <span className="label text-muted block text-[10px]">Çizilen Yıldız</span>
-              <span className="font-bold text-gold">{activeConstellation.starIndices.length} Yıldız</span>
-            </div>
-            <div className="bg-ink p-2">
-              <span className="label text-muted block text-[10px]">Merkez Sağ Açıklık</span>
-              <span className="font-bold text-paper">{(activeConstellation.centerRa / 15).toFixed(1)}h</span>
-            </div>
-            <div className="bg-ink p-2">
-              <span className="label text-muted block text-[10px]">Merkez Dik Açıklık</span>
-              <span className="font-bold text-paper">+{activeConstellation.centerDec.toFixed(1)}°</span>
-            </div>
-            <div className="bg-ink p-2">
-              <span className="label text-muted block text-[10px]">Gözlem Durumu</span>
-              <span className="font-bold text-lime">Sirkumpolar</span>
-            </div>
-          </div>
-
-          {/* Star-Hopping Guide for Ursa Minor / Polaris */}
-          {activeConstellation.pointerGuide && (
-            <div className="border border-gold/30 bg-gold/5 p-3 mb-3 text-xs">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="label text-gold font-bold flex items-center gap-1.5">
-                  <Orbit size={12} className="text-gold" />
-                  Yıldız Atlama (Star-Hopping)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowStarHoppingGuide(!showStarHoppingGuide)}
-                  className={`label text-[10px] px-2 py-0.5 border rounded cursor-pointer transition-colors ${
-                    showStarHoppingGuide
-                      ? 'border-gold bg-gold text-ink font-bold'
-                      : 'border-line bg-ink text-muted hover:text-paper'
-                  }`}
-                >
-                  {showStarHoppingGuide ? 'Kılavuz Açık' : 'Kılavuzu Aç'}
-                </button>
-              </div>
-              <p className="text-[11px] text-paper/75 leading-relaxed">
-                {activeConstellation.pointerGuide.description}
-              </p>
-            </div>
-          )}
-
-          {/* Observation & Mythology Tips */}
-          <div className="border border-line bg-ink-2 p-2.5 mb-3 text-[11px] text-paper/75 leading-snug">
-            <span className="label text-muted block text-[9px] mb-1 uppercase tracking-wider">Mitoloji & Gözlem</span>
-            {activeConstellation.observationTip}
-          </div>
-
-          {/* Re-trigger animation button */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setAnimTrigger((t) => t + 1)}
-              className="flex-1 flex items-center justify-center gap-2 border border-line bg-ink-2 hover:bg-gold hover:text-ink hover:border-gold py-2 text-xs font-bold transition-all cursor-pointer"
-            >
-              <RefreshCw size={13} />
-              <span>Çizim Animasyonunu Yeniden Başlat</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveConstellation(null)}
-              className="border border-line bg-ink-2 hover:bg-ink-3 px-3 py-2 text-xs text-muted hover:text-paper transition-all cursor-pointer"
-              title="Serbest Bakışa Dön"
-            >
-              Kapat
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
 
