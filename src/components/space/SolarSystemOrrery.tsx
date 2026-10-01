@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useMemo } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -129,7 +130,8 @@ function PlanetBody({
   showLabels,
   showOrbits,
   isSelected,
-  onSelect
+  onSelect,
+  labelPortal
 }: {
   planet: OrreryPlanet;
   speedMultiplier: number;
@@ -138,6 +140,8 @@ function PlanetBody({
   showOrbits: boolean;
   isSelected: boolean;
   onSelect: () => void;
+  /** Fixed DOM host for the labels; without it drei re-targets them once events connect, leaving a stale root behind. */
+  labelPortal: React.RefObject<HTMLElement>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const orbitGroupRef = useRef<THREE.Group>(null);
@@ -223,7 +227,7 @@ function PlanetBody({
 
           {/* Label */}
           {showLabels && (
-            <Html distanceFactor={45} position={[0, planet.size + 0.8, 0]} center>
+            <Html portal={labelPortal} distanceFactor={45} position={[0, planet.size + 0.8, 0]} center>
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -283,6 +287,8 @@ function OrrerySun() {
 // MAIN SOLAR SYSTEM ORRERY EXPORT
 // -------------------------------------------------------------
 export function SolarSystemOrrery() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stageVisible = useInView(stageRef);
   const [selectedPlanet, setSelectedPlanet] = useState<OrreryPlanet>(PLANETS_DATA[2]); // Earth default
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
@@ -311,7 +317,7 @@ export function SolarSystemOrrery() {
         {/* Speed & View Controls */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Play/Pause */}
-          <button
+          <button type="button" aria-label={isPaused ? 'Oynat' : 'Durdur'}
             onClick={() => setIsPaused(!isPaused)}
             className={`p-2 border font-bold text-xs transition-colors cursor-pointer ${
               isPaused
@@ -344,7 +350,7 @@ export function SolarSystemOrrery() {
           <div className="h-4 w-px bg-line mx-1 hidden sm:block" />
 
           {/* Toggles */}
-          <button
+          <button type="button" aria-label="Yörünge izleri" aria-pressed={showOrbits}
             onClick={() => setShowOrbits(!showOrbits)}
             className={`p-2 border text-xs font-mono transition-colors cursor-pointer ${
               showOrbits
@@ -356,7 +362,7 @@ export function SolarSystemOrrery() {
             <Orbit size={14} />
           </button>
 
-          <button
+          <button type="button" aria-label="Gezegen etiketleri" aria-pressed={showLabels}
             onClick={() => setShowLabels(!showLabels)}
             className={`p-2 border text-xs font-mono transition-colors cursor-pointer ${
               showLabels
@@ -371,8 +377,9 @@ export function SolarSystemOrrery() {
       </div>
 
       {/* 3D Canvas Arena */}
-      <div className="relative h-[480px] w-full bg-[#03030a]">
+      <div ref={stageRef} className="relative h-[480px] w-full bg-[#03030a]">
         <Canvas
+          frameloop={stageVisible ? 'always' : 'never'}
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 45, 60], fov: 45, near: 0.1, far: 500 }}
@@ -403,6 +410,7 @@ export function SolarSystemOrrery() {
               showOrbits={showOrbits}
               isSelected={selectedPlanet.id === p.id}
               onSelect={() => setSelectedPlanet(p)}
+              labelPortal={stageRef as React.RefObject<HTMLElement>}
             />
           ))}
         </Canvas>

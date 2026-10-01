@@ -144,6 +144,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
   const root = useRef<HTMLDivElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
 
   useEffect(() => {
@@ -169,6 +170,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
     const t = tl.current;
     if (!t) return;
     if (open) {
+      returnFocus.current = document.activeElement as HTMLElement | null;
       document.documentElement.style.overflow = 'hidden';
       root.current!.style.visibility = 'visible';
       if (prefersReducedMotion()) t.progress(1);
@@ -176,6 +178,9 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
       closeBtn.current?.focus({ preventScroll: true });
     } else {
       document.documentElement.style.overflow = '';
+      // Hand focus back to whatever opened the menu (the toggle button)
+      returnFocus.current?.focus({ preventScroll: true });
+      returnFocus.current = null;
       if (t.progress() > 0) {
         if (prefersReducedMotion()) {
           t.progress(0);
@@ -187,7 +192,27 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      // Keep Tab cycling inside the open dialog
+      if (e.key !== 'Tab' || !root.current) return;
+      const focusables = [...root.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')].filter(
+        (el) => el.tabIndex >= 0
+      );
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useMemo } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -120,6 +121,8 @@ function BlackHole3DMesh({
 }
 
 export function BlackHoleSimulator() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stageVisible = useInView(stageRef);
   // Distance from event horizon in Schwarzschild radii (r / r_s)
   const [distanceRs, setDistanceRs] = useState<number>(3.5); // 3.5 r_s default
   const [isRotating, setIsRotating] = useState<boolean>(true);
@@ -180,8 +183,8 @@ export function BlackHoleSimulator() {
       {/* Main 3D Canvas & Simulation Deck */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* 3D Black Hole Canvas (7 cols) */}
-        <div className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
-          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 2.5, 9.5], fov: 45 }} gl={{ powerPreference: 'high-performance' }}>
+        <div ref={stageRef} className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
+          <Canvas frameloop={stageVisible ? 'always' : 'never'} dpr={[1, 1.5]} camera={{ position: [0, 2.5, 9.5], fov: 45 }} gl={{ powerPreference: 'high-performance' }}>
             <ambientLight intensity={0.2} />
             <directionalLight position={[5, 10, 5]} intensity={1.5} color="#fff" />
 
@@ -236,7 +239,7 @@ export function BlackHoleSimulator() {
               </span>
             </div>
 
-            <input
+            <input aria-label="Kara deliğe uzaklık (Schwarzschild yarıçapı)"
               type="range"
               min="1.1"
               max="20"

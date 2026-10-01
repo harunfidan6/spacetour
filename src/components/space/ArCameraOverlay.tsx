@@ -26,6 +26,7 @@ export function ArCameraOverlay({
 
     let currentStream: MediaStream | null = null;
     let cancelled = false;
+    const video = videoRef.current;
 
     async function startCamera() {
       setIsLoading(true);
@@ -52,9 +53,9 @@ export function ArCameraOverlay({
         }
         currentStream = mediaStream;
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-          videoRef.current.play().catch(() => {});
+        if (video) {
+          video.srcObject = mediaStream;
+          video.play().catch(() => {});
         }
       } catch (err: unknown) {
         console.warn('Camera access error:', err);
@@ -72,8 +73,8 @@ export function ArCameraOverlay({
 
     return () => {
       cancelled = true;
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
+      if (video) {
+        video.srcObject = null;
       }
       if (currentStream) {
         currentStream.getTracks().forEach((track) => track.stop());
@@ -114,7 +115,7 @@ export function ArCameraOverlay({
           <div className="flex items-center gap-1.5 text-xs font-mono text-paper/75">
             <Eye size={13} className="text-primary" />
             <span className="hidden sm:inline">Yıldız Saydamlığı:</span>
-            <input
+            <input aria-label="Yıldız katmanı saydamlığı"
               type="range"
               min="0.2"
               max="1.0"
@@ -125,7 +126,7 @@ export function ArCameraOverlay({
             />
           </div>
 
-          <button
+          <button type="button" aria-label="Ön ve arka kamera arasında geçiş yap"
             onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
             className="text-muted hover:text-paper transition-colors p-1"
             title="Kamera Değiştir (Ön/Arka)"

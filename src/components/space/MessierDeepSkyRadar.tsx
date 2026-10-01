@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Telescope } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
 interface MessierObject {
   id: string;
@@ -15,7 +16,7 @@ interface MessierObject {
   distance: string;
   bestSeason: string;
   minEquipment: string;
-  image: string;
+  image: AstroImage;
   description: string;
   observationTip: string;
 }
@@ -32,7 +33,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '2.537 Milyon Işık Yılı',
     bestSeason: 'Sonbahar / Kış',
     minEquipment: 'Çıplak Göz / 7x50 Dürbün',
-    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m31,
     description: 'Samanyolu’nun en büyük komşusu. Yaklaşık 1 trilyon yıldıza ev sahipliği yapar. Çıplak gözle insan gözünün görebileceği en uzak nesnedir.',
     observationTip: 'Karanlık bir gökyüzünde dürbünle oval, parlak bir sis çekirdeği ve her iki yana uzanan soluk galaksi diski rahatlıkla seçilir.'
   },
@@ -47,7 +48,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '1.344 Işık Yılı',
     bestSeason: 'Kış',
     minEquipment: 'Küçük Dürbün / Her Türlü Teleskop',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m42,
     description: 'Avcı Kılıcı’nın ortasında yer alan, bebek yıldızların doğduğu devasa bir hidrojen ve oksijen gazı laboratuvarı. Merkezinde Trapezium yıldız dörtlüsü parlar.',
     observationTip: 'Orta boy bir teleskopla yeşilimsi-gri kanat benzeri gaz perdeleri ve Trapezium’un 4 parlak mavi yıldızı kristal netliğinde görünür.'
   },
@@ -62,7 +63,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '444 Işık Yılı',
     bestSeason: 'Sonbahar / Kış',
     minEquipment: 'Çıplak Göz / Geniş Açılı Dürbün',
-    image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m45,
     description: 'Gökyüzündeki en ünlü açık küme. Yaklaşık 100 milyon yıl önce doğmuş 1.000’den fazla genç mavi yıldıza sahiptir. Çıplak gözle 7 ana yıldız seçilir.',
     observationTip: 'Yüksek büyütmeli teleskop yerine geniş görüş alanına sahip bir dürbün (7x50 veya 10x50) kümenin tamamını bir arada görmek için çok daha uygundur.'
   },
@@ -77,7 +78,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '22.200 Işık Yılı',
     bestSeason: 'İlkbahar / Yaz',
     minEquipment: 'Dürbün / 150mm+ Teleskop',
-    image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m13,
     description: '145 ışık yılı çapa sıkışmış 300.000’den fazla yaşlı yıldız. 1974 yılında Arecibo radyo teleskobuyla uzaylı uygarlıklara gönderilen radyo mesajının hedefidir.',
     observationTip: '200mm (8 inç) bir Dobson teleskopla merkezdeki binlerce yıldız tek tek elmas taneleri gibi ayrışır.'
   },
@@ -92,7 +93,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '23 Milyon Işık Yılı',
     bestSeason: 'İlkbahar',
     minEquipment: '200mm+ Teleskop',
-    image: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m51,
     description: 'Tarihte sarmal yapısı keşfedilen ilk galaksi (Lord Rosse, 1845). Yanındaki küçük cüce galaksi NGC 5195 ile kütleçekimsel dans halindedir.',
     observationTip: 'Karanlık bir gökyüzünde 20 cm veya daha büyük bir teleskopla ana galaksinin kollarını ve küçük yoldaş galaksiyle olan köprüyü görmek mümkündür.'
   },
@@ -107,7 +108,7 @@ const MESSIER_TARGETS: MessierObject[] = [
     distance: '2.570 Işık Yılı',
     bestSeason: 'Yaz / Sonbahar',
     minEquipment: '100mm+ Teleskop',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop',
+    image: ASTRO_IMAGES.m57,
     description: 'Ölen bir yıldızın uzaya fırlattığı duman halkası benzeri gaz kabuğu. Merkezinde 100.000 Kelvin sıcaklığında bir beyaz cüce kalıntısı bulunur.',
     observationTip: 'Küçük teleskoplarda minik gri bir duman halkası; büyük açıklıklı teleskoplarda ise yeşilimsi oksijen ve kırmızımsı nitrojen gaz katmanları ayırt edilir.'
   }
@@ -194,7 +195,7 @@ export function MessierDeepSkyRadar() {
             <div className="relative h-44 w-full border border-line overflow-hidden my-4 bg-black">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={selectedTarget.image}
+                src={selectedTarget.image.src}
                 alt={selectedTarget.name}
                 className="w-full h-full object-cover filter contrast-110"
               />

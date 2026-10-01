@@ -258,7 +258,7 @@ export function BortleScaleSimulator() {
           </span>
         </div>
 
-        <input
+        <input aria-label="Bortle ışık kirliliği sınıfı"
           type="range"
           min="1"
           max="9"

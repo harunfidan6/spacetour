@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useInView } from '@/lib/useInView';
 import {
   Rocket,
   Sliders,
@@ -98,6 +99,7 @@ export function HohmannTransferSimulator() {
   const [flightProgress, setFlightProgress] = useState<number>(35); // 0 to 100%
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const visible = useInView(canvasRef);
 
   // Total delta-V
   const totalDeltaV = useMemo(() => {
@@ -106,7 +108,7 @@ export function HohmannTransferSimulator() {
 
   // Animation loop
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || !visible) return;
     const interval = setInterval(() => {
       setFlightProgress((prev) => {
         if (prev >= 100) return 0;
@@ -114,12 +116,12 @@ export function HohmannTransferSimulator() {
       });
     }, 30);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, visible]);
 
   // Canvas drawing
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !visible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -287,7 +289,7 @@ export function HohmannTransferSimulator() {
     return () => {
       if (localAnim) cancelAnimationFrame(localAnim);
     };
-  }, [selectedDest, flightProgress]);
+  }, [selectedDest, flightProgress, visible]);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -375,7 +377,7 @@ export function HohmannTransferSimulator() {
               {isPlaying ? <Pause size={12} /> : <Play size={12} />}
               <span>{isPlaying ? 'Durdur' : 'Uçur'}</span>
             </button>
-            <button
+            <button type="button" aria-label="Uçuşu başa sar"
               onClick={() => setFlightProgress(0)}
               className="label px-2.5 py-1.5 bg-ink/90 border border-line text-muted backdrop-blur hover:text-paper transition-colors cursor-pointer"
               title="Başa Sar"
@@ -415,7 +417,7 @@ export function HohmannTransferSimulator() {
               </span>
             </div>
 
-            <input
+            <input aria-label="Uçuş ilerlemesi"
               type="range"
               min="0"
               max="100"

@@ -34,7 +34,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SpaceTour TR — Kinetik Uzay Atlası",
+  title: {
+    default: "SpaceTour TR — Kinetik Uzay Atlası",
+    template: "%s — SpaceTour TR",
+  },
+  applicationName: "SpaceTour TR",
+  openGraph: {
+    siteName: "SpaceTour TR",
+    locale: "tr_TR",
+    type: "website",
+  },
   description:
     "spacetour.com.tr — Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve çok dalgaboylu gözlemevi.",
 };

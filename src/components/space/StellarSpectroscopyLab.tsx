@@ -480,7 +480,7 @@ export function StellarSpectroscopyLab() {
 
           <div className="mt-4 flex items-center gap-4">
             <span className="font-mono text-xs text-blue-400">-15.000 km/s</span>
-            <input
+            <input aria-label="Radyal hız (km/s)"
               type="range"
               min="-15000"
               max="15000"

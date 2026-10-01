@@ -1,14 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Heart, Sparkles, Flame, Globe2, Wind, Droplets } from 'lucide-react';
+import React, { useState, useId } from 'react';
+import { Heart, Sparkles } from 'lucide-react';
 import {
   ZODIAC_SIGNS,
   getSunSign,
   calculateAscendant,
-  calculateMoonSign
+  calculateMoonSign,
+  daysInMonth,
+  innerPlanetSignIndices,
+  localSolarHour
 } from '@/data/zodiac';
 import { Ticks } from '@/components/motion/primitives';
+import { NumericInput } from '@/components/ui/NumericInput';
+
+// Birth times are read as Turkish clock time at İstanbul, matching the natal chart's default city
+const IST_LONGITUDE = 28.9784;
+const TR_UTC_OFFSET = 3;
+
+/** Turkish genitive suffix with vowel harmony: Ayşe'nin, Ahmet'in, Mert'in, Doğu'nun. */
+function withGenitive(name: string): string {
+  const trimmed = name.trim() || 'Partner';
+  const lower = trimmed.toLocaleLowerCase('tr-TR');
+  const lastVowel = [...lower].reverse().find((ch) => 'aıoueiöü'.includes(ch)) ?? 'e';
+  const suffix = { a: 'ın', ı: 'ın', e: 'in', i: 'in', o: 'un', u: 'un', ö: 'ün', ü: 'ün' }[lastVowel] ?? 'in';
+  const endsWithVowel = 'aıoueiöü'.includes(lower[lower.length - 1]);
+  return `${trimmed}'${endsWithVowel ? 'n' : ''}${suffix}`;
+}
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -30,25 +48,43 @@ export function SynastryChartCalculator() {
   const [p2Year, setP2Year] = useState(1997);
   const [p2Hour, setP2Hour] = useState(18);
 
+  const fid = useId();
+  const p1MaxDay = daysInMonth(p1Month, p1Year);
+  const p2MaxDay = daysInMonth(p2Month, p2Year);
+  const changeP1Month = (m: number) => {
+    setP1Month(m);
+    setP1Day((d) => Math.min(d, daysInMonth(m, p1Year)));
+  };
+  const changeP1Year = (y: number) => {
+    setP1Year(y);
+    setP1Day((d) => Math.min(d, daysInMonth(p1Month, y)));
+  };
+  const changeP2Month = (m: number) => {
+    setP2Month(m);
+    setP2Day((d) => Math.min(d, daysInMonth(m, p2Year)));
+  };
+  const changeP2Year = (y: number) => {
+    setP2Year(y);
+    setP2Day((d) => Math.min(d, daysInMonth(p2Month, y)));
+  };
+
   // Calculate Person 1 Astrological Placements
   const p1Sun = getSunSign(p1Month, p1Day);
   const p1SunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === p1Sun.id);
-  const p1Rising = calculateAscendant(p1SunIdx, p1Hour);
+  const p1Rising = calculateAscendant(p1SunIdx, localSolarHour(p1Hour, 0, IST_LONGITUDE, TR_UTC_OFFSET));
   const p1Moon = calculateMoonSign(p1SunIdx, p1Day);
-  const p1VenusIdx = ((p1SunIdx + ((p1Day % 3) - 1)) + 12) % 12;
-  const p1Venus = ZODIAC_SIGNS[p1VenusIdx];
-  const p1MarsIdx = ((p1SunIdx + (p1Day % 5) - 2) + 12) % 12;
-  const p1Mars = ZODIAC_SIGNS[p1MarsIdx];
+  const p1Inner = innerPlanetSignIndices(p1SunIdx, p1Day);
+  const p1Venus = ZODIAC_SIGNS[p1Inner.venus];
+  const p1Mars = ZODIAC_SIGNS[p1Inner.mars];
 
   // Calculate Person 2 Astrological Placements
   const p2Sun = getSunSign(p2Month, p2Day);
   const p2SunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === p2Sun.id);
-  const p2Rising = calculateAscendant(p2SunIdx, p2Hour);
+  const p2Rising = calculateAscendant(p2SunIdx, localSolarHour(p2Hour, 0, IST_LONGITUDE, TR_UTC_OFFSET));
   const p2Moon = calculateMoonSign(p2SunIdx, p2Day);
-  const p2VenusIdx = ((p2SunIdx + ((p2Day % 3) - 1)) + 12) % 12;
-  const p2Venus = ZODIAC_SIGNS[p2VenusIdx];
-  const p2MarsIdx = ((p2SunIdx + (p2Day % 5) - 2) + 12) % 12;
-  const p2Mars = ZODIAC_SIGNS[p2MarsIdx];
+  const p2Inner = innerPlanetSignIndices(p2SunIdx, p2Day);
+  const p2Venus = ZODIAC_SIGNS[p2Inner.venus];
+  const p2Mars = ZODIAC_SIGNS[p2Inner.mars];
 
   // Synastry Aspect Computations
   // 1. Sun-Moon Harmony (Soul Connection)
@@ -112,40 +148,41 @@ export function SynastryChartCalculator() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Person 1 Inputs */}
         <div className="border border-line bg-ink-2 p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-gold" />
-              <input
+              <input aria-label="Birinci partnerin adı"
                 type="text"
                 value={p1Name}
                 onChange={(e) => setP1Name(e.target.value)}
-                className="bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-gold"
+                className="min-w-0 w-full bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-gold"
               />
             </div>
-            <div className="flex items-center gap-2 label text-gold font-bold">
+            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap label text-gold font-bold">
               <ZodiacGlyph sign={p1Sun.id} size={16} className="text-gold" />
               <span>{p1Sun.name} Burcu</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-px border border-line bg-line text-xs font-mono">
+          <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs font-mono sm:grid-cols-4">
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">GÜN</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p1-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+              <NumericInput
+                id={`${fid}-p1-day`}
                 min={1}
-                max={31}
+                max={p1MaxDay}
                 value={p1Day}
-                onChange={(e) => setP1Day(parseInt(e.target.value) || 1)}
+                onValueChange={setP1Day}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">AY</label>
+              <label htmlFor={`${fid}-p1-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
               <select
+                id={`${fid}-p1-month`}
                 value={p1Month}
-                onChange={(e) => setP1Month(parseInt(e.target.value))}
+                onChange={(e) => changeP1Month(parseInt(e.target.value, 10))}
                 className="w-full bg-transparent font-bold text-paper outline-none cursor-pointer"
               >
                 {months.map((m, idx) => (
@@ -155,25 +192,25 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">YIL</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p1-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+              <NumericInput
+                id={`${fid}-p1-year`}
                 min={1920}
                 max={2030}
                 value={p1Year}
-                onChange={(e) => setP1Year(parseInt(e.target.value) || 1995)}
+                onValueChange={changeP1Year}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">SAAT</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p1-hour`} className="label text-muted block mb-1 text-[10px]">SAAT</label>
+              <NumericInput
+                id={`${fid}-p1-hour`}
                 min={0}
                 max={23}
                 value={p1Hour}
-                onChange={(e) => setP1Hour(parseInt(e.target.value) || 0)}
+                onValueChange={setP1Hour}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
@@ -216,40 +253,41 @@ export function SynastryChartCalculator() {
 
         {/* Person 2 Inputs */}
         <div className="border border-line bg-ink-2 p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-rose-signal" />
-              <input
+              <input aria-label="İkinci partnerin adı"
                 type="text"
                 value={p2Name}
                 onChange={(e) => setP2Name(e.target.value)}
-                className="bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-rose-signal"
+                className="min-w-0 w-full bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-rose-signal"
               />
             </div>
-            <div className="flex items-center gap-2 label text-rose-signal font-bold">
+            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap label text-rose-signal font-bold">
               <ZodiacGlyph sign={p2Sun.id} size={16} className="text-rose-signal" />
               <span>{p2Sun.name} Burcu</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-px border border-line bg-line text-xs font-mono">
+          <div className="grid grid-cols-2 gap-px border border-line bg-line text-xs font-mono sm:grid-cols-4">
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">GÜN</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p2-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+              <NumericInput
+                id={`${fid}-p2-day`}
                 min={1}
-                max={31}
+                max={p2MaxDay}
                 value={p2Day}
-                onChange={(e) => setP2Day(parseInt(e.target.value) || 1)}
+                onValueChange={setP2Day}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">AY</label>
+              <label htmlFor={`${fid}-p2-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
               <select
+                id={`${fid}-p2-month`}
                 value={p2Month}
-                onChange={(e) => setP2Month(parseInt(e.target.value))}
+                onChange={(e) => changeP2Month(parseInt(e.target.value, 10))}
                 className="w-full bg-transparent font-bold text-paper outline-none cursor-pointer"
               >
                 {months.map((m, idx) => (
@@ -259,25 +297,25 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">YIL</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p2-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+              <NumericInput
+                id={`${fid}-p2-year`}
                 min={1920}
                 max={2030}
                 value={p2Year}
-                onChange={(e) => setP2Year(parseInt(e.target.value) || 1995)}
+                onValueChange={changeP2Year}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
 
             <div className="bg-ink p-2.5">
-              <label className="label text-muted block mb-1 text-[10px]">SAAT</label>
-              <input
-                type="number"
+              <label htmlFor={`${fid}-p2-hour`} className="label text-muted block mb-1 text-[10px]">SAAT</label>
+              <NumericInput
+                id={`${fid}-p2-hour`}
                 min={0}
                 max={23}
                 value={p2Hour}
-                onChange={(e) => setP2Hour(parseInt(e.target.value) || 0)}
+                onValueChange={setP2Hour}
                 className="w-full bg-transparent font-bold text-paper outline-none"
               />
             </div>
@@ -321,7 +359,7 @@ export function SynastryChartCalculator() {
 
       {/* Main Synastry Score Banner */}
       <div className="border border-line bg-ink-2 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
           <div className="h-20 w-20 bg-rose-signal/15 border border-rose-signal flex flex-col items-center justify-center text-center shrink-0">
             <span className="text-2xl font-black text-rose-signal font-mono">%{synastryScore}</span>
             <span className="label text-[8px] text-rose-signal">SİNASTRİ</span>
@@ -344,7 +382,7 @@ export function SynastryChartCalculator() {
           </div>
         </div>
 
-        <div className="text-right shrink-0 font-mono text-xs text-muted bg-ink p-4 border border-line space-y-1">
+        <div className="w-full text-left md:w-auto md:text-right shrink-0 font-mono text-xs text-muted bg-ink p-4 border border-line space-y-1">
           <div>Güneş-Güneş: <strong className="text-paper">{p1Sun.element} + {p2Sun.element}</strong></div>
           <div>Ay Uyumu: <strong className="text-violet">{isSunMoonHarmonious ? 'Yüksek Rezonans' : 'Dengeli'}</strong></div>
           <div>Venüs-Mars: <strong className="text-rose-signal">{isVenusMarsFiery ? 'Yoğun Tutku' : 'Duygusal Uyum'}</strong></div>
@@ -368,7 +406,7 @@ export function SynastryChartCalculator() {
           </h4>
           <p className="text-xs text-paper/75 leading-relaxed font-sans">
             {isSunMoonHarmonious
-              ? `${p1Name}'in temel karakteri, ${p2Name}'in içsel duygusal gereksinimleriyle derin bir huzur içinde örtüşüyor.`
+              ? `${withGenitive(p1Name)} temel karakteri, ${withGenitive(p2Name)} içsel duygusal gereksinimleriyle derin bir huzur içinde örtüşüyor.`
               : 'Duygusal tepkilerinizi ifade ederken birbirinizin diline saygı göstermeniz bağı güçlendirir.'}
           </p>
         </div>

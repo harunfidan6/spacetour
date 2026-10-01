@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
+import { matchesQuery } from '@/lib/text';
 import { ArrowUpRight, Search } from 'lucide-react';
 import { planets } from '@/data/planets';
 import { constellations } from '@/data/constellations';
@@ -65,7 +66,7 @@ export default function AnsiklopediPage() {
   const filtered = useMemo(
     () =>
       planets.filter((p) => {
-        const matchesSearch = p.name.toLocaleLowerCase('tr-TR').includes(searchTerm.toLocaleLowerCase('tr-TR'));
+        const matchesSearch = matchesQuery(searchTerm, p.name, p.description);
         const matchesTab =
           activeTab === 'Tümü' ||
           (activeTab === 'Gezegenler' && p.type === 'gezegen') ||
@@ -140,15 +141,14 @@ export default function AnsiklopediPage() {
                 style={{ fontStretch: '112%' }}
               />
             </label>
-            <div className="flex gap-1 rounded-full border border-line p-1" role="tablist" aria-label="Kayıt türü">
+            <div className="flex max-w-full gap-1 self-start overflow-x-auto no-scrollbar rounded-full border border-line p-1" role="group" aria-label="Kayıt türü">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab}
+                  aria-pressed={activeTab === tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`label rounded-full px-4 py-2 transition-colors ${activeTab === tab ? 'bg-violet text-ink' : 'text-paper/70 hover:text-paper'}`}
+                  className={`label shrink-0 rounded-full px-3 py-2 transition-colors sm:px-4 ${activeTab === tab ? 'bg-violet text-ink' : 'text-paper/70 hover:text-paper'}`}
                 >
                   {tab}
                 </button>

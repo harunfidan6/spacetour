@@ -5,6 +5,7 @@
  */
 
 import { raDecToAltAz, altAzToCartesian } from '@/utils/astronomy';
+import { computePlanetState, type HeliocentricState } from './keplerEphemeris';
 
 export interface CelestialBodyDomeState {
   id: string;
@@ -35,7 +36,7 @@ function normalizeDeg(d: number): number {
 /**
  * Computes the Sun's geocentric equatorial coordinates (RA, Dec) with high precision.
  */
-export function getSunEquatorial(date: Date): { ra: number; dec: number } {
+export function getSunEquatorial(date: Date): { ra: number; dec: number; lambda: number } {
   const jd = date.getTime() / 86400000 + 2440587.5;
   const d = jd - 2451545.0; // days from J2000.0
   const T = d / 36525.0;
@@ -54,13 +55,20 @@ export function getSunEquatorial(date: Date): { ra: number; dec: number } {
   const x = Math.cos(lambda);
   const ra = normalizeDeg(Math.atan2(y, x) * RAD2DEG);
 
-  return { ra, dec };
+  return { ra, dec, lambda: lambda * RAD2DEG };
 }
 
 /**
  * Computes the Moon's geocentric coordinates (RA, Dec, Phase, Illumination fraction).
  */
-export function getMoonEquatorial(date: Date): { ra: number; dec: number; phaseFraction: number; elongation: number } {
+export function getMoonEquatorial(date: Date): {
+  ra: number;
+  dec: number;
+  phaseFraction: number;
+  elongation: number;
+  lambda: number;
+  distanceKm: number;
+} {
   const jd = date.getTime() / 86400000 + 2440587.5;
   const d = jd - 2451545.0;
   const T = d / 36525.0;
@@ -91,12 +99,160 @@ export function getMoonEquatorial(date: Date): { ra: number; dec: number; phaseF
   const x = Math.cos(beta) * Math.cos(lambda);
   const ra = normalizeDeg(Math.atan2(y, x) * RAD2DEG);
 
-  // Illumination calculation from elongation
+  // Illumination from elongation, measured along the ecliptic (Moon λ − Sun λ)
   const sunEq = getSunEquatorial(date);
-  const el = normalizeDeg(lambda * RAD2DEG - sunEq.ra);
+  const el = normalizeDeg(lambda * RAD2DEG - sunEq.lambda);
   const phaseFraction = (1 + Math.cos((180 - el) * DEG2RAD)) / 2;
 
-  return { ra, dec, phaseFraction, elongation: el };
+  // Earth–Moon distance, leading periodic terms of Meeus (Astronomical Algorithms, ch. 47)
+  const distanceKm =
+    385000.56 -
+    20905.355 * Math.cos(M_prime) -
+    3699.111 * Math.cos(2 * D - M_prime) -
+    2955.968 * Math.cos(2 * D) -
+    569.925 * Math.cos(2 * M_prime) +
+    48.888 * Math.cos(M) -
+    3.149 * Math.cos(2 * F) +
+    246.158 * Math.cos(2 * D - 2 * M_prime) -
+    152.138 * Math.cos(2 * D - M - M_prime) -
+    170.733 * Math.cos(2 * D + M_prime) -
+    204.586 * Math.cos(2 * D - M) -
+    129.62 * Math.cos(M - M_prime) +
+    108.743 * Math.cos(D) +
+    104.755 * Math.cos(M + M_prime) +
+    10.321 * Math.cos(2 * D - 2 * F) +
+    79.661 * Math.cos(M_prime - 2 * F) -
+    34.782 * Math.cos(4 * D - M_prime) -
+    23.21 * Math.cos(3 * M_prime) -
+    21.636 * Math.cos(4 * D - 2 * M_prime) +
+    24.208 * Math.cos(2 * D + M - M_prime) +
+    30.824 * Math.cos(2 * D + M) -
+    16.675 * Math.cos(D + M) -
+    12.831 * Math.cos(2 * D - M + M_prime) -
+    10.445 * Math.cos(2 * D + 2 * M_prime) -
+    11.65 * Math.cos(4 * D) +
+    14.403 * Math.cos(2 * D - 3 * M_prime) +
+    10.056 * Math.cos(2 * D - M - 2 * M_prime);
+
+  return { ra, dec, phaseFraction, elongation: el, lambda: lambda * RAD2DEG, distanceKm };
+}
+
+export type MoonPhaseKey =
+  | 'new'
+  | 'waxing-crescent'
+  | 'first-quarter'
+  | 'waxing-gibbous'
+  | 'full'
+  | 'waning-gibbous'
+  | 'last-quarter'
+  | 'waning-crescent';
+
+const MOON_PHASE_ORDER: MoonPhaseKey[] = [
+  'new',
+  'waxing-crescent',
+  'first-quarter',
+  'waxing-gibbous',
+  'full',
+  'waning-gibbous',
+  'last-quarter',
+  'waning-crescent',
+];
+
+export const MOON_PHASE_NAMES: Record<MoonPhaseKey, string> = {
+  new: 'Yeni Ay',
+  'waxing-crescent': 'Büyüyen Hilal',
+  'first-quarter': 'İlk Dördün',
+  'waxing-gibbous': 'Büyüyen Şişkin Ay',
+  full: 'Dolunay',
+  'waning-gibbous': 'Küçülen Şişkin Ay',
+  'last-quarter': 'Son Dördün',
+  'waning-crescent': 'Küçülen Hilal',
+};
+
+const SYNODIC_MONTH_DAYS = 29.530588;
+
+/** Phase of the Moon from its true elongation; each phase spans ±22.5° around its centre. */
+export function getMoonPhase(date: Date): {
+  key: MoonPhaseKey;
+  name: string;
+  illumination: number;
+  elongation: number;
+  waxing: boolean;
+  ageDays: number;
+  distanceKm: number;
+} {
+  const moon = getMoonEquatorial(date);
+  const key = MOON_PHASE_ORDER[Math.round(moon.elongation / 45) % 8];
+  return {
+    key,
+    name: MOON_PHASE_NAMES[key],
+    illumination: moon.phaseFraction,
+    elongation: moon.elongation,
+    waxing: moon.elongation < 180,
+    ageDays: (moon.elongation / 360) * SYNODIC_MONTH_DAYS,
+    distanceKm: moon.distanceKm,
+  };
+}
+
+export type NakedEyePlanet = 'venus' | 'mars' | 'jupiter' | 'saturn';
+export type GeocentricPlanet = NakedEyePlanet | 'mercury';
+
+/**
+ * Geocentric view of a planet: RA/Dec, ecliptic longitude, Sun/Earth distances (AU),
+ * phase angle and elongation from the Sun (degrees).
+ */
+export function planetGeocentric(key: GeocentricPlanet, date: Date) {
+  const earth = computePlanetState('earth', date);
+  const planet = computePlanetState(key, date);
+  const x = planet.x - earth.x;
+  const y = planet.y - earth.y;
+  const z = planet.z - earth.z;
+  const delta = Math.hypot(x, y, z);
+  const r = planet.rAU;
+  const R = earth.rAU;
+  const phaseAngle = Math.acos(Math.min(1, Math.max(-1, (r * r + delta * delta - R * R) / (2 * r * delta)))) * RAD2DEG;
+  const elongation = Math.acos(Math.min(1, Math.max(-1, (R * R + delta * delta - r * r) / (2 * R * delta)))) * RAD2DEG;
+  return {
+    ...eclipticToEquatorial(x, y, z),
+    lambda: normalizeDeg(Math.atan2(y, x) * RAD2DEG),
+    beta: Math.atan2(z, Math.hypot(x, y)) * RAD2DEG,
+    r,
+    delta,
+    phaseAngle,
+    elongation,
+  };
+}
+
+/** True while the planet's geocentric ecliptic longitude is decreasing (apparent retrograde motion). */
+export function isRetrograde(key: GeocentricPlanet, date: Date): boolean {
+  const today = planetGeocentric(key, date).lambda;
+  const tomorrow = planetGeocentric(key, new Date(date.getTime() + 86_400_000)).lambda;
+  return ((tomorrow - today + 540) % 360) - 180 < 0;
+}
+
+// Mean obliquity of the ecliptic at J2000 — the Keplerian states are in the J2000 ecliptic frame
+const J2000_OBLIQUITY = 23.4392911 * DEG2RAD;
+
+/**
+ * Geocentric RA/Dec of a planet: heliocentric planet vector minus Earth's,
+ * rotated from the ecliptic into the equatorial frame (light-time and aberration ignored).
+ */
+function planetEquatorial(planet: HeliocentricState, earth: HeliocentricState): { ra: number; dec: number } {
+  const x = planet.x - earth.x;
+  const y = planet.y - earth.y;
+  const z = planet.z - earth.z;
+  return eclipticToEquatorial(x, y, z);
+}
+
+function eclipticToEquatorial(x: number, y: number, z: number): { ra: number; dec: number } {
+  const cosE = Math.cos(J2000_OBLIQUITY);
+  const sinE = Math.sin(J2000_OBLIQUITY);
+  const yq = y * cosE - z * sinE;
+  const zq = y * sinE + z * cosE;
+  return {
+    ra: normalizeDeg(Math.atan2(yq, x) * RAD2DEG),
+    dec: Math.atan2(zq, Math.hypot(x, yq)) * RAD2DEG,
+  };
 }
 
 /**
@@ -108,10 +264,6 @@ export function computeSkyDomeSolarSystem(
   lst: number,
   domeRadius: number
 ): CelestialBodyDomeState[] {
-  const jd = date.getTime() / 86400000 + 2440587.5;
-  const d = jd - 2451545.0;
-  const T = d / 36525.0;
-
   // 1. Sun
   const sunEq = getSunEquatorial(date);
   const sunAltAz = raDecToAltAz(sunEq.ra, sunEq.dec, latitude, lst);
@@ -122,28 +274,20 @@ export function computeSkyDomeSolarSystem(
   const moonAltAz = raDecToAltAz(moonEq.ra, moonEq.dec, latitude, lst);
   const moonCart = altAzToCartesian(moonAltAz.alt, moonAltAz.az, domeRadius * 0.95);
 
-  // 3. Venus (Analytic Keplerian Mean Motion)
-  const lVenus = normalizeDeg(181.979 + 58517.815 * T + 0.77 * Math.sin(normalizeDeg(212.6 + 58517.8 * T) * DEG2RAD));
-  const decVenus = 23.4 * Math.sin(lVenus * DEG2RAD);
-  const vAltAz = raDecToAltAz(lVenus, decVenus, latitude, lst);
+  // 3-6. Planets from JPL Keplerian elements, seen from Earth
+  const earth = computePlanetState('earth', date);
+  const venusEq = planetEquatorial(computePlanetState('venus', date), earth);
+  const marsEq = planetEquatorial(computePlanetState('mars', date), earth);
+  const jupiterEq = planetEquatorial(computePlanetState('jupiter', date), earth);
+  const saturnEq = planetEquatorial(computePlanetState('saturn', date), earth);
+
+  const vAltAz = raDecToAltAz(venusEq.ra, venusEq.dec, latitude, lst);
   const vCart = altAzToCartesian(vAltAz.alt, vAltAz.az, domeRadius * 0.95);
-
-  // 4. Mars
-  const lMars = normalizeDeg(355.433 + 19140.299 * T + 10.7 * Math.sin(normalizeDeg(319.5 + 19140.3 * T) * DEG2RAD));
-  const decMars = 24.5 * Math.sin(lMars * DEG2RAD);
-  const mAltAz = raDecToAltAz(lMars, decMars, latitude, lst);
+  const mAltAz = raDecToAltAz(marsEq.ra, marsEq.dec, latitude, lst);
   const mCart = altAzToCartesian(mAltAz.alt, mAltAz.az, domeRadius * 0.95);
-
-  // 5. Jupiter
-  const lJup = normalizeDeg(34.351 + 3034.906 * T + 5.5 * Math.sin(normalizeDeg(273.8 + 3034.9 * T) * DEG2RAD));
-  const decJup = 23.1 * Math.sin(lJup * DEG2RAD);
-  const jAltAz = raDecToAltAz(lJup, decJup, latitude, lst);
+  const jAltAz = raDecToAltAz(jupiterEq.ra, jupiterEq.dec, latitude, lst);
   const jCart = altAzToCartesian(jAltAz.alt, jAltAz.az, domeRadius * 0.95);
-
-  // 6. Saturn
-  const lSat = normalizeDeg(50.077 + 1222.114 * T + 6.3 * Math.sin(normalizeDeg(339.4 + 1222.1 * T) * DEG2RAD));
-  const decSat = 22.8 * Math.sin(lSat * DEG2RAD);
-  const sAltAz = raDecToAltAz(lSat, decSat, latitude, lst);
+  const sAltAz = raDecToAltAz(saturnEq.ra, saturnEq.dec, latitude, lst);
   const sCart = altAzToCartesian(sAltAz.alt, sAltAz.az, domeRadius * 0.95);
 
   return [
@@ -181,8 +325,8 @@ export function computeSkyDomeSolarSystem(
       id: 'venus',
       name: 'Venüs (Zühre)',
       type: 'planet',
-      ra: lVenus,
-      dec: decVenus,
+      ra: venusEq.ra,
+      dec: venusEq.dec,
       alt: vAltAz.alt,
       az: vAltAz.az,
       isVisible: vAltAz.isVisible,
@@ -195,8 +339,8 @@ export function computeSkyDomeSolarSystem(
       id: 'mars',
       name: 'Mars (Merih)',
       type: 'planet',
-      ra: lMars,
-      dec: decMars,
+      ra: marsEq.ra,
+      dec: marsEq.dec,
       alt: mAltAz.alt,
       az: mAltAz.az,
       isVisible: mAltAz.isVisible,
@@ -209,8 +353,8 @@ export function computeSkyDomeSolarSystem(
       id: 'jupiter',
       name: 'Jüpiter (Müşteri)',
       type: 'planet',
-      ra: lJup,
-      dec: decJup,
+      ra: jupiterEq.ra,
+      dec: jupiterEq.dec,
       alt: jAltAz.alt,
       az: jAltAz.az,
       isVisible: jAltAz.isVisible,
@@ -223,8 +367,8 @@ export function computeSkyDomeSolarSystem(
       id: 'saturn',
       name: 'Satürn (Zühal)',
       type: 'planet',
-      ra: lSat,
-      dec: decSat,
+      ra: saturnEq.ra,
+      dec: saturnEq.dec,
       alt: sAltAz.alt,
       az: sAltAz.az,
       isVisible: sAltAz.isVisible,
@@ -240,7 +384,7 @@ export function computeSkyDomeSolarSystem(
  * Transforms Galactic Coordinates (l, b in degrees) into Equatorial Coordinates (RA, Dec in degrees).
  * Standard IAU J2000 definition:
  * North Galactic Pole: RA = 192.85948°, Dec = +27.12825°
- * Ascending node theta0 = 122.93192°
+ * Galactic longitude of the north celestial pole l0 = 122.93192°
  */
 export function galacticToEquatorial(lDeg: number, bDeg: number): { ra: number; dec: number } {
   const l = lDeg * DEG2RAD;
@@ -250,11 +394,12 @@ export function galacticToEquatorial(lDeg: number, bDeg: number): { ra: number; 
   const decG = 27.12825 * DEG2RAD;
   const l0 = 122.93192 * DEG2RAD;
 
-  const sinDec = Math.sin(decG) * Math.sin(b) + Math.cos(decG) * Math.cos(b) * Math.cos(l - l0);
+  // l0 is the galactic longitude of the north celestial pole, so the angle runs (l0 − l)
+  const sinDec = Math.sin(decG) * Math.sin(b) + Math.cos(decG) * Math.cos(b) * Math.cos(l0 - l);
   const dec = Math.asin(Math.min(Math.max(sinDec, -1), 1));
 
-  const y = Math.cos(b) * Math.sin(l - l0);
-  const x = Math.cos(decG) * Math.sin(b) - Math.sin(decG) * Math.cos(b) * Math.cos(l - l0);
+  const y = Math.cos(b) * Math.sin(l0 - l);
+  const x = Math.cos(decG) * Math.sin(b) - Math.sin(decG) * Math.cos(b) * Math.cos(l0 - l);
   const ra = normalizeDeg((raG + Math.atan2(y, x)) * RAD2DEG);
 
   return { ra, dec: dec * RAD2DEG };
@@ -265,8 +410,7 @@ export function galacticToEquatorial(lDeg: number, bDeg: number): { ra: number; 
  * Includes galactic core condensation towards Sagittarius (l ≈ 0°) and dust lane absorption.
  */
 export function generateMilkyWayParticles(
-  count: number = 3200,
-  domeRadius: number = 90
+  count: number = 3200
 ): {
   galacticCoords: { l: number; b: number; brightness: number; isCore: boolean }[];
 } {
@@ -291,7 +435,7 @@ export function generateMilkyWayParticles(
     const u1 = Math.max(rand(), 1e-4);
     const u2 = rand();
     const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    let b = z0 * spread;
+    const b = z0 * spread;
 
     // The Great Rift dust lane absorption simulation between Cygnus (l ≈ 75°) and Sagittarius (l ≈ 0°)
     if (l > 15 && l < 85 && Math.abs(b - 0.5) < 1.4) {

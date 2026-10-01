@@ -1,58 +1,66 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  Sun,
-  Wind,
-  AlertTriangle,
-  ShieldCheck,
-  Zap
-} from 'lucide-react';
+import React, { useRef } from 'react';
+import { Sun, Wind, AlertTriangle, ShieldCheck, Magnet } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { useInView } from '@/lib/useInView';
+import { usePolledJson } from '@/lib/usePolledJson';
 
-interface SpaceWeatherData {
-  solarWindSpeed: number; // km/s
-  solarWindDensity: number; // p/cm³
-  kpIndex: number; // 0-9
-  geomagneticStorm: string;
-  auroraChance: string;
-  solarFlareStatus: string;
-  flareClass: string;
+// NOAA Space Weather Prediction Center — small, CORS-enabled summary feeds
+const SWPC = 'https://services.swpc.noaa.gov';
+const WIND_SPEED_URL = `${SWPC}/products/summary/solar-wind-speed.json`;
+const MAG_FIELD_URL = `${SWPC}/products/summary/solar-wind-mag-field.json`;
+const FLARE_URL = `${SWPC}/json/goes/primary/xray-flares-latest.json`;
+const KP_URL = `${SWPC}/products/noaa-planetary-k-index.json`;
+
+const REFRESH_MS = 5 * 60_000;
+
+type WindSpeed = { proton_speed: number; time_tag: string }[];
+type MagField = { bt: number; bz_gsm: number; time_tag: string }[];
+type Flares = { current_class?: string; max_class?: string; max_time?: string }[];
+type KpSeries = { time_tag: string; Kp: number }[];
+
+const clock = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+function windNote(speed: number): string {
+  if (speed >= 600) return 'Hızlı akış (koronal delik / CME)';
+  if (speed >= 400) return 'Normal plazma akışı';
+  return 'Yavaş, sakin akış';
 }
 
+function kpStatus(kp: number): string {
+  if (kp >= 5) return `G${Math.min(5, Math.floor(kp) - 4)} JEOMANYETİK FIRTINA`;
+  if (kp >= 4) return 'JEOMANYETİK AKTİF';
+  return 'JEOMANYETİK SAKİN';
+}
+
+function kpColor(kp: number | null): string {
+  if (kp === null) return 'border-line text-muted';
+  if (kp < 4) return 'border-lime/30 bg-lime/10 text-lime';
+  if (kp < 5) return 'border-solar/30 bg-solar/10 text-solar';
+  return 'border-rose/30 bg-rose/10 text-rose';
+}
+
+// Equatorward edge of the auroral oval (geomagnetic latitude) for a given Kp, NOAA rule of thumb
+const auroraLatitude = (kp: number) => Math.round(66.5 - 2.05 * kp);
+
 export function SpaceWeatherWidget() {
-  const [weather, setWeather] = useState<SpaceWeatherData>({
-    solarWindSpeed: 442,
-    solarWindDensity: 6.8,
-    kpIndex: 3.2,
-    geomagneticStorm: 'Sakin / Normal (G0)',
-    auroraChance: '%35 (Kuzey İskandinavya & Alaska)',
-    solarFlareStatus: 'M1.4 Orta Şiddet Patlama',
-    flareClass: 'M1.4'
-  });
+  const root = useRef<HTMLDivElement>(null);
+  const visible = useInView(root);
+  const wind = usePolledJson<WindSpeed>(WIND_SPEED_URL, REFRESH_MS, visible);
+  const mag = usePolledJson<MagField>(MAG_FIELD_URL, REFRESH_MS, visible);
+  const flares = usePolledJson<Flares>(FLARE_URL, REFRESH_MS, visible);
+  const kpSeries = usePolledJson<KpSeries>(KP_URL, REFRESH_MS, visible);
 
-  // Minor live fluctuations simulating real-time NOAA/DSCOVR satellite telemetry
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setWeather((prev) => ({
-        ...prev,
-        solarWindSpeed: Math.round(440 + Math.sin(Date.now() * 0.001) * 25),
-        solarWindDensity: Number((6.5 + Math.cos(Date.now() * 0.0015) * 0.8).toFixed(1)),
-        kpIndex: Number((3.0 + Math.sin(Date.now() * 0.0008) * 0.6).toFixed(1))
-      }));
-    }, 2500);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const getKpColor = (kp: number) => {
-    if (kp < 4) return 'border-lime/30 bg-lime/10 text-lime';
-    if (kp < 6) return 'border-solar/30 bg-solar/10 text-solar';
-    return 'border-rose/30 bg-rose/10 text-rose';
-  };
+  const speed = wind.data?.[0]?.proton_speed ?? null;
+  const bz = mag.data?.[0]?.bz_gsm ?? null;
+  const flare = flares.data?.[0] ?? null;
+  const kpEntry = kpSeries.data?.[kpSeries.data.length - 1] ?? null;
+  const kp = kpEntry ? Number(kpEntry.Kp) : null;
+  const offline = [wind, mag, flares, kpSeries].every((feed) => feed.error && !feed.data);
 
   return (
-    <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
+    <div ref={root} className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
       <Ticks />
 
       {/* Header */}
@@ -64,51 +72,63 @@ export function SpaceWeatherWidget() {
               Güneş & Uzay Hava Durumu
             </h3>
             <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
-              NOAA & SOHO UYDU TELEMETRİSİ
+              {offline ? 'NOAA SWPC · VERİ ALINAMADI' : 'NOAA SWPC · DSCOVR & GOES UYDU VERİSİ'}
             </span>
           </div>
         </div>
-        <span className={`px-2.5 py-1 text-[10px] font-mono border font-bold uppercase tracking-wider ${getKpColor(weather.kpIndex)}`}>
-          KP {weather.kpIndex} · {weather.kpIndex < 4 ? 'JEOMANYETİK SAKİN' : 'FIRTINA UYARISI'}
+        <span className={`px-2.5 py-1 text-[10px] font-mono border font-bold uppercase tracking-wider ${kpColor(kp)}`}>
+          {kp === null ? 'KP —' : `KP ${kp.toFixed(1)} · ${kpStatus(kp)}`}
         </span>
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-        <div className="bg-ink-2 p-3.5 border border-line">
+      <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+        <div className="bg-ink-2 p-4 border border-line">
           <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
             <Wind size={12} className="text-solar" /> GÜNEŞ RÜZGARI
           </div>
-          <div className="text-base font-bold text-paper">
-            {weather.solarWindSpeed} <span className="text-[10px] font-normal text-muted">km/s</span>
+          <div className="text-xl font-bold text-paper">
+            {speed ?? '—'} <span className="text-[10px] font-normal text-muted">km/s</span>
           </div>
-          <div className="text-[10px] text-muted mt-1">Hızlı Plazma Akışı</div>
+          <div className="text-[10px] text-muted mt-1">{speed === null ? '—' : windNote(speed)}</div>
         </div>
 
-        <div className="bg-ink-2 p-3.5 border border-line">
+        <div className="bg-ink-2 p-4 border border-line">
           <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <Zap size={12} className="text-solar" /> PROTON YOĞUNLUĞU
+            <Magnet size={12} className="text-solar" /> MANYETİK ALAN Bz
           </div>
-          <div className="text-base font-bold text-solar">
-            {weather.solarWindDensity} <span className="text-[10px] font-normal text-muted">p/cm³</span>
+          <div className="text-xl font-bold text-solar">
+            {bz ?? '—'} <span className="text-[10px] font-normal text-muted">nT</span>
           </div>
-          <div className="text-[10px] text-muted mt-1">Partikül Yoğunluğu</div>
+          <div className="text-[10px] text-muted mt-1">
+            {bz === null ? '—' : bz <= -5 ? 'Güneye dönük · fırtına tetikleyici' : 'Zayıf / kuzeye dönük · sakin'}
+          </div>
         </div>
 
-        <div className="bg-ink-2 p-3.5 border border-line">
+        <div className="bg-ink-2 p-4 border border-line">
           <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <AlertTriangle size={12} className="text-solar" /> FLARE AKTİVİTESİ
+            <AlertTriangle size={12} className="text-solar" /> X-IŞINI SEVİYESİ
           </div>
-          <div className="text-base font-bold text-paper">{weather.flareClass}</div>
-          <div className="text-[10px] text-muted mt-1">X-Ray Radyasyon Sınıfı</div>
+          <div className="text-xl font-bold text-paper">{flare?.current_class ?? '—'}</div>
+          <div className="text-[10px] text-muted mt-1 leading-snug">
+            {flare?.max_class && flare.max_time
+              ? `Son patlama ${flare.max_class} · ${clock.format(new Date(flare.max_time))}`
+              : 'GOES X-ışını akısı'}
+          </div>
         </div>
 
-        <div className="bg-ink-2 p-3.5 border border-line">
+        <div className="bg-ink-2 p-4 border border-line">
           <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
             <ShieldCheck size={12} className="text-lime" /> KUTUP IŞIĞI (AURORA)
           </div>
-          <div className="text-base font-bold text-lime">{weather.auroraChance.split(' ')[0]}</div>
-          <div className="text-[10px] text-muted mt-1 truncate">{weather.auroraChance.split(' ')[1]}</div>
+          <div className="text-xl font-bold text-lime">{kp === null ? '—' : `≥ ${auroraLatitude(kp)}° K`}</div>
+          <div className="text-[10px] text-muted mt-1 leading-snug">
+            {kp === null
+              ? '—'
+              : kp >= 8
+                ? 'Aşırı fırtına · kuzey ufkunda nadir şans'
+                : 'Geomanyetik enlem · Türkiye’den görünmez'}
+          </div>
         </div>
       </div>
     </div>

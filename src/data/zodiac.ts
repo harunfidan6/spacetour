@@ -629,10 +629,32 @@ export function calculateAscendant(sunSignIndex: number, birthHour: number): Zod
   return ZODIAC_SIGNS[ascIndex];
 }
 
+/**
+ * Local apparent solar hour (0-24): the clock time shifted by the birthplace's
+ * distance from its time-zone meridian (15° per hour).
+ */
+export function localSolarHour(hour: number, minute: number, longitude: number, utcOffset: number): number {
+  const solar = hour + minute / 60 + (longitude - utcOffset * 15) / 15;
+  return ((solar % 24) + 24) % 24;
+}
+
 export function calculateMoonSign(sunSignIndex: number, birthDay: number): ZodiacSign {
   const moonOffset = Math.floor((birthDay * 1.5) % 12);
   const moonIndex = (sunSignIndex + moonOffset) % 12;
   return ZODIAC_SIGNS[moonIndex];
+}
+
+/** Sign indices of Mercury, Venus and Mars — shared by the natal and synastry charts. */
+export function innerPlanetSignIndices(sunSignIndex: number, birthDay: number) {
+  const mod12 = (val: number) => ((val % 12) + 12) % 12;
+  return {
+    // Mercury is never more than 28° from Sun (within ±1 sign)
+    mercury: mod12(sunSignIndex + ((birthDay % 3) - 1)),
+    // Venus is never more than 47° from Sun (within ±2 signs)
+    venus: mod12(sunSignIndex + ((birthDay % 5) - 2)),
+    // Mars moves through signs every ~2 months
+    mars: mod12(sunSignIndex + (birthDay % 7) - 3),
+  };
 }
 
 /**
@@ -646,12 +668,7 @@ export function calculatePlanetaryPlacements(
 ): PlanetaryPlacement[] {
   const mod12 = (val: number) => ((val % 12) + 12) % 12;
 
-  // Mercury is never more than 28° from Sun (within ±1 sign)
-  const mercurySignIdx = mod12(sunSignIndex + ((birthDay % 3) - 1));
-  // Venus is never more than 47° from Sun (within ±2 signs)
-  const venusSignIdx = mod12(sunSignIndex + ((birthDay % 5) - 2));
-  // Mars moves through signs every ~2 months
-  const marsSignIdx = mod12(sunSignIndex + (birthDay % 7) - 3);
+  const { mercury: mercurySignIdx, venus: venusSignIdx, mars: marsSignIdx } = innerPlanetSignIndices(sunSignIndex, birthDay);
   // Jupiter stays ~1 year in a sign
   const jupiterSignIdx = mod12((birthYear - 1900) % 12);
   // Saturn stays ~2.5 years in a sign
@@ -771,4 +788,9 @@ export function calculateLifePathNumber(day: number, month: number, year: number
     title: info.title,
     description: info.desc
   };
+}
+
+/** Number of days in a 1-based month, leap years included. */
+export function daysInMonth(month: number, year: number): number {
+  return new Date(year, month, 0).getDate();
 }

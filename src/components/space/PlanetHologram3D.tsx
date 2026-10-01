@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -304,16 +305,19 @@ function HologramMesh({
 }
 
 export function PlanetHologram3D({ id }: PlanetHologramProps) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stageVisible = useInView(stageRef);
   const [isWireframe, setIsWireframe] = useState<boolean>(false);
   const [showAtmosphere, setShowAtmosphere] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   return (
-    <div className="relative ticks h-80 sm:h-[420px] w-full border border-line bg-ink overflow-hidden">
+    <div ref={stageRef} className="relative ticks h-80 sm:h-[420px] w-full border border-line bg-ink overflow-hidden">
       <Ticks />
 
       {/* 3D WebGL Canvas */}
       <Canvas
+        frameloop={stageVisible ? 'always' : 'never'}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.2, 5.8], fov: 45 }}
@@ -351,7 +355,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
 
       {/* Interactive Control Bar */}
       <div className="absolute top-4 right-4 flex items-center gap-1 bg-ink/90 border border-line p-1 text-xs font-mono">
-        <button
+        <button type="button" aria-label={isPaused ? 'Döndürmeyi başlat' : 'Döndürmeyi duraklat'}
           onClick={() => setIsPaused(!isPaused)}
           title={isPaused ? 'Döndürmeyi Başlat' : 'Döndürmeyi Duraklat'}
           className={`p-1.5 transition-colors cursor-pointer border ${
@@ -363,7 +367,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           {isPaused ? <Play size={13} /> : <Pause size={13} />}
         </button>
 
-        <button
+        <button type="button" aria-label="Tel kafes (wireframe) modu" aria-pressed={isWireframe}
           onClick={() => setIsWireframe(!isWireframe)}
           title="3D Tel Kafes (Wireframe) Modu"
           className={`p-1.5 transition-colors cursor-pointer border ${
@@ -375,7 +379,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           <Layers size={13} />
         </button>
 
-        <button
+        <button type="button" aria-label="Atmosfer efekti" aria-pressed={showAtmosphere}
           onClick={() => setShowAtmosphere(!showAtmosphere)}
           title="Atmosfer & Saçılma Efektini Aç/Kapat"
           className={`p-1.5 transition-colors cursor-pointer border ${

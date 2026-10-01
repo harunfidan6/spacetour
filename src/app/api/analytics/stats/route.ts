@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { computeAnalyticsStats } from '@/lib/analyticsStore';
+import { isAdminRequest } from '@/lib/adminAuth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    const adminKey = process.env.ADMIN_TELEMETRY_KEY || 'astro2026';
-    const headerKey = req.headers.get('x-admin-key');
-    const cookieKey = req.cookies.get('admin_telemetry_key')?.value;
-
-    if (headerKey !== adminKey && cookieKey !== adminKey) {
+    if (!isAdminRequest(req)) {
       return NextResponse.json(
         { error: 'Yetkisiz erişim. Telemetri verisi yalnızca site sahibine özeldir.' },
         { status: 401 }
@@ -27,6 +24,7 @@ export async function GET(req: NextRequest) {
       }
     });
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Bilinmeyen hata' }, { status: 500 });
+    console.error('[analytics/stats]', err);
+    return NextResponse.json({ error: 'İstatistikler hesaplanamadı.' }, { status: 500 });
   }
 }

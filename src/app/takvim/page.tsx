@@ -90,13 +90,18 @@ function NextEventCountdown({ activeTypes, onPick }: { activeTypes: Set<EventTyp
   );
 }
 
+// Deterministic month for the prerendered HTML; the real month is swapped in after mount
+const FALLBACK_MONTH = startOfMonth(parseISO(events[0].date));
+
 export default function CalendarPage() {
-  const [currentMonth, setCurrentMonth] = useState(() => new Date());
+  const [pickedMonth, setPickedMonth] = useState<Date | null>(null);
   const [direction, setDirection] = useState(1);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeFilters, setActiveFilters] = useState<Set<EventType>>(() => new Set(ALL_TYPES));
   const grid = useRef<HTMLDivElement>(null);
   const today = useNow(60_000);
+  const monthReady = pickedMonth !== null || today !== null;
+  const currentMonth = pickedMonth ?? today ?? FALLBACK_MONTH;
 
   const toggleFilter = (type: EventType) => {
     setActiveFilters((prev) => {
@@ -111,15 +116,14 @@ export default function CalendarPage() {
   const filteredEvents = useMemo(() => events.filter((e) => activeFilters.has(e.type)), [activeFilters]);
   const upcoming = useMemo(() => (today ? upcomingEvents(today, 50).filter((e) => activeFilters.has(e.type)).slice(0, 8) : []), [today, activeFilters]);
 
-  const monthStart = startOfMonth(currentMonth);
+  const monthKey = format(currentMonth, 'yyyy-MM');
+  const monthStart = useMemo(() => startOfMonth(parseISO(`${monthKey}-01`)), [monthKey]);
   const days = useMemo(() => {
     const out: Date[] = [];
     const end = endOfWeek(endOfMonth(monthStart), { weekStartsOn: 1 });
     for (let d = startOfWeek(monthStart, { weekStartsOn: 1 }); d <= end; d = addDays(d, 1)) out.push(d);
     return out;
   }, [monthStart]);
-
-  const monthKey = format(currentMonth, 'yyyy-MM');
 
   // Month change: cells cascade in from the travel direction
   useGsap(
@@ -139,13 +143,13 @@ export default function CalendarPage() {
 
   const go = (delta: number) => {
     setDirection(delta);
-    setCurrentMonth((m) => (delta > 0 ? addMonths(m, 1) : subMonths(m, 1)));
+    setPickedMonth(delta > 0 ? addMonths(currentMonth, 1) : subMonths(currentMonth, 1));
   };
 
   const pick = (iso: string) => {
     const d = parseISO(iso);
     setDirection(d > currentMonth ? 1 : -1);
-    setCurrentMonth(d);
+    setPickedMonth(d);
     setSelectedDate(d);
     document.getElementById('takvim-izgara')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -230,7 +234,7 @@ export default function CalendarPage() {
             {/* Calendar */}
             <div className="lg:col-span-8">
               <div className="mb-5 flex items-end justify-between gap-4">
-                <div className="overflow-hidden pt-[0.16em]">
+                <div className={`overflow-hidden pt-[0.16em] ${monthReady ? '' : 'invisible'}`}>
                   <h3 data-month-title key={monthKey} className="display text-[clamp(2.6rem,7vw,6.5rem)] text-paper">
                     {format(currentMonth, 'MMMM', { locale: tr })} <span className="serif-i text-solar">{format(currentMonth, 'yyyy')}</span>
                   </h3>
@@ -252,7 +256,7 @@ export default function CalendarPage() {
                   </div>
                 ))}
               </div>
-              <div ref={grid} className="grid grid-cols-7 gap-px border-x border-b border-line bg-line">
+              <div ref={grid} aria-busy={!monthReady} className={`grid grid-cols-7 gap-px border-x border-b border-line bg-line ${monthReady ? '' : 'invisible'}`}>
                 {days.map((day) => {
                   const dayEvents = filteredEvents.filter((e) => isSameDay(parseISO(e.date), day));
                   const inMonth = isSameMonth(day, monthStart);

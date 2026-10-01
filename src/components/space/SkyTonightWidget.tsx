@@ -1,62 +1,53 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, Telescope, ArrowRight, Clock } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { PlanetGlyph, VectorMoonPhase } from '@/components/ui/CosmicGlyphs';
+import { useNow } from '@/lib/useNow';
+import { computeSkyTonight, ISTANBUL_SITE, type PlanetTonight } from '@/lib/astrophysics/skyTonight';
 
-interface VisiblePlanet {
-  name: string;
-  planetKey: string;
-  constellation: string;
-  magnitude: string;
-  bestTime: string;
-  visibility: 'Mükemmel' | 'İyi' | 'Orta';
-  color: string;
+const timeFmt = new Intl.DateTimeFormat('tr-TR', {
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: ISTANBUL_SITE.timeZone,
+});
+const hm = (d: Date | null | undefined) => (d ? timeFmt.format(d) : '—');
+
+const RATING_STYLE: Record<PlanetTonight['rating'], string> = {
+  Mükemmel: 'border-lime/40 bg-lime/10 text-lime',
+  İyi: 'border-solar/40 bg-solar/10 text-solar',
+  Düşük: 'border-line text-paper/70',
+  Görünmüyor: 'border-line text-muted',
+};
+
+function brightnessNote(mag: number): string {
+  if (mag <= -3.5) return 'Göğün en parlağı';
+  if (mag <= -1.5) return 'Çok parlak';
+  if (mag <= 0.5) return 'Parlak';
+  if (mag <= 2) return 'Kolay seçilir';
+  return 'Soluk';
+}
+
+function planetTiming(p: PlanetTonight): string {
+  if (!p.window || !p.peak) {
+    return p.elongation < 20 ? "Güneş'e çok yakın; bu gece gözlenemez" : 'Karanlık saatlerde ufkun altında';
+  }
+  return `${hm(p.window.start)}–${hm(p.window.end)} · en iyi ${hm(p.peak.time)}, ${p.peak.direction} (${Math.round(p.peak.altitude)}°)`;
 }
 
 export function SkyTonightWidget() {
   const [selectedTab, setSelectedTab] = useState<'planets' | 'moon' | 'quality'>('planets');
 
-  const visiblePlanets: VisiblePlanet[] = [
-    {
-      name: 'Jüpiter',
-      planetKey: 'jupiter',
-      constellation: 'Boğa (Taurus)',
-      magnitude: '-2.4 m (Çok Parlak)',
-      bestTime: 'Gün batımından gece yarısına kadar',
-      visibility: 'Mükemmel',
-      color: '#e5c158'
-    },
-    {
-      name: 'Venüs',
-      planetKey: 'venus',
-      constellation: 'Balıklar (Pisces)',
-      magnitude: '-4.1 m (Akşam Yıldızı)',
-      bestTime: 'Batı ufkunda gün batımından hemen sonra',
-      visibility: 'Mükemmel',
-      color: '#fff0cc'
-    },
-    {
-      name: 'Mars',
-      planetKey: 'mars',
-      constellation: 'İkizler (Gemini)',
-      magnitude: '+0.5 m (Kızıl Parıltı)',
-      bestTime: 'Gece 22:00 sonrası doğu ufkunda',
-      visibility: 'İyi',
-      color: '#ff4422'
-    },
-    {
-      name: 'Satürn',
-      planetKey: 'saturn',
-      constellation: 'Kova (Aquarius)',
-      magnitude: '+0.8 m (Sarımsı Ton)',
-      bestTime: 'Akşamın ilk saatleri güneybatıda',
-      visibility: 'Orta',
-      color: '#e2c58a'
-    }
-  ];
+  // Computed after mount (the page is prerendered) and refreshed every 10 minutes
+  const now = useNow(600_000);
+  const tonight = useMemo(() => (now ? computeSkyTonight(now) : null), [now]);
+
+  const dark = tonight?.astroDark;
+  const darkHours = dark ? (dark.end.getTime() - dark.start.getTime()) / 3_600_000 : 0;
+  const moon = tonight?.moon;
+  const moonGlare = moon ? moon.illumination * moon.upDuringDarkFraction : 0;
 
   return (
     <div className="relative ticks border border-line bg-ink p-6 lg:p-8 space-y-6">
@@ -68,47 +59,39 @@ export function SkyTonightWidget() {
           <div className="flex items-center gap-2 mb-1.5">
             <Telescope className="h-4 w-4 text-solar" />
             <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-widest">
-              GÖKYÜZÜ GÖZLEM RADARI · CANLI TELEMETRİ
+              GÖKYÜZÜ GÖZLEM RADARI · {ISTANBUL_SITE.city.toLocaleUpperCase('tr-TR')} · ANLIK HESAP
             </span>
           </div>
           <h3 className="display display-tight text-2xl text-paper sm:text-3xl">Bu Gece Gökyüzü</h3>
           <p className="text-xs text-muted mt-1 leading-relaxed">
-            Bulunduğunuz konumdan bu akşam çıplak gözle ve amatör teleskopla izlenebilecek gökcisimleri.
+            {ISTANBUL_SITE.city}’dan bu gece çıplak gözle ve amatör teleskopla izlenebilecek gök cisimleri; konumlar
+            JPL yörünge elemanlarıyla tarayıcında hesaplanır.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1.5 border border-line bg-ink-2 p-1 font-mono text-xs">
-          <button
-            onClick={() => setSelectedTab('planets')}
-            className={`px-3 py-1.5 transition-colors cursor-pointer border uppercase tracking-wider ${
-              selectedTab === 'planets'
-                ? 'border-solar bg-solar text-ink font-bold'
-                : 'border-transparent text-muted hover:text-paper'
-            }`}
-          >
-            Gezegenler
-          </button>
-          <button
-            onClick={() => setSelectedTab('moon')}
-            className={`px-3 py-1.5 transition-colors cursor-pointer border uppercase tracking-wider ${
-              selectedTab === 'moon'
-                ? 'border-solar bg-solar text-ink font-bold'
-                : 'border-transparent text-muted hover:text-paper'
-            }`}
-          >
-            Ay Evresi
-          </button>
-          <button
-            onClick={() => setSelectedTab('quality')}
-            className={`px-3 py-1.5 transition-colors cursor-pointer border uppercase tracking-wider ${
-              selectedTab === 'quality'
-                ? 'border-solar bg-solar text-ink font-bold'
-                : 'border-transparent text-muted hover:text-paper'
-            }`}
-          >
-            Gözlem Kalitesi
-          </button>
+        <div role="group" aria-label="Gökyüzü görünümü" className="flex items-center gap-1.5 border border-line bg-ink-2 p-1 font-mono text-xs">
+          {(
+            [
+              ['planets', 'Gezegenler'],
+              ['moon', 'Ay Evresi'],
+              ['quality', 'Gözlem Kalitesi'],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={selectedTab === id}
+              onClick={() => setSelectedTab(id)}
+              className={`px-3 py-1.5 transition-colors cursor-pointer border uppercase tracking-wider ${
+                selectedTab === id
+                  ? 'border-solar bg-solar text-ink font-bold'
+                  : 'border-transparent text-muted hover:text-paper'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -116,25 +99,19 @@ export function SkyTonightWidget() {
       {selectedTab === 'planets' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {visiblePlanets.map((planet) => (
+            {(tonight?.planets ?? []).map((planet) => (
               <div
-                key={planet.name}
+                key={planet.key}
                 className="group border border-line bg-ink-2 p-4 hover:border-solar/50 transition-colors"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-8 h-8 rounded-full border border-line/60 bg-ink flex items-center justify-center p-1.5 shadow-inner">
-                    <PlanetGlyph planet={planet.planetKey} size={18} className="text-solar group-hover:text-paper transition-colors" />
+                    <PlanetGlyph planet={planet.key} size={18} className="text-solar group-hover:text-paper transition-colors" />
                   </div>
                   <span
-                    className={`text-[9px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${
-                      planet.visibility === 'Mükemmel'
-                        ? 'border-lime/40 bg-lime/10 text-lime'
-                        : planet.visibility === 'İyi'
-                        ? 'border-solar/40 bg-solar/10 text-solar'
-                        : 'border-line text-muted'
-                    }`}
+                    className={`text-[9px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${RATING_STYLE[planet.rating]}`}
                   >
-                    {planet.visibility}
+                    {planet.rating}
                   </span>
                 </div>
 
@@ -144,17 +121,24 @@ export function SkyTonightWidget() {
                 <div className="text-[11px] font-mono text-muted mt-0.5">{planet.constellation}</div>
 
                 <div className="mt-3 pt-2.5 border-t border-line text-[11px] font-mono space-y-1">
-                  <div className="text-muted flex justify-between">
+                  <div className="text-muted flex justify-between gap-2">
                     <span>Parlaklık:</span>
-                    <span className="text-paper font-bold">{planet.magnitude}</span>
+                    <span className="text-paper font-bold text-right">
+                      {planet.magnitude >= 0 ? '+' : '−'}
+                      {Math.abs(planet.magnitude).toFixed(1)} kadir · {brightnessNote(planet.magnitude)}
+                    </span>
                   </div>
-                  <div className="text-muted leading-snug pt-1 text-[10px] flex items-center gap-1.5">
-                    <Clock size={11} className="text-solar shrink-0" />
-                    <span>{planet.bestTime}</span>
+                  <div className="text-muted leading-snug pt-1 text-[10px] flex items-start gap-1.5">
+                    <Clock size={11} className="text-solar shrink-0 mt-px" />
+                    <span>{planetTiming(planet)}</span>
                   </div>
                 </div>
               </div>
             ))}
+            {!tonight &&
+              Array.from({ length: 4 }, (_, i) => (
+                <div key={i} aria-hidden className="h-[168px] border border-line bg-ink-2 animate-pulse" />
+              ))}
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
@@ -179,31 +163,47 @@ export function SkyTonightWidget() {
           <div className="md:col-span-4 flex flex-col items-center justify-center p-6 border border-line bg-ink-2 text-center">
             <div className="relative mb-3">
               <div className="w-20 h-20 border border-line bg-ink rounded-full flex items-center justify-center p-3 shadow-inner">
-                <VectorMoonPhase illumination={78} size={54} className="text-paper" />
+                <VectorMoonPhase
+                  illumination={moon ? Math.round(moon.illumination * 100) : 0}
+                  waning={moon ? !moon.waxing : false}
+                  size={54}
+                  className="text-paper"
+                />
               </div>
             </div>
-            <div className="font-mono text-base font-bold text-paper">Büyüyen Şişkin Ay</div>
-            <div className="text-xs font-mono text-solar font-bold mt-1">%78 Aydınlık</div>
+            <div className="font-mono text-base font-bold text-paper">{moon?.phaseName ?? 'Hesaplanıyor'}</div>
+            <div className="text-xs font-mono text-solar font-bold mt-1">
+              {moon ? `%${Math.round(moon.illumination * 100)} Aydınlık · ${moon.ageDays.toFixed(1)} günlük` : '—'}
+            </div>
           </div>
 
           <div className="md:col-span-8 space-y-3.5 font-mono text-xs">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               <div className="p-3 bg-ink-2 border border-line">
                 <span className="text-[10px] text-muted block uppercase">Doğuş Saati</span>
-                <span className="font-bold text-paper text-sm">16:42</span>
+                <span className="font-bold text-paper text-sm">{hm(moon?.rise)}</span>
               </div>
               <div className="p-3 bg-ink-2 border border-line">
                 <span className="text-[10px] text-muted block uppercase">Batış Saati</span>
-                <span className="font-bold text-paper text-sm">05:18</span>
+                <span className="font-bold text-paper text-sm">{hm(moon?.set)}</span>
               </div>
               <div className="p-3 bg-ink-2 border border-line">
                 <span className="text-[10px] text-muted block uppercase">Dünya’ya Mesafe</span>
-                <span className="font-bold text-paper text-sm">384,400 km</span>
+                <span className="font-bold text-paper text-sm">
+                  {moon ? `${Math.round(moon.distanceKm).toLocaleString('tr-TR')} km` : '—'}
+                </span>
               </div>
             </div>
 
             <div className="p-4 bg-ink-2 border border-line leading-relaxed text-muted text-xs">
-              <strong className="text-paper">Gözlem İpucu:</strong> Ay ışığı bu evrede derin uzay bulutsularını soluklaştırabilir ancak Ay yüzeyindeki kraterleri (Tycho, Copernicus) dürbün veya küçük bir teleskopla incelemek için terminatör (aydınlık-karanlık sınırı) çizgisi kusursuz ayrıntı sunar.
+              <strong className="text-paper">Gözlem İpucu:</strong>{' '}
+              {!moon
+                ? '—'
+                : moon.illumination > 0.85
+                  ? 'Parlak Ay ışığı bulutsu ve galaksileri soluklaştırır; bu gece gezegenlere ve çift yıldızlara odaklan.'
+                  : moon.illumination < 0.15
+                    ? 'Ay neredeyse karanlık: derin uzay bulutsuları ve Samanyolu için ayın en iyi gecelerinden biri.'
+                    : 'Terminatör (aydınlık-karanlık sınırı) boyunca Tycho ve Copernicus gibi kraterler dürbünle bile keskin gölgelerle seçilir.'}
             </div>
           </div>
         </div>
@@ -213,41 +213,45 @@ export function SkyTonightWidget() {
       {selectedTab === 'quality' && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
           <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted uppercase">Astronomik Karanlık</span>
+              <span className="text-xs font-bold text-lime">{dark ? `${hm(dark.start)}–${hm(dark.end)}` : '—'}</span>
+            </div>
+            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
+              <div className="bg-lime h-full" style={{ width: `${Math.min(100, (darkHours / 12) * 100)}%` }} />
+            </div>
+            <p className="text-[11px] text-muted leading-relaxed">
+              {dark
+                ? `Güneş ufkun 18° altında: ${darkHours.toFixed(1)} saatlik tam karanlık pencere. Gün batımı ${hm(tonight?.sunset)}, gün doğumu ${hm(tonight?.sunrise)}.`
+                : 'Bu gece Güneş 18° altına inmiyor; gökyüzü tam kararmayacak.'}
+            </p>
+          </div>
+
+          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted uppercase">Ay Işığı Etkisi</span>
+              <span className="text-xs font-bold text-solar">{moon ? `%${Math.round(moonGlare * 100)}` : '—'}</span>
+            </div>
+            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
+              <div className="bg-solar h-full" style={{ width: `${Math.round(moonGlare * 100)}%` }} />
+            </div>
+            <p className="text-[11px] text-muted leading-relaxed">
+              {moon
+                ? `Ay %${Math.round(moon.illumination * 100)} aydınlık; karanlık saatlerde ufkun üstünde kalma oranı %${Math.round(moon.upDuringDarkFraction * 100)}.`
+                : '—'}
+            </p>
+          </div>
+
+          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-muted uppercase">Işık Kirliliği</span>
-              <span className="text-xs font-bold text-lime">Bortle Sınıfı 4</span>
+              <span className="text-xs font-bold text-rose">Bortle 8–9</span>
             </div>
             <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
-              <div className="bg-lime h-full w-2/3" />
+              <div className="bg-rose h-full w-[88%]" />
             </div>
             <p className="text-[11px] text-muted leading-relaxed">
-              Kırsal/banliyö geçiş göğü. Samanyolu çıplak gözle ufkun üstünde seçilebilir.
-            </p>
-          </div>
-
-          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted uppercase">Atmosferik Durgunluk</span>
-              <span className="text-xs font-bold text-solar">Seeing: 4/5</span>
-            </div>
-            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
-              <div className="bg-solar h-full w-4/5" />
-            </div>
-            <p className="text-[11px] text-muted leading-relaxed">
-              Hava katmanları stabil; yüksek büyütmede gezegen detayları titremesiz izlenebilir.
-            </p>
-          </div>
-
-          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted uppercase">Bulut Örtüsü</span>
-              <span className="text-xs font-bold text-lime">%10 (Açık)</span>
-            </div>
-            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
-              <div className="bg-lime h-full w-[10%]" />
-            </div>
-            <p className="text-[11px] text-muted leading-relaxed">
-              Gözlem pencereleri gece boyu kristal netliğinde açık kalacak.
+              {ISTANBUL_SITE.city} merkezinden gezegenler ve Ay rahat izlenir; Samanyolu için şehirden en az 60–80 km uzaklaş.
             </p>
           </div>
         </div>

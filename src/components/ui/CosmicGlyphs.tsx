@@ -14,6 +14,16 @@ export interface GlyphProps extends React.SVGProps<SVGSVGElement> {
   strokeWidth?: number;
 }
 
+/**
+ * Lookup key for glyph switches: Turkish-aware lowercase, diacritics folded to ASCII.
+ * 'Merkür (Hermes)' → 'merkur', 'İkizler' → 'ikizler', 'büyük-ayı' → 'buyuk-ayi'.
+ */
+function glyphKey(value: string, firstWordOnly = false): string {
+  let key = value.trim().toLocaleLowerCase('tr-TR');
+  if (firstWordOnly) key = key.split(/[\s(]/)[0];
+  return key.replace(/ı/g, 'i').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 // -----------------------------------------------------------------------------
 // 1. ZODIAC GLYPHS (12 Sacred Signs)
 // -----------------------------------------------------------------------------
@@ -419,36 +429,39 @@ export function OppositionGlyph({ size = 20, className = '', strokeWidth = 1.5, 
 
 export function VectorMoonPhase({
   phase,
-  illumination = 50,
+  illumination,
+  waning,
   size = 28,
   className = ''
 }: {
   phase?: 'new' | 'waxing-crescent' | 'first-quarter' | 'waxing-gibbous' | 'full' | 'waning-gibbous' | 'last-quarter' | 'waning-crescent';
+  /** Illuminated fraction in percent; takes precedence over the preset for `phase`. */
   illumination?: number;
+  /** Lit limb on the left (northern-hemisphere view); inferred from `phase` when omitted. */
+  waning?: boolean;
   size?: number;
   className?: string;
 }) {
-  // Determine normalized phase angle (0 = New Moon, 0.5 = Full Moon, 1.0 = New Moon)
-  let p = illumination / 100;
-  if (phase === 'new') p = 0.0;
-  else if (phase === 'waxing-crescent') p = 0.2;
-  else if (phase === 'first-quarter') p = 0.5;
-  else if (phase === 'waxing-gibbous') p = 0.8;
-  else if (phase === 'full') p = 1.0;
-  else if (phase === 'waning-gibbous') p = 0.8;
-  else if (phase === 'last-quarter') p = 0.5;
-  else if (phase === 'waning-crescent') p = 0.2;
-
-  const isWaning = phase?.startsWith('waning') || phase === 'last-quarter';
+  const PRESET = {
+    new: 0,
+    'waxing-crescent': 0.2,
+    'first-quarter': 0.5,
+    'waxing-gibbous': 0.8,
+    full: 1,
+    'waning-gibbous': 0.8,
+    'last-quarter': 0.5,
+    'waning-crescent': 0.2
+  } as const;
+  const p = Math.min(1, Math.max(0, illumination !== undefined ? illumination / 100 : phase ? PRESET[phase] : 0.5));
+  const isWaning = waning ?? (phase?.startsWith('waning') || phase === 'last-quarter');
   const r = 11;
   const cx = 14;
   const cy = 14;
 
-  // Calculate terminator control offset
-  // At p = 0 (new), entire disc dark
-  // At p = 0.5 (quarter), terminator is straight line
-  // At p = 1.0 (full), entire disc illuminated
-  const tOffset = (p - 0.5) * 2 * r; // ranges from -r to +r
+  // The terminator is a half-ellipse whose midpoint sits at x = cx ± (1 − 2p)·r.
+  // A quadratic Bézier passes through its midpoint halfway to the control point,
+  // so the control point is pushed twice as far: (1 − 2p)·2r from the centre.
+  const bulge = (1 - 2 * p) * 2 * r;
 
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} className={`select-none ${className}`}>
@@ -465,8 +478,8 @@ export function VectorMoonPhase({
             p >= 0.97
               ? `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx} ${cy + r} A ${r} ${r} 0 1 1 ${cx} ${cy - r}`
               : isWaning
-              ? `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} Q ${cx - tOffset} ${cy} ${cx} ${cy - r}`
-              : `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} Q ${cx + tOffset} ${cy} ${cx} ${cy - r}`
+              ? `M ${cx} ${cy - r} A ${r} ${r} 0 0 0 ${cx} ${cy + r} Q ${cx - bulge} ${cy} ${cx} ${cy - r}`
+              : `M ${cx} ${cy - r} A ${r} ${r} 0 0 1 ${cx} ${cy + r} Q ${cx + bulge} ${cy} ${cx} ${cy - r}`
           }
           fill="currentColor"
           opacity={0.92}
@@ -581,7 +594,7 @@ export function ZodiacGlyph({
   strokeWidth = 1.5,
   ...props
 }: { sign: string } & GlyphProps) {
-  const s = sign.toLowerCase();
+  const s = glyphKey(sign);
   switch (s) {
     case 'koc':
     case 'aries':
@@ -631,7 +644,7 @@ export function PlanetGlyph({
   strokeWidth = 1.5,
   ...props
 }: { planet: string } & GlyphProps) {
-  const p = planet.toLowerCase();
+  const p = glyphKey(planet, true);
   switch (p) {
     case 'gunes':
     case 'sun':
@@ -645,33 +658,26 @@ export function PlanetGlyph({
     case 'mercury':
       return <MercuryGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'venus':
-    case 'venüs':
       return <VenusGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'mars':
       return <MarsGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'jupiter':
-    case 'jüpiter':
       return <JupiterGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'saturn':
-    case 'satürn':
       return <SaturnGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'uranus':
-    case 'uranüs':
       return <UranusGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'neptun':
-    case 'neptün':
     case 'neptune':
       return <NeptuneGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'pluto':
-    case 'plüton':
+    case 'pluton':
       return <PlutoGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'dunya':
-    case 'dünya':
     case 'earth':
       return <EarthGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'asc':
     case 'yukselen':
-    case 'yükselen':
       return <AscendantGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
     case 'mc':
     case 'tepe':
@@ -834,7 +840,7 @@ export function ConstellationGlyph({
   strokeWidth = 1.3,
   ...props
 }: { id: string } & GlyphProps) {
-  const norm = id.toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const norm = glyphKey(id).replace(/[^a-z0-9-]/g, '');
   switch (norm) {
     case 'buyuk-ayi':
     case 'ursa-major':
@@ -933,7 +939,7 @@ export function AstronomicalEventGlyph({
   strokeWidth = 1.4,
   ...props
 }: { type: string } & GlyphProps) {
-  const t = type.toLowerCase();
+  const t = glyphKey(type);
   switch (t) {
     case 'ay-tutulmasi':
       return <LunarEclipseGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;

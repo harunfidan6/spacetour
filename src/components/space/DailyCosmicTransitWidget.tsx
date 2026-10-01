@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Clock,
   Zap,
@@ -11,6 +11,8 @@ import {
   Briefcase
 } from 'lucide-react';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
+import { useNow } from '@/lib/useNow';
+import { getMoonPhase, isRetrograde, type MoonPhaseKey } from '@/lib/astrophysics/skyDomeEphemeris';
 import { Ticks } from '@/components/motion/primitives';
 import {
   VectorMoonPhase,
@@ -18,71 +20,55 @@ import {
   PlanetGlyph
 } from '@/components/ui/CosmicGlyphs';
 
+const DAY_NAMES = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+// Traditional Chaldean Planetary Ruler of Day
+const PLANETARY_RULERS_OF_DAY: Record<number, { planet: string; planetId: string; focus: string; color: string }> = {
+  0: { planet: 'Güneş (Sol)', planetId: 'sun', focus: 'Yaratıcılık, Liderlik & Özgüven', color: 'text-gold' },
+  1: { planet: 'Ay (Luna)', planetId: 'moon', focus: 'Sezgiler, Ev & Duygusal Denge', color: 'text-violet' },
+  2: { planet: 'Mars (Ares)', planetId: 'mars', focus: 'Eylem, Cesaret, Spor & Girişimcilik', color: 'text-rose-signal' },
+  3: { planet: 'Merkür (Hermes)', planetId: 'mercury', focus: 'İletişim, Sözleşmeler, Zihin & Ticaret', color: 'text-primary' },
+  4: { planet: 'Jüpiter (Zeus)', planetId: 'jupiter', focus: 'Bolluk, Felsefe, Şans & Genişleme', color: 'text-lime' },
+  5: { planet: 'Venüs (Afrodit)', planetId: 'venus', focus: 'Aşk, Sanat, Uyum, Sosyalleşme & Estetik', color: 'text-pink-400' },
+  6: { planet: 'Satürn (Kronos)', planetId: 'saturn', focus: 'Disiplin, Sorumluluk, Sabır & Planlama', color: 'text-indigo-400' }
+};
+
+const MOON_PHASE_THEMES: Record<MoonPhaseKey, string> = {
+  new: 'Yeni niyetler ve başlangıçlar ekme vakti.',
+  'waxing-crescent': 'Fikirlerin filizlenmesi, motivasyon artışı.',
+  'first-quarter': 'Kararlılık, engelleri aşma ve harekete geçiş.',
+  'waxing-gibbous': 'Olgunlaşma, detayları tamamlama ve odak.',
+  full: 'Aydınlanma, hasat, duygusal zirve ve netlik.',
+  'waning-gibbous': 'Bilgeliği paylaşma, şükran duyma.',
+  'last-quarter': 'Bırakma, affetme, yüklerden arınma.',
+  'waning-crescent': 'İçsel dinlenme, arınma ve meditasyon.'
+};
+
 export function DailyCosmicTransitWidget() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
 
   const selectedSign = ZODIAC_SIGNS.find((s) => s.id === selectedSignId) || ZODIAC_SIGNS[0];
 
-  // Current real-world date simulation
-  const today = new Date();
-  const dateFormatted = today.toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  // Real sky state; only known after mount so the static HTML never carries a stale date
+  const now = useNow(60_000);
+  const sky = useMemo(() => {
+    if (!now) return null;
+    return {
+      dateFormatted: now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+      dayName: DAY_NAMES[now.getDay()],
+      dayRuler: PLANETARY_RULERS_OF_DAY[now.getDay()],
+      moon: getMoonPhase(now),
+      mercuryRetro: isRetrograde('mercury', now)
+    };
+  }, [now]);
 
-  const dayOfWeekNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-  const dayName = dayOfWeekNames[today.getDay()];
-
-  // Traditional Chaldean Planetary Ruler of Day
-  const planetaryRulersOfDay: Record<number, { planet: string; planetId: string; focus: string; color: string }> = {
-    0: { planet: 'Güneş (Sol)', planetId: 'sun', focus: 'Yaratıcılık, Liderlik & Özgüven', color: 'text-gold' },
-    1: { planet: 'Ay (Luna)', planetId: 'moon', focus: 'Sezgiler, Ev & Duygusal Denge', color: 'text-violet' },
-    2: { planet: 'Mars (Ares)', planetId: 'mars', focus: 'Eylem, Cesaret, Spor & Girişimcilik', color: 'text-rose-signal' },
-    3: { planet: 'Merkür (Hermes)', planetId: 'mercury', focus: 'İletişim, Sözleşmeler, Zihin & Ticaret', color: 'text-primary' },
-    4: { planet: 'Jüpiter (Zeus)', planetId: 'jupiter', focus: 'Bolluk, Felsefe, Şans & Genişleme', color: 'text-lime' },
-    5: { planet: 'Venüs (Afrodit)', planetId: 'venus', focus: 'Aşk, Sanat, Uyum, Sosyalleşme & Estetik', color: 'text-pink-400' },
-    6: { planet: 'Satürn (Kronos)', planetId: 'saturn', focus: 'Disiplin, Sorumluluk, Sabır & Planlama', color: 'text-indigo-400' }
-  };
-
-  const dayRuler = planetaryRulersOfDay[today.getDay()];
-
-  // Accurate Lunar Cycle calculation
-  const knownNewMoon = new Date('2026-01-18T16:53:00Z').getTime();
-  const diffDays = (today.getTime() - knownNewMoon) / (1000 * 60 * 60 * 24);
-  const lunarAge = ((diffDays % 29.530588) + 29.530588) % 29.530588;
-
-  let moonPhaseName = 'Yeni Ay';
-  let moonPhaseDesc = 'Yeni niyetler ve başlangıçlar tohumlama dönemi.';
-  const illuminationPct = Math.round((1 - Math.cos((lunarAge / 29.530588) * 2 * Math.PI)) * 50);
-
-  if (lunarAge < 3.7) {
-    moonPhaseName = 'Yeni Ay';
-    moonPhaseDesc = 'Yeni niyetler ve başlangıçlar ekme vakti.';
-  } else if (lunarAge < 7.4) {
-    moonPhaseName = 'Büyüyen Hilal';
-    moonPhaseDesc = 'Fikirlerin filizlenmesi, motivasyon artışı.';
-  } else if (lunarAge < 11.1) {
-    moonPhaseName = 'İlk Dördün';
-    moonPhaseDesc = 'Kararlılık, engelleri aşma ve harekete geçiş.';
-  } else if (lunarAge < 14.8) {
-    moonPhaseName = 'Şişkin Ay';
-    moonPhaseDesc = 'Olgunlaşma, detayları tamamlama ve odak.';
-  } else if (lunarAge < 18.5) {
-    moonPhaseName = 'Dolunay';
-    moonPhaseDesc = 'Aydınlanma, hasat, duygusal zirve ve netlik.';
-  } else if (lunarAge < 22.2) {
-    moonPhaseName = 'Küçülen Şişkin Ay';
-    moonPhaseDesc = 'Bilgeliği paylaşma, şükran duyma.';
-  } else if (lunarAge < 25.8) {
-    moonPhaseName = 'Son Dördün';
-    moonPhaseDesc = 'Bırakma, affetme, yüklerden arınma.';
-  } else {
-    moonPhaseName = 'Küçülen Hilal (Balsamik)';
-    moonPhaseDesc = 'İçsel dinlenme, arınma ve meditasyon.';
-  }
-
-  const isMercuryRetro = false; // direct in current window
+  const dateFormatted = sky?.dateFormatted ?? '—';
+  const dayName = sky?.dayName ?? '';
+  const dayRuler = sky?.dayRuler ?? PLANETARY_RULERS_OF_DAY[0];
+  const moonPhaseName = sky?.moon.name ?? 'Ay fazı hesaplanıyor';
+  const moonPhaseDesc = sky ? MOON_PHASE_THEMES[sky.moon.key] : '';
+  const illuminationPct = sky ? Math.round(sky.moon.illumination * 100) : 0;
+  const isMercuryRetro = sky?.mercuryRetro ?? false;
 
   return (
     <div id="gunluk-transitler" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -99,7 +85,7 @@ export function DailyCosmicTransitWidget() {
             Günün Kozmik Nabzı <span className="serif-i text-primary">& Burç Yorumları</span>
           </h2>
           <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            {dateFormatted}, {dayName} • Gökyüzündeki güncel Ay fazı, gezegen yöneticisi ve 12 burç için günlük arketip rehberi.
+            {sky ? `${dateFormatted}, ${dayName} • ` : ''}Gökyüzündeki güncel Ay fazı, gezegen yöneticisi ve 12 burç için günlük arketip rehberi.
           </p>
         </div>
 
@@ -117,10 +103,10 @@ export function DailyCosmicTransitWidget() {
             <span className="label text-violet">
               GÜNCEL AY FAZI
             </span>
-            <VectorMoonPhase illumination={illuminationPct} size={30} className="text-paper" />
+            <VectorMoonPhase illumination={illuminationPct} waning={sky ? !sky.moon.waxing : false} size={30} className="text-paper" />
           </div>
           <div className="display display-tight text-lg font-bold text-paper">
-            {moonPhaseName} (%{illuminationPct} Aydınlık)
+            {moonPhaseName}{sky && ` (%${illuminationPct} Aydınlık)`}
           </div>
           <p className="text-xs text-paper/75 leading-relaxed">
             {moonPhaseDesc}
@@ -152,11 +138,13 @@ export function DailyCosmicTransitWidget() {
             <PlanetGlyph planet="mercury" size={20} className="text-primary" />
           </div>
           <div className="display display-tight text-lg font-bold text-paper flex items-center gap-2">
-            <ShieldCheck className="text-lime" size={18} />
-            <span>{isMercuryRetro ? 'Retrograd (Geri Hareket)' : 'Düz Harekette (Direct)'}</span>
+            {isMercuryRetro ? <Hourglass className="text-solar" size={18} /> : <ShieldCheck className="text-lime" size={18} />}
+            <span>{!sky ? 'Hesaplanıyor' : isMercuryRetro ? 'Retrograd (Geri Hareket)' : 'Düz Harekette'}</span>
           </div>
           <p className="text-xs text-paper/75 leading-relaxed">
-            Zihinsel netlik, yeni kontratlar, teknolojik hamleler ve açık iletişim için elverişli akış.
+            {isMercuryRetro
+              ? 'Gökyüzünde geri gidiyor gibi görünüyor: sözleşmeleri, yazışmaları ve teknik planları bir kez daha gözden geçir.'
+              : 'Zihinsel netlik, yeni kontratlar, teknolojik hamleler ve açık iletişim için elverişli akış.'}
           </p>
         </div>
       </div>

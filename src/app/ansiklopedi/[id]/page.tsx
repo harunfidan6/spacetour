@@ -17,7 +17,8 @@ export function generateStaticParams() {
 export async function generateMetadata(props: PageProps<'/ansiklopedi/[id]'>) {
   const { id } = await props.params;
   const planet = planets.find((p) => p.id === id);
-  return { title: planet ? `${planet.name} — SpaceTour TR Ansiklopedi` : 'Kayıt bulunamadı — SpaceTour TR' };
+  if (!planet) return { title: 'Kayıt bulunamadı' };
+  return { title: `${planet.name} · Ansiklopedi`, description: planet.description };
 }
 
 const TYPE_LABEL: Record<string, string> = {

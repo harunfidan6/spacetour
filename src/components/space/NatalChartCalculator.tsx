@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useId } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
@@ -18,7 +18,9 @@ import {
   calculateAscendant,
   calculateMoonSign,
   calculatePlanetaryPlacements,
-  calculateLifePathNumber
+  calculateLifePathNumber,
+  daysInMonth,
+  localSolarHour
 } from '@/data/zodiac';
 import {
   ZodiacGlyph,
@@ -27,11 +29,11 @@ import {
   EarthElementGlyph,
   AirElementGlyph,
   WaterElementGlyph,
-  AscendantGlyph,
-  MidheavenGlyph
+  AscendantGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { POPULAR_LOCATIONS } from '@/utils/astronomy';
 import { Ticks } from '@/components/motion/primitives';
+import { NumericInput } from '@/components/ui/NumericInput';
 
 interface AspectInfo {
   p1: string;
@@ -49,6 +51,22 @@ interface AspectInfo {
   interpretation: string;
 }
 
+// SVG Chart Geometry Constants
+const WHEEL_SIZE = 420;
+const CENTER = WHEEL_SIZE / 2;
+const R_OUTER = 195;
+const R_ZODIAC = 165;
+const R_HOUSES = 135;
+const R_PLANETS = 110;
+const R_INNER = 75;
+
+// Standard UTC offsets for the selectable birth cities (Turkey: UTC+3)
+const CITY_UTC_OFFSET: Record<string, number> = {
+  'Londra (Greenwich)': 0,
+  'New York': -5,
+  Tokyo: 9,
+};
+
 export function NatalChartCalculator() {
   const [day, setDay] = useState(15);
   const [month, setMonth] = useState(4); // April
@@ -56,6 +74,22 @@ export function NatalChartCalculator() {
   const [hour, setHour] = useState(14);
   const [minute, setMinute] = useState(30);
   const [city, setCity] = useState(POPULAR_LOCATIONS[0].city);
+  const fid = useId();
+  const maxDay = daysInMonth(month, year);
+
+  const changeMonth = (next: number) => {
+    setMonth(next);
+    setDay((d) => Math.min(d, daysInMonth(next, year)));
+  };
+  const changeYear = (next: number) => {
+    setYear(next);
+    setDay((d) => Math.min(d, daysInMonth(month, next)));
+  };
+
+  // Local apparent solar hour: clock time corrected by the city's offset from its zone meridian
+  const location = POPULAR_LOCATIONS.find((l) => l.city === city) ?? POPULAR_LOCATIONS[0];
+  const zoneOffset = CITY_UTC_OFFSET[city] ?? 3;
+  const solarHourNorm = localSolarHour(hour, minute, location.longitude, zoneOffset);
 
   // Active view tab: 'trinity' | 'planets' | 'houses'
   const [activeTab, setActiveTab] = useState<'trinity' | 'planets' | 'houses'>('trinity');
@@ -63,17 +97,20 @@ export function NatalChartCalculator() {
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [hoveredAspect, setHoveredAspect] = useState<AspectInfo | null>(null);
 
-  // Compute Core Signs
-  const sunSign = getSunSign(month, day);
-  const sunSignIndex = ZODIAC_SIGNS.findIndex((s) => s.id === sunSign.id);
-  const risingSign = calculateAscendant(sunSignIndex, hour);
-  const risingSignIndex = ZODIAC_SIGNS.findIndex((s) => s.id === risingSign.id);
-  const moonSign = calculateMoonSign(sunSignIndex, day);
-
-  // Compute Planetary Placements & Numerology
-  const planetaryPlacements = useMemo(() => {
-    return calculatePlanetaryPlacements(sunSignIndex, risingSignIndex, day, year);
-  }, [sunSignIndex, risingSignIndex, day, year]);
+  // Compute Core Signs & Planetary Placements
+  const { sunSign, risingSign, risingSignIndex, moonSign, planetaryPlacements } = useMemo(() => {
+    const sun = getSunSign(month, day);
+    const sunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === sun.id);
+    const rising = calculateAscendant(sunIdx, solarHourNorm);
+    const risingIdx = ZODIAC_SIGNS.findIndex((s) => s.id === rising.id);
+    return {
+      sunSign: sun,
+      risingSign: rising,
+      risingSignIndex: risingIdx,
+      moonSign: calculateMoonSign(sunIdx, day),
+      planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year),
+    };
+  }, [month, day, solarHourNorm, year]);
 
   const lifePath = useMemo(() => {
     return calculateLifePathNumber(day, month, year);
@@ -86,15 +123,6 @@ export function NatalChartCalculator() {
     Hava: <AirElementGlyph size={14} className="text-primary" />,
     Su: <WaterElementGlyph size={14} className="text-blue-400" />
   };
-
-  // SVG Chart Geometry Constants
-  const WHEEL_SIZE = 420;
-  const CENTER = WHEEL_SIZE / 2;
-  const R_OUTER = 195;
-  const R_ZODIAC = 165;
-  const R_HOUSES = 135;
-  const R_PLANETS = 110;
-  const R_INNER = 75;
 
   // Compute exact celestial angles for planets (0° - 360°)
   const planetPositions = useMemo(() => {
@@ -231,23 +259,24 @@ export function NatalChartCalculator() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line font-mono text-xs">
         {/* Day */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">GÜN</label>
-          <input
-            type="number"
+          <label htmlFor={`${fid}-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+          <NumericInput
+            id={`${fid}-day`}
             min={1}
-            max={31}
+            max={maxDay}
             value={day}
-            onChange={(e) => setDay(parseInt(e.target.value) || 1)}
+            onValueChange={setDay}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none"
           />
         </div>
 
         {/* Month */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">AY</label>
+          <label htmlFor={`${fid}-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
           <select
+            id={`${fid}-month`}
             value={month}
-            onChange={(e) => setMonth(parseInt(e.target.value))}
+            onChange={(e) => changeMonth(parseInt(e.target.value, 10))}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none cursor-pointer"
           >
             {[
@@ -263,47 +292,48 @@ export function NatalChartCalculator() {
 
         {/* Year */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">YIL</label>
-          <input
-            type="number"
+          <label htmlFor={`${fid}-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+          <NumericInput
+            id={`${fid}-year`}
             min={1920}
             max={2030}
             value={year}
-            onChange={(e) => setYear(parseInt(e.target.value) || 2000)}
+            onValueChange={changeYear}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none"
           />
         </div>
 
         {/* Hour */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">SAAT (0-23)</label>
-          <input
-            type="number"
+          <label htmlFor={`${fid}-hour`} className="label text-muted block mb-1 text-[10px]">SAAT (0-23)</label>
+          <NumericInput
+            id={`${fid}-hour`}
             min={0}
             max={23}
             value={hour}
-            onChange={(e) => setHour(parseInt(e.target.value) || 0)}
+            onValueChange={setHour}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none"
           />
         </div>
 
         {/* Minute */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">DAKİKA</label>
-          <input
-            type="number"
+          <label htmlFor={`${fid}-minute`} className="label text-muted block mb-1 text-[10px]">DAKİKA</label>
+          <NumericInput
+            id={`${fid}-minute`}
             min={0}
             max={59}
             value={minute}
-            onChange={(e) => setMinute(parseInt(e.target.value) || 0)}
+            onValueChange={setMinute}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none"
           />
         </div>
 
         {/* City */}
         <div className="bg-ink-2 p-3">
-          <label className="label text-muted block mb-1 text-[10px]">DOĞUM ŞEHRİ</label>
+          <label htmlFor={`${fid}-city`} className="label text-muted block mb-1 text-[10px]">DOĞUM ŞEHRİ</label>
           <select
+            id={`${fid}-city`}
             value={city}
             onChange={(e) => setCity(e.target.value)}
             className="w-full bg-transparent text-sm font-bold text-paper outline-none cursor-pointer"
@@ -795,40 +825,42 @@ export function NatalChartCalculator() {
               const govSign = ZODIAC_SIGNS.find((s) => s.name === h.governingSign);
 
               return (
-                <div
+                <button
+                  type="button"
                   key={h.number}
+                  aria-pressed={isSelected}
                   onClick={() => setSelectedHouse(h)}
-                  className={`p-4 cursor-pointer transition-all duration-300 space-y-2 ${
+                  className={`block w-full text-left p-4 cursor-pointer transition-all duration-300 space-y-2 ${
                     isSelected
                       ? 'bg-violet/15 text-paper border border-violet/50'
                       : 'bg-ink-2 hover:bg-ink-3 text-paper'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <span className="flex items-center justify-between">
                     <span className="label text-xs font-bold text-violet">
                       {h.title}
                     </span>
                     <span className="label text-[10px] text-muted">
                       {h.traditionalName}
                     </span>
-                  </div>
+                  </span>
 
-                  <div className="display display-tight text-sm font-bold text-paper">
+                  <span className="block display display-tight text-sm font-bold text-paper">
                     {h.area}
-                  </div>
+                  </span>
 
-                  <p className="text-xs text-paper/75 line-clamp-2 leading-relaxed">
+                  <span className="block text-xs text-paper/75 line-clamp-2 leading-relaxed">
                     {h.description}
-                  </p>
+                  </span>
 
-                  <div className="pt-2 flex items-center justify-between label text-[10px] text-muted border-t border-line">
+                  <span className="pt-2 flex items-center justify-between label text-[10px] text-muted border-t border-line">
                     <span className="flex items-center gap-1.5">
                       {govSign && <ZodiacGlyph sign={govSign.id} size={11} className="text-violet" />}
                       Doğal Yöneticisi: <strong className="text-paper">{h.governingSign}</strong>
                     </span>
                     <span className="text-violet">Detay Gör →</span>
-                  </div>
-                </div>
+                  </span>
+                </button>
               );
             })}
           </div>

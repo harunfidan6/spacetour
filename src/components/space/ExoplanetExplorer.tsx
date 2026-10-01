@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useInView } from '@/lib/useInView';
 import { EXOPLANETS, Exoplanet } from '@/data/exoplanets';
 import { Globe } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
@@ -8,11 +9,12 @@ import { Ticks } from '@/components/motion/primitives';
 export function ExoplanetExplorer() {
   const [selectedPlanet, setSelectedPlanet] = useState<Exoplanet>(EXOPLANETS[0]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const visible = useInView(canvasRef);
 
   // Animated Goldilocks Orbit Simulation
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !visible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -75,7 +77,7 @@ export function ExoplanetExplorer() {
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [selectedPlanet]);
+  }, [selectedPlanet, visible]);
 
   return (
     <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-6">

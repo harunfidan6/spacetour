@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Volume2, Play, Activity, Disc3 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
@@ -57,6 +58,7 @@ export function GravitationalWaveInterferometer() {
   const [activePolarization, setActivePolarization] = useState<'plus' | 'cross'>('plus');
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const visible = useInView(canvasRef);
   const ringCanvasRef = useRef<HTMLCanvasElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -130,6 +132,7 @@ export function GravitationalWaveInterferometer() {
 
   // Live Canvas Waveform and Spacetime Metric Distortion Ring
   useEffect(() => {
+    if (!visible) return;
     let animId: number;
     let t = 0;
 
@@ -258,7 +261,7 @@ export function GravitationalWaveInterferometer() {
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [fStart, fMerge, activePolarization]);
+  }, [fStart, fMerge, activePolarization, visible]);
 
   return (
     <div className="relative ticks border border-line bg-ink p-6 sm:p-8">
@@ -434,7 +437,7 @@ export function GravitationalWaveInterferometer() {
                 <span className="text-paper/80">Birinci Cisim Kütlesi (M₁):</span>
                 <span className="text-solar font-bold">{m1} M☉</span>
               </div>
-              <input
+              <input aria-label="Birinci cisim kütlesi"
                 type="range"
                 min={1}
                 max={100}
@@ -454,7 +457,7 @@ export function GravitationalWaveInterferometer() {
                 <span className="text-paper/80">İkinci Cisim Kütlesi (M₂):</span>
                 <span className="text-solar font-bold">{m2} M☉</span>
               </div>
-              <input
+              <input aria-label="İkinci cisim kütlesi"
                 type="range"
                 min={1}
                 max={100}
@@ -474,7 +477,7 @@ export function GravitationalWaveInterferometer() {
                 <span className="text-paper/80">Aydınlatma Mesafesi:</span>
                 <span className="text-lime font-bold">{distance} Mpc ({Math.round(distance * 3.26)} Milyon Işık Yılı)</span>
               </div>
-              <input
+              <input aria-label="Aydınlatma mesafesi"
                 type="range"
                 min={10}
                 max={3000}

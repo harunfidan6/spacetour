@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Ticks } from '@/components/motion/primitives';
+import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
 interface Observatory {
   id: string;
@@ -15,7 +16,7 @@ interface Observatory {
   status: 'Aktif Gözlem' | 'Yapım Aşamasında (İlk Işık Yakında)' | 'Operasyonel';
   highlightDiscovery: string;
   description: string;
-  image: string;
+  image: AstroImage | null;
 }
 
 const OBSERVATORIES: Observatory[] = [
@@ -31,7 +32,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Aktif Gözlem',
     highlightDiscovery: 'Büyük Patlama’dan 300 milyon yıl sonrasına ait en yaşlı galaksiler (JADES-GS-z14-0) ve ötegezegen atmosferlerinde su buharı/karbondioksit tespiti.',
     description: '18 parçalı altın kaplı berilyum aynası ve 5 katmanlı tenis kortu büyüklüğündeki güneş kalkanıyla astronomi tarihinin en güçlü kızılötesi gözlemevi.',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop'
+    image: ASTRO_IMAGES.jwst
   },
   {
     id: 'elt',
@@ -45,7 +46,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Yapım Aşamasında (İlk Işık Yakında)',
     highlightDiscovery: 'Hubble’dan 16 kat daha keskin görüntülerle yaşanabilir bölgedeki Dünya benzeri ötegezegenlerin yüzey biyo-imzalarını doğrudan görüntüleyecek.',
     description: '798 altıgen ayna parçasından oluşan 39.3 metrelik ana aynasıyla gezegenimizin en büyük optik teleskop yapısı.',
-    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000&auto=format&fit=crop'
+    image: ASTRO_IMAGES.elt
   },
   {
     id: 'alma',
@@ -59,7 +60,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Aktif Gözlem',
     highlightDiscovery: 'Proto-gezegen disklerinde yeni oluşan gezegenlerin tozda açtığı halkaların ilk yüksek çözünürlüklü görüntüleri (HL Tauri).',
     description: '5.000 metre yükseklikte kuru çölde konuşlanmış 66 dev radyo anteninin interferometri yöntemiyle tek bir dev anten gibi çalışması.',
-    image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1000&auto=format&fit=crop'
+    image: ASTRO_IMAGES.alma
   },
   {
     id: 'dag',
@@ -73,7 +74,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Aktif Gözlem',
     highlightDiscovery: 'Türkiye’nin ve Avrupa’nın tek parça aynalı en yüksek irtifalı gözlemevi; adaptif optik sistemiyle atmosferik türbülansı gerçek zamanlı düzeltir.',
     description: '3.170 metre zirvede yer alan 4 metre çaplı ayna, aktif ve adaptif optik sistemleriyle Türkiye’nin en büyük temel bilim altyapı projesidir.',
-    image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000&auto=format&fit=crop'
+    image: null
   },
   {
     id: 'hst',
@@ -87,7 +88,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Operasyonel',
     highlightDiscovery: 'Evrenin genişleme hızının (Hubble Sabiti) netleştirilmesi, karanlık enerjinin keşfi ve ikonik Yaratılış Sütunları görüntüsü.',
     description: '1990’dan bu yana 1.5 milyondan fazla gözlem yaparak astronomi ders kitaplarını baştan yazan efsanevi yörünge teleskobu.',
-    image: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?q=80&w=1000&auto=format&fit=crop'
+    image: ASTRO_IMAGES.hubble
   },
   {
     id: 'tug',
@@ -101,7 +102,7 @@ const OBSERVATORIES: Observatory[] = [
     status: 'Aktif Gözlem',
     highlightDiscovery: 'RTT150 teleskobu ile gama ışını patlamalarının optik ışıma takipleri, çift yıldız sistemleri ve ötegezegen geçiş analizleri.',
     description: 'Antalya Toros Dağları’nda 2.500 metrede Türkiye’nin ulusal astronomi araştırmalarına ev sahipliği yapan öncü yerleşke.',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop'
+    image: ASTRO_IMAGES.tug
   }
 ];
 
@@ -184,17 +185,19 @@ export function MegaObservatoriesRegistry() {
               {obs.location}
             </div>
 
-            <div className="relative h-44 w-full border border-line overflow-hidden my-4 bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={obs.image}
-                alt={obs.name}
-                className="w-full h-full object-cover filter contrast-105"
-              />
-              <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[9px] text-paper/80 backdrop-blur">
-                {obs.altitudeOrOrbit}
+            {obs.image && (
+              <div className="relative h-44 w-full border border-line overflow-hidden my-4 bg-black">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={obs.image.src}
+                  alt={obs.name}
+                  className="w-full h-full object-cover filter contrast-105"
+                />
+                <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[9px] text-paper/80 backdrop-blur">
+                  {obs.altitudeOrOrbit}
+                </div>
               </div>
-            </div>
+            )}
 
             <p className="text-xs leading-relaxed text-paper/75">
               {obs.description}

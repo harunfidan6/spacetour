@@ -29,14 +29,17 @@ export function PlanetScaleComparator() {
   const [targetA, setTargetA] = useState<ScaleItem>(SCALE_DATA[4]); // Earth
   const [targetB, setTargetB] = useState<ScaleItem>(SCALE_DATA[8]); // Jupiter
 
-  const ratio = (targetB.diameterKm / targetA.diameterKm).toFixed(2);
-  const volumeRatio = Math.round(Math.pow(targetB.diameterKm / targetA.diameterKm, 3)).toLocaleString();
+  // Always compare the larger body against the smaller one, whichever slot it sits in
+  const [big, small] = targetA.diameterKm >= targetB.diameterKm ? [targetA, targetB] : [targetB, targetA];
+  const diameterRatio = big.diameterKm / small.diameterKm;
+  const ratio = diameterRatio.toFixed(2);
+  const volumeRatio = Math.round(Math.pow(diameterRatio, 3)).toLocaleString('tr-TR');
 
+  // The larger disc gets the full size; the smaller one is drawn to scale (never below a visible dot)
   const maxDisplayPx = 160;
-  const ratioVisual = targetA.diameterKm / targetB.diameterKm;
-
-  const sizeB = maxDisplayPx;
-  const sizeA = Math.max(20, Math.min(maxDisplayPx, maxDisplayPx * ratioVisual));
+  const discSize = (item: ScaleItem) => Math.max(4, (maxDisplayPx * item.diameterKm) / big.diameterKm);
+  const sizeA = discSize(targetA);
+  const sizeB = discSize(targetB);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -68,7 +71,7 @@ export function PlanetScaleComparator() {
           <label className="label text-gold flex items-center gap-2 text-xs">
             <span className="h-2 w-2 rounded-full bg-gold" /> 1. CİSİM (BAZ ALINAN)
           </label>
-          <select
+          <select aria-label="Birinci gök cismi"
             value={targetA.id}
             onChange={(e) => setTargetA(SCALE_DATA.find((x) => x.id === e.target.value) || targetA)}
             className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-gold transition-colors cursor-pointer"
@@ -85,7 +88,7 @@ export function PlanetScaleComparator() {
           <label className="label text-violet flex items-center gap-2 text-xs">
             <span className="h-2 w-2 rounded-full bg-violet" /> 2. CİSİM (HEDEF KÜTLE)
           </label>
-          <select
+          <select aria-label="İkinci gök cismi"
             value={targetB.id}
             onChange={(e) => setTargetB(SCALE_DATA.find((x) => x.id === e.target.value) || targetB)}
             className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-violet transition-colors cursor-pointer"
@@ -112,11 +115,13 @@ export function PlanetScaleComparator() {
               boxShadow: `0 0 30px ${targetA.color}44`
             }}
           >
-            <PlanetGlyph
-              planet={targetA.id}
-              size={Math.max(12, Math.min(sizeA * 0.45, 42))}
-              className="text-ink"
-            />
+            {sizeA >= 24 && (
+              <PlanetGlyph
+                planet={targetA.id}
+                size={Math.min(sizeA * 0.45, 42)}
+                className="text-ink"
+              />
+            )}
           </div>
 
           <div className="text-center bg-ink border border-line px-4 py-2">
@@ -128,17 +133,21 @@ export function PlanetScaleComparator() {
         {/* Telemetry Readout */}
         <div className="z-10 flex flex-col items-center gap-3 text-center px-6 py-4 bg-ink border border-line">
           <span className="label text-violet">
-            HACİMSEL ORAN
+            ÇAP ORANI
           </span>
           <div className="display display-tight text-4xl font-black text-paper">
             {ratio}x <span className="label text-muted font-normal text-xs">kat çap</span>
           </div>
           <div className="h-px w-full bg-line" />
-          <p className="label text-muted max-w-[200px] leading-relaxed">
-            <strong className="text-paper">{targetB.name}</strong> içine tam <br />
-            <strong className="text-violet text-sm font-mono">{volumeRatio}</strong><br />
-            adet <strong className="text-paper">{targetA.name}</strong> sığar
-          </p>
+          {big.id === small.id ? (
+            <p className="label text-muted max-w-[200px] leading-relaxed">Aynı gök cismini karşılaştırıyorsun.</p>
+          ) : (
+            <p className="label text-muted max-w-[200px] leading-relaxed">
+              <strong className="text-paper">{big.name}</strong> içine tam <br />
+              <strong className="text-violet text-sm font-mono">{volumeRatio}</strong><br />
+              adet <strong className="text-paper">{small.name}</strong> sığar
+            </p>
+          )}
         </div>
 
         {/* Item B */}
@@ -152,11 +161,13 @@ export function PlanetScaleComparator() {
               boxShadow: `0 0 40px ${targetB.color}55`
             }}
           >
-            <PlanetGlyph
-              planet={targetB.id}
-              size={Math.max(18, Math.min(sizeB * 0.45, 48))}
-              className="text-ink"
-            />
+            {sizeB >= 24 && (
+              <PlanetGlyph
+                planet={targetB.id}
+                size={Math.min(sizeB * 0.45, 48)}
+                className="text-ink"
+              />
+            )}
           </div>
 
           <div className="text-center bg-ink border border-line px-4 py-2">

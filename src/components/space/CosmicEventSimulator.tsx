@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import { useInView } from '@/lib/useInView';
 import { EventType } from '@/data/events';
 import { Sparkles } from 'lucide-react';
 
@@ -11,10 +12,11 @@ interface SimulatorProps {
 
 export function CosmicEventSimulator({ type, title }: SimulatorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const visible = useInView(canvasRef);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !visible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -196,7 +198,7 @@ export function CosmicEventSimulator({ type, title }: SimulatorProps) {
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [type]);
+  }, [type, visible]);
 
   return (
     <div className="relative overflow-hidden border border-line bg-ink">

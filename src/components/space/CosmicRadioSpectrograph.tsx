@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useInView } from '@/lib/useInView';
 import {
   Volume2,
   VolumeX,
@@ -148,6 +149,7 @@ export function CosmicRadioSpectrograph() {
   const nodesRef = useRef<AudioNode[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const visible = useInView(canvasRef);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
@@ -296,7 +298,7 @@ export function CosmicRadioSpectrograph() {
   // Canvas visualizer loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !visible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -408,7 +410,7 @@ export function CosmicRadioSpectrograph() {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isPlaying, displayMode]);
+  }, [isPlaying, displayMode, visible]);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -424,7 +426,7 @@ export function CosmicRadioSpectrograph() {
             Evrenin <span className="serif-i text-lime">radyo şarkıları</span>
           </h3>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            Radyo teleskoplar ve derin uzay sondalarının elektromanyetik dalgalardan elde ettiği gerçek kozmik sonifikasyon kayıtları. Nötron yıldızlarının nabzını ve yıldızlararası plazmayı canlı dinleyin.
+            Radyo teleskopların ve derin uzay sondalarının ölçtüğü gerçek darbe periyotları ve plazma frekanslarıyla tarayıcında sentezlenen kozmik sonifikasyonlar. Nötron yıldızlarının nabzını ve yıldızlararası plazmayı duyulabilir aralıkta dinle.
           </p>
         </div>
 
@@ -458,7 +460,7 @@ export function CosmicRadioSpectrograph() {
             >
               {volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
-            <input
+            <input aria-label="Ses seviyesi"
               type="range"
               min="0"
               max="1"

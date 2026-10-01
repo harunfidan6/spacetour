@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Orbit, Play, Pause } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
@@ -101,6 +102,7 @@ export function ExoplanetTransitLab() {
   const [transitPhase, setTransitPhase] = useState<number>(0); // -1.5 to +1.5
 
   const transitCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const visible = useInView(transitCanvasRef);
   const lightCurveCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
@@ -121,19 +123,18 @@ export function ExoplanetTransitLab() {
 
   // Animation loop
   useEffect(() => {
+    if (!isPlaying || !visible) return;
     let lastTime = performance.now();
 
     const loop = (currentTime: number) => {
       const dt = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      if (isPlaying) {
-        setTransitPhase((prev) => {
-          let next = prev + dt * 0.45;
-          if (next > 1.8) next = -1.8;
-          return next;
-        });
-      }
+      setTransitPhase((prev) => {
+        let next = prev + dt * 0.45;
+        if (next > 1.8) next = -1.8;
+        return next;
+      });
 
       animFrameRef.current = requestAnimationFrame(loop);
     };
@@ -142,7 +143,7 @@ export function ExoplanetTransitLab() {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isPlaying]);
+  }, [isPlaying, visible]);
 
   // Render Star & Planet Transit Canvas
   useEffect(() => {
@@ -471,7 +472,7 @@ export function ExoplanetTransitLab() {
             <span className="label text-muted">Ötegezegen Yarıçapı (Rp)</span>
             <span className="text-paper font-bold">{planetRadiusEarth.toFixed(2)} R⊕ (Dünya)</span>
           </div>
-          <input
+          <input aria-label="Ötegezegen yarıçapı"
             type="range"
             min="0.5"
             max="25"
@@ -489,7 +490,7 @@ export function ExoplanetTransitLab() {
             <span className="label text-muted">Ana Yıldız Yarıçapı (R*)</span>
             <span className="text-paper font-bold">{starRadiusSolar.toFixed(2)} R☉ (Güneş)</span>
           </div>
-          <input
+          <input aria-label="Ana yıldız yarıçapı"
             type="range"
             min="0.1"
             max="3.0"
@@ -507,7 +508,7 @@ export function ExoplanetTransitLab() {
             <span className="label text-muted">Transit Çarpma Parametresi (b)</span>
             <span className="text-paper font-bold">{impactParameter.toFixed(2)}</span>
           </div>
-          <input
+          <input aria-label="Transit çarpma parametresi"
             type="range"
             min="0"
             max="0.9"

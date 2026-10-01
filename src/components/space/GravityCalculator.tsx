@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Fingerprint, ArrowUp, Target } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { PlanetGlyph } from '@/components/ui/CosmicGlyphs';
+import { NumericInput } from '@/components/ui/NumericInput';
 
 interface GravityBody {
   id: string;
@@ -55,12 +56,12 @@ export function GravityCalculator() {
           </div>
           <span className="label text-muted">REFERANS KÜTLE:</span>
           <div className="relative group">
-            <input
-              type="number"
-              min="20"
-              max="250"
+            <NumericInput
+              aria-label="Dünyadaki kütlen (kg)"
+              min={20}
+              max={250}
               value={earthWeight}
-              onChange={(e) => setEarthWeight(Math.max(1, Number(e.target.value)))}
+              onValueChange={setEarthWeight}
               className="w-24 bg-ink border border-line px-3 py-1.5 text-center text-lg font-black text-paper focus:outline-none focus:border-violet transition-colors"
             />
             <span className="absolute right-2 top-2 text-xs text-violet font-bold">kg</span>

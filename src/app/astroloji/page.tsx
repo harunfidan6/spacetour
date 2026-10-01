@@ -7,6 +7,8 @@ import { ZODIAC_SIGNS, ASTROLOGICAL_HOUSES, type ZodiacSign, type ZodiacElement 
 import { NatalChartCalculator } from '@/components/space/NatalChartCalculator';
 import { DailyCosmicTransitWidget } from '@/components/space/DailyCosmicTransitWidget';
 import { CosmicTarotDrawer } from '@/components/space/CosmicTarotDrawer';
+import { DailyHoroscopeDeck } from '@/components/space/DailyHoroscopeDeck';
+import { StarOracleWidget } from '@/components/space/StarOracleWidget';
 import { SynastryChartCalculator } from '@/components/space/SynastryChartCalculator';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { AstrolojiGraphic } from '@/components/home/ModuleGraphics';
@@ -19,11 +21,13 @@ const ELEMENT_ICON: Record<ZodiacElement, typeof Flame> = { Ateş: Flame, Toprak
 
 const CHAPTERS = [
   { href: '#dogum-haritasi', label: 'Doğum haritası' },
-  { href: '#gunluk-transitler', label: 'Günlük transitler' },
-  { href: '#kozmik-tarot', label: 'Kozmik tarot' },
-  { href: '#zodyak-atlasi', label: '12 zodyak' },
+  { href: '#gunluk-burc-fali', label: 'Günlük burç falı' },
+  { href: '#yildiz-fali', label: 'Yıldız falı & saatler' },
+  { href: '#kozmik-tarot', label: 'Kozmik tarot (22 arkana)' },
+  { href: '#gunluk-transitler', label: 'Canlı transitler' },
+  { href: '#zodyak-atlasi', label: '12 zodyak arşivi' },
   { href: '#burc-uyumu', label: 'Burç uyumu' },
-  { href: '#sinastri-analizi', label: 'Sinastri' },
+  { href: '#sinastri-analizi', label: 'Sinastri analizi' },
 ];
 
 function Chapter({ index, title, children }: { index: string; title: string; children: ReactNode }) {
@@ -60,6 +64,7 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
     if (!el) return;
     const reduced = prefersReducedMotion();
     if (sign) {
+      const opener = document.activeElement as HTMLElement | null;
       document.documentElement.style.overflow = 'hidden';
       el.style.visibility = 'visible';
       closeBtn.current?.focus({ preventScroll: true });
@@ -68,11 +73,30 @@ function SignPanel({ sign, onClose }: { sign: ZodiacSign | null; onClose: () => 
         gsap.fromTo(el.querySelector('[data-sheet]'), { xPercent: 100 }, { xPercent: 0, duration: 0.8, ease: 'mg.inOut' });
         gsap.fromTo(el.querySelectorAll('[data-in]'), { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.05, delay: 0.35 });
       }
-      const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+          return;
+        }
+        // Keep Tab cycling inside the open sheet
+        if (e.key !== 'Tab') return;
+        const focusables = [...el.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')];
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      };
       window.addEventListener('keydown', onKey);
       return () => {
         window.removeEventListener('keydown', onKey);
         document.documentElement.style.overflow = '';
+        // Return focus to the sign card that opened the sheet
+        if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
       };
     }
     document.documentElement.style.overflow = '';
@@ -230,20 +254,40 @@ export default function AstrolojiPage() {
           ))}
         </nav>
 
-        <Chapter index="04.1" title="Doğum haritası & numeroloji">
-          <NatalChartCalculator />
-        </Chapter>
-        <Chapter index="04.2" title="Günlük transitler & burç yorumları">
-          <DailyCosmicTransitWidget />
-        </Chapter>
-        <Chapter index="04.3" title="Kozmik tarot arketipi">
-          <CosmicTarotDrawer />
-        </Chapter>
+        <div id="dogum-haritasi">
+          <Chapter index="04.1" title="Doğum haritası, gezegenler & açı şebekesi">
+            <NatalChartCalculator />
+          </Chapter>
+        </div>
+
+        <div id="gunluk-burc-fali">
+          <Chapter index="04.2" title="Günlük burç falı & yaşam enerjisi radarı">
+            <DailyHoroscopeDeck />
+          </Chapter>
+        </div>
+
+        <div id="yildiz-fali">
+          <Chapter index="04.3" title="Yıldız falı, Keldani gezegen saatleri & kraliyet yıldızları">
+            <StarOracleWidget />
+          </Chapter>
+        </div>
+
+        <div id="kozmik-tarot">
+          <Chapter index="04.4" title="Kozmik tarot açılımı (22 majör arkana & 3 açılım düzeni)">
+            <CosmicTarotDrawer />
+          </Chapter>
+        </div>
+
+        <div id="gunluk-transitler">
+          <Chapter index="04.5" title="Canlı efemeris transitleri & gökyüzü nabzı">
+            <DailyCosmicTransitWidget />
+          </Chapter>
+        </div>
 
         {/* Zodiac directory */}
         <section id="zodyak-atlasi">
           <SectionHead
-            index="04.4"
+            index="04.6"
             kicker="12 zodyak takımyıldızı"
             title={
               <>
@@ -252,13 +296,12 @@ export default function AstrolojiPage() {
             }
             lede="Her burcun elementi, yönetici gezegeni, mitolojik arketipi ve tarot karşılığı. Bir karta dokun, dosyası açılsın."
           />
-          <div className="mb-6 flex w-fit gap-1 rounded-full border border-line p-1" role="tablist" aria-label="Element filtresi">
+          <div className="mb-6 flex w-fit gap-1 rounded-full border border-line p-1" role="group" aria-label="Element filtresi">
             {ELEMENTS.map((el) => (
               <button
                 key={el}
                 type="button"
-                role="tab"
-                aria-selected={element === el}
+                aria-pressed={element === el}
                 onClick={() => setElement(el)}
                 className={`label rounded-full px-4 py-2 transition-colors ${element === el ? 'bg-gold text-ink' : 'text-paper/70 hover:text-paper'}`}
               >
@@ -301,7 +344,7 @@ export default function AstrolojiPage() {
         {/* Compatibility */}
         <section id="burc-uyumu">
           <SectionHead
-            index="04.5"
+            index="04.7"
             kicker="Kozmik kimya"
             title={
               <>
@@ -360,9 +403,11 @@ export default function AstrolojiPage() {
           </div>
         </section>
 
-        <Chapter index="04.6" title="Sinastri & ikili doğum haritası">
-          <SynastryChartCalculator />
-        </Chapter>
+        <div id="sinastri-analizi">
+          <Chapter index="04.8" title="Sinastri & ikili doğum haritası">
+            <SynastryChartCalculator />
+          </Chapter>
+        </div>
       </div>
 
       <SignPanel sign={active} onClose={closePanel} />

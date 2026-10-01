@@ -3,6 +3,13 @@
 import React, { useState } from 'react';
 import { Rocket, Radio } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { useNow } from '@/lib/useNow';
+
+const AU_KM = 149_597_870.7;
+const LIGHT_KM_S = 299_792.458;
+// Epoch of the tabulated distances; outbound probes are extrapolated from here at their radial speed
+const DATA_EPOCH = Date.UTC(2024, 2, 1);
+const YEAR_MS = 365.25 * 86_400_000;
 
 interface Probe {
   id: string;
@@ -12,7 +19,8 @@ interface Probe {
   distanceAu: number;
   speedKmH: number;
   launchYear: number;
-  signalDelay: string;
+  /** Radial recession (AU per year) for probes coasting out of the Solar System. */
+  auPerYear?: number;
   status: 'Yıldızlararası Uzayda' | 'Kuiper Kuşağında' | 'L2 Yörüngesinde' | 'Güneş Tacında';
   badgeColor: string;
 }
@@ -26,7 +34,7 @@ const PROBES_DATA: Probe[] = [
     distanceAu: 163.4,
     speedKmH: 61198,
     launchYear: 1977,
-    signalDelay: '22 saat 39 dakika (Tek yön)',
+    auPerYear: 3.58,
     status: 'Yıldızlararası Uzayda',
     badgeColor: 'text-violet bg-violet/10 border-violet/30'
   },
@@ -38,7 +46,7 @@ const PROBES_DATA: Probe[] = [
     distanceAu: 136.3,
     speedKmH: 55346,
     launchYear: 1977,
-    signalDelay: '18 saat 54 dakika (Tek yön)',
+    auPerYear: 3.25,
     status: 'Yıldızlararası Uzayda',
     badgeColor: 'text-violet bg-violet/10 border-violet/30'
   },
@@ -50,7 +58,7 @@ const PROBES_DATA: Probe[] = [
     distanceAu: 59.1,
     speedKmH: 49600,
     launchYear: 2006,
-    signalDelay: '8 saat 12 dakika',
+    auPerYear: 2.9,
     status: 'Kuiper Kuşağında',
     badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
@@ -60,9 +68,8 @@ const PROBES_DATA: Probe[] = [
     mission: 'Güneş Tacı İncelemesi',
     distanceKm: 145000000,
     distanceAu: 0.97,
-    speedKmH: 635266, // Fastest human-made object in history!
+    speedKmH: 635266, // Peak speed at perihelion — fastest human-made object in history
     launchYear: 2018,
-    signalDelay: '8 dakika 19 saniye',
     status: 'Güneş Tacında',
     badgeColor: 'text-primary bg-primary/10 border-primary/30'
   },
@@ -74,14 +81,29 @@ const PROBES_DATA: Probe[] = [
     distanceAu: 0.01,
     speedKmH: 720,
     launchYear: 2021,
-    signalDelay: '5 saniye (Işık Hızı)',
     status: 'L2 Yörüngesinde',
     badgeColor: 'text-star-gold bg-star-gold/10 border-star-gold/30'
   }
 ];
 
+function formatLightTime(seconds: number): string {
+  if (seconds < 60) return `${Math.round(seconds)} saniye`;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h === 0) return `${m} dk ${Math.round(seconds % 60)} sn`;
+  return `${h} sa ${m} dk`;
+}
+
 export function InterstellarProbes() {
   const [selectedProbe, setSelectedProbe] = useState<Probe>(PROBES_DATA[0]);
+  const now = useNow(60_000);
+
+  const years = now ? (now.getTime() - DATA_EPOCH) / YEAR_MS : 0;
+  const distanceAu = selectedProbe.auPerYear
+    ? selectedProbe.distanceAu + selectedProbe.auPerYear * years
+    : selectedProbe.distanceAu;
+  const distanceKm = selectedProbe.auPerYear ? distanceAu * AU_KM : selectedProbe.distanceKm;
+  const lightSeconds = distanceKm / LIGHT_KM_S;
 
   return (
     <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
@@ -102,7 +124,7 @@ export function InterstellarProbes() {
         </div>
         <span className="flex items-center gap-1.5 border border-violet/30 bg-violet/10 px-2.5 py-1 text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
           <Radio size={12} className="animate-spin text-violet" style={{ animationDuration: '4s' }} />
-          CANLI SİNYAL TAKİBİ
+          {selectedProbe.auPerYear ? 'MESAFE ANLIK TAHMİN' : 'YAKLAŞIK KONUM'}
         </span>
       </div>
 
@@ -113,6 +135,8 @@ export function InterstellarProbes() {
           return (
             <button
               key={probe.id}
+              type="button"
+              aria-pressed={isActive}
               onClick={() => setSelectedProbe(probe)}
               className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
                 isActive
@@ -120,7 +144,7 @@ export function InterstellarProbes() {
                   : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
               }`}
             >
-              {probe.name}
+              <span lang="en">{probe.name}</span>
             </button>
           );
         })}
@@ -142,17 +166,23 @@ export function InterstellarProbes() {
           <div className="p-3 bg-ink border border-line">
             <span className="text-[10px] text-muted block uppercase tracking-wider">DÜNYA’YA UZAKLIK</span>
             <span className="text-base font-bold text-paper mt-0.5 block">
-              {selectedProbe.distanceAu >= 1 ? `${selectedProbe.distanceAu} AU` : `${(selectedProbe.distanceKm / 1000000).toFixed(2)} Milyon km`}
+              {!now
+                ? '—'
+                : distanceAu >= 1
+                  ? `${distanceAu.toFixed(2)} AU`
+                  : `${(distanceKm / 1_000_000).toFixed(2)} Milyon km`}
             </span>
             <span className="text-[10px] text-muted block mt-1">
-              {(selectedProbe.distanceKm / 1000000000).toFixed(2)} Milyar km
+              {now ? `${(distanceKm / 1_000_000_000).toFixed(2)} Milyar km` : '—'}
             </span>
           </div>
 
           <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">MEVCUT HIZ</span>
+            <span className="text-[10px] text-muted block uppercase tracking-wider">
+              {selectedProbe.id === 'parker' ? 'TEPE HIZ' : 'MEVCUT HIZ'}
+            </span>
             <span className="text-base font-bold text-solar mt-0.5 block">
-              {selectedProbe.speedKmH.toLocaleString()} km/s
+              {selectedProbe.speedKmH.toLocaleString('tr-TR')} km/sa
             </span>
             <span className="text-[10px] text-muted block mt-1">
               {(selectedProbe.speedKmH / 3600).toFixed(1)} km/saniye
@@ -161,17 +191,17 @@ export function InterstellarProbes() {
 
           <div className="p-3 bg-ink border border-line">
             <span className="text-[10px] text-muted block uppercase tracking-wider">SİNYAL GECİKMESİ</span>
-            <span className="text-base font-bold text-paper truncate block mt-0.5" title={selectedProbe.signalDelay}>
-              {selectedProbe.signalDelay.split(' ')[0]} {selectedProbe.signalDelay.split(' ')[1]}
+            <span className="text-sm font-bold text-paper block mt-0.5 sm:text-base">
+              {now ? formatLightTime(lightSeconds) : '—'}
             </span>
-            <span className="text-[10px] text-muted block mt-1">Işık hızı telsiz süresi</span>
+            <span className="text-[10px] text-muted block mt-1">Işık hızıyla tek yön</span>
           </div>
 
           <div className="p-3 bg-ink border border-line">
             <span className="text-[10px] text-muted block uppercase tracking-wider">FIRLATILIŞ YILI</span>
             <span className="text-base font-bold text-paper mt-0.5 block">{selectedProbe.launchYear}</span>
             <span className="text-[10px] text-muted block mt-1">
-              {2026 - selectedProbe.launchYear} yıldır görevde
+              {now ? `${now.getFullYear() - selectedProbe.launchYear} yıldır görevde` : '—'}
             </span>
           </div>
         </div>

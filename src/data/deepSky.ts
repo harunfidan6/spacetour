@@ -1,3 +1,4 @@
+import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 export type WavelengthMode = 'radio' | 'infrared' | 'optical' | 'xray';
 
 export interface DeepSkyTarget {
@@ -13,7 +14,7 @@ export interface DeepSkyTarget {
       telescope: string;
       wavelength: string;
       color: string;
-      image: string;
+      image: AstroImage;
       highlights: string;
     }
   >;
@@ -32,29 +33,29 @@ export const DEEP_SKY_TARGETS: DeepSkyTarget[] = [
         telescope: 'Hubble Uzay Teleskobu',
         wavelength: '400 - 700 nm (Görünür)',
         color: '#ff6633',
-        image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.m1,
         highlights: 'Genişleyen hidrojen ve oksijen gazı filamentleri, patlamanın dış katmanları.'
       },
       infrared: {
         telescope: 'James Webb (JWST)',
         wavelength: '0.6 - 28 µm (Yakın & Orta Kızılötesi)',
         color: '#ff2255',
-        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.crabInfrared,
         highlights: 'Pulsar rüzgarının ısıttığı toz tanecikleri ve iç senkrotron ışıması.'
       },
       xray: {
         telescope: 'Chandra X-Işını Gözlemevi',
         wavelength: '0.1 - 10 nm (Yüksek Enerji X-Ray)',
         color: '#00d4ff',
-        image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.crabXray,
         highlights: 'Pulsarın manyetik kutuplarından fışkıran devasa plazma jetleri ve yüksek enerjili halkalar.'
       },
       radio: {
         telescope: 'VLA (Very Large Array)',
-        wavelength: '1 - 50 cm (Radyo Dalgaları)',
+        wavelength: '6 cm (5 GHz radyo)',
         color: '#a855f7',
-        image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1000&auto=format&fit=crop',
-        highlights: 'Pulsarın manyetosferinde ivmelenen elektronların yaydığı ritmik radyo sinyalleri.'
+        image: ASTRO_IMAGES.crabRadio,
+        highlights: 'Pulsar rüzgârının hızlandırdığı elektronların manyetik alanda yaydığı senkrotron ışıması; bulutsunun tamamını dolduran radyo sisi.'
       }
     }
   },
@@ -67,31 +68,31 @@ export const DEEP_SKY_TARGETS: DeepSkyTarget[] = [
     description: 'Samanyolu’nun en yakın büyük komşusu. Yaklaşık 1 trilyon yıldıza ev sahipliği yapar ve yaklaşık 4.5 milyar yıl sonra Samanyolu ile birleşecektir.',
     views: {
       optical: {
-        telescope: 'Hubble & Yer Tabanlı Teleskoplar',
+        telescope: 'Yer Tabanlı Teleskop (560 mm)',
         wavelength: '380 - 750 nm',
         color: '#ffd700',
-        image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.m31,
         highlights: 'Yıldız diskleri, parlak sarı çekirdek ve sarmal kollardaki karanlık toz şeritleri.'
       },
       infrared: {
-        telescope: 'Spitzer & Herschel',
-        wavelength: '3.6 - 160 µm',
+        telescope: 'Spitzer Uzay Teleskobu',
+        wavelength: '3.6 - 8 µm',
         color: '#ff4444',
-        image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.m31Infrared,
         highlights: 'Yeni yıldızların doğduğu sarmal kollardaki ılık yıldızlararası toz halkaları.'
       },
       xray: {
-        telescope: 'XMM-Newton & Chandra',
-        wavelength: '0.2 - 12 keV',
+        telescope: 'Chandra X-Işını Gözlemevi',
+        wavelength: '0.3 - 8 keV',
         color: '#00e5ff',
-        image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.m31Xray,
         highlights: 'Merkezdeki süper kütleli karadelik ve yoldaş yıldızından madde çeken X-ışını çift yıldızları.'
       },
       radio: {
-        telescope: 'Effelsberg 100m Radyo Teleskobu',
-        wavelength: '6 - 21 cm',
+        telescope: 'Green Bank & Westerbork (HI) + Herschel',
+        wavelength: '21 cm hidrojen + uzak kızılötesi',
         color: '#9c27b0',
-        image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1000&auto=format&fit=crop',
+        image: ASTRO_IMAGES.m31Radio,
         highlights: 'Galaksinin dış sınırlarına kadar uzanan devasa nötr hidrojen gazı bulutları.'
       }
     }

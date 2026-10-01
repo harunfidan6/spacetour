@@ -330,11 +330,11 @@ export function PolarisPrecessionHop() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="label flex items-center gap-2 text-violet-signal">
+          <div className="label flex items-center gap-2 text-violet">
             <Compass className="h-4 w-4" /> Göksel Yön Bulma & Eksen Yalpalama Mekaniği
           </div>
           <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Kutup yıldızı rehberi <span className="serif-i text-violet-signal">& presesyon çemberi</span>
+            Kutup yıldızı rehberi <span className="serif-i text-violet">& presesyon çemberi</span>
           </h3>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-paper/70">
             Kuzey Gökkubbesi’nin dönme ekseni sabit değildir. Dünyanın topaç gibi 25.772 yıllık yalpalaması (eksen devinimi) kutup noktasını gökyüzünde bir çember boyunca kaydırır.
@@ -347,7 +347,7 @@ export function PolarisPrecessionHop() {
             onClick={() => setActiveTab('precession')}
             className={`px-4 py-2.5 text-xs font-mono transition-colors ${
               activeTab === 'precession'
-                ? 'bg-violet-signal text-ink font-bold'
+                ? 'bg-violet text-ink font-bold'
                 : 'bg-ink text-paper hover:bg-ink-3'
             }`}
           >
@@ -357,7 +357,7 @@ export function PolarisPrecessionHop() {
             onClick={() => setActiveTab('hopping')}
             className={`px-4 py-2.5 text-xs font-mono transition-colors ${
               activeTab === 'hopping'
-                ? 'bg-violet-signal text-ink font-bold'
+                ? 'bg-violet text-ink font-bold'
                 : 'bg-ink text-paper hover:bg-ink-3'
             }`}
           >
@@ -373,7 +373,7 @@ export function PolarisPrecessionHop() {
           <div className="lg:col-span-7 bg-black p-6 sm:p-8 flex flex-col justify-between">
             <div className="flex items-center justify-between text-xs text-muted mb-4 font-mono">
               <span>Tutulma Kutbu Merkezli Eksen Projeksiyonu</span>
-              <span className="text-violet-signal">Eğim: 23° 26′</span>
+              <span className="text-violet">Eğim: 23° 26′</span>
             </div>
 
             <div className="relative aspect-square w-full max-w-[480px] mx-auto border border-line/40 overflow-hidden bg-ink/50">
@@ -393,14 +393,14 @@ export function PolarisPrecessionHop() {
                   {targetYear > 0 ? `M.S. ${targetYear}` : `M.Ö. ${Math.abs(targetYear)}`}
                 </span>
               </div>
-              <input
+              <input aria-label="Presesyon yılı"
                 type="range"
                 min="-12000"
                 max="14000"
                 step="250"
                 value={targetYear}
                 onChange={(e) => setTargetYear(parseInt(e.target.value))}
-                className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-violet-signal"
+                className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-violet"
               />
               <div className="flex justify-between font-mono text-[10px] text-muted">
                 <span>M.Ö. 12.000</span>
@@ -414,11 +414,11 @@ export function PolarisPrecessionHop() {
           {/* Right Information Panel (5 cols) */}
           <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
             <div>
-              <span className="label text-violet-signal">Seçili Çağın Kutup Yıldızı</span>
+              <span className="label text-violet">Seçili Çağın Kutup Yıldızı</span>
               <h4 className="display display-tight mt-2 text-2xl text-paper">
                 {selectedHistoricalStar.starName}
               </h4>
-              <p className="serif-i text-base text-violet-signal mt-0.5">
+              <p className="serif-i text-base text-violet mt-0.5">
                 {selectedHistoricalStar.constellation} Takımyıldızı · {selectedHistoricalStar.yearLabel}
               </p>
 
@@ -433,7 +433,7 @@ export function PolarisPrecessionHop() {
                 </div>
               </div>
 
-              <div className="border-l-2 border-violet-signal pl-4 py-1">
+              <div className="border-l-2 border-violet pl-4 py-1">
                 <span className="label text-muted">Tarihsel ve Astronomik Önem</span>
                 <p className="mt-1 text-xs leading-relaxed text-paper/85">
                   {selectedHistoricalStar.historicalContext}
@@ -451,7 +451,7 @@ export function PolarisPrecessionHop() {
                     onClick={() => setTargetYear(star.year)}
                     className="p-2 border border-line text-left bg-ink-2 hover:bg-ink-3 transition-colors cursor-pointer"
                   >
-                    <div className="font-mono text-[10px] text-violet-signal">
+                    <div className="font-mono text-[10px] text-violet">
                       {star.year > 0 ? `+${star.year}` : star.year}
                     </div>
                     <div className="font-mono text-xs text-paper truncate">
@@ -488,7 +488,7 @@ export function PolarisPrecessionHop() {
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-line pt-4">
               <div className="w-full sm:w-2/3 space-y-1">
                 <span className="label text-muted block">5 Kat Uzatma Vektörünü Çiz:</span>
-                <input
+                <input aria-label="İşaretçi yıldız uzatma ilerlemesi"
                   type="range"
                   min="0"
                   max="100"
@@ -547,7 +547,7 @@ export function PolarisPrecessionHop() {
                   Polaris’in ufuk çizgisinden kaç derece yukarıda olduğu, tam olarak bulunduğunuz yerin kuzey enlemine eşittir.
                 </p>
                 <div className="flex items-center gap-3 pt-2">
-                  <input
+                  <input aria-label="Gözlemci enlemi"
                     type="range"
                     min="10"
                     max="80"

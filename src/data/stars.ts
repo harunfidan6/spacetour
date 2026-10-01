@@ -1,3 +1,4 @@
+import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 export interface StarData {
   name: string;
   turkishName?: string;
@@ -235,7 +236,7 @@ export interface DeepSkyObject {
   distanceLightYears: string;
   color: string;
   emoji: string;
-  image?: string;
+  image?: AstroImage;
 }
 
 export const deepSkyObjects: DeepSkyObject[] = [
@@ -251,7 +252,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '2.54 milyon Işık Yılı',
     color: '#00d4ff',
     emoji: '🌀',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m31
   },
   {
     id: 'm42',
@@ -265,7 +266,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '1,344 Işık Yılı',
     color: '#ff2a85',
     emoji: '✨',
-    image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m42
   },
   {
     id: 'm45',
@@ -279,7 +280,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '444 Işık Yılı',
     color: '#70baff',
     emoji: '💎',
-    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m45
   },
   {
     id: 'm13',
@@ -293,7 +294,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '22,200 Işık Yılı',
     color: '#ffd700',
     emoji: '🔮',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m13
   },
   {
     id: 'm57',
@@ -307,7 +308,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '2,570 Işık Yılı',
     color: '#00ffcc',
     emoji: '💍',
-    image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m57
   },
   {
     id: 'm1',
@@ -321,7 +322,7 @@ export const deepSkyObjects: DeepSkyObject[] = [
     distanceLightYears: '6,500 Işık Yılı',
     color: '#ff6633',
     emoji: '💥',
-    image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=800&auto=format&fit=crop'
+    image: ASTRO_IMAGES.m1
   }
 ];
 

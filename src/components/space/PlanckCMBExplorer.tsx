@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Sparkles } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
@@ -11,6 +12,7 @@ export function PlanckCMBExplorer() {
   const [h0, setH0] = useState<number>(67.4); // Hubble constant km/s/Mpc
 
   const sphereCanvasRef = useRef<HTMLCanvasElement>(null);
+  const sphereVisible = useInView(sphereCanvasRef);
   const powerSpectrumCanvasRef = useRef<HTMLCanvasElement>(null);
   const rotRef = useRef({ yaw: 0, pitch: 0, isDragging: false, lastX: 0, lastY: 0 });
 
@@ -45,7 +47,7 @@ export function PlanckCMBExplorer() {
   // 3D Celestial CMB Sphere Canvas Render
   useEffect(() => {
     const canvas = sphereCanvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !sphereVisible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -130,7 +132,7 @@ export function PlanckCMBExplorer() {
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, []);
+  }, [sphereVisible]);
 
   // Power Spectrum Canvas Render (C_ell vs ell)
   useEffect(() => {
@@ -316,7 +318,7 @@ export function PlanckCMBExplorer() {
                   <span className="text-paper/70">Baryonik Madde (Ωb):</span>
                   <span className="text-solar font-bold">%{omegaB.toFixed(1)}</span>
                 </div>
-                <input
+                <input aria-label="Baryonik madde oranı"
                   type="range"
                   min={1}
                   max={15}
@@ -333,7 +335,7 @@ export function PlanckCMBExplorer() {
                   <span className="text-paper/70">Soğuk Karanlık Madde (Ωc):</span>
                   <span className="text-violet font-bold">%{omegaC.toFixed(1)}</span>
                 </div>
-                <input
+                <input aria-label="Soğuk karanlık madde oranı"
                   type="range"
                   min={5}
                   max={60}
@@ -350,7 +352,7 @@ export function PlanckCMBExplorer() {
                   <span className="text-paper/70">Karanlık Enerji (ΩΛ):</span>
                   <span className="text-lime font-bold">%{omegaL.toFixed(1)}</span>
                 </div>
-                <input
+                <input aria-label="Karanlık enerji oranı"
                   type="range"
                   min={20}
                   max={85}
@@ -367,7 +369,7 @@ export function PlanckCMBExplorer() {
                   <span className="text-paper/70">Hubble Sabiti (H₀):</span>
                   <span className="text-paper font-bold">{h0.toFixed(1)} km/s/Mpc</span>
                 </div>
-                <input
+                <input aria-label="Hubble sabiti"
                   type="range"
                   min={50}
                   max={85}

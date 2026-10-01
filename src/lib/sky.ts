@@ -1,8 +1,5 @@
 import { events, type AstronomicalEvent } from '@/data/events';
-
-const SYNODIC_MONTH = 29.530588853;
-// Reference new moon: 2000-01-06 18:14 UTC
-const REFERENCE_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+import { getMoonPhase } from '@/lib/astrophysics/skyDomeEphemeris';
 
 export interface MoonPhase {
   /** 0 → new, 0.5 → full, 1 → new */
@@ -13,23 +10,16 @@ export interface MoonPhase {
   waxing: boolean;
 }
 
+/** Moon phase from the true Sun–Moon elongation (same source as the planetarium and sky widgets). */
 export function moonPhase(date: Date): MoonPhase {
-  const days = (date.getTime() - REFERENCE_NEW_MOON) / 86400000;
-  const age = ((days % SYNODIC_MONTH) + SYNODIC_MONTH) % SYNODIC_MONTH;
-  const fraction = age / SYNODIC_MONTH;
-  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
-  const names = [
-    'Yeni Ay',
-    'Büyüyen Hilal',
-    'İlk Dördün',
-    'Büyüyen Şişkin Ay',
-    'Dolunay',
-    'Küçülen Şişkin Ay',
-    'Son Dördün',
-    'Küçülen Hilal',
-  ];
-  const name = names[Math.round(fraction * 8) % 8];
-  return { fraction, illumination, age, name, waxing: fraction < 0.5 };
+  const phase = getMoonPhase(date);
+  return {
+    fraction: phase.elongation / 360,
+    illumination: phase.illumination,
+    age: phase.ageDays,
+    name: phase.name,
+    waxing: phase.waxing,
+  };
 }
 
 export function upcomingEvents(from: Date, limit = 5): AstronomicalEvent[] {

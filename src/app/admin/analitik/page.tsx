@@ -27,15 +27,10 @@ import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 
-async function requestStats(demo: boolean, secretKey?: string): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
+async function requestStats(demo: boolean): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
   try {
-    const headers: Record<string, string> = {};
-    if (secretKey) {
-      headers['x-admin-key'] = secretKey;
-    }
     const res = await fetch(`/api/analytics/stats?demo=${demo}`, {
       cache: 'no-store',
-      headers,
       credentials: 'include'
     });
     if (res.status === 401) {
@@ -48,10 +43,18 @@ async function requestStats(demo: boolean, secretKey?: string): Promise<{ data: 
   }
 }
 
+function clearStoredKey() {
+  try {
+    localStorage.removeItem('admin_telemetry_key');
+    sessionStorage.removeItem('admin_telemetry_key');
+  } catch {
+    // storage may be unavailable (private mode); nothing to clear
+  }
+}
+
 export default function AdminAnalyticsPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
-  const [secretKey, setSecretKey] = useState<string>('');
   const [keyInput, setKeyInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
@@ -69,29 +72,16 @@ export default function AdminAnalyticsPage() {
   useEffect(() => {
     let ignore = false;
     const checkInitialAuth = async () => {
-      // 1. Check client storage
-      const storedKey = localStorage.getItem('admin_telemetry_key') || sessionStorage.getItem('admin_telemetry_key') || '';
-      
-      // 2. Check server cookie
+      // Earlier builds kept the raw key in web storage; purge it.
+      clearStoredKey();
+
+      // The signed, httpOnly session cookie is the only source of truth
       try {
-        const res = await fetch('/api/analytics/auth', {
-          credentials: 'include',
-          headers: storedKey ? { 'x-admin-key': storedKey } : undefined
-        });
+        const res = await fetch('/api/analytics/auth', { credentials: 'include', cache: 'no-store' });
         const data = await res.json().catch(() => ({}));
-        if (!ignore) {
-          if (data.authenticated || storedKey) {
-            setIsAuthenticated(true);
-            setSecretKey(storedKey);
-          } else {
-            setIsAuthenticated(false);
-          }
-        }
+        if (!ignore) setIsAuthenticated(Boolean(data.authenticated));
       } catch {
-        if (!ignore && storedKey) {
-          setIsAuthenticated(true);
-          setSecretKey(storedKey);
-        }
+        if (!ignore) setIsAuthenticated(false);
       } finally {
         if (!ignore) {
           setIsCheckingAuth(false);
@@ -123,15 +113,6 @@ export default function AdminAnalyticsPage() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.ok) {
-        const validKey = keyInput.trim();
-        if (rememberMe) {
-          localStorage.setItem('admin_telemetry_key', validKey);
-          sessionStorage.removeItem('admin_telemetry_key');
-        } else {
-          sessionStorage.setItem('admin_telemetry_key', validKey);
-          localStorage.removeItem('admin_telemetry_key');
-        }
-        setSecretKey(validKey);
         setIsAuthenticated(true);
         setKeyInput('');
       } else {
@@ -150,9 +131,7 @@ export default function AdminAnalyticsPage() {
     } catch {
       // ignore
     }
-    localStorage.removeItem('admin_telemetry_key');
-    sessionStorage.removeItem('admin_telemetry_key');
-    setSecretKey('');
+    clearStoredKey();
     setIsAuthenticated(false);
     setStats(null);
   };
@@ -173,20 +152,20 @@ export default function AdminAnalyticsPage() {
   const refresh = useCallback(() => {
     if (!isAuthenticated) return;
     setIsRefreshing(true);
-    requestStats(isDemoMode, secretKey).then(applyStats);
-  }, [isDemoMode, isAuthenticated, secretKey, applyStats]);
+    requestStats(isDemoMode).then(applyStats);
+  }, [isDemoMode, isAuthenticated, applyStats]);
 
   // Load on mount & source toggle
   useEffect(() => {
     if (!isAuthenticated) return;
     let ignore = false;
-    requestStats(isDemoMode, secretKey).then((result) => {
+    requestStats(isDemoMode).then((result) => {
       if (!ignore) applyStats(result);
     });
     return () => {
       ignore = true;
     };
-  }, [isAuthenticated, isDemoMode, secretKey, applyStats]);
+  }, [isAuthenticated, isDemoMode, applyStats]);
 
   // Periodic Auto-refresh
   useEffect(() => {
@@ -242,11 +221,14 @@ export default function AdminAnalyticsPage() {
 
           <form onSubmit={handleAuthSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="block font-mono text-[10px] uppercase tracking-wider text-muted">
+              <label htmlFor="admin-key" className="block font-mono text-[10px] uppercase tracking-wider text-muted">
                 Yönetici Erişim Anahtarı (Master Key)
               </label>
               <div className="relative flex items-center">
                 <input
+                  id="admin-key"
+                  name="admin-key"
+                  autoComplete="current-password"
                   type={showPassword ? 'text' : 'password'}
                   value={keyInput}
                   onChange={(e) => setKeyInput(e.target.value)}
@@ -260,6 +242,7 @@ export default function AdminAnalyticsPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 text-muted hover:text-paper transition-colors cursor-pointer"
                   title={showPassword ? 'Gizle' : 'Göster'}
+                  aria-label={showPassword ? 'Anahtarı gizle' : 'Anahtarı göster'}
                 >
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
@@ -279,7 +262,7 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {authError && (
-              <div className="border border-rose/40 bg-rose/10 p-2.5 text-xs font-mono text-rose flex items-center gap-2">
+              <div role="alert" className="border border-rose/40 bg-rose/10 p-2.5 text-xs font-mono text-rose flex items-center gap-2">
                 <AlertCircle size={14} className="shrink-0" />
                 <span>{authError}</span>
               </div>
@@ -309,7 +292,7 @@ export default function AdminAnalyticsPage() {
               ← Ana Sayfaya Dön
             </Link>
             <span className="text-[10px] text-muted/60">
-              ASTRO-TR SECURE TELEMETRY
+              SPACETOUR TR · GÜVENLİ TELEMETRİ
             </span>
           </div>
         </div>

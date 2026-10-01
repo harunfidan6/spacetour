@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useMemo, type CSSProperties } from 'react';
-import { ArrowUpRight, Zap, Orbit } from 'lucide-react';
+import { ArrowUpRight, Orbit } from 'lucide-react';
 import { useSpace, type DestinationId } from '@/components/space/SpaceContext';
 import { Scramble, Ticks } from '@/components/motion/primitives';
 import { SectionHead, Em } from '@/components/ui/Headings';
@@ -192,17 +192,15 @@ function TelemetryBody({
   index: number;
   orbitMode: 'didactic' | 'j2000';
 }) {
-  const isPlanet = d.id in PLANET_EPHEMERIS;
-  const ephem = isPlanet ? computePlanetState(d.id as keyof typeof PLANET_EPHEMERIS) : null;
-  const currentJD = getJulianDate();
-
   const rows: { k: string; v: string }[] = useMemo(() => {
-    if (orbitMode === 'j2000' && ephem) {
+    // Ephemeris is only evaluated in J2000 mode, which is always entered on the client
+    if (orbitMode === 'j2000' && d.id in PLANET_EPHEMERIS) {
+      const ephem = computePlanetState(d.id as keyof typeof PLANET_EPHEMERIS);
       return [
         { k: 'Uzaklık (Güneş)', v: `${ephem.rAU.toFixed(3)} AU (${Math.round(ephem.rKm / 1e6)}M km)` },
         { k: 'Yörünge Hızı', v: `${ephem.speedKmS.toFixed(2)} km/s` },
         { k: 'Gerçek Anomali (ν)', v: `${ephem.trueAnomalyDeg.toFixed(1)}°` },
-        { k: 'J2000 Efemeris', v: `JD ${currentJD.toFixed(2)}` },
+        { k: 'J2000 Efemeris', v: `JD ${getJulianDate().toFixed(2)}` },
       ];
     }
     return [
@@ -211,7 +209,7 @@ function TelemetryBody({
       { k: 'Sıcaklık', v: d.temperature },
       { k: 'Yerçekimi', v: d.gravity },
     ];
-  }, [orbitMode, ephem, currentJD, d.distance, d.speed, d.temperature, d.gravity]);
+  }, [orbitMode, d.id, d.distance, d.speed, d.temperature, d.gravity]);
 
   return (
     <>

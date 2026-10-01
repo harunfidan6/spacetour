@@ -53,7 +53,7 @@ export default function GozlemeviPage() {
 
   const change = (nextTarget: DeepSkyTarget, nextMode: WavelengthMode) => {
     if (nextTarget.id === target.id && nextMode === mode) return;
-    setPrevious(view.image);
+    setPrevious(view.image.src);
     setTarget(nextTarget);
     setMode(nextMode);
   };
@@ -162,7 +162,7 @@ export default function GozlemeviPage() {
             )}
             <div data-exposure className="absolute inset-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={view.image} alt={`${target.name} — ${band.label} gözlemi`} className="h-full w-full object-cover" />
+              <img src={view.image.src} alt={`${target.name} — ${band.label} gözlemi`} className="h-full w-full object-cover" />
               <div className="absolute inset-0 mix-blend-color" style={{ background: view.color, opacity: 0.35 }} />
             </div>
             <span data-wipe-edge aria-hidden className="absolute inset-y-0 w-[2px] bg-paper shadow-[0_0_24px_4px_var(--paper)]" style={{ visibility: 'hidden' }} />

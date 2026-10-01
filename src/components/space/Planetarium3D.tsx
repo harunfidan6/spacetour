@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { useInView } from '@/lib/useInView';
+import { matchesQuery } from '@/lib/text';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -21,7 +23,6 @@ import {
 import {
   PlanetGlyph,
   TelescopeGlyph,
-  AstrolabeGlyph,
   GalaxySpiralGlyph,
   VectorMoonPhase
 } from '@/components/ui/CosmicGlyphs';
@@ -39,9 +40,7 @@ import {
   ChevronDown,
   Moon,
   Sparkles,
-  Eye,
-  Orbit,
-  Sun
+  Orbit
 } from 'lucide-react';
 
 const SPHERE_RADIUS = 90;
@@ -200,7 +199,7 @@ function MilkyWayDustBelt({
   nightVision: boolean;
   opacity: number;
 }) {
-  const mwData = useMemo(() => generateMilkyWayParticles(3400, SPHERE_RADIUS), []);
+  const mwData = useMemo(() => generateMilkyWayParticles(3400), []);
 
   const { positions, colors } = useMemo(() => {
     const pos = new Float32Array(mwData.galacticCoords.length * 3);
@@ -609,8 +608,11 @@ function RealTimeDeepSky({
 // MAIN 3D PLANETARIUM COMPONENT
 // -------------------------------------------------------------
 export function Planetarium3D() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const stageVisible = useInView(stageRef);
   const [selectedLocation, setSelectedLocation] = useState<UserLocation>(POPULAR_LOCATIONS[0]);
   const [isGpsLoading, setIsGpsLoading] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeFlowRate, setTimeFlowRate] = useState(1);
   const [useLocalHorizon, setUseLocalHorizon] = useState(true);
@@ -643,9 +645,10 @@ export function Planetarium3D() {
   // GPS Auto-detection
   const handleAutoGps = () => {
     if (!navigator.geolocation) {
-      alert('Cihazınızda GPS konumu desteklenmiyor.');
+      setGpsError('Cihazınızda GPS konumu desteklenmiyor.');
       return;
     }
+    setGpsError(null);
     setIsGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -660,7 +663,11 @@ export function Planetarium3D() {
       },
       (err) => {
         console.warn('GPS Error:', err);
-        alert('Konum izni alınamadı. Şehir listesinden seçim yapabilirsiniz.');
+        setGpsError(
+          err.code === err.PERMISSION_DENIED
+            ? 'Konum izni verilmedi. Şehir listesinden seçim yapabilirsiniz.'
+            : 'Konum alınamadı. Şehir listesinden seçim yapabilirsiniz.'
+        );
         setIsGpsLoading(false);
       },
       { timeout: 10000, enableHighAccuracy: true }
@@ -670,20 +677,19 @@ export function Planetarium3D() {
   // Search filter
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
     const starMatches = stars
-      .filter((s) => s.name.toLowerCase().includes(q) || s.turkishName?.toLowerCase().includes(q))
+      .filter((s) => matchesQuery(searchQuery, s.name, s.turkishName))
       .slice(0, 4)
       .map((s) => ({ type: 'star' as const, data: s }));
     const dsoMatches = deepSkyObjects
-      .filter((d) => d.name.toLowerCase().includes(q) || d.catalog.toLowerCase().includes(q))
+      .filter((d) => matchesQuery(searchQuery, d.name, d.catalog))
       .slice(0, 3)
       .map((d) => ({ type: 'dso' as const, data: d }));
     return [...starMatches, ...dsoMatches];
   }, [searchQuery]);
 
   return (
-    <div className={`relative h-full w-full overflow-hidden select-none ${nightVision ? 'bg-[#090000]' : 'bg-[#020206]'}`}>
+    <div ref={stageRef} className={`relative h-full w-full overflow-hidden select-none ${nightVision ? 'bg-[#090000]' : 'bg-[#020206]'}`}>
       {/* 1. Optional Live AR Camera Overlay */}
       <ArCameraOverlay
         isActive={isArActive}
@@ -694,6 +700,7 @@ export function Planetarium3D() {
 
       {/* 2. 3D WebGL Canvas */}
       <Canvas
+        frameloop={stageVisible ? 'always' : 'never'}
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 0.1], fov: 65, near: 0.1, far: 300 }}
         className="h-full w-full cursor-grab active:cursor-grabbing z-10"
@@ -787,6 +794,9 @@ export function Planetarium3D() {
         {/* Location & Real-Time Sidereal Indicator */}
         <div className="pointer-events-auto relative">
           <button
+            type="button"
+            aria-expanded={isLocDropdownOpen}
+            aria-haspopup="true"
             onClick={() => setIsLocDropdownOpen(!isLocDropdownOpen)}
             className="flex items-center gap-2.5 border border-line bg-ink/90 px-3.5 py-2 text-xs font-mono backdrop-blur-xl shadow-2xl hover:border-paper/40 transition-colors text-left cursor-pointer"
           >
@@ -797,7 +807,7 @@ export function Planetarium3D() {
                 <ChevronDown size={11} className="text-muted" />
               </div>
               <div className="label text-[9px] text-muted">
-                {selectedLocation.latitude}°K · LST: {(currentLst / 15).toFixed(1)}h
+                {Math.abs(selectedLocation.latitude)}°{selectedLocation.latitude >= 0 ? 'K' : 'G'} · LST: {(currentLst / 15).toFixed(1)}h
               </div>
             </div>
           </button>
@@ -806,6 +816,7 @@ export function Planetarium3D() {
           {isLocDropdownOpen && (
             <div className="absolute top-full left-0 mt-1 w-64 border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1 font-mono text-xs">
               <button
+                type="button"
                 onClick={handleAutoGps}
                 disabled={isGpsLoading}
                 className="w-full flex items-center gap-2 border border-line bg-ink-2 text-lime p-2 hover:bg-ink-3 transition-colors label text-left cursor-pointer"
@@ -813,6 +824,11 @@ export function Planetarium3D() {
                 <RefreshCw size={12} className={isGpsLoading ? 'animate-spin' : ''} />
                 <span>{isGpsLoading ? 'GPS Alınıyor...' : 'Otomatik GPS Konumu Al'}</span>
               </button>
+              {gpsError && (
+                <p role="alert" className="border border-rose/40 bg-rose/10 px-2 py-1.5 text-[10px] leading-snug text-rose">
+                  {gpsError}
+                </p>
+              )}
 
               <div className="label text-[9px] text-muted uppercase px-2 pt-2">
                 Hazır Şehirler
@@ -821,6 +837,7 @@ export function Planetarium3D() {
               <div className="max-h-48 overflow-y-auto space-y-0.5">
                 {POPULAR_LOCATIONS.map((loc) => (
                   <button
+                    type="button"
                     key={loc.city}
                     onClick={() => {
                       setSelectedLocation(loc);
@@ -843,7 +860,7 @@ export function Planetarium3D() {
         <div className="pointer-events-auto relative w-60 sm:w-72">
           <div className="flex items-center gap-2 border border-line bg-ink/90 px-3 py-1.5 backdrop-blur-xl text-xs">
             <Search size={13} className="text-muted" />
-            <input
+            <input aria-label="Yıldız veya derin uzay nesnesi ara"
               type="text"
               placeholder="Yıldız veya Bulutsu ara..."
               value={searchQuery}
@@ -860,9 +877,10 @@ export function Planetarium3D() {
           {/* Search Dropdown */}
           {searchResults.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-30 font-mono text-xs">
-              {searchResults.map((res, i) => (
-                <div
-                  key={i}
+              {searchResults.map((res) => (
+                <button
+                  type="button"
+                  key={`${res.type}-${res.data.name}`}
                   onClick={() => {
                     if (res.type === 'star') {
                       setSelectedStar(res.data);
@@ -875,20 +893,20 @@ export function Planetarium3D() {
                     }
                     setSearchQuery('');
                   }}
-                  className="flex items-center justify-between p-2 cursor-pointer hover:bg-ink-2 text-paper transition-colors"
+                  className="flex w-full items-center justify-between p-2 text-left cursor-pointer hover:bg-ink-2 focus-visible:bg-ink-2 text-paper transition-colors"
                 >
-                  <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-2">
                     {res.type === 'star' ? (
                       <TelescopeGlyph size={12} className="text-lime" />
                     ) : (
                       <GalaxySpiralGlyph size={12} className="text-gold" />
                     )}
                     <span className="font-bold">{res.data.name}</span>
-                  </div>
+                  </span>
                   <span className="label text-[10px] text-muted">
                     {res.type === 'star' ? `Mag ${res.data.magnitude}` : res.data.type}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -1082,7 +1100,7 @@ export function Planetarium3D() {
                 <span className="label text-muted block text-[10px]">Ay Aydınlanma Oranı</span>
                 <span className="font-bold text-paper">%{Math.round(selectedBody.phaseFraction * 100)}</span>
               </div>
-              <VectorMoonPhase illumination={Math.round(selectedBody.phaseFraction * 100)} size={32} className="text-paper" />
+              <VectorMoonPhase illumination={Math.round(selectedBody.phaseFraction * 100)} waning={(selectedBody.phaseAngle ?? 0) > 180} size={32} className="text-paper" />
             </div>
           )}
         </div>
@@ -1109,7 +1127,7 @@ export function Planetarium3D() {
             <div className="relative h-32 w-full border border-line overflow-hidden mb-3 bg-black">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={selectedDso.image}
+                src={selectedDso.image.src}
                 alt={selectedDso.name}
                 className="h-full w-full object-cover"
               />

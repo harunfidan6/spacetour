@@ -10,10 +10,11 @@ import { LiveClock, Magnetic } from '@/components/motion/primitives';
 import { SITE_ROUTES } from '@/lib/routes';
 
 const SOURCES = [
-  { label: 'NASA Open APIs', href: 'https://api.nasa.gov/' },
+  { label: 'NASA Science', href: 'https://science.nasa.gov/' },
   { label: 'ESA / Hubble', href: 'https://esahubble.org/' },
   { label: 'NOAA SWPC', href: 'https://www.swpc.noaa.gov/' },
-  { label: 'JPL Horizons', href: 'https://ssd.jpl.nasa.gov/horizons/' },
+  { label: 'JPL yörünge elemanları', href: 'https://ssd.jpl.nasa.gov/planets/approx_pos.html' },
+  { label: 'Where the ISS at?', href: 'https://wheretheiss.at/' },
 ];
 
 export function Footer() {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { gsap, ScrollTrigger, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { Scramble } from '@/components/motion/primitives';
@@ -23,6 +23,8 @@ export function LabDeck({ labs, prefix = 'L', accent = 'var(--page-accent)' }: {
   const [active, setActive] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const uid = useId();
   const lab = labs[active];
 
   // Follow #lab-<id> (initial load and back/forward).
@@ -70,6 +72,23 @@ export function LabDeck({ labs, prefix = 'L', accent = 'var(--page-accent)' }: {
 
   const code = (i: number) => `${prefix}${i + 1}`;
 
+  // WAI-ARIA tabs: arrows move between modules, Home/End jump to the ends
+  const onTabKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    const keys: Record<string, number> = {
+      ArrowRight: active + 1,
+      ArrowDown: active + 1,
+      ArrowLeft: active - 1,
+      ArrowUp: active - 1,
+      Home: 0,
+      End: labs.length - 1,
+    };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    const next = (keys[e.key] + labs.length) % labs.length;
+    select(next);
+    tabRefs.current[next]?.focus();
+  };
+
   return (
     <div ref={root} className="grid gap-8 lg:grid-cols-12 lg:gap-10">
       <nav aria-label="Modüller" className="min-w-0 lg:col-span-3">
@@ -80,15 +99,22 @@ export function LabDeck({ labs, prefix = 'L', accent = 'var(--page-accent)' }: {
               {String(active + 1).padStart(2, '0')} / {String(labs.length).padStart(2, '0')}
             </span>
           </div>
-          <ol role="tablist" className="no-scrollbar -mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-t lg:border-line lg:px-0">
+          <ol role="tablist" aria-label="Modüller" aria-orientation="vertical" className="no-scrollbar -mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-t lg:border-line lg:px-0">
             {labs.map((l, i) => {
               const on = i === active;
               return (
-                <li key={l.id} className="shrink-0 lg:border-b lg:border-line">
+                <li key={l.id} role="presentation" className="shrink-0 lg:border-b lg:border-line">
                   <button
+                    ref={(el) => {
+                      tabRefs.current[i] = el;
+                    }}
                     type="button"
                     role="tab"
+                    id={`${uid}-tab-${i}`}
                     aria-selected={on}
+                    aria-controls={`${uid}-panel`}
+                    tabIndex={on ? 0 : -1}
+                    onKeyDown={onTabKey}
                     onClick={() => select(i)}
                     className={`group relative flex w-full items-baseline gap-3 overflow-hidden rounded-full border px-4 py-2 text-left transition-colors lg:rounded-none lg:border-0 lg:px-0 lg:py-3.5 ${
                       on ? 'border-transparent bg-paper text-ink lg:bg-transparent lg:text-paper' : 'border-line text-paper/60 hover:text-paper'
@@ -130,7 +156,15 @@ export function LabDeck({ labs, prefix = 'L', accent = 'var(--page-accent)' }: {
           </div>
         </header>
 
-        <div ref={stage} key={lab.id} className="module" role="tabpanel" aria-label={lab.title}>
+        <div
+          ref={stage}
+          key={lab.id}
+          id={`${uid}-panel`}
+          className="module"
+          role="tabpanel"
+          aria-labelledby={`${uid}-tab-${active}`}
+          tabIndex={0}
+        >
           {lab.render()}
         </div>
 

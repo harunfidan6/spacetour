@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useInView } from '@/lib/useInView';
 import { Flame } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 
@@ -23,6 +24,7 @@ export function AsteroidImpactSimulator() {
   const [diameter, setDiameter] = useState<number>(340);
   const [speed, setSpeed] = useState<number>(25);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const visible = useInView(canvasRef);
 
   const radiusM = diameter / 2;
   const volumeM3 = (4 / 3) * Math.PI * Math.pow(radiusM, 3);
@@ -36,7 +38,7 @@ export function AsteroidImpactSimulator() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !visible) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -108,7 +110,7 @@ export function AsteroidImpactSimulator() {
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [diameter, speed, megatonsTNT]);
+  }, [diameter, speed, megatonsTNT, visible]);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -161,7 +163,7 @@ export function AsteroidImpactSimulator() {
               {diameter >= 1000 ? `${(diameter / 1000).toFixed(1)} km` : `${diameter} metre`}
             </span>
           </div>
-          <input
+          <input aria-label="Asteroit çapı"
             type="range"
             min="10"
             max="10000"
@@ -178,7 +180,7 @@ export function AsteroidImpactSimulator() {
             <span className="label text-muted">GİRİŞ HIZI</span>
             <span className="display display-tight text-base font-bold text-paper">{speed} km/s</span>
           </div>
-          <input
+          <input aria-label="Giriş hızı"
             type="range"
             min="11"
             max="72"

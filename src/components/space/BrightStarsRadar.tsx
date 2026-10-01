@@ -63,7 +63,7 @@ const BRIGHTEST_STARS: BrightStar[] = [
   },
   {
     id: 'arcturus',
-    name: 'Arcturus (Akbaba)',
+    name: 'Arcturus (Arktürüs)',
     bayer: 'α Boötis',
     constellation: 'Çoban (Boötes)',
     magnitude: -0.05,

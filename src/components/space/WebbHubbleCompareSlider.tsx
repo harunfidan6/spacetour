@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import {
   Eye,
   Sparkles,
@@ -21,6 +22,7 @@ interface ComparisonTarget {
     instrument: string;
     wavelength: string;
     image: string;
+    credit: string;
     details: string;
   };
   webb: {
@@ -28,6 +30,7 @@ interface ComparisonTarget {
     instrument: string;
     wavelength: string;
     image: string;
+    credit: string;
     details: string;
   };
   scientificInsight: string;
@@ -42,16 +45,18 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
     description: 'Yıldız oluşum bölgesinin gaz ve toz duvarı. Yeni doğan bebek yıldızların yaydığı morötesi ışınlar ve yıldız rüzgarları bulutsuyu oyarak devasa kozmik uçurumlar yaratır.',
     hubble: {
       label: 'Hubble (Görünür Işık)',
-      instrument: 'WFC3 / Görünür Işık',
-      wavelength: '0.4 – 0.8 µm',
-      image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1200&auto=format&fit=crop',
+      instrument: 'ACS + WFPC2 (2006–2008)',
+      wavelength: 'Hα · [S II] · [O III]',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/NGC_3324_Hubble.jpg/1280px-NGC_3324_Hubble.jpg',
+      credit: 'NASA, ESA, Hubble Heritage Team (STScI/AURA)',
       details: 'Yoğun toz perdesi arka plandaki bebek yıldızları ve proto-gezegen disklerini tamamen gizler.'
     },
     webb: {
       label: 'James Webb (Kızılötesi)',
       instrument: 'NIRCam / Yakın Kızılötesi',
-      wavelength: '0.6 – 5.0 µm',
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
+      wavelength: '0.9 – 4.4 µm',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/NASA%E2%80%99s_Webb_Reveals_Cosmic_Cliffs%2C_Glittering_Landscape_of_Star_Birth.jpg/1280px-NASA%E2%80%99s_Webb_Reveals_Cosmic_Cliffs%2C_Glittering_Landscape_of_Star_Birth.jpg',
+      credit: 'NASA, ESA, CSA, STScI',
       details: 'Kızılötesi dalgalar kalın tozu delip geçer; yüzlerce gizli proto-yıldız ve gaz fışkırması görünür hale gelir.'
     },
     scientificInsight: 'Webb’in NIRCam kamerası, optik dalgaları bloke eden mikron boyutlu toz taneciklerini şeffaf kılarak yıldız oluşumunun en erken evrelerini yakalar.'
@@ -64,16 +69,18 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
     description: 'Kartal Bulutsusu (M16) kalbinde yer alan, 4-5 ışık yılı uzunluğundaki devasa soğuk moleküler hidrojen gazı ve kozmik toz kuleleri.',
     hubble: {
       label: 'Hubble (Görünür Spektrum)',
-      instrument: 'WFPC2 / Optik Filtreler',
-      wavelength: '0.5 – 0.7 µm',
-      image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1200&auto=format&fit=crop',
+      instrument: 'WFC3/UVIS (2014)',
+      wavelength: '0.50 – 0.67 µm',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg/1280px-Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg',
+      credit: 'NASA, ESA, Hubble Heritage Team (STScI/AURA)',
       details: 'Sütunlar karanlık monolitik heykeller gibi durur. Sadece kenarlardaki iyonize hidrojen ışıması seçilebilir.'
     },
     webb: {
       label: 'James Webb (Kızılötesi)',
-      instrument: 'NIRCam & MIRI Bileşimi',
-      wavelength: '0.9 – 28 µm',
-      image: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1200&auto=format&fit=crop',
+      instrument: 'NIRCam / Yakın Kızılötesi',
+      wavelength: '0.9 – 4.4 µm',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Pillars_of_Creation_(NIRCam_Image).jpg/1280px-Pillars_of_Creation_(NIRCam_Image).jpg',
+      credit: 'NASA, ESA, CSA, STScI; J. DePasquale, A. Koekemoer, A. Pagan',
       details: 'Sütunların içindeki gaz düğümleri parlak lav lavraları gibi ışıma yapar; dışarı püsküren kırmızı şok dalgaları görülür.'
     },
     scientificInsight: 'Sütunların uçlarındaki parlak kırmızı küreler, kendi yerçekimleri altında çöken ve henüz birkaç yüz bin yıllık olan bebek yıldızlardır.'
@@ -86,16 +93,18 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
     description: 'Ömrünün sonuna gelen bir yıldızın dış gaz kabuklarını uzaya fırlatmasıyla oluşan genişleyen gezegenimsi bulutsu.',
     hubble: {
       label: 'Hubble (Optik)',
-      instrument: 'WFC3',
+      instrument: 'WFPC2 (1998)',
       wavelength: 'Görünür Işık',
-      image: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?q=80&w=1200&auto=format&fit=crop',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/a/af/NGC_3132.jpg',
+      credit: 'Hubble Heritage Team (STScI/AURA/NASA)',
       details: 'Merkezde sadece parlak beyaz bir yıldız seçilebilir; gaz halkaları simetrik görünür.'
     },
     webb: {
       label: 'James Webb (MIRI)',
       instrument: 'MIRI / Orta Kızılötesi',
-      wavelength: '5.0 – 28 µm',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+      wavelength: '7.7 – 18 µm',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/5/54/Southern_Ring_Nebula_%28MIRI_Image%29_%28weic2207c%29.jpeg',
+      credit: 'ESA/Webb, NASA & CSA, STScI (CC BY 4.0)',
       details: 'İlk kez gaz fırlatan asıl ölmekte olan ikinci yıldızın kalın toz kılıfı içinde saklandığı ortaya çıkarıldı.'
     },
     scientificInsight: 'MIRI dedektörü, parlak ana yıldızın yanında dönen ve toza gömülü ikinci soluk beyaz cüceyi tarihte ilk kez kanıtlamıştır.'
@@ -108,16 +117,18 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
     description: 'Büyük patlamadan sadece birkaç yüz milyon yıl sonra var olmuş en eski galaksileri kütleçekimsel mercekleme yöntemiyle büyüten dev galaksi kümesi.',
     hubble: {
       label: 'Hubble Derin Alan',
-      instrument: 'ACS / WFC3 (Haftalar süren pozlama)',
+      instrument: 'ACS + WFC3 · RELICS (2017)',
       wavelength: 'Optik + Yakın IR',
-      image: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1200&auto=format&fit=crop',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/NASA-HubbleSpaceTelescope-DeepField-2017.jpg',
+      credit: 'NASA, ESA, RELICS',
       details: 'Galaksiler soluk leke halindedir; arka plandaki bükülmüş kütleçekim yayları belirsizdir.'
     },
     webb: {
       label: 'Webb İlk Derin Alan (Deep Field)',
       instrument: 'NIRCam (12.5 saatlik pozlama)',
-      wavelength: '0.6 – 5.0 µm',
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
+      wavelength: '0.9 – 4.4 µm',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Webb%27s_First_Deep_Field.jpg/1280px-Webb%27s_First_Deep_Field.jpg',
+      credit: 'NASA, ESA, CSA, STScI',
       details: '13.1 milyar yıl öncesine ait binlerce ilk nesil galaksi, kızıla kaymış keskin kütleçekim yayları halinde netleşir.'
     },
     scientificInsight: 'Kütleçekimsel merceklenme etkisi, Albert Einstein’ın Genel Görelilik kuramını doğrular; dev kütle arkasındaki ışığı büküp büyüterek doğal bir kozmik teleskop oluşturur.'
@@ -198,6 +209,8 @@ export function WebbHubbleCompareSlider() {
           return (
             <button
               key={t.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => {
                 setSelectedTarget(t);
                 setSliderPosition(50);
@@ -208,7 +221,7 @@ export function WebbHubbleCompareSlider() {
                   : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                 <span className={`label ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
                   Hedef 0{idx + 1}
                 </span>
@@ -238,22 +251,21 @@ export function WebbHubbleCompareSlider() {
       >
         {/* Layer 1: Right Side - James Webb (Infrared) Background */}
         <div className="absolute inset-0 w-full h-full">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={selectedTarget.webb.image}
-            alt={selectedTarget.webb.label}
-            className="w-full h-full object-cover filter brightness-110 contrast-105"
+            alt={`${selectedTarget.name} — ${selectedTarget.webb.label}`}
+            fill
+            sizes="(min-width: 1024px) 70vw, 100vw"
+            className="object-cover"
             draggable={false}
           />
-          {/* Webb Color Grade / Infrared Glow Tint */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-rose-950/40 via-transparent to-amber-900/20 mix-blend-screen pointer-events-none" />
 
           {/* Right Label (Webb) */}
-          <div className="absolute right-4 top-4 z-10 flex flex-col items-end gap-1 pointer-events-none">
-            <span className="label px-3 py-1 bg-rose-signal text-ink font-bold backdrop-blur">
+          <div className="absolute right-3 top-3 z-10 flex max-w-[46%] flex-col items-end gap-1 pointer-events-none sm:right-4 sm:top-4">
+            <span className="label max-w-full truncate px-2 py-1 bg-rose-signal text-ink font-bold backdrop-blur sm:px-3">
               ★ {selectedTarget.webb.label}
             </span>
-            <span className="label text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur">
+            <span className="label hidden text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur sm:block">
               {selectedTarget.webb.instrument} · {selectedTarget.webb.wavelength}
             </span>
           </div>
@@ -264,22 +276,21 @@ export function WebbHubbleCompareSlider() {
           className="absolute inset-0 w-full h-full overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={selectedTarget.hubble.image}
-            alt={selectedTarget.hubble.label}
-            className="w-full h-full object-cover filter saturate-90 brightness-95"
+            alt={`${selectedTarget.name} — ${selectedTarget.hubble.label}`}
+            fill
+            sizes="(min-width: 1024px) 70vw, 100vw"
+            className="object-cover"
             draggable={false}
           />
-          {/* Optical Fog / Cold Filter */}
-          <div className="absolute inset-0 bg-blue-950/20 mix-blend-screen pointer-events-none" />
 
           {/* Left Label (Hubble) */}
-          <div className="absolute left-4 top-4 z-10 flex flex-col items-start gap-1 pointer-events-none">
-            <span className="label px-3 py-1 bg-ink/90 border border-line text-paper font-bold backdrop-blur">
+          <div className="absolute left-3 top-3 z-10 flex max-w-[46%] flex-col items-start gap-1 pointer-events-none sm:left-4 sm:top-4">
+            <span className="label max-w-full truncate px-2 py-1 bg-ink/90 border border-line text-paper font-bold backdrop-blur sm:px-3">
               {selectedTarget.hubble.label}
             </span>
-            <span className="label text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur">
+            <span className="label hidden text-[10px] text-paper/80 bg-ink/80 px-2 py-0.5 border border-line backdrop-blur sm:block">
               {selectedTarget.hubble.instrument} · {selectedTarget.hubble.wavelength}
             </span>
           </div>
@@ -304,6 +315,10 @@ export function WebbHubbleCompareSlider() {
           </span>
         </div>
       </div>
+
+      <p className="label -mt-5 text-[10px] leading-relaxed text-muted">
+        Görseller · Hubble: {selectedTarget.hubble.credit} — Webb: {selectedTarget.webb.credit}
+      </p>
 
       {/* Target Scientific Deep-Dive & Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line">

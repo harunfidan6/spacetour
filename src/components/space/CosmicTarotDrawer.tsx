@@ -1,385 +1,452 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Sparkles,
   Shuffle,
   Shield,
   Lightbulb,
-  HeartHandshake
+  HeartHandshake,
+  Compass,
+  RotateCw,
+  Eye,
+  Layers,
+  Flame,
+  Globe2,
+  Wind,
+  Droplets
 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import {
   ZodiacGlyph,
   PlanetGlyph,
+  AstrolabeGlyph,
   FireElementGlyph,
   EarthElementGlyph,
   AirElementGlyph,
-  WaterElementGlyph,
-  AstrolabeGlyph
+  WaterElementGlyph
 } from '@/components/ui/CosmicGlyphs';
+import { MAJOR_ARCANA_DECK, type TarotCard } from '@/data/tarotDeck';
 
-export interface CosmicCard {
-  id: string;
-  number: string;
-  name: string;
-  archetype: string;
-  associatedZodiacOrPlanet: string;
-  element: 'Ateş' | 'Toprak' | 'Hava' | 'Su' | 'Eter';
-  glyphType: 'zodiac' | 'planet';
-  glyphId: string;
-  cardColor: string;
-  message: string;
-  shadowWarning: string;
-  affirmation: string;
+export type SpreadType = 'single' | 'three' | 'decision';
+
+interface DrawnCard {
+  card: TarotCard;
+  isReversed: boolean;
+  positionLabel: string;
+  positionDesc: string;
 }
 
-export const COSMIC_TAROT_DECK: CosmicCard[] = [
-  {
-    id: 'imparator',
-    number: 'IV',
-    name: 'İmparator',
-    archetype: 'Egemen Lider & İnşa Edici İrade',
-    associatedZodiacOrPlanet: 'Koç Burcu (Mars)',
-    element: 'Ateş',
-    glyphType: 'zodiac',
-    glyphId: 'koc',
-    cardColor: 'from-gold/30 via-red-950/20 to-ink',
-    message: 'Bugün hayatınızda düzen ve disiplin kurma günü. Fikirlerinizi somut kurallarla koruyun, sınırlarınızı net çizin ve liderlik etmekten çekinmeyin.',
-    shadowWarning: 'Aşırı katılık, inatçılık ve başkalarının fikirlerine alan tanımama riskine dikkat edin.',
-    affirmation: 'Kendi hayatımın egemen mimarıyım; kararlarımı cesaret ve bilgelikle alıyorum.'
-  },
-  {
-    id: 'aziz',
-    number: 'V',
-    name: 'Aziz (Hierophant)',
-    archetype: 'Kadim Bilgelik & Ruhsal Rehber',
-    associatedZodiacOrPlanet: 'Boğa Burcu (Venüs)',
-    element: 'Toprak',
-    glyphType: 'zodiac',
-    glyphId: 'boga',
-    cardColor: 'from-lime/30 via-green-950/20 to-ink',
-    message: 'Geleneksel bilgi, derin ahlaki değerler ve sabır bugün size en büyük gücü verecektir. Güvendiğiniz mentörlerin sözlerine kulak verin.',
-    shadowWarning: 'Değişime kapalı dogmatik inançlara ve geçmişin kalıplarına takılı kalmayın.',
-    affirmation: 'Doğanın ve kadim bilgeliğin sessiz rehberliğine güveniyorum.'
-  },
-  {
-    id: 'asiklar',
-    number: 'VI',
-    name: 'Âşıklar (The Lovers)',
-    archetype: 'Kozmik Birlik & Kalp Seçimi',
-    associatedZodiacOrPlanet: 'İkizler Burcu (Merkür)',
-    element: 'Hava',
-    glyphType: 'zodiac',
-    glyphId: 'ikizler',
-    cardColor: 'from-primary/30 via-blue-950/20 to-ink',
-    message: 'Önemli bir yol ayrımında kalbinizin pusulasını takip edin. Zihinsel çelişkileri bir kenara bırakıp içsel bütünlüğünüzle uyumlu olan seçimi yapın.',
-    shadowWarning: 'Kararsızlık, yüzeysellik veya başkalarını memnun etmek için kendi değerlerinizden ödün verme.',
-    affirmation: 'Her seçimimde sevgi, dürüstlük ve ruhsal uyumu temel alıyorum.'
-  },
-  {
-    id: 'araba',
-    number: 'VII',
-    name: 'Araba (The Chariot)',
-    archetype: 'Zafer & Odaklanmış Kararlılık',
-    associatedZodiacOrPlanet: 'Yengeç Burcu (Ay)',
-    element: 'Su',
-    glyphType: 'zodiac',
-    glyphId: 'yengec',
-    cardColor: 'from-blue-600/30 via-indigo-950/20 to-ink',
-    message: 'Zıt duyguları ve farklı güçleri tek bir amaca yönlendirerek zafere ulaşabilirsiniz. Duygusal disiplininiz sizi istediğiniz menzile taşıyacak.',
-    shadowWarning: 'Agresif hırs, kontrolü kaybetme korkusu veya çevrenizdekileri ezerek ilerleme tehlikesi.',
-    affirmation: 'İçsel dengemle rotamı çiziyor, tüm fırtınalara rağmen hedefime güvenle ilerliyorum.'
-  },
-  {
-    id: 'guc',
-    number: 'VIII',
-    name: 'Güç (Strength)',
-    archetype: 'Şefkatli Cesaret & İçsel Ehlileştirme',
-    associatedZodiacOrPlanet: 'Aslan Burcu (Güneş)',
-    element: 'Ateş',
-    glyphType: 'zodiac',
-    glyphId: 'aslan',
-    cardColor: 'from-gold/30 via-yellow-950/20 to-ink',
-    message: 'Gerçek güç kaslarda veya kaba kuvvette değil, kalbinizin sabrında ve şefkatindedir. Karşınıza çıkan agresif enerjileri nezaketle dönüştürün.',
-    shadowWarning: 'Kibir, ego çatışması veya öfkeyi bastırıp aniden patlama riski.',
-    affirmation: 'En vahşi engelleri bile sakinliğimin ve koşulsuz sevgimin gücüyle aşıyorum.'
-  },
-  {
-    id: 'ermis',
-    number: 'IX',
-    name: 'Ermiş (The Hermit)',
-    archetype: 'İçsel Işık & Hakikat Arayışı',
-    associatedZodiacOrPlanet: 'Başak Burcu (Merkür)',
-    element: 'Toprak',
-    glyphType: 'zodiac',
-    glyphId: 'basak',
-    cardColor: 'from-teal-600/30 via-neutral-900/30 to-ink',
-    message: 'Gürültülü dünyadan bir anlığına geri çekilip iç sesinizi dinleme zamanı. İhtiyacınız olan bütün cevaplar zaten kendi derinliklerinizde gizli.',
-    shadowWarning: 'Aşırı izolasyon, insanlardan kopma ve aşırı eleştirel bir zihne hapsolma.',
-    affirmation: 'Kendi içsel fenerimle karanlık yolları aydınlatıyor, hakikate doğru yürüyorum.'
-  },
-  {
-    id: 'kader-carki',
-    number: 'X',
-    name: 'Kader Çarkı (Wheel of Fortune)',
-    archetype: 'Kozmik Döngüler & Büyük Şans',
-    associatedZodiacOrPlanet: 'Jüpiter (Bolluk & Şans)',
-    element: 'Eter',
-    glyphType: 'planet',
-    glyphId: 'jupiter',
-    cardColor: 'from-violet/30 via-violet/10 to-ink',
-    message: 'Evrenin çarkı lehinize dönüyor! Beklenmedik fırsatlara, şanslı tesadüflere ve yeni kapılara açık olun. Değişime direnmek yerine akışa güvenin.',
-    shadowWarning: 'Her şeyi şansa bırakıp emek vermeyi unutmak veya geçici zorlukları felaket saymak.',
-    affirmation: 'Hayatın mucizevi ritmine güveniyorum; evren benim en yüksek hayrıma çalışıyor.'
-  },
-  {
-    id: 'adalet',
-    number: 'XI',
-    name: 'Adalet (Justice)',
-    archetype: 'Kozmik Denge & Sebep-Sonuç',
-    associatedZodiacOrPlanet: 'Terazi Burcu (Venüs)',
-    element: 'Hava',
-    glyphType: 'zodiac',
-    glyphId: 'terazi',
-    cardColor: 'from-primary/30 via-indigo-950/20 to-ink',
-    message: 'Ektiğinizi biçeceğiniz bir gündesiniz. Kararlarınızı objektif gerçeklere, dürüstlüğe ve etik değerlere dayandırın. Denge ve adalet er ya da geç tecelli eder.',
-    shadowWarning: 'Önyargılar, aşırı katı hükümler verme veya kendi hatalarından kaçınma.',
-    affirmation: 'Dürüstlük ve hakkaniyetle hareket ediyor, hayatımın sorumluluğunu üstleniyorum.'
-  },
-  {
-    id: 'olum-donusum',
-    number: 'XIII',
-    name: 'Dönüşüm & Yeniden Doğuş',
-    archetype: 'Karmik Arınma & Metamorfoz',
-    associatedZodiacOrPlanet: 'Akrep Burcu (Mars/Plüton)',
-    element: 'Su',
-    glyphType: 'zodiac',
-    glyphId: 'akrep',
-    cardColor: 'from-rose-signal/20 via-violet/10 to-ink',
-    message: 'Eski olanın sona ermesine izin verin. Hizmet etmeyen alışkanlıkları, toksik bağları veya eski kimliğinizi geride bıraktığınızda muazzam bir yeniden doğuş başlar.',
-    shadowWarning: 'Biten şeylere umutsuzca tutunmak ve değişimin kaçınılmaz doğasından korkmak.',
-    affirmation: 'Eskiye veda ediyor, ruhumun küllerinden daha güçlü ve aydınlık doğuyorum.'
-  },
-  {
-    id: 'denge',
-    number: 'XIV',
-    name: 'Denge / İtidal (Temperance)',
-    archetype: 'Ruhsal Simya & Uyum',
-    associatedZodiacOrPlanet: 'Yay Burcu (Jüpiter)',
-    element: 'Ateş',
-    glyphType: 'zodiac',
-    glyphId: 'yay',
-    cardColor: 'from-gold/30 via-violet/10 to-ink',
-    message: 'Aşırılıklardan kaçının ve zıtlıkları altın bir oranda birleştirin. Sabırlı, ölçülü ve sakin bir yaklaşım karmaşık krizleri mucizevi bir uyuma çevirir.',
-    shadowWarning: 'Sabırsızlık, doyumsuzluk veya kutuplaşmış siyah-beyaz bakış açısı.',
-    affirmation: 'Ruhumu sevgi, sabır ve ılımlılıkla besliyorum; her koşulda merkezimde kalıyorum.'
-  },
-  {
-    id: 'yildiz',
-    number: 'XVII',
-    name: 'Yıldız (The Star)',
-    archetype: 'Kozmik Umut & İlahi İlham',
-    associatedZodiacOrPlanet: 'Kova Burcu (Uranüs)',
-    element: 'Hava',
-    glyphType: 'zodiac',
-    glyphId: 'kova',
-    cardColor: 'from-blue-500/30 via-primary/10 to-ink',
-    message: 'Karanlık gecenin ardından parlayan en parlak kutup yıldızı sizin için doğuyor. Geleceğe güvenle bakın, ilham dolu projelere başlayın ve şifalanın.',
-    shadowWarning: 'Aşırı hayalperestlik veya pratik eylemler yerine sadece hayallerde yaşamak.',
-    affirmation: 'Yıldızların parlak ışığı yolumu aydınlatıyor; umut ve şifa doluyum.'
-  },
-  {
-    id: 'gunes',
-    number: 'XIX',
-    name: 'Güneş (The Sun)',
-    archetype: 'Kozmik Aydınlanma & Yaşam Coşkusu',
-    associatedZodiacOrPlanet: 'Güneş (Sol)',
-    element: 'Ateş',
-    glyphType: 'planet',
-    glyphId: 'sun',
-    cardColor: 'from-gold/30 via-yellow-950/20 to-ink',
-    message: 'Tam bir berraklık, neşe ve başarı kartı! Kendinizi saklamayın, ışığınızı tüm dünyaya yansıtın. Bugün başladığınız her iş bereket ve neşeyle sonuçlanacaktır.',
-    shadowWarning: 'Aşırı kibir, kendini beğenmişlik veya başkalarının başarısını gölgeleme dürtüsü.',
-    affirmation: 'İçimdeki yaşam enerjisini neşeyle paylaşıyorum; hayatım ışık ve başarıyla dolu.'
-  }
-];
-
 export function CosmicTarotDrawer() {
-  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
-  const [isFlipping, setIsFlipping] = useState<boolean>(false);
-  const [hasDrawn, setHasDrawn] = useState<boolean>(false);
+  const [spreadType, setSpreadType] = useState<SpreadType>('three');
+  const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [selectedCardIdx, setSelectedCardIdx] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<'genel' | 'ask' | 'kariyer' | 'ruhsal'>('genel');
 
-  const card = COSMIC_TAROT_DECK[currentCardIndex];
+  // Spread definitions
+  const SPREAD_CONFIGS: Record<SpreadType, { name: string; count: number; desc: string; slots: { label: string; desc: string }[] }> = {
+    single: {
+      name: 'Günün Rehber Kartı',
+      count: 1,
+      desc: 'Bugünün temel enerjisini, içsel sınavını ve kozmik olumlamasını ortaya koyar.',
+      slots: [
+        { label: 'GÜNÜN REHBERİ', desc: 'Bugünün ana kozmik teması ve odak noktası' }
+      ]
+    },
+    three: {
+      name: 'Keltik Zaman Triadı',
+      count: 3,
+      desc: 'Geçmişin köklerini, şu anki eşiği ve geleceğin kadersel potansiyelini okur.',
+      slots: [
+        { label: '01. GEÇMİŞİN KÖKÜ', desc: 'Şu anki durumu hazırlayan temel dinamik' },
+        { label: '02. ŞİMDİKİ EŞİK', desc: 'Aşılması gereken anlık sınav veya meydan okuma' },
+        { label: '03. GELECEK POTANSİYELİ', desc: 'Eylemlerinizin evrileceği en yüksek sonuç' }
+      ]
+    },
+    decision: {
+      name: 'Karar & İkilem Aynası',
+      count: 3,
+      desc: 'İki farklı yol arasındaki enerjiyi ve her iki yolun sentezini çözümler.',
+      slots: [
+        { label: 'YOL A (BİRİNCİ SEÇENEK)', desc: 'İlk tercihin getireceği deneyim ve enerji' },
+        { label: 'YOL B (İKİNCİ SEÇENEK)', desc: 'İkinci tercihin olası yansımaları ve bedeli' },
+        { label: 'KOZMİK SENTEZ', desc: 'İki yolun ötesindeki en bilgece ortak payda' }
+      ]
+    }
+  };
 
-  const handleDrawCard = () => {
-    setIsFlipping(true);
+  // Perform draw
+  const performDraw = (type: SpreadType) => {
+    setIsShuffling(true);
     setTimeout(() => {
-      let nextIndex = Math.floor(Math.random() * COSMIC_TAROT_DECK.length);
-      if (nextIndex === currentCardIndex) {
-        nextIndex = (currentCardIndex + 1) % COSMIC_TAROT_DECK.length;
+      const config = SPREAD_CONFIGS[type];
+      const shuffled = [...MAJOR_ARCANA_DECK].sort(() => Math.random() - 0.5);
+      const drawn: DrawnCard[] = [];
+
+      for (let i = 0; i < config.count; i++) {
+        const isReversed = Math.random() > 0.65; // 35% chance of reversed
+        drawn.push({
+          card: shuffled[i],
+          isReversed,
+          positionLabel: config.slots[i].label,
+          positionDesc: config.slots[i].desc
+        });
       }
-      setCurrentCardIndex(nextIndex);
-      setHasDrawn(true);
-      setIsFlipping(false);
-    }, 350);
+
+      setDrawnCards(drawn);
+      setSelectedCardIdx(0);
+      setIsShuffling(false);
+    }, 600);
   };
 
-  const elementIcons = {
-    Ateş: <FireElementGlyph size={14} className="text-gold" />,
-    Toprak: <EarthElementGlyph size={14} className="text-lime" />,
-    Hava: <AirElementGlyph size={14} className="text-primary" />,
-    Su: <WaterElementGlyph size={14} className="text-blue-400" />,
-    Eter: <AstrolabeGlyph size={14} className="text-violet" />
-  };
+  // Initial draw on mount
+  React.useEffect(() => {
+    performDraw('three');
+  }, []);
+
+  const activeDrawnCard = drawnCards[selectedCardIdx] || drawnCards[0];
 
   return (
-    <div id="kozmik-tarot" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
+    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8" id="kozmik-tarot">
       <Ticks />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-line pb-6">
         <div>
-          <div className="label flex items-center gap-2 text-gold">
-            <Sparkles className="h-4 w-4 animate-pulse" />
-            <span>GÜNÜN KOZMİK ARKETİP KARTI</span>
+          <div className="label flex items-center gap-2 text-solar">
+            <AstrolabeGlyph size={16} />
+            <span>22 MAJÖR ARKANA · KUTSAL GEOMETRİ ORACULUM</span>
           </div>
-          <h2 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
-            Kozmik Tarot <span className="serif-i text-gold">& Bilinçaltı Rehberi</span>
-          </h2>
-          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            Carl Gustav Jung&apos;un arketip psikolojisi ve kadim Zodyak sembolizmiyle harmanlanan günlük kozmik kartınızı çekin ve bugüne dair ilhamınızı keşfedin.
+          <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-2">
+            Kozmik Tarot Açılımı
+          </h3>
+          <p className="text-sm text-paper/70 mt-1 max-w-2xl leading-relaxed">
+            Kadim arketiplerin ve zodyak simyasının aynasında ruhsal rehberlik alın. Açılım türünü seçip desteyi karıştırın.
           </p>
         </div>
 
+        {/* Spread Selector Buttons */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1 border border-line bg-ink-2">
+          {(['single', 'three', 'decision'] as SpreadType[]).map((type) => {
+            const isActive = spreadType === type;
+            return (
+              <button
+                key={type}
+                onClick={() => {
+                  setSpreadType(type);
+                  performDraw(type);
+                }}
+                className={`px-3 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer border ${
+                  isActive
+                    ? 'border-solar bg-solar text-ink font-bold shadow-xs'
+                    : 'border-transparent text-muted hover:text-paper hover:border-line'
+                }`}
+              >
+                {SPREAD_CONFIGS[type].name}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Action Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 py-2 border-b border-line/60">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-mono text-muted uppercase">
+            AÇILIM DÜZENİ:
+          </span>
+          <span className="text-xs font-mono text-paper font-bold px-2 py-0.5 border border-line bg-ink-2">
+            {SPREAD_CONFIGS[spreadType].name} ({SPREAD_CONFIGS[spreadType].count} KART)
+          </span>
+          <span className="hidden sm:inline text-xs font-mono text-muted">
+            · {SPREAD_CONFIGS[spreadType].desc}
+          </span>
+        </div>
+
         <button
-          onClick={handleDrawCard}
-          disabled={isFlipping}
-          className="flex items-center gap-2 px-5 py-3 border border-line bg-gold hover:bg-paper text-ink font-bold text-xs font-mono transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+          onClick={() => performDraw(spreadType)}
+          disabled={isShuffling}
+          className="inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider border border-solar text-solar hover:bg-solar hover:text-ink transition-colors cursor-pointer disabled:opacity-50"
         >
-          <Shuffle size={16} className={isFlipping ? 'animate-spin' : ''} />
-          <span>{hasDrawn ? 'YENİ BİR KART ÇEK' : 'GÜNÜN KARTINI ÇEK'}</span>
+          <Shuffle size={14} className={isShuffling ? 'animate-spin' : ''} />
+          <span>{isShuffling ? 'Desteler Karıştırılıyor…' : 'Desteyi Yeniden Karıştır & Çek'}</span>
         </button>
       </div>
 
-      {/* Main Interactive Card Showcase */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        {/* Visual Tarot Card Deck with Sacred Geometry Frame */}
-        <div className="lg:col-span-5 flex justify-center">
-          <div
-            className={`w-64 sm:w-72 h-96 sm:h-[420px] border border-gold/40 bg-gradient-to-br ${card.cardColor} p-6 flex flex-col justify-between shadow-[0_0_35px_rgba(229,193,88,0.15)] relative overflow-hidden transition-all duration-500 transform ${
-              isFlipping ? 'scale-90 rotate-6 opacity-30 blur-sm' : 'scale-100 rotate-0 opacity-100'
-            }`}
-          >
-            {/* Sacred Geometry Corner Accents */}
-            <div className="absolute top-2.5 left-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
-            <div className="absolute top-2.5 right-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
-            <div className="absolute bottom-2.5 left-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
-            <div className="absolute bottom-2.5 right-2.5 text-[9px] font-mono text-gold/60 select-none">✦</div>
+      {/* Cards Table Display */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        {drawnCards.map((drawn, idx) => {
+          const isSelected = selectedCardIdx === idx;
+          const { card, isReversed, positionLabel } = drawn;
 
-            {/* Inner Engraved Border */}
-            <div className="absolute inset-2 border border-gold/20 pointer-events-none" />
-
-            {/* Card Top: Number & Mini Emblem */}
-            <div className="flex items-center justify-between border-b border-gold/30 pb-3 relative z-10">
-              <span className="font-mono text-lg font-black text-gold tracking-widest">
-                {card.number}
-              </span>
-              {card.glyphType === 'zodiac' ? (
-                <ZodiacGlyph sign={card.glyphId} size={24} className="text-gold" />
-              ) : (
-                <PlanetGlyph planet={card.glyphId} size={24} className="text-gold" />
-              )}
-            </div>
-
-            {/* Card Middle: Archetype Title & Large Vector Emblem */}
-            <div className="text-center space-y-3 my-auto relative z-10">
-              <div className="h-24 w-24 mx-auto rounded-full bg-ink/70 border border-gold/40 flex items-center justify-center shadow-inner">
-                {card.glyphType === 'zodiac' ? (
-                  <ZodiacGlyph sign={card.glyphId} size={48} className="text-gold" />
-                ) : (
-                  <PlanetGlyph planet={card.glyphId} size={48} className="text-gold" />
-                )}
+          return (
+            <div
+              key={`${card.id}-${idx}`}
+              onClick={() => setSelectedCardIdx(idx)}
+              className={`group relative flex flex-col p-6 border transition-all duration-300 cursor-pointer ${
+                isSelected
+                  ? 'border-solar bg-ink-3 ring-1 ring-solar/40 shadow-lg shadow-solar/5'
+                  : 'border-line bg-ink-2 hover:border-solar/40 hover:bg-ink-3/70'
+              }`}
+            >
+              {/* Position Header */}
+              <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
+                <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-wider">
+                  {positionLabel}
+                </span>
+                <span
+                  className={`font-mono text-[9px] px-1.5 py-0.5 border uppercase font-bold tracking-wider ${
+                    isReversed
+                      ? 'border-rose/50 bg-rose/10 text-rose'
+                      : 'border-lime/50 bg-lime/10 text-lime'
+                  }`}
+                >
+                  {isReversed ? 'TERS (GÖLGE)' : 'DÜZ (AYDINLIK)'}
+                </span>
               </div>
-              <h3 className="display display-tight text-2xl font-black text-paper tracking-wide">
-                {card.name}
-              </h3>
-              <p className="label text-gold/90 uppercase tracking-wider text-[10px]">
-                {card.archetype}
+
+              {/* Tarot Card Frame */}
+              <div className="relative aspect-[2/3] w-full border border-line bg-ink p-4 flex flex-col justify-between items-center overflow-hidden group-hover:border-solar/60 transition-colors">
+                {/* Background Sacred Geometric Pattern */}
+                <div className="absolute inset-2 border border-line/40 pointer-events-none" />
+                <div className="absolute inset-3 border border-dashed border-line/20 pointer-events-none" />
+
+                {/* Top Number & Element */}
+                <div className="w-full flex items-center justify-between text-xs font-mono text-muted z-10">
+                  <span className="font-bold text-paper">{card.number}</span>
+                  <span className="text-[10px] text-solar border border-solar/30 px-1 py-0.2">
+                    {card.element}
+                  </span>
+                </div>
+
+                {/* Center Sacred Glyph Art */}
+                <div className="my-auto flex flex-col items-center text-center z-10 py-3">
+                  <div className={`p-4 rounded-full border border-line bg-ink-2/80 mb-3 shadow-inner transition-transform duration-500 ${isReversed ? 'rotate-180' : 'group-hover:scale-105'}`}>
+                    {card.glyphType === 'zodiac' ? (
+                      <ZodiacGlyph sign={card.glyphId} size={42} className="text-solar" />
+                    ) : card.glyphType === 'planet' ? (
+                      <PlanetGlyph planet={card.glyphId} size={42} className="text-solar" />
+                    ) : (
+                      <AstrolabeGlyph size={42} className="text-solar" />
+                    )}
+                  </div>
+                  <h4 className="font-mono text-base font-bold text-paper tracking-wide">
+                    {card.name}
+                  </h4>
+                  <span className="font-mono text-[10px] text-muted mt-0.5 italic">
+                    {card.nameEn}
+                  </span>
+                </div>
+
+                {/* Bottom Archetype */}
+                <div className="w-full text-center border-t border-line/60 pt-2 z-10">
+                  <span className="font-mono text-[10px] text-paper/80 line-clamp-1">
+                    {card.archetype}
+                  </span>
+                </div>
+              </div>
+
+              {/* Click Indicator */}
+              <div className="mt-4 pt-2 border-t border-line flex items-center justify-between text-[11px] font-mono text-muted">
+                <span>{card.associatedSignOrPlanet}</span>
+                <span className={isSelected ? 'text-solar font-bold' : 'group-hover:text-paper'}>
+                  {isSelected ? '● İNCELENİYOR' : 'Ayrıntıları Gör →'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Selected Card Deep Cosmic Dossier */}
+      {activeDrawnCard && (
+        <div className="border border-solar/40 bg-ink-2 p-6 sm:p-8 space-y-6 animate-fadeIn">
+          {/* Card Meta Row */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-line pb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-mono text-xs text-solar font-bold uppercase tracking-widest">
+                  SEÇİLİ KART TELEMETRİSİ · {activeDrawnCard.positionLabel}
+                </span>
+                <span className="text-muted">·</span>
+                <span className={`font-mono text-[10px] font-bold px-2 py-0.5 border ${
+                  activeDrawnCard.isReversed ? 'border-rose/50 bg-rose/10 text-rose' : 'border-lime/50 bg-lime/10 text-lime'
+                }`}>
+                  {activeDrawnCard.isReversed ? 'TERS KONUM' : 'DÜZ KONUM'}
+                </span>
+              </div>
+              <h4 className="display text-2xl sm:text-3xl text-paper">
+                {activeDrawnCard.card.number}. {activeDrawnCard.card.name} ({activeDrawnCard.card.nameEn})
+              </h4>
+              <p className="font-mono text-xs text-gold mt-1">
+                {activeDrawnCard.card.archetype} · {activeDrawnCard.card.associatedSignOrPlanet}
               </p>
             </div>
 
-            {/* Card Bottom: Element & Astro Link */}
-            <div className="border-t border-gold/30 pt-3 flex items-center justify-between text-[11px] font-mono text-paper/75 relative z-10">
-              <span className="flex items-center gap-1.5 font-bold">
-                {elementIcons[card.element]}
-                {card.element}
+            {/* Sub-tab Switcher for Detailed Interpretation */}
+            <div className="flex items-center gap-1 border border-line bg-ink p-1 font-mono text-xs">
+              <button
+                onClick={() => setActiveTab('genel')}
+                className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
+                  activeTab === 'genel' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                }`}
+              >
+                Genel Rehberlik
+              </button>
+              <button
+                onClick={() => setActiveTab('ask')}
+                className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
+                  activeTab === 'ask' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                }`}
+              >
+                Aşk & Kalp
+              </button>
+              <button
+                onClick={() => setActiveTab('kariyer')}
+                className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
+                  activeTab === 'kariyer' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                }`}
+              >
+                Kariyer & Para
+              </button>
+              <button
+                onClick={() => setActiveTab('ruhsal')}
+                className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
+                  activeTab === 'ruhsal' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                }`}
+              >
+                Ruhsal Simya
+              </button>
+            </div>
+          </div>
+
+          {/* Dossier Content Based on Tab */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-8 space-y-4">
+              {activeTab === 'genel' && (
+                <div className="space-y-4 font-mono">
+                  <div className="p-4 border border-line bg-ink">
+                    <span className="text-[11px] text-solar uppercase font-bold block mb-1">
+                      {activeDrawnCard.isReversed ? activeDrawnCard.card.reversed.title : activeDrawnCard.card.upright.title}
+                    </span>
+                    <p className="text-sm text-paper/90 leading-relaxed">
+                      {activeDrawnCard.isReversed
+                        ? activeDrawnCard.card.reversed.warning
+                        : activeDrawnCard.card.upright.message}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 border border-line bg-ink">
+                      <span className="text-muted block uppercase text-[10px]">Aydınlık Anahtarları</span>
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {activeDrawnCard.card.upright.keywords.map((kw) => (
+                          <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-paper">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-3 border border-line bg-ink">
+                      <span className="text-muted block uppercase text-[10px]">Gölge Anahtarları</span>
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {activeDrawnCard.card.reversed.keywords.map((kw) => (
+                          <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-rose">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'ask' && (
+                <div className="p-5 border border-line bg-ink font-mono space-y-3">
+                  <div className="flex items-center gap-2 text-rose">
+                    <HeartHandshake size={16} />
+                    <span className="text-xs uppercase font-bold">Aşk, Çekim & Duygusal Sinerji</span>
+                  </div>
+                  <p className="text-sm text-paper/90 leading-relaxed">
+                    {activeDrawnCard.card.upright.loveGuidance}
+                  </p>
+                </div>
+              )}
+
+              {activeTab === 'kariyer' && (
+                <div className="p-5 border border-line bg-ink font-mono space-y-3">
+                  <div className="flex items-center gap-2 text-solar">
+                    <Compass size={16} />
+                    <span className="text-xs uppercase font-bold">Kariyer, Başarı & Maddi Fırsatlar</span>
+                  </div>
+                  <p className="text-sm text-paper/90 leading-relaxed">
+                    {activeDrawnCard.card.upright.careerGuidance}
+                  </p>
+                </div>
+              )}
+
+              {activeTab === 'ruhsal' && (
+                <div className="p-5 border border-line bg-ink font-mono space-y-3">
+                  <div className="flex items-center gap-2 text-violet">
+                    <Lightbulb size={16} />
+                    <span className="text-xs uppercase font-bold">Ruhsal Evrim & Bilinç Seviyesi</span>
+                  </div>
+                  <p className="text-sm text-paper/90 leading-relaxed">
+                    {activeDrawnCard.card.upright.spiritualGuidance}
+                  </p>
+                </div>
+              )}
+
+              {/* Cosmic Affirmation Banner */}
+              <div className="p-4 border border-line bg-ink flex items-start gap-3">
+                <Sparkles size={16} className="text-solar shrink-0 mt-0.5" />
+                <div className="font-mono text-xs">
+                  <span className="text-muted uppercase block text-[10px]">Günün Kutsal Olumlaması</span>
+                  <p className="text-paper italic font-serif text-sm mt-0.5">
+                    &quot;{activeDrawnCard.card.affirmation}&quot;
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Astrological Correspondences */}
+            <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4 font-mono text-xs">
+              <span className="text-[10px] text-muted uppercase tracking-widest block border-b border-line pb-2">
+                ASTROLOJİK HİZALANMA
               </span>
-              <span className="label text-muted">{card.associatedZodiacOrPlanet}</span>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted">Kozmik Element:</span>
+                  <span className="text-paper font-bold flex items-center gap-1.5">
+                    {activeDrawnCard.card.element === 'Ateş' && <FireElementGlyph size={14} className="text-solar" />}
+                    {activeDrawnCard.card.element === 'Toprak' && <EarthElementGlyph size={14} className="text-lime" />}
+                    {activeDrawnCard.card.element === 'Hava' && <AirElementGlyph size={14} className="text-cyan-400" />}
+                    {activeDrawnCard.card.element === 'Su' && <WaterElementGlyph size={14} className="text-blue-400" />}
+                    {activeDrawnCard.card.element}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-muted">Yönetici Prensip:</span>
+                  <span className="text-paper font-bold">{activeDrawnCard.card.associatedSignOrPlanet}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-muted">Arkana Seviyesi:</span>
+                  <span className="text-gold font-bold">Majör Arkana ({activeDrawnCard.card.numericValue}/21)</span>
+                </div>
+
+                <div className="pt-2 border-t border-line text-[11px] text-muted leading-relaxed">
+                  <strong className="text-paper">Transit Etkisi:</strong> {activeDrawnCard.card.astrologicalAspect}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Card Guidance & Psycho-Astrological Reading */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="label text-gold">
-                KART ARKETİPİ & ANLAMI
-              </span>
-              <span className="label text-muted">
-                · {card.associatedZodiacOrPlanet}
-              </span>
-            </div>
-            <h3 className="display display-tight text-2xl sm:text-3xl font-black text-paper">
-              {card.name} — <span className="serif-i text-gold">{card.archetype}</span>
-            </h3>
-          </div>
-
-          {/* 1. Main Daily Guidance */}
-          <div className="border border-line bg-ink-2 p-5 space-y-2">
-            <div className="label text-gold flex items-center gap-2">
-              <Lightbulb size={14} className="text-gold" />
-              <span>Günün Kozmik Rehberliği</span>
-            </div>
-            <p className="text-sm text-paper/85 leading-relaxed font-sans">
-              {card.message}
-            </p>
-          </div>
-
-          {/* 2. Shadow Warning */}
-          <div className="border border-line bg-ink-2 p-5 space-y-1">
-            <div className="label text-rose-signal flex items-center gap-2">
-              <Shield size={14} className="text-rose-signal" />
-              <span>Gölge Yüzü & Dikkat Edilmesi Gerekenler</span>
-            </div>
-            <p className="text-xs text-paper/75 leading-relaxed font-sans pt-1">
-              {card.shadowWarning}
-            </p>
-          </div>
-
-          {/* 3. Daily Affirmation / Mantra */}
-          <div className="border border-line bg-ink-2 p-5 space-y-1">
-            <div className="label text-violet flex items-center gap-2">
-              <HeartHandshake size={14} className="text-violet" />
-              <span>Günün Olumlaması / Mantrası</span>
-            </div>
-            <p className="text-sm text-paper font-sans serif-i leading-relaxed pt-1">
-              &quot;{card.affirmation}&quot;
-            </p>
-          </div>
-
-          <div className="pt-2 flex items-center justify-between label text-muted">
-            <span>Toplam Deste: <strong className="text-paper">{COSMIC_TAROT_DECK.length} Kozmik Arketip</strong></span>
-            <button
-              onClick={handleDrawCard}
-              className="text-gold hover:text-paper transition-colors cursor-pointer flex items-center gap-1 font-bold"
-            >
-              Farklı Bir Kart Seç →
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

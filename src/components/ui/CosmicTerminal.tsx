@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Terminal, 
   Search, 
-  Zap, 
   Orbit, 
   Compass, 
   Activity, 
@@ -20,6 +19,7 @@ import {
   X
 } from 'lucide-react';
 import { useSpace } from '@/components/space/SpaceContext';
+import { matchesQuery } from '@/lib/text';
 
 export interface CommandItem {
   id: string;
@@ -42,16 +42,14 @@ export function CosmicTerminal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const navigateTo = (path: string, hash?: string) => {
-    if (typeof window !== 'undefined') {
-      if (window.location.pathname === path && hash) {
-        window.location.hash = hash;
-      } else {
-        router.push(hash ? `${path}${hash}` : path);
-      }
+  const navigateTo = useCallback((path: string, hash?: string) => {
+    if (window.location.pathname === path && hash) {
+      window.location.hash = hash;
+    } else {
+      router.push(hash ? `${path}${hash}` : path);
     }
     setOpen(false);
-  };
+  }, [router]);
 
   // Define commands
   const commands: CommandItem[] = useMemo(() => [
@@ -393,7 +391,7 @@ export function CosmicTerminal() {
         setOpen(false);
       },
     },
-  ], [orbitMode, setDestination, toggleOrbitMode, focusCurrentDestination, toggleAutoPilot, router]);
+  ], [orbitMode, setDestination, toggleOrbitMode, focusCurrentDestination, toggleAutoPilot, navigateTo]);
 
   const resetSearch = () => {
     setQuery('');
@@ -429,30 +427,40 @@ export function CosmicTerminal() {
     };
   }, [open]);
 
-  // Focus input when opened
+  // Focus input when opened; hand focus back to the opener when closed
   useEffect(() => {
     if (!open) return;
+    const opener = document.activeElement as HTMLElement | null;
     const id = setTimeout(() => inputRef.current?.focus(), 50);
-    return () => clearTimeout(id);
+    return () => {
+      clearTimeout(id);
+      if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
+    };
   }, [open]);
 
   // Filter commands
   const filteredCommands = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase('tr-TR');
     return commands.filter((cmd) => {
       const matchesCategory = selectedCategory === 'ALL' || cmd.category === selectedCategory;
-      if (!matchesCategory) return false;
-      if (!q) return true;
-      return (
-        cmd.title.toLocaleLowerCase('tr-TR').includes(q) ||
-        cmd.subtitle.toLocaleLowerCase('tr-TR').includes(q) ||
-        cmd.category.toLocaleLowerCase('tr-TR').includes(q)
-      );
+      return matchesCategory && matchesQuery(query, cmd.title, cmd.subtitle, cmd.category);
     });
   }, [commands, query, selectedCategory]);
 
-  // Arrow key navigation
-  const handleKeyNavigation = (e: React.KeyboardEvent) => {
+  // Arrow key navigation (+ keep Tab inside the dialog)
+  const handleKeyNavigation = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Tab') {
+      const focusables = [...e.currentTarget.querySelectorAll<HTMLElement>('input, button:not([disabled])')];
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+      return;
+    }
     if (filteredCommands.length === 0) return;
 
     if (e.key === 'ArrowDown') {
@@ -487,6 +495,9 @@ export function CosmicTerminal() {
       onClick={() => setOpen(false)}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Kozmik Kumanda Terminali"
         className="w-full max-w-2xl border border-line bg-ink shadow-[0_25px_80px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyNavigation}
@@ -507,7 +518,7 @@ export function CosmicTerminal() {
             <span className="hidden font-mono text-[10px] text-muted sm:inline">
               [ESC] Kapat
             </span>
-            <button
+            <button aria-label="Terminali kapat"
               type="button"
               onClick={() => setOpen(false)}
               className="text-paper/60 hover:text-paper cursor-pointer"
@@ -520,8 +531,13 @@ export function CosmicTerminal() {
         {/* Input Bar */}
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           <Search size={16} className="text-muted shrink-0" />
-          <input
+          <input aria-label="Komut ara"
             ref={inputRef}
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="cosmic-terminal-list"
+            aria-autocomplete="list"
+            aria-activedescendant={filteredCommands[selectedIndex] ? `cosmic-cmd-${filteredCommands[selectedIndex].id}` : undefined}
             type="text"
             value={query}
             onChange={(e) => {
@@ -572,10 +588,13 @@ export function CosmicTerminal() {
         {/* Command List */}
         <ul
           ref={listRef}
+          id="cosmic-terminal-list"
+          role="listbox"
+          aria-label="Komutlar"
           className="max-h-[380px] overflow-y-auto divide-y divide-line/40 p-2"
         >
           {filteredCommands.length === 0 ? (
-            <li className="p-8 text-center font-mono text-xs text-muted">
+            <li role="presentation" className="p-8 text-center font-mono text-xs text-muted">
               Eşleşen komut bulunamadı. Lütfen başka bir anahtar kelime deneyin.
             </li>
           ) : (
@@ -586,6 +605,9 @@ export function CosmicTerminal() {
               return (
                 <li
                   key={cmd.id}
+                  id={`cosmic-cmd-${cmd.id}`}
+                  role="option"
+                  aria-selected={isSelected}
                   onClick={() => cmd.action()}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`group flex items-center justify-between gap-3 p-3 transition-colors cursor-pointer ${

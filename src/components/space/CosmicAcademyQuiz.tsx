@@ -249,7 +249,7 @@ export function CosmicAcademyQuiz() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
           <div className="label flex items-center gap-2 text-violet">
-            <span className="live-dot" /> AstroTR Kozmik Akademi & Değerlendirme
+            <span className="live-dot" /> SpaceTour Kozmik Akademi & Değerlendirme
           </div>
           <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
             Astrofizik <span className="serif-i text-violet">& yetkinlik testi</span>
@@ -384,7 +384,7 @@ export function CosmicAcademyQuiz() {
               <label className="block label text-muted mb-1 text-left">
                 Sertifikada Görünecek İsim / Çağrı Kodu:
               </label>
-              <input
+              <input aria-label="Sertifikada yazacak ad"
                 type="text"
                 value={candidateName}
                 onChange={(e) => setCandidateName(e.target.value)}
@@ -407,7 +407,7 @@ export function CosmicAcademyQuiz() {
 
             <div className="space-y-2 pt-6">
               <span className="label text-violet tracking-[0.25em]">
-                ASTROTR KOZMİK GÖZLEMEVİ AKADEMİSİ
+                SPACETOUR TR KOZMİK GÖZLEMEVİ AKADEMİSİ
               </span>
               <h2 className="display display-tight text-3xl md:text-5xl text-paper tracking-wider">
                 Astrofizik Yetkinlik Belgesi
@@ -439,7 +439,7 @@ export function CosmicAcademyQuiz() {
             {/* Signatures */}
             <div className="flex justify-between items-end pt-8 max-w-lg mx-auto border-t border-line text-xs font-mono text-muted">
               <div className="text-center">
-                <div className="serif-i text-paper text-sm">AstroTR Telemetri</div>
+                <div className="serif-i text-paper text-sm">SpaceTour TR</div>
                 <div className="label text-[9px] mt-1">Gözlem Masası Şefi</div>
               </div>
               <div className="w-10 h-10 border border-violet/40 flex items-center justify-center text-violet">
