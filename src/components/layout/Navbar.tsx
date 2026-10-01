@@ -113,15 +113,15 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="group flex items-center gap-3 rounded-full bg-paper py-2 pl-4 pr-2 text-ink transition-colors hover:bg-gold"
+              className="group flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.04] py-1.5 pl-3.5 pr-2 text-paper backdrop-blur-md transition-all hover:border-gold/40 hover:bg-gold/10 hover:text-gold cursor-pointer"
               aria-expanded={menuOpen}
               aria-controls="site-menu"
             >
-              <span className="label font-semibold text-ink">Menü</span>
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-ink">
+              <span className="font-mono text-xs font-medium">Menü</span>
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-white/[0.08] transition-colors group-hover:bg-gold/20">
                 <span className="flex flex-col gap-[3px]">
-                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:translate-x-0.5" />
-                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:-translate-x-0.5" />
+                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:translate-x-0.5 group-hover:bg-gold" />
+                  <span className="block h-px w-3 bg-paper transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:bg-gold" />
                 </span>
               </span>
             </button>

@@ -292,7 +292,6 @@ export default function AstrolojiPage() {
         section="Astroloji"
         accent="var(--gold)"
         lines={['Zodyak', <Em key="a">atlası</Em>]}
-        size="clamp(3.4rem, 12.5vw, 13rem)"
         lede="Kadim gökyüzü gözlemleriyle şekillenen on iki arketip. Doğum haritanı çıkar, günlük transitleri oku, tarot çek, iki haritayı karşılaştır."
         meta={[
           { k: 'Burç', v: ZODIAC_SIGNS.length },
@@ -495,45 +494,56 @@ export default function AstrolojiPage() {
                 }
                 lede="Her burcun elementi, yönetici gezegeni, mitolojik arketipi ve tarot karşılığı. Bir karta dokun, dosyası açılsın."
               />
-              <div className="mb-6 flex w-fit gap-1 rounded-full border border-line p-1" role="group" aria-label="Element filtresi">
+              <div className="mb-6 flex w-fit gap-1.5 rounded-full border border-white/[0.08] bg-ink-2/60 p-1 backdrop-blur-md" role="group" aria-label="Element filtresi">
                 {ELEMENTS.map((el) => (
                   <button
                     key={el}
                     type="button"
                     aria-pressed={element === el}
                     onClick={() => setElement(el)}
-                    className={`label rounded-full px-4 py-2 transition-colors ${element === el ? 'bg-gold text-ink' : 'text-paper/70 hover:text-paper'}`}
+                    className={`rounded-full px-4 py-1.5 font-mono text-xs transition-all ${
+                      element === el
+                        ? 'bg-gold text-ink font-semibold shadow-md'
+                        : 'text-paper/70 hover:text-paper hover:bg-white/[0.04]'
+                    }`}
                   >
                     {el}
                   </button>
                 ))}
               </div>
-              <div ref={grid} className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div ref={grid} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {signs.map((s) => {
                   const Icon = ELEMENT_ICON[s.element];
                   return (
-                    <button key={s.id} type="button" data-sign onClick={() => setActive(s)} className="group relative flex min-h-[320px] flex-col overflow-hidden bg-ink p-6 text-left cursor-pointer">
-                      <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-y-100" />
-                      <span className="relative flex items-start justify-between">
-                        <span className="label text-muted group-hover:text-ink">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
-                        <span className="label flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-paper/70 group-hover:border-ink/30 group-hover:text-ink">
-                          <Icon size={11} /> {s.element}
+                    <button
+                      key={s.id}
+                      type="button"
+                      data-sign
+                      onClick={() => setActive(s)}
+                      className="group relative flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-2/60 p-6 text-left backdrop-blur-md transition-all duration-300 hover:border-gold/50 hover:bg-ink-2 hover:shadow-[0_12px_36px_rgba(245,197,66,0.12)] cursor-pointer"
+                    >
+                      <div className="flex items-start justify-between">
+                        <span className="font-mono text-xs text-muted">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[10px] text-paper/80">
+                          <Icon size={11} className="text-gold" /> {s.element}
                         </span>
-                      </span>
-                      <div className="relative mt-6">
+                      </div>
+                      <div className="mt-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.02] p-2 transition-all duration-500 group-hover:border-gold/30 group-hover:bg-gold/[0.06]">
                         <ZodiacGlyph
                           sign={s.id}
-                          size={54}
-                          className="text-gold transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:text-ink"
+                          size={46}
+                          className="text-gold transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-0.5"
                         />
                       </div>
-                      <span className="display display-tight relative mt-6 pt-[0.12em] text-4xl text-paper group-hover:text-ink">{s.name}</span>
-                      <span className="label relative mt-1 text-muted group-hover:text-ink/70">{s.dates}</span>
-                      <span className="relative mt-4 line-clamp-2 text-sm leading-relaxed text-paper/60 group-hover:text-ink/80">{s.overview}</span>
-                      <span className="label relative mt-auto flex items-center justify-between border-t border-line pt-4 text-[10px] text-muted group-hover:border-ink/20 group-hover:text-ink">
-                        <span>Yönetici · {s.rulingPlanet}</span>
-                        <ArrowUpRight size={14} />
-                      </span>
+                      <span className="display mt-6 text-2xl font-semibold text-paper group-hover:text-gold transition-colors">{s.name}</span>
+                      <span className="mt-1 font-mono text-xs text-muted">{s.dates}</span>
+                      <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-paper/70">{s.overview}</p>
+                      <div className="mt-auto flex items-center justify-between border-t border-white/[0.06] pt-4 font-mono text-[11px] text-muted">
+                        <span>Yönetici: <strong className="text-paper/90 font-medium">{s.rulingPlanet}</strong></span>
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] text-muted transition-colors group-hover:border-gold/40 group-hover:text-gold">
+                          <ArrowUpRight size={13} />
+                        </div>
+                      </div>
                     </button>
                   );
                 })}

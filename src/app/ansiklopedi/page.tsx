@@ -61,7 +61,7 @@ const LABS: LabEntry[] = [
 export default function AnsiklopediPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('Tümü');
-  const list = useRef<HTMLOListElement>(null);
+  const list = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(
     () =>
@@ -94,7 +94,6 @@ export default function AnsiklopediPage() {
         section="Ansiklopedi"
         accent="var(--violet)"
         lines={['Kozmik', <Em key="a">arşiv</Em>]}
-        size="clamp(3.4rem, 13vw, 14rem)"
         lede="Gök cisimlerinin kimlik kartları, dokunabileceğin 3D hologramlar ve evrenin fiziğini deneyerek öğreten on laboratuvar modülü."
         meta={[
           { k: 'Kayıt', v: planets.length },
@@ -128,27 +127,29 @@ export default function AnsiklopediPage() {
             lede="Bir kayda tıkla: 3D hologram, fiziksel veriler ve bilimsel rapor açılır."
           />
 
-          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <label className="group relative block w-full max-w-xl">
-              <span className="sr-only">Kozmik arşivde ara</span>
-              <Search className="pointer-events-none absolute left-0 top-1/2 h-6 w-6 -translate-y-1/2 text-muted transition-colors group-focus-within:text-violet" />
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="relative w-full max-w-md">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
               <input
                 type="text"
-                placeholder="Arşivde ara…"
+                placeholder="Gök cismi veya gezegen ara…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full border-b-2 border-line bg-transparent py-3 pl-10 font-display text-3xl font-bold uppercase text-paper placeholder:text-muted/60 focus:border-violet focus:outline-none sm:text-4xl"
-                style={{ fontStretch: '112%' }}
+                className="w-full rounded-xl border border-white/[0.1] bg-ink-2/80 py-2.5 pl-10 pr-4 text-sm text-paper placeholder:text-muted/60 transition-all focus:border-violet focus:outline-none focus:ring-1 focus:ring-violet/30"
               />
-            </label>
-            <div className="flex max-w-full gap-1 self-start overflow-x-auto no-scrollbar rounded-full border border-line p-1" role="group" aria-label="Kayıt türü">
+            </div>
+            <div className="flex max-w-full gap-1.5 self-start overflow-x-auto no-scrollbar rounded-full border border-white/[0.08] bg-ink-2/60 p-1 backdrop-blur-md" role="group" aria-label="Kayıt türü">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   aria-pressed={activeTab === tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`label shrink-0 rounded-full px-3 py-2 transition-colors sm:px-4 ${activeTab === tab ? 'bg-violet text-ink' : 'text-paper/70 hover:text-paper'}`}
+                  className={`rounded-full px-3.5 py-1.5 font-mono text-xs transition-all ${
+                    activeTab === tab
+                      ? 'bg-violet text-ink font-semibold shadow-md'
+                      : 'text-paper/70 hover:text-paper hover:bg-white/[0.04]'
+                  }`}
                 >
                   {tab}
                 </button>
@@ -157,43 +158,52 @@ export default function AnsiklopediPage() {
           </div>
 
           {filtered.length > 0 ? (
-            <ol ref={list} className="border-t border-line">
-              <li className="label hidden grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] items-center gap-4 border-b border-line py-3 text-muted md:grid">
+            <div ref={list} className="space-y-2">
+              <div className="hidden grid-cols-[3rem_1fr_10rem_10rem_6rem_3rem] items-center gap-4 px-5 py-2 font-mono text-xs uppercase tracking-wider text-muted md:grid">
                 <span>No</span>
-                <span>Ad</span>
+                <span>Gök Cismi</span>
                 <span>Tür</span>
                 <span>Çap</span>
                 <span>Uydu</span>
-                <span />
-              </li>
+                <span className="text-right">Detay</span>
+              </div>
               {filtered.map((p) => {
                 const index = planets.indexOf(p) + 1;
                 return (
-                  <li key={p.id} data-row className="overflow-hidden border-b border-line">
-                    <Link href={`/ansiklopedi/${p.id}`} className="group relative grid grid-cols-[3rem_1fr_auto] items-center gap-4 py-4 md:grid-cols-[4rem_1fr_10rem_10rem_6rem_3rem] md:py-5">
-                      <span aria-hidden className="absolute inset-0 origin-left scale-x-0 bg-violet transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-x-100" />
-                      <span className="label relative text-muted transition-colors group-hover:text-ink">{String(index).padStart(2, '0')}</span>
-                      <span className="relative flex items-center gap-4">
-                        <PlanetOrb id={p.id} className="h-12 w-12 transition-transform duration-500 group-hover:scale-125 sm:h-16 sm:w-16" spin={1.5} />
-                        <span className="display display-tight pt-[0.12em] text-[clamp(1.8rem,4vw,3.6rem)] text-paper transition-[color,letter-spacing] duration-500 group-hover:tracking-[0.01em] group-hover:text-ink">
-                          {p.name}
-                        </span>
+                  <div key={p.id} data-row>
+                    <Link
+                      href={`/ansiklopedi/${p.id}`}
+                      className="group flex flex-col md:grid md:grid-cols-[3rem_1fr_10rem_10rem_6rem_3rem] items-start md:items-center gap-4 rounded-xl border border-white/[0.06] bg-ink-2/50 px-5 py-4 backdrop-blur-md transition-all duration-300 hover:border-violet/40 hover:bg-ink-2/90 hover:shadow-[0_10px_30px_rgba(129,140,248,0.1)]"
+                    >
+                      <span className="font-mono text-xs text-muted group-hover:text-paper transition-colors">
+                        {String(index).padStart(2, '0')}
                       </span>
-                      <span className="label relative hidden text-paper/70 group-hover:text-ink md:block">{TYPE_LABEL[p.type] ?? p.type}</span>
-                      <span className="relative hidden font-mono text-sm text-paper/70 group-hover:text-ink md:block">{p.facts.çap}</span>
-                      <span className="relative hidden font-mono text-sm text-paper/70 group-hover:text-ink md:block">{p.facts.uyduSayısı}</span>
-                      <span className="relative grid h-10 w-10 place-items-center justify-self-end rounded-full border border-line text-paper transition-all duration-500 group-hover:rotate-45 group-hover:border-ink group-hover:bg-ink">
-                        <ArrowUpRight size={16} />
-                      </span>
+                      <div className="flex items-center gap-4">
+                        <PlanetOrb id={p.id} className="h-10 w-10 shrink-0 transition-transform duration-500 group-hover:scale-115 sm:h-12 sm:w-12" spin={1.5} />
+                        <div>
+                          <div className="display text-xl sm:text-2xl font-semibold text-paper group-hover:text-violet transition-colors">
+                            {p.name}
+                          </div>
+                          <div className="text-xs text-muted md:hidden mt-0.5">
+                            {TYPE_LABEL[p.type] ?? p.type} · Çap: {p.facts.çap}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="hidden font-mono text-xs text-paper/70 md:block">{TYPE_LABEL[p.type] ?? p.type}</span>
+                      <span className="hidden font-mono text-xs text-paper/70 md:block">{p.facts.çap}</span>
+                      <span className="hidden font-mono text-xs text-paper/70 md:block">{p.facts.uyduSayısı}</span>
+                      <div className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.03] text-paper/60 transition-all duration-300 group-hover:border-violet/40 group-hover:bg-violet group-hover:text-ink md:flex ml-auto">
+                        <ArrowUpRight size={15} />
+                      </div>
                     </Link>
-                  </li>
+                  </div>
                 );
               })}
-            </ol>
+            </div>
           ) : (
-            <div className="border border-dashed border-line py-16 text-center">
-              <p className="display display-tight text-3xl text-paper">Kayıt yok</p>
-              <p className="mt-2 text-sm text-muted">“{searchTerm}” için eşleşen gök cismi bulunamadı.</p>
+            <div className="rounded-2xl border border-dashed border-white/10 bg-ink-2/30 py-16 text-center">
+              <p className="display text-2xl text-paper">Kayıt bulunamadı</p>
+              <p className="mt-2 text-sm text-muted">“{searchTerm}” ile eşleşen gök cismi bulunamadı.</p>
             </div>
           )}
         </section>
@@ -225,22 +235,22 @@ export default function AnsiklopediPage() {
             }
             lede="Kuzey yarımküreden çıplak gözle görülebilen takımyıldızları, en iyi gözlem ayları ve mitolojik hikâyeleriyle."
           />
-          <Reveal items="[data-card]" stagger={0.06} className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          <Reveal items="[data-card]" stagger={0.05} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {constellations.map((c, i) => (
-              <article key={c.id} data-card className="group relative flex flex-col bg-ink p-6 transition-colors duration-500 hover:bg-ink-3">
+              <article key={c.id} data-card className="group relative flex flex-col rounded-2xl border border-white/[0.08] bg-ink-2/60 p-6 backdrop-blur-md transition-all duration-300 hover:border-violet/40 hover:bg-ink-2 hover:shadow-[0_12px_36px_rgba(0,0,0,0.5)]">
                 <div className="flex items-start justify-between">
-                  <span className="label text-muted">{String(i + 1).padStart(2, '0')}</span>
-                  <div className="w-12 h-12 rounded-full border border-line/60 bg-ink-2 flex items-center justify-center p-2 transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-110 group-hover:border-solar/60">
-                    <ConstellationGlyph id={c.id} size={30} className="text-solar group-hover:text-paper transition-colors" />
+                  <span className="font-mono text-xs text-muted">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 transition-all duration-300 group-hover:border-violet/40 group-hover:bg-violet/10">
+                    <ConstellationGlyph id={c.id} size={26} className="text-violet transition-colors" />
                   </div>
                 </div>
-                <h3 className="display display-tight mt-8 pt-[0.12em] text-3xl text-paper">{c.name}</h3>
-                <p className="serif-i text-xl text-violet">{c.latinName}</p>
-                <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-paper/60">{c.description}</p>
-                <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-muted">{c.mythology}</p>
-                <div className="label mt-auto flex justify-between border-t border-line pt-4 text-[10px] text-muted">
+                <h3 className="display mt-6 text-xl sm:text-2xl font-semibold text-paper group-hover:text-violet transition-colors">{c.name}</h3>
+                <p className="serif-i text-base text-violet/90">{c.latinName}</p>
+                <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-paper/70">{c.description}</p>
+                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted">{c.mythology}</p>
+                <div className="mt-auto flex justify-between border-t border-white/[0.06] pt-4 font-mono text-[11px] text-muted">
                   <span>{c.mainStars} ana yıldız</span>
-                  <span className="text-paper">En iyi: {c.bestMonth}</span>
+                  <span className="text-paper/90 font-medium">En iyi: {c.bestMonth}</span>
                 </div>
               </article>
             ))}

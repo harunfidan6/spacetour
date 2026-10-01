@@ -126,16 +126,14 @@ body {
    Typography
    -------------------------------------------------------------------------- */
 .display {
-  font-family: var(--font-display), sans-serif;
-  font-weight: 800;
-  font-stretch: 125%;
-  line-height: 0.84;
-  letter-spacing: -0.035em;
-  text-transform: uppercase;
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
 }
 
-.display-tight { font-stretch: 100%; letter-spacing: -0.04em; }
-.display-narrow { font-stretch: 70%; letter-spacing: -0.02em; }
+.display-tight { letter-spacing: -0.035em; line-height: 1.02; }
+.display-narrow { letter-spacing: -0.015em; }
 
 .serif-i {
   font-family: var(--font-serif), serif;

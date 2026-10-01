@@ -44,7 +44,6 @@ export default function HaritaPage() {
         section="Gök Haritası"
         accent="var(--lime)"
         lines={['Gök', <Em key="a">kubbesi</Em>]}
-        size="clamp(3.4rem, 13vw, 14rem)"
         lede="Konumuna göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği analizi ve Messier derin uzay atlası."
         meta={[
           { k: 'Görünür Yıldız', v: '9,000+' },
@@ -53,16 +52,17 @@ export default function HaritaPage() {
           { k: 'Optik Mod', v: 'Alt-Az & AR' },
         ]}
         graphic={
-          <RotatingBadge text="Gök Kubbesi · Planetaryum · Alt-Azimuth · " size={220} className="text-paper/80">
+          <div className="flex flex-col items-center justify-center p-4">
             <div className="aspect-square w-24 text-lime">
               <HaritaGraphic />
             </div>
-          </RotatingBadge>
+            <span className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted">360° AR Gözlem</span>
+          </div>
         }
         ticker={['Polaris', 'Sirius', 'Vega', 'Betelgeuse', 'Arcturus', 'Rigel', 'Capella', 'Antares', 'Andromeda (M31)', 'Orion (M42)']}
       />
 
-      <div className="space-y-24 px-[var(--gutter)] pb-28 pt-16">
+      <div className="space-y-20 px-[var(--gutter)] pb-28 pt-12">
         {/* 01.1 - 3D Interactive Planetarium Dome */}
         <section>
           <SectionHead
@@ -75,14 +75,13 @@ export default function HaritaPage() {
             }
             lede="Bulunduğun konumun şu anki gökyüzü. Mouse ile sürükle, yakınlaş, yıldızlara dokun veya AR kamera modunu aç."
             aside={
-              <span className="inline-flex items-center gap-2 label text-lime">
+              <span className="inline-flex items-center gap-2 rounded-full border border-lime/30 bg-lime/10 px-3 py-1 font-mono text-xs text-lime">
                 <span className="live-dot" /> Yerel Ufuk Aktif
               </span>
             }
           />
 
-          <div className="ticks relative h-[70svh] sm:h-[82svh] w-full border border-line bg-black overflow-hidden">
-            <Ticks />
+          <div className="relative h-[72svh] sm:h-[84svh] w-full rounded-2xl border border-white/[0.12] bg-[#020206] shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden">
             <Planetarium3D />
           </div>
         </section>

@@ -52,17 +52,16 @@ function NextEventCountdown({ activeTypes, onPick }: { activeTypes: Set<EventTyp
   ];
 
   return (
-    <div className="ticks relative grid gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12 lg:items-end">
-      <Ticks />
+    <div className="relative grid gap-8 rounded-2xl border border-white/[0.08] bg-ink-2/70 p-6 sm:p-8 backdrop-blur-xl shadow-2xl lg:grid-cols-12 lg:items-center">
       <div className="lg:col-span-5">
-        <div className="label flex items-center gap-2 text-solar">
-          <span className="live-dot" /> Sıradaki gök olayı
+        <div className="inline-flex items-center gap-2 rounded-full border border-solar/30 bg-solar/10 px-3 py-1 font-mono text-xs text-solar">
+          <span className="live-dot" /> Sıradaki Gök Olayı
         </div>
-        <h2 className="display display-tight mt-5 text-[clamp(2rem,4.4vw,4rem)] text-paper flex items-center">
+        <h2 className="display mt-4 text-2xl sm:text-3xl font-semibold text-paper flex items-center">
           {next ? (
             <>
-              <span className="w-12 h-12 rounded-full border border-line bg-ink flex items-center justify-center p-2 mr-3 shrink-0">
-                <AstronomicalEventGlyph type={next.type} size={26} className="text-solar" />
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 mr-3">
+                <AstronomicalEventGlyph type={next.type} size={24} className="text-solar" />
               </span>
               <span>{next.title}</span>
             </>
@@ -71,18 +70,23 @@ function NextEventCountdown({ activeTypes, onPick }: { activeTypes: Set<EventTyp
           )}
         </h2>
         {next && (
-          <button type="button" onClick={() => onPick(next.date)} className="label mt-5 inline-flex items-center gap-2 text-paper/70 transition-colors hover:text-solar">
-            {format(parseISO(next.date), 'd MMMM yyyy, EEEE', { locale: tr })} {next.time ? `· ${next.time}` : ''} <ArrowRight size={13} />
+          <button
+            type="button"
+            onClick={() => onPick(next.date)}
+            className="mt-4 inline-flex items-center gap-2 font-mono text-xs text-paper/70 transition-colors hover:text-solar"
+          >
+            <span>{format(parseISO(next.date), 'd MMMM yyyy, EEEE', { locale: tr })} {next.time ? `· ${next.time}` : ''}</span>
+            <ArrowRight size={13} />
           </button>
         )}
       </div>
-      <div className="grid grid-cols-4 gap-px border border-line bg-line lg:col-span-7">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:col-span-7">
         {parts.map((p) => (
-          <div key={p.k} className="bg-ink px-3 py-4 sm:px-5 sm:py-6">
-            <div className="display display-tight text-[clamp(2.2rem,6vw,5.5rem)] tabular-nums leading-[0.85] text-solar" suppressHydrationWarning>
+          <div key={p.k} className="flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-black/40 p-4 sm:p-5 backdrop-blur-md">
+            <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-solar tabular-nums leading-none" suppressHydrationWarning>
               {now ? pad(p.v) : '--'}
             </div>
-            <div className="label mt-3 text-muted">{p.k}</div>
+            <div className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted">{p.k}</div>
           </div>
         ))}
       </div>
@@ -176,7 +180,6 @@ export default function CalendarPage() {
           </>,
           'Takvimi',
         ]}
-        size="clamp(3.2rem, 11vw, 12rem)"
         lede="Güneş ve Ay tutulmaları, meteor yağmurları, gezegen kavuşumları, ekinokslar. Gözlem planını yap, geri sayımı başlat, gökyüzüyle randevulaş."
         meta={[
           { k: 'Kayıtlı olay', v: counts.total },
@@ -209,7 +212,7 @@ export default function CalendarPage() {
             <button
               type="button"
               onClick={() => setActiveFilters(allOn ? new Set() : new Set(ALL_TYPES))}
-              className={`label rounded-full border px-4 py-2 transition-colors ${allOn ? 'border-paper bg-paper text-ink' : 'border-line text-paper/70 hover:border-paper'}`}
+              className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors ${allOn ? 'border-paper bg-paper text-ink font-semibold' : 'border-white/10 bg-ink-2 text-paper/70 hover:border-paper'}`}
             >
               {allOn ? 'Tümünü kapat' : 'Tümünü aç'}
             </button>
@@ -221,7 +224,7 @@ export default function CalendarPage() {
                   type="button"
                   onClick={() => toggleFilter(t)}
                   aria-pressed={on}
-                  className={`label flex items-center gap-2 rounded-full border px-4 py-2 transition-all ${on ? 'border-paper/40 text-paper' : 'border-line text-muted line-through'}`}
+                  className={`flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-xs transition-all ${on ? 'border-white/20 bg-ink-2/90 text-paper' : 'border-white/10 bg-ink-2/40 text-muted line-through opacity-60'}`}
                 >
                   <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[t], opacity: on ? 1 : 0.35 }} />
                   {eventTypeLabels[t]}
@@ -233,95 +236,97 @@ export default function CalendarPage() {
           <div className="grid gap-6 lg:grid-cols-12">
             {/* Calendar */}
             <div className="lg:col-span-8">
-              <div className="mb-5 flex items-end justify-between gap-4">
-                <div className={`overflow-hidden pt-[0.16em] ${monthReady ? '' : 'invisible'}`}>
-                  <h3 data-month-title key={monthKey} className="display text-[clamp(2.6rem,7vw,6.5rem)] text-paper">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div className={`overflow-hidden ${monthReady ? '' : 'invisible'}`}>
+                  <h3 data-month-title key={monthKey} className="display text-2xl sm:text-3xl font-semibold text-paper">
                     {format(currentMonth, 'MMMM', { locale: tr })} <span className="serif-i text-solar">{format(currentMonth, 'yyyy')}</span>
                   </h3>
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <button type="button" onClick={() => go(-1)} aria-label="Önceki ay" className="grid h-12 w-12 place-items-center rounded-full border border-line text-paper transition-colors hover:border-solar hover:bg-solar hover:text-ink">
-                    <ArrowLeft size={18} />
+                  <button type="button" onClick={() => go(-1)} aria-label="Önceki ay" className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-paper transition-all hover:border-solar/40 hover:bg-solar/10 hover:text-solar">
+                    <ArrowLeft size={16} />
                   </button>
-                  <button type="button" onClick={() => go(1)} aria-label="Sonraki ay" className="grid h-12 w-12 place-items-center rounded-full border border-line text-paper transition-colors hover:border-solar hover:bg-solar hover:text-ink">
-                    <ArrowRight size={18} />
+                  <button type="button" onClick={() => go(1)} aria-label="Sonraki ay" className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-paper transition-all hover:border-solar/40 hover:bg-solar/10 hover:text-solar">
+                    <ArrowRight size={16} />
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-7 border-x border-t border-line">
-                {days.slice(0, 7).map((d) => (
-                  <div key={d.toISOString()} className="label border-b border-line py-3 text-center text-muted">
-                    {format(d, 'EEEEEE', { locale: tr })}
-                  </div>
-                ))}
-              </div>
-              <div ref={grid} aria-busy={!monthReady} className={`grid grid-cols-7 gap-px border-x border-b border-line bg-line ${monthReady ? '' : 'invisible'}`}>
-                {days.map((day) => {
-                  const dayEvents = filteredEvents.filter((e) => isSameDay(parseISO(e.date), day));
-                  const inMonth = isSameMonth(day, monthStart);
-                  const isToday = today ? isSameDay(day, today) : false;
-                  const selected = selectedDate ? isSameDay(day, selectedDate) : false;
-                  return (
-                    <button
-                      key={day.toISOString()}
-                      type="button"
-                      data-cell
-                      onClick={() => setSelectedDate(dayEvents.length ? day : null)}
-                      className={`group relative flex min-h-[64px] flex-col items-start p-1.5 text-left transition-colors sm:min-h-[104px] sm:p-2.5 ${
-                        selected ? 'bg-paper text-ink' : inMonth ? 'bg-ink text-paper hover:bg-ink-3' : 'bg-ink bg-[repeating-linear-gradient(135deg,transparent_0_7px,rgba(239,236,230,0.035)_7px_8px)] text-muted/40'
-                      } ${dayEvents.length ? 'cursor-pointer' : 'cursor-default'}`}
-                      aria-label={`${format(day, 'd MMMM', { locale: tr })}${dayEvents.length ? `, ${dayEvents.length} olay` : ''}`}
-                    >
-                      <span className="flex w-full items-center justify-between">
-                        <span className={`font-mono text-xs sm:text-sm ${isToday && !selected ? 'grid h-6 w-6 place-items-center rounded-full bg-solar text-ink' : ''}`}>{format(day, 'd')}</span>
-                        {dayEvents.length > 1 && <span className="label text-[9px] opacity-60">×{dayEvents.length}</span>}
-                      </span>
-                      <span className="mt-auto flex w-full flex-col gap-1">
-                        {dayEvents.slice(0, 2).map((e) => (
-                          <span key={e.id} className="flex w-full items-center gap-1.5">
-                            <span className="h-1.5 w-full shrink-0 sm:w-1.5 sm:rounded-full" style={{ background: eventTypeTones[e.type] }} />
-                            <span className="hidden truncate text-[11px] leading-tight sm:block">{e.title}</span>
-                          </span>
-                        ))}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="rounded-2xl border border-white/[0.08] bg-ink-2/50 backdrop-blur-md overflow-hidden">
+                <div className="grid grid-cols-7 border-b border-white/[0.08] bg-white/[0.02]">
+                  {days.slice(0, 7).map((d) => (
+                    <div key={d.toISOString()} className="font-mono text-xs uppercase tracking-wider py-3 text-center text-muted">
+                      {format(d, 'EEEEEE', { locale: tr })}
+                    </div>
+                  ))}
+                </div>
+                <div ref={grid} aria-busy={!monthReady} className={`grid grid-cols-7 gap-px bg-white/[0.06] ${monthReady ? '' : 'invisible'}`}>
+                  {days.map((day) => {
+                    const dayEvents = filteredEvents.filter((e) => isSameDay(parseISO(e.date), day));
+                    const inMonth = isSameMonth(day, monthStart);
+                    const isToday = today ? isSameDay(day, today) : false;
+                    const selected = selectedDate ? isSameDay(day, selectedDate) : false;
+                    return (
+                      <button
+                        key={day.toISOString()}
+                        type="button"
+                        data-cell
+                        onClick={() => setSelectedDate(dayEvents.length ? day : null)}
+                        className={`group relative flex min-h-[64px] flex-col items-start p-1.5 text-left transition-colors sm:min-h-[104px] sm:p-2.5 ${
+                          selected ? 'bg-solar/20 text-paper ring-1 ring-solar' : inMonth ? 'bg-ink-2 text-paper hover:bg-ink-3' : 'bg-ink/80 text-muted/40'
+                        } ${dayEvents.length ? 'cursor-pointer' : 'cursor-default'}`}
+                        aria-label={`${format(day, 'd MMMM', { locale: tr })}${dayEvents.length ? `, ${dayEvents.length} olay` : ''}`}
+                      >
+                        <span className="flex w-full items-center justify-between">
+                          <span className={`font-mono text-xs sm:text-sm ${isToday && !selected ? 'grid h-6 w-6 place-items-center rounded-full bg-solar text-ink font-semibold' : ''}`}>{format(day, 'd')}</span>
+                          {dayEvents.length > 1 && <span className="font-mono text-[9px] text-muted">×{dayEvents.length}</span>}
+                        </span>
+                        <span className="mt-auto flex w-full flex-col gap-1">
+                          {dayEvents.slice(0, 2).map((e) => (
+                            <span key={e.id} className="flex w-full items-center gap-1.5">
+                              <span className="h-1.5 w-full shrink-0 sm:w-1.5 sm:rounded-full" style={{ background: eventTypeTones[e.type] }} />
+                              <span className="hidden truncate text-[11px] leading-tight sm:block">{e.title}</span>
+                            </span>
+                          ))}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
             {/* Side */}
-            <aside className="module space-y-6 lg:col-span-4">
+            <aside className="space-y-6 lg:col-span-4">
               {selectedDate && (
-                <div className="border border-paper bg-paper p-5 text-ink">
-                  <div className="flex items-start justify-between gap-3 border-b border-ink/15 pb-3">
+                <div className="rounded-2xl border border-solar/40 bg-ink-2/95 p-6 text-paper shadow-2xl backdrop-blur-xl">
+                  <div className="flex items-start justify-between gap-3 border-b border-white/[0.08] pb-4">
                     <div>
-                      <div className="label text-ink/60">Seçili gün</div>
-                      <div className="display display-tight mt-2 text-3xl">{format(selectedDate, 'd MMMM yyyy', { locale: tr })}</div>
+                      <div className="font-mono text-xs uppercase tracking-wider text-solar">Seçili gün</div>
+                      <div className="display mt-1 text-2xl font-semibold text-paper">{format(selectedDate, 'd MMMM yyyy', { locale: tr })}</div>
                     </div>
-                    <button type="button" onClick={() => setSelectedDate(null)} aria-label="Kapat" className="grid h-9 w-9 place-items-center rounded-full border border-ink/20 hover:bg-ink hover:text-paper">
-                      <X size={16} />
+                    <button type="button" onClick={() => setSelectedDate(null)} aria-label="Kapat" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-muted transition-colors hover:border-white/30 hover:text-paper">
+                      <X size={15} />
                     </button>
                   </div>
                   {selectedDayEvents.length === 0 ? (
-                    <p className="pt-4 text-sm text-ink/70">Bu tarihte filtrelenmiş gök olayı yok.</p>
+                    <p className="pt-4 text-sm text-paper/70">Bu tarihte filtrelenmiş gök olayı yok.</p>
                   ) : (
-                    <div className="divide-y divide-ink/15">
+                    <div className="divide-y divide-white/[0.08]">
                       {selectedDayEvents.map((e) => (
                         <article key={e.id} className="py-4">
-                          <div className="label flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[e.type] === 'var(--paper)' ? 'var(--ink)' : eventTypeTones[e.type] }} />
+                          <div className="flex items-center gap-2 font-mono text-xs text-muted">
+                            <span className="h-2 w-2 rounded-full" style={{ background: eventTypeTones[e.type] }} />
                             {eventTypeLabels[e.type]} {e.time ? `· ${e.time}` : ''}
                           </div>
-                          <h4 className="mt-2 text-lg font-semibold flex items-center gap-2">
-                            <AstronomicalEventGlyph type={e.type} size={20} className="text-ink shrink-0" />
+                          <h4 className="mt-2 text-base font-semibold text-paper flex items-center gap-2">
+                            <AstronomicalEventGlyph type={e.type} size={18} className="text-solar shrink-0" />
                             <span>{e.title}</span>
                           </h4>
-                          <p className="mt-2 text-sm leading-relaxed text-ink/75">{e.description}</p>
-                          <p className="mt-3 border-l-2 border-solar pl-3 text-sm leading-relaxed text-ink/75">{e.details}</p>
-                          <div className="label mt-3 flex items-center gap-1.5 text-ink/60">
-                            <MapPin size={12} /> {VISIBILITY[e.visibility] ?? e.visibility}
+                          <p className="mt-2 text-xs leading-relaxed text-paper/80">{e.description}</p>
+                          <p className="mt-3 border-l-2 border-solar/60 pl-3 text-xs leading-relaxed text-paper/70">{e.details}</p>
+                          <div className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-muted">
+                            <MapPin size={12} className="text-solar" /> {VISIBILITY[e.visibility] ?? e.visibility}
                           </div>
                         </article>
                       ))}
@@ -332,31 +337,31 @@ export default function CalendarPage() {
 
               <CosmicEventSimulator type={featured?.type ?? 'meteor-yagmuru'} title={featured?.title ?? 'Gök olayı simülasyonu'} />
 
-              <div className="border border-line bg-ink-2">
-                <div className="flex items-center justify-between border-b border-line px-5 py-3">
-                  <span className="label text-paper">Yaklaşan olaylar</span>
-                  <span className="label text-muted">{upcoming.length}</span>
+              <div className="rounded-2xl border border-white/[0.08] bg-ink-2/60 backdrop-blur-md overflow-hidden">
+                <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-3.5 bg-white/[0.02]">
+                  <span className="font-mono text-xs uppercase tracking-wider text-paper/90">Yaklaşan Olaylar</span>
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-muted">{upcoming.length}</span>
                 </div>
-                <ol className="relative">
+                <ol className="divide-y divide-white/[0.06]">
                   {upcoming.length === 0 && <li className="px-5 py-6 text-sm text-muted">Yakın zamanda filtrelenmiş olay yok.</li>}
                   {upcoming.map((e, i) => (
                     <li key={e.id}>
                       <button
                         type="button"
                         onClick={() => pick(e.date)}
-                        className="group grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-line px-5 py-4 text-left transition-colors last:border-b-0 hover:bg-ink-3"
+                        className="group grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 px-5 py-3.5 text-left transition-colors hover:bg-white/[0.03]"
                       >
-                        <span className="label text-muted">{pad(i + 1)}</span>
+                        <span className="font-mono text-xs text-muted">{pad(i + 1)}</span>
                         <span className="min-w-0">
-                          <span className="flex items-center gap-2 truncate text-sm text-paper group-hover:text-solar">
+                          <span className="flex items-center gap-2 truncate text-sm text-paper group-hover:text-solar transition-colors">
                             <AstronomicalEventGlyph type={e.type} size={15} className="text-solar shrink-0" />
                             <span className="truncate">{e.title}</span>
                           </span>
-                          <span className="label mt-1 block text-[10px]" style={{ color: eventTypeTones[e.type] }}>
+                          <span className="mt-1 block font-mono text-[10px]" style={{ color: eventTypeTones[e.type] }}>
                             {format(parseISO(e.date), 'd MMM yyyy', { locale: tr })}
                           </span>
                         </span>
-                        <ArrowRight size={15} className="text-muted transition-transform group-hover:translate-x-1 group-hover:text-solar" />
+                        <ArrowRight size={14} className="text-muted transition-transform group-hover:translate-x-1 group-hover:text-solar" />
                       </button>
                     </li>
                   ))}

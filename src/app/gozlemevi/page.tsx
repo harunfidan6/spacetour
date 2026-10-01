@@ -76,7 +76,6 @@ export default function GozlemeviPage() {
         section="Gözlemevi"
         accent="var(--rose)"
         lines={['Spektrum', <Em key="a">gözlemevi</Em>]}
-        size="clamp(3rem, 9vw, 10.5rem)"
         lede="Evreni yalnızca gözün gördüğü dar bantta değil; Webb’in kızılötesi, Chandra’nın X-ışını ve dev radyo çanaklarının gözünden izle."
         meta={[
           { k: 'Hedef', v: DEEP_SKY_TARGETS.length },
@@ -85,14 +84,14 @@ export default function GozlemeviPage() {
           { k: 'Aralık', v: '10⁻¹⁰ m' },
         ]}
         graphic={
-          <div className="aspect-square w-full max-w-[300px] text-rose-signal">
+          <div className="aspect-square w-full max-w-[280px] text-rose">
             <GozlemeviGraphic />
           </div>
         }
         ticker={['Hubble', 'James Webb', 'Chandra', 'VLA', 'Spitzer', 'XMM-Newton', 'Effelsberg']}
       />
 
-      <div className="space-y-12 px-[var(--gutter)] pb-28 pt-16">
+      <div className="space-y-16 px-[var(--gutter)] pb-28 pt-16">
         <SectionHead
           index="05.1"
           kicker="Gözlem masası"
@@ -105,24 +104,41 @@ export default function GozlemeviPage() {
         />
 
         {/* Targets */}
-        <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {DEEP_SKY_TARGETS.map((t, i) => {
             const on = t.id === target.id;
             return (
-              <button key={t.id} type="button" onClick={() => change(t, mode)} aria-pressed={on} className={`group relative overflow-hidden p-5 text-left transition-colors sm:p-7 ${on ? 'bg-rose-signal text-ink' : 'bg-ink text-paper hover:bg-ink-3'}`}>
-                <span className={`label ${on ? 'text-ink/70' : 'text-muted'}`}>
-                  Hedef {String(i + 1).padStart(2, '0')} · {t.catalog}
-                </span>
-                <span className="display display-tight mt-3 block pt-[0.12em] text-[clamp(1.8rem,3.6vw,3.2rem)]">{t.name}</span>
-                <span className={`serif-i mt-1 block text-lg ${on ? 'text-ink/80' : 'text-rose-signal'}`}>{t.type}</span>
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => change(t, mode)}
+                aria-pressed={on}
+                className={`group relative flex flex-col rounded-2xl border p-6 text-left backdrop-blur-md transition-all duration-300 ${
+                  on
+                    ? 'border-rose/60 bg-ink-2 shadow-[0_12px_36px_rgba(244,63,94,0.15)] ring-1 ring-rose/40'
+                    : 'border-white/[0.08] bg-ink-2/60 hover:border-white/20 hover:bg-ink-2'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-muted">
+                    Hedef {String(i + 1).padStart(2, '0')} · {t.catalog}
+                  </span>
+                  {on && (
+                    <span className="rounded-full border border-rose/30 bg-rose/10 px-2.5 py-0.5 font-mono text-[10px] text-rose">
+                      Aktif Hedef
+                    </span>
+                  )}
+                </div>
+                <span className="display mt-4 text-2xl font-semibold text-paper group-hover:text-rose transition-colors">{t.name}</span>
+                <span className="serif-i mt-1 text-base text-rose/90">{t.type}</span>
               </button>
             );
           })}
         </div>
 
         {/* Spectrum selector */}
-        <div>
-          <div className="relative h-14 overflow-hidden border border-line bg-[linear-gradient(90deg,#3b1d7a_0%,#7a5cff_18%,#ff3d7f_36%,#ff5b22_50%,#ffc53d_58%,#d4ff3d_64%,#8fd3ff_74%,#efece6_100%)]">
+        <div className="rounded-2xl border border-white/[0.08] bg-ink-2/50 backdrop-blur-md overflow-hidden p-2">
+          <div className="relative h-14 overflow-hidden rounded-xl bg-[linear-gradient(90deg,#3b1d7a_0%,#7a5cff_18%,#ff3d7f_36%,#ff5b22_50%,#ffc53d_58%,#d4ff3d_64%,#8fd3ff_74%,#efece6_100%)]">
             <svg viewBox="0 0 400 56" preserveAspectRatio="none" className="absolute inset-0 h-full w-full mix-blend-multiply" aria-hidden>
               <path
                 d={Array.from({ length: 200 }, (_, i) => {
@@ -136,16 +152,27 @@ export default function GozlemeviPage() {
                 strokeWidth="1.5"
               />
             </svg>
-            <span className="absolute inset-y-0 w-[3px] bg-ink shadow-[0_0_0_2px_var(--paper)] transition-[left] duration-700 ease-[cubic-bezier(.76,0,.24,1)]" style={{ left: `calc(${band.stop}% - 1.5px)` }} />
+            <span className="absolute inset-y-0 w-[3px] bg-white shadow-[0_0_12px_2px_rgba(255,255,255,0.8)] transition-[left] duration-700 ease-[cubic-bezier(.76,0,.24,1)]" style={{ left: `calc(${band.stop}% - 1.5px)` }} />
           </div>
-          <div className="grid grid-cols-2 gap-px border-x border-b border-line bg-line sm:grid-cols-4" role="radiogroup" aria-label="Dalgaboyu">
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Dalgaboyu">
             {BANDS.map((b) => {
               const on = b.id === mode;
               return (
-                <button key={b.id} type="button" role="radio" aria-checked={on} onClick={() => change(target, b.id)} className={`p-4 text-left transition-colors ${on ? 'bg-paper text-ink' : 'bg-ink text-paper hover:bg-ink-3'}`}>
-                  <span className={`label ${on ? 'text-ink/60' : 'text-muted'}`}>{b.band}</span>
-                  <span className="display display-tight mt-2 block text-2xl">{b.label}</span>
-                  <span className={`mt-1 block text-xs ${on ? 'text-ink/70' : 'text-paper/55'}`}>{b.desc}</span>
+                <button
+                  key={b.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => change(target, b.id)}
+                  className={`rounded-xl border p-4 text-left transition-all ${
+                    on
+                      ? 'border-rose/50 bg-rose/10 text-paper ring-1 ring-rose/30 shadow-md'
+                      : 'border-white/[0.06] bg-white/[0.02] text-paper/70 hover:border-white/20 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <span className="font-mono text-xs text-muted">{b.band}</span>
+                  <span className="display mt-1 block text-xl font-semibold text-paper">{b.label}</span>
+                  <span className="mt-1 block text-xs text-paper/60">{b.desc}</span>
                 </button>
               );
             })}
@@ -153,7 +180,7 @@ export default function GozlemeviPage() {
         </div>
 
         {/* Observation */}
-        <div className="grid gap-px border border-line bg-line lg:grid-cols-12">
+        <div className="grid gap-px rounded-2xl border border-white/[0.1] bg-white/[0.06] overflow-hidden shadow-2xl lg:grid-cols-12">
           <div ref={viewport} className="ticks relative min-h-[360px] overflow-hidden bg-black sm:min-h-[520px] lg:col-span-7">
             <Ticks />
             {previous && (
@@ -175,34 +202,34 @@ export default function GozlemeviPage() {
               <path d="M-96 0H-52M52 0H96M0 -96V-52M0 52V96" stroke="var(--paper)" strokeWidth="1.2" />
             </svg>
 
-            <div className="absolute left-4 top-4 flex items-center gap-2 bg-ink/80 px-3 py-1.5 backdrop-blur">
+            <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-ink/80 px-3.5 py-1.5 backdrop-blur-md">
               <span className="h-2 w-2 rounded-full" style={{ background: view.color }} />
-              <span className="label text-paper">
+              <span className="font-mono text-xs text-paper">
                 <Scramble key={mode} text={`${band.label} · ${band.band}`} onView={false} />
               </span>
             </div>
-            <div className="absolute inset-x-4 bottom-4 flex flex-wrap items-center justify-between gap-2 bg-ink/80 px-4 py-2.5 backdrop-blur">
-              <span className="label text-muted">Gözlem aracı</span>
-              <span className="font-mono text-xs text-paper">
+            <div className="absolute inset-x-4 bottom-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-ink/80 px-4 py-2.5 backdrop-blur-md">
+              <span className="font-mono text-xs text-muted">Gözlem Teleskobu</span>
+              <span className="font-mono text-xs font-semibold text-paper">
                 <Scramble text={view.telescope} onView={false} />
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col justify-between gap-8 bg-ink p-6 sm:p-8 lg:col-span-5">
+          <div className="flex flex-col justify-between gap-8 bg-ink-2 p-6 sm:p-8 lg:col-span-5">
             <div>
-              <div className="flex items-center justify-between border-b border-line pb-3">
-                <span className="label text-rose-signal">{target.catalog}</span>
-                <span className="label text-muted">{target.distance}</span>
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <span className="font-mono text-xs font-semibold text-rose">{target.catalog}</span>
+                <span className="font-mono text-xs text-muted">{target.distance}</span>
               </div>
-              <h2 className="display display-tight mt-6 pt-[0.12em] text-[clamp(2.2rem,4vw,3.6rem)] text-paper">{target.name}</h2>
-              <p className="serif-i mt-1 text-xl text-rose-signal">{target.type}</p>
-              <p className="mt-5 text-sm leading-relaxed text-paper/70">{target.description}</p>
+              <h2 className="display mt-6 text-3xl font-semibold text-paper">{target.name}</h2>
+              <p className="serif-i mt-1 text-lg text-rose/90">{target.type}</p>
+              <p className="mt-4 text-sm leading-relaxed text-paper/70">{target.description}</p>
             </div>
-            <div className="border-l-2 pl-5" style={{ borderColor: view.color }}>
-              <div className="label text-paper">Bu dalgaboyunda görülen</div>
-              <p className="mt-3 text-base leading-relaxed text-paper/80">{view.highlights}</p>
-              <div className="label mt-4 text-muted">Spektrum · {view.wavelength}</div>
+            <div className="rounded-xl border-l-2 bg-white/[0.02] p-4" style={{ borderColor: view.color }}>
+              <div className="font-mono text-xs uppercase tracking-wider text-paper/80">Bu dalgaboyunda görülen</div>
+              <p className="mt-2 text-sm leading-relaxed text-paper/90">{view.highlights}</p>
+              <div className="mt-3 font-mono text-[11px] text-muted">Spektrum · {view.wavelength}</div>
             </div>
           </div>
         </div>
