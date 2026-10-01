@@ -9,11 +9,10 @@ import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Magnetic } from '@/components/motion/primitives';
 import { moonPhase, upcomingEvents, daysUntil } from '@/lib/sky';
 import { useNow } from '@/lib/useNow';
-import { HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
+import { HeroSolarSystem3D, HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
+import { HeroKineticHUD } from './HeroKineticHUD';
 import { MoonOrb } from '@/components/space/PlanetOrb';
 import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
-
-const HeroSolarSystem3D = dynamic(() => import('./HeroSolarSystem3D').then((m) => m.HeroSolarSystem3D), { ssr: false });
 
 export function HomeHero() {
   const root = useRef<HTMLElement>(null);
@@ -95,7 +94,10 @@ export function HomeHero() {
   return (
     <div>
     <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
-      {/* Live 3D solar system */}
+      {/* 1. Motion Graphics Kinetic HUD Background */}
+      <HeroKineticHUD />
+
+      {/* 2. Live 3D solar system */}
       <div className="pointer-events-none absolute inset-0">
         <HeroSolarSystem3D project={placeLabel} active={inView} />
         {HERO_BODIES.map((b, i) => (
@@ -132,7 +134,7 @@ export function HomeHero() {
         </div>
 
         <h1 data-hero-title className="display mt-6 text-[clamp(2.8rem,6.2vw,5.5rem)] font-bold tracking-tight text-paper sm:mt-8">
-          <SplitReveal as="span" className="block" trigger="intro" effect="fade">
+          <SplitReveal as="span" className="block text-shimmer" trigger="intro" effect="fade">
             Evren
           </SplitReveal>
           <SplitReveal as="span" className="block" trigger="intro" effect="fade" delay={0.1}>

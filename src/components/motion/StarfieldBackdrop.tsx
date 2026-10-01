@@ -54,11 +54,40 @@ export function StarfieldBackdrop() {
       seed();
     };
 
+    let lastScroll = 0;
+    let scrollVel = 0;
+
     const draw = (t: number) => {
       ctx.clearRect(0, 0, w, h);
       pointer.x += (pointer.tx - pointer.x) * 0.04;
       pointer.y += (pointer.ty - pointer.y) * 0.04;
       const scroll = window.scrollY;
+      scrollVel = (scroll - lastScroll) * 0.2;
+      lastScroll = scroll;
+
+      // 1. Cinematic Volumetric Cosmic Nebula Layer
+      if (!reduced) {
+        const nebula1X = w * 0.25 + Math.sin(t * 0.0004) * 50 - pointer.x * 30;
+        const nebula1Y = h * 0.35 + Math.cos(t * 0.0003) * 40 - pointer.y * 30;
+        const grad1 = ctx.createRadialGradient(nebula1X, nebula1Y, 10, nebula1X, nebula1Y, w * 0.55);
+        grad1.addColorStop(0, 'rgba(129, 140, 248, 0.045)');
+        grad1.addColorStop(0.5, 'rgba(99, 102, 241, 0.02)');
+        grad1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad1;
+        ctx.fillRect(0, 0, w, h);
+
+        const nebula2X = w * 0.75 + Math.cos(t * 0.0005) * 60 - pointer.x * 40;
+        const nebula2Y = h * 0.65 + Math.sin(t * 0.0004) * 50 - pointer.y * 40;
+        const grad2 = ctx.createRadialGradient(nebula2X, nebula2Y, 10, nebula2X, nebula2Y, w * 0.6);
+        grad2.addColorStop(0, 'rgba(245, 197, 66, 0.035)');
+        grad2.addColorStop(0.5, 'rgba(244, 63, 94, 0.015)');
+        grad2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad2;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // 2. Stars with twinkle, parallax and scroll motion blur
+      const isWarping = Math.abs(scrollVel) > 2;
 
       for (const s of stars) {
         const depth = 0.15 + s.z * 0.85;
@@ -66,30 +95,37 @@ export function StarfieldBackdrop() {
         if (y < 0) y += h;
         const x = s.x - pointer.x * depth * 18;
         const twinkle = reduced ? 1 : 0.55 + Math.sin(t * 0.0012 + s.tw) * 0.45;
-        const alpha = (0.18 + depth * 0.7) * twinkle;
+        const alpha = (0.2 + depth * 0.75) * twinkle;
         ctx.fillStyle = `rgba(${HUES[s.hue]},${alpha.toFixed(3)})`;
         const size = s.r * (0.6 + depth);
-        ctx.fillRect(x, y, size, size);
+
+        if (isWarping && !reduced) {
+          ctx.fillRect(x, y, size, size + Math.min(Math.abs(scrollVel) * depth, 8));
+        } else {
+          ctx.fillRect(x, y, size, size);
+        }
       }
 
+      // 3. Shooting star meteors
       if (!reduced) {
-        if (Math.random() < 0.004 && streaks.length < 2) {
-          streaks.push({ x: Math.random() * w, y: Math.random() * h * 0.5, vx: -(6 + Math.random() * 6), vy: 3 + Math.random() * 3, life: 1 });
+        if (Math.random() < 0.006 && streaks.length < 3) {
+          streaks.push({ x: Math.random() * w, y: Math.random() * h * 0.6, vx: -(8 + Math.random() * 8), vy: 4 + Math.random() * 4, life: 1 });
         }
         for (let i = streaks.length - 1; i >= 0; i--) {
           const s = streaks[i];
-          const grad = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * 12, s.y - s.vy * 12);
-          grad.addColorStop(0, `rgba(239,236,230,${s.life})`);
-          grad.addColorStop(1, 'rgba(239,236,230,0)');
+          const grad = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * 16, s.y - s.vy * 16);
+          grad.addColorStop(0, `rgba(245, 197, 66, ${s.life})`);
+          grad.addColorStop(0.3, `rgba(255, 255, 255, ${s.life * 0.8})`);
+          grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
           ctx.strokeStyle = grad;
-          ctx.lineWidth = 1.2;
+          ctx.lineWidth = 1.5;
           ctx.beginPath();
           ctx.moveTo(s.x, s.y);
-          ctx.lineTo(s.x - s.vx * 12, s.y - s.vy * 12);
+          ctx.lineTo(s.x - s.vx * 16, s.y - s.vy * 16);
           ctx.stroke();
           s.x += s.vx;
           s.y += s.vy;
-          s.life -= 0.012;
+          s.life -= 0.015;
           if (s.life <= 0) streaks.splice(i, 1);
         }
       }

@@ -8,17 +8,19 @@ import { InterstellarProbes } from '@/components/space/InterstellarProbes';
 import { NasaApodSection } from '@/components/space/NasaApodSection';
 import { Radio } from 'lucide-react';
 
+import { CinematicCard } from '@/components/motion/CinematicCard';
+
 export function MissionControlDashboard() {
   return (
-    <section className="relative px-[var(--gutter)] py-20 bg-ink border-t border-line">
+    <section className="relative px-[var(--gutter)] py-20 bg-ink border-t border-white/[0.08]">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line pb-8 mb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8 mb-12">
         <div>
           <div className="label text-lime flex items-center gap-2 mb-2 font-mono">
             <Radio size={14} className="animate-pulse text-lime" />
             <span>CANLI TELEMETRİ MERKEZİ</span>
           </div>
-          <h2 className="display display-tight text-3xl sm:text-5xl text-paper">
+          <h2 className="display text-3xl sm:text-5xl font-semibold text-paper">
             Kozmik Görev Kontrolü
           </h2>
         </div>
@@ -30,28 +32,28 @@ export function MissionControlDashboard() {
       {/* Grid */}
       <div className="space-y-8">
         {/* 1. Sky Tonight */}
-        <div className="rounded-2xl border border-line bg-ink-2/95 overflow-hidden shadow-2xl">
+        <CinematicCard accent="#38bdf8" className="overflow-hidden shadow-2xl">
           <SkyTonightWidget />
-        </div>
+        </CinematicCard>
 
         {/* 2. Middle Row: ISS & Space Weather */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="rounded-2xl border border-line bg-ink-2/95 overflow-hidden shadow-2xl">
+          <CinematicCard accent="#38bdf8" className="overflow-hidden shadow-2xl">
             <IssTracker />
-          </div>
-          <div className="rounded-2xl border border-line bg-ink-2/95 overflow-hidden shadow-2xl">
+          </CinematicCard>
+          <CinematicCard accent="#f59e0b" className="overflow-hidden shadow-2xl">
             <SpaceWeatherWidget />
-          </div>
+          </CinematicCard>
         </div>
 
         {/* 3. Bottom Row: Interstellar Probes & NASA APOD */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="rounded-2xl border border-line bg-ink-2/95 overflow-hidden shadow-2xl">
+          <CinematicCard accent="#818cf8" className="overflow-hidden shadow-2xl">
             <InterstellarProbes />
-          </div>
-          <div className="rounded-2xl border border-line bg-ink-2/95 overflow-hidden shadow-2xl">
+          </CinematicCard>
+          <CinematicCard accent="#f5c542" className="overflow-hidden shadow-2xl">
             <NasaApodSection />
-          </div>
+          </CinematicCard>
         </div>
       </div>
     </section>

@@ -8,6 +8,7 @@ import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { PageTransitionProvider } from "@/components/motion/PageTransition";
 import { Preloader } from "@/components/motion/Preloader";
 import { StarfieldBackdrop } from "@/components/motion/StarfieldBackdrop";
+import { CinematicCursor } from "@/components/motion/CinematicCursor";
 import { CosmicTerminal } from "@/components/ui/CosmicTerminal";
 
 const archivo = Archivo({
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <PageTransitionProvider>
             <AnalyticsTracker />
             <StarfieldBackdrop />
+            <CinematicCursor />
             <Navbar />
             <main className="relative z-10 min-h-screen">{children}</main>
             <Footer />
