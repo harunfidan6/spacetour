@@ -77,7 +77,7 @@ export default function Navbar() {
           <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="SpaceTour TR ana sayfa">
             <LogoMark className="h-8 w-8" />
             <span className="display text-[17px] leading-none tracking-[-0.02em]">
-              Spacetour<span className="text-solar">.tr</span>
+              Spacetour<span className="text-gold">.tr</span>
             </span>
           </Link>
 
@@ -86,12 +86,12 @@ export default function Navbar() {
               const active = isActive(pathname, r.href);
               return (
                 <Link key={r.href} href={r.href} className="group flex items-start gap-1.5 whitespace-nowrap text-[13px] font-medium" aria-current={active ? 'page' : undefined}>
-                  <span className="label mt-[1px] text-[9px]" style={{ color: active ? r.accent : 'var(--muted)' }}>
+                  <span className="label mt-[1px] text-[9px]" style={{ color: active ? 'var(--gold)' : 'var(--muted)' }}>
                     {r.index}
                   </span>
-                  <span className={`roll ${active ? 'text-paper' : 'text-paper/70'}`}>
+                  <span className={`roll ${active ? 'text-paper font-semibold' : 'text-paper/70'}`}>
                     <span>{r.label}</span>
-                    <span style={{ color: r.accent }}>{r.label}</span>
+                    <span style={{ color: 'var(--gold)' }}>{r.label}</span>
                   </span>
                 </Link>
               );
@@ -103,17 +103,17 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('open-cosmic-terminal'))}
-              className="hidden h-9 items-center gap-1.5 rounded-full border border-line bg-ink/60 px-3 font-mono text-[11px] text-paper/80 transition-colors hover:border-solar hover:text-solar sm:flex cursor-pointer"
+              className="hidden h-9 items-center gap-1.5 rounded-full border border-line bg-ink/60 px-3 font-mono text-[11px] text-paper/80 transition-colors hover:border-gold hover:text-gold sm:flex cursor-pointer"
               title="Kozmik kumanda terminali (⌘K / Ctrl+K)"
               aria-label="Kozmik kumanda terminalini aç"
             >
-              <Terminal size={12} className="text-solar" />
+              <Terminal size={12} className="text-gold" />
               <span>⌘K</span>
             </button>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="group flex items-center gap-3 rounded-full bg-paper py-2 pl-4 pr-2 text-ink transition-colors hover:bg-solar"
+              className="group flex items-center gap-3 rounded-full bg-paper py-2 pl-4 pr-2 text-ink transition-colors hover:bg-gold"
               aria-expanded={menuOpen}
               aria-controls="site-menu"
             >
@@ -128,7 +128,7 @@ export default function Navbar() {
           </div>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-[2px]">
-          <div ref={progress} className="h-full origin-left bg-solar" style={{ transform: 'scaleX(0)' }} />
+          <div ref={progress} className="h-full origin-left bg-gold" style={{ transform: 'scaleX(0)' }} />
         </div>
       </nav>
 

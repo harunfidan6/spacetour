@@ -6,18 +6,19 @@
    ========================================================================== */
 
 :root {
-  /* Core palette */
-  --ink: #09090b;
-  --ink-2: #111114;
-  --ink-3: #1a1a1f;
-  --paper: #efece6;
-  --muted: #8d8a85;
-  --line: #26262b;
-  --solar: #ff5b22;
-  --violet: #7a5cff;
-  --lime: #d4ff3d;
-  --gold: #ffc53d;
-  --rose: #ff3d7f;
+  /* Core palette — Nordic / James Webb Observatory System */
+  --ink: #050508;
+  --ink-2: #0b0b10;
+  --ink-3: #121218;
+  --paper: #f4f3ee;
+  --muted: #888680;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --solar: #f59e0b;
+  --violet: #818cf8;
+  --lime: #38bdf8;
+  --gold: #f5c542;
+  --rose: #f43f5e;
 
   /* Semantic aliases (consumed across modules) */
   --background: var(--ink);
@@ -25,20 +26,21 @@
   --card-bg: var(--ink-2);
   --card-border: var(--line);
   --primary: var(--solar);
-  --primary-glow: rgb(255 91 34 / 0.16);
+  --primary-glow: rgba(245, 158, 11, 0.12);
   --secondary: var(--violet);
-  --secondary-glow: rgb(122 92 255 / 0.16);
+  --secondary-glow: rgba(129, 140, 248, 0.12);
   --accent: var(--lime);
   --text-secondary: var(--muted);
   --star-gold: var(--gold);
 
   /* Per-page accent, overridden by PageHero / sections */
-  --page-accent: var(--solar);
+  --page-accent: var(--gold);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
   --gutter: clamp(16px, 4vw, 56px);
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -377,3 +379,38 @@ body {
   }
   .grain { display: none; }
 }
+
+/* --------------------------------------------------------------------------
+   Nordic Observatory Design System Utilities
+   -------------------------------------------------------------------------- */
+.cosmic-surface {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+}
+
+.cosmic-glass {
+  background: rgba(11, 11, 16, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--line);
+}
+
+.cosmic-card {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  transition: border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.cosmic-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+.cosmic-pill {
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: rgba(11, 11, 16, 0.75);
+  backdrop-filter: blur(16px);
+  transition: all 0.2s var(--ease-out);
+}
+

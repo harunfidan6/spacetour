@@ -59,11 +59,11 @@ export function PageHero({
               </SplitReveal>
             )}
             {meta.length > 0 && (
-              <Reveal items="[data-meta]" stagger={0.07} y={24} className="grid grid-cols-2 gap-px self-end border border-line bg-line sm:grid-cols-4 lg:col-span-6 lg:col-start-7">
+              <Reveal items="[data-meta]" stagger={0.07} y={24} className="grid grid-cols-2 gap-px self-end border border-line bg-line sm:grid-cols-4 lg:col-span-6 lg:col-start-7 shadow-xl">
                 {meta.map((m) => (
-                  <div key={m.k} data-meta className="bg-ink p-4">
+                  <div key={m.k} data-meta className="bg-ink-2 p-4 sm:p-5">
                     <div className="label text-muted">{m.k}</div>
-                    <div className="display display-tight mt-3 text-2xl sm:text-3xl" style={{ color: accent }}>
+                    <div className="display display-tight mt-3 text-2xl sm:text-3xl font-bold" style={{ color: accent }}>
                       {m.v}
                     </div>
                   </div>

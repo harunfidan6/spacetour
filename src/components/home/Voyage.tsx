@@ -127,13 +127,13 @@ export function Voyage() {
           <button
             type="button"
             onClick={toggleOrbitMode}
-            className={`flex items-center gap-2 border px-3 py-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex items-center gap-2 border px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer rounded-full backdrop-blur-xl ${
               orbitMode === 'j2000'
-                ? 'border-lime bg-lime/15 text-lime shadow-[0_0_20px_rgba(212,255,61,0.2)]'
-                : 'border-line bg-ink/80 text-paper/80 backdrop-blur hover:border-paper/40'
+                ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(245,197,66,0.3)]'
+                : 'border-line bg-ink/80 text-paper/80 hover:border-paper/40'
             }`}
           >
-            <Orbit size={14} className={orbitMode === 'j2000' ? 'animate-spin' : ''} />
+            <Orbit size={13} className={orbitMode === 'j2000' ? 'animate-spin' : ''} />
             <span>{orbitMode === 'j2000' ? 'J2000 Canlı Efemeris' : 'Didaktik Sıralama'}</span>
           </button>
 
@@ -142,13 +142,13 @@ export function Voyage() {
             type="button"
             onClick={focusCurrentDestination}
             disabled={isTransitioning}
-            className={`flex items-center gap-2 border px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex items-center gap-2 border px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer rounded-full backdrop-blur-xl ${
               isTransitioning
-                ? 'border-solar bg-solar text-ink font-bold shadow-[0_0_20px_rgba(255,91,34,0.35)]'
-                : 'border-line bg-ink/80 text-paper backdrop-blur hover:border-paper/40'
+                ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(245,197,66,0.3)]'
+                : 'border-line bg-ink/80 text-paper hover:border-paper/40'
             }`}
           >
-            <Orbit size={14} className={isTransitioning ? 'animate-spin' : ''} />
+            <Orbit size={13} className={isTransitioning ? 'animate-spin' : ''} />
             <span>{isTransitioning ? 'Hedefe Kilitleniyor' : 'Hedefe Odaklan'}</span>
           </button>
 
@@ -157,10 +157,10 @@ export function Voyage() {
             type="button"
             onClick={toggleAutoPilot}
             aria-pressed={autoPilot}
-            className={`flex items-center gap-2 border px-4 py-2 font-mono text-xs transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 border px-3.5 py-1.5 font-mono text-xs transition-colors cursor-pointer rounded-full backdrop-blur-xl ${
               autoPilot
-                ? 'border-lime bg-lime text-ink font-bold'
-                : 'border-line bg-ink/80 text-paper backdrop-blur hover:border-paper/40'
+                ? 'border-lime bg-lime text-ink font-bold shadow-[0_0_15px_rgba(56,189,248,0.3)]'
+                : 'border-line bg-ink/80 text-paper hover:border-paper/40'
             }`}
           >
             <span className={`h-2 w-2 rounded-full ${autoPilot ? 'bg-ink animate-ping' : 'bg-lime'}`} />

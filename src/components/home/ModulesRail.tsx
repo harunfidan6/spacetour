@@ -116,35 +116,44 @@ export function ModulesRail() {
                 key={m.href}
                 href={m.href}
                 data-rail-card
-               
-                className="group relative flex shrink-0 flex-col overflow-hidden text-ink md:h-[72svh] md:max-h-[680px] md:min-h-[480px] md:w-[min(76vw,1080px)] lg:flex-row"
-                style={{ background: r.accent }}
+                className="group relative flex shrink-0 flex-col overflow-hidden text-paper md:h-[72svh] md:max-h-[680px] md:min-h-[480px] md:w-[min(76vw,1080px)] lg:flex-row border border-line bg-ink-2/95 transition-all duration-500 hover:border-white/25 shadow-2xl backdrop-blur-2xl"
               >
+                {/* Precision top accent line */}
+                <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: r.accent }} />
+
+                {/* Subtle ambient glow halo */}
+                <div
+                  className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full opacity-15 blur-3xl transition-opacity duration-700 group-hover:opacity-30"
+                  style={{ background: r.accent }}
+                />
+
                 <div className="relative z-10 flex flex-1 flex-col justify-between gap-8 p-6 sm:p-10">
                   <div className="flex items-center justify-between">
-                    <span className="label font-semibold">
-                      {r.index} / 0{MODULES.length}
+                    <span className="label font-mono flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: r.accent }} />
+                      <span style={{ color: r.accent }}>{r.index}</span>
+                      <span className="text-muted">/ 0{MODULES.length}</span>
                     </span>
-                    <span className="grid h-12 w-12 place-items-center rounded-full border border-ink/40 transition-all duration-500 group-hover:rotate-45 group-hover:bg-ink group-hover:text-paper">
+                    <span className="grid h-12 w-12 place-items-center rounded-full border border-line bg-ink/60 text-paper transition-all duration-500 group-hover:rotate-45 group-hover:bg-paper group-hover:text-ink">
                       <ArrowUpRight size={20} />
                     </span>
                   </div>
                   <div>
-                    <h3 data-rail-title className="display display-tight text-[clamp(2.4rem,4.8vw,5rem)]">
+                    <h3 data-rail-title className="display display-tight text-[clamp(2.4rem,4.8vw,5rem)] text-paper">
                       {m.title}
                     </h3>
-                    <p className="mt-5 max-w-md text-sm leading-relaxed text-ink/75 sm:text-base">{m.text}</p>
+                    <p className="mt-5 max-w-md text-sm leading-relaxed text-paper/70 sm:text-base">{m.text}</p>
                     <div className="mt-6 flex flex-wrap gap-2">
                       {m.tags.map((t) => (
-                        <span key={t} className="label rounded-full border border-ink/35 px-3 py-1.5 text-[10px]">
+                        <span key={t} className="label rounded-full border border-line bg-ink/60 px-3 py-1 text-[10px] text-paper/70 font-mono">
                           {t}
                         </span>
                       ))}
                     </div>
                   </div>
                 </div>
-                <div className="relative flex min-h-[260px] flex-1 items-center justify-center p-6 md:min-h-0">
-                  <div data-rail-art className="aspect-square w-full max-w-[440px]">
+                <div className="relative flex min-h-[260px] flex-1 items-center justify-center p-6 md:min-h-0 bg-ink/40">
+                  <div data-rail-art className="aspect-square w-full max-w-[420px] transition-transform duration-700 group-hover:scale-105">
                     {m.graphic}
                   </div>
                 </div>

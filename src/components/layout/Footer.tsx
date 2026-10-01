@@ -24,12 +24,12 @@ export function Footer() {
 
   return (
     <footer className="relative z-10 overflow-hidden border-t border-line bg-ink">
-      <div className="border-b border-line bg-solar py-3 text-ink">
+      <div className="border-b border-line bg-ink-2 py-3 text-paper">
         <Marquee speed={70}>
           {['Gökyüzü bu gece açık', 'Yukarı bak', 'Evren hiç durmaz'].map((t) => (
             <span key={t} className="display flex items-center gap-8 px-8 pb-[0.04em] pt-[0.16em] text-[clamp(1.6rem,3.4vw,3rem)]">
               {t}
-              <span aria-hidden>✺</span>
+              <span className="text-gold">✺</span>
             </span>
           ))}
         </Marquee>
@@ -37,17 +37,16 @@ export function Footer() {
 
       <div className="grid gap-12 px-[var(--gutter)] py-16 lg:grid-cols-12">
         <div className="lg:col-span-6">
-          <SplitReveal as="p" className="display text-[clamp(2.2rem,5vw,4.5rem)]">
-            Bakmaya <span className="serif-i text-solar">hazır</span> mısın?
+          <SplitReveal as="p" className="display text-[clamp(2.2rem,5vw,4.5rem)] text-paper">
+            Bakmaya <span className="serif-i text-gold">hazır</span> mısın?
           </SplitReveal>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Magnetic>
               <Link
                 href="/harita"
-               
-                className="grid h-32 w-32 place-items-center rounded-full bg-paper text-center text-ink transition-colors hover:bg-lime"
+                className="grid h-32 w-32 place-items-center rounded-full bg-gold text-center text-ink font-bold transition-all hover:bg-paper hover:scale-105 shadow-2xl"
               >
-                <span className="label font-semibold leading-snug">
+                <span className="label font-bold leading-snug">
                   Gök
                   <br />
                   haritası
