@@ -10,6 +10,9 @@ import { CosmicTarotDrawer } from '@/components/space/CosmicTarotDrawer';
 import { DailyHoroscopeDeck } from '@/components/space/DailyHoroscopeDeck';
 import { StarOracleWidget } from '@/components/space/StarOracleWidget';
 import { SynastryChartCalculator } from '@/components/space/SynastryChartCalculator';
+import { LunarPhaseTracker } from '@/components/space/LunarPhaseTracker';
+import { CosmicRetrogradeRadar } from '@/components/space/CosmicRetrogradeRadar';
+import { CosmicNumerologyMatrix } from '@/components/space/CosmicNumerologyMatrix';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
 import { AstrolojiGraphic } from '@/components/home/ModuleGraphics';
 import { Reveal, Ticks } from '@/components/motion/primitives';
@@ -24,6 +27,9 @@ const CHAPTERS = [
   { href: '#gunluk-burc-fali', label: 'Günlük burç falı' },
   { href: '#yildiz-fali', label: 'Yıldız falı & saatler' },
   { href: '#kozmik-tarot', label: 'Kozmik tarot (22 arkana)' },
+  { href: '#ay-takvimi', label: 'Ay fazları & VoC' },
+  { href: '#gezegen-retrolari', label: 'Gezegen retroları' },
+  { href: '#kozmik-numeroloji', label: 'Numeroloji matrisi' },
   { href: '#gunluk-transitler', label: 'Canlı transitler' },
   { href: '#zodyak-atlasi', label: '12 zodyak arşivi' },
   { href: '#burc-uyumu', label: 'Burç uyumu' },
@@ -278,8 +284,26 @@ export default function AstrolojiPage() {
           </Chapter>
         </div>
 
+        <div id="ay-takvimi">
+          <Chapter index="04.5" title="Ay evreleri, boşluktaki ay (VoC) & kozmik niyet ritüelleri">
+            <LunarPhaseTracker />
+          </Chapter>
+        </div>
+
+        <div id="gezegen-retrolari">
+          <Chapter index="04.6" title="Gezegen retroları, gölge periyotları & astrolojik koruma radarı">
+            <CosmicRetrogradeRadar />
+          </Chapter>
+        </div>
+
+        <div id="kozmik-numeroloji">
+          <Chapter index="04.7" title="Pisagor kozmik numeroloji matrisi & 4 sütun yaşam yolu">
+            <CosmicNumerologyMatrix />
+          </Chapter>
+        </div>
+
         <div id="gunluk-transitler">
-          <Chapter index="04.5" title="Canlı efemeris transitleri & gökyüzü nabzı">
+          <Chapter index="04.8" title="Canlı efemeris transitleri & gökyüzü nabzı">
             <DailyCosmicTransitWidget />
           </Chapter>
         </div>
@@ -287,7 +311,7 @@ export default function AstrolojiPage() {
         {/* Zodiac directory */}
         <section id="zodyak-atlasi">
           <SectionHead
-            index="04.6"
+            index="04.9"
             kicker="12 zodyak takımyıldızı"
             title={
               <>
@@ -344,7 +368,7 @@ export default function AstrolojiPage() {
         {/* Compatibility */}
         <section id="burc-uyumu">
           <SectionHead
-            index="04.7"
+            index="04.10"
             kicker="Kozmik kimya"
             title={
               <>
@@ -404,7 +428,7 @@ export default function AstrolojiPage() {
         </section>
 
         <div id="sinastri-analizi">
-          <Chapter index="04.8" title="Sinastri & ikili doğum haritası">
+          <Chapter index="04.11" title="Sinastri & ikili doğum haritası">
             <SynastryChartCalculator />
           </Chapter>
         </div>

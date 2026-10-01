@@ -992,3 +992,117 @@ export function AstronomicalEventGlyph({
       return <AstrolabeGlyph size={size} className={className} strokeWidth={strokeWidth} {...props} />;
   }
 }
+
+// -----------------------------------------------------------------------------
+// SACRED ESOTERIC & LUNAR GLYPHS (Retrogrades, Moon Phases, Numerology)
+// -----------------------------------------------------------------------------
+
+export function RetrogradeGlyph({ size = 24, className = '', strokeWidth = 1.5, ...props }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+      {/* Capital R */}
+      <line x1="6" y1="4" x2="6" y2="20" strokeWidth={1.8} />
+      <path d="M6 4H14C16.5 4 18 5.5 18 8C18 10.5 16.5 12 14 12H6" strokeWidth={1.8} />
+      <line x1="12" y1="12" x2="18" y2="20" strokeWidth={1.8} />
+      {/* Crossed leg slash (℞) */}
+      <line x1="11" y1="18" x2="16" y2="14" strokeWidth={1.6} />
+      {/* Outer subtle orbital ring */}
+      <circle cx="12" cy="12" r="10.5" strokeWidth={0.8} strokeDasharray="2 3" strokeOpacity={0.6} />
+    </svg>
+  );
+}
+
+export function SacredTetractysGlyph({ size = 24, className = '', strokeWidth = 1.2, ...props }: GlyphProps) {
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+      {/* Outer Sacred Triangle */}
+      <polygon points="14,3 25,23 3,23" strokeOpacity={0.4} strokeDasharray="1.5 2" />
+      {/* Row 1 (1 point) */}
+      <circle cx="14" cy="6" r="1.6" fill="currentColor" />
+      {/* Row 2 (2 points) */}
+      <circle cx="10.5" cy="11.5" r="1.4" fill="currentColor" />
+      <circle cx="17.5" cy="11.5" r="1.4" fill="currentColor" />
+      {/* Row 3 (3 points) */}
+      <circle cx="7" cy="17" r="1.4" fill="currentColor" />
+      <circle cx="14" cy="17" r="1.4" fill="currentColor" />
+      <circle cx="21" cy="17" r="1.4" fill="currentColor" />
+      {/* Row 4 (4 points) */}
+      <circle cx="3.5" cy="22.5" r="1.4" fill="currentColor" />
+      <circle cx="10.5" cy="22.5" r="1.4" fill="currentColor" />
+      <circle cx="17.5" cy="22.5" r="1.4" fill="currentColor" />
+      <circle cx="24.5" cy="22.5" r="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function MoonPhaseVectorGlyph({
+  phaseId,
+  size = 28,
+  className = '',
+  strokeWidth = 1.2,
+  ...props
+}: { phaseId: string } & GlyphProps) {
+  switch (phaseId) {
+    case 'new-moon':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" strokeDasharray="2 2" strokeOpacity={0.6} />
+          <circle cx="14" cy="14" r="11" fill="currentColor" fillOpacity={0.08} />
+          <circle cx="14" cy="14" r="1.5" fill="currentColor" />
+        </svg>
+      );
+    case 'waxing-crescent':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" strokeOpacity={0.4} />
+          <path d="M14 3 A 11 11 0 0 1 14 25 A 7 11 0 0 0 14 3" fill="currentColor" fillOpacity={0.8} />
+        </svg>
+      );
+    case 'first-quarter':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" />
+          <path d="M14 3 A 11 11 0 0 1 14 25 Z" fill="currentColor" fillOpacity={0.85} />
+          <line x1="14" y1="2" x2="14" y2="26" strokeWidth={1} />
+        </svg>
+      );
+    case 'waxing-gibbous':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" />
+          <path d="M14 3 A 11 11 0 0 1 14 25 A 6 11 0 0 1 14 3" fill="currentColor" fillOpacity={0.85} />
+        </svg>
+      );
+    case 'full-moon':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" fill="currentColor" fillOpacity={0.9} />
+          <circle cx="14" cy="14" r="13" strokeWidth={0.8} strokeDasharray="1 2" strokeOpacity={0.5} />
+        </svg>
+      );
+    case 'waning-gibbous':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" />
+          <path d="M14 3 A 11 11 0 0 0 14 25 A 6 11 0 0 0 14 3" fill="currentColor" fillOpacity={0.85} />
+        </svg>
+      );
+    case 'third-quarter':
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" />
+          <path d="M14 3 A 11 11 0 0 0 14 25 Z" fill="currentColor" fillOpacity={0.85} />
+          <line x1="14" y1="2" x2="14" y2="26" strokeWidth={1} />
+        </svg>
+      );
+    case 'balsamic-moon':
+    default:
+      return (
+        <svg viewBox="0 0 28 28" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+          <circle cx="14" cy="14" r="11" strokeOpacity={0.4} />
+          <path d="M14 3 A 11 11 0 0 0 14 25 A 7 11 0 0 1 14 3" fill="currentColor" fillOpacity={0.8} />
+        </svg>
+      );
+  }
+}
+

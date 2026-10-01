@@ -91,8 +91,8 @@ export function NatalChartCalculator() {
   const zoneOffset = CITY_UTC_OFFSET[city] ?? 3;
   const solarHourNorm = localSolarHour(hour, minute, location.longitude, zoneOffset);
 
-  // Active view tab: 'trinity' | 'planets' | 'houses'
-  const [activeTab, setActiveTab] = useState<'trinity' | 'planets' | 'houses'>('trinity');
+  // Active view tab: 'trinity' | 'planets' | 'houses' | 'poster'
+  const [activeTab, setActiveTab] = useState<'trinity' | 'planets' | 'houses' | 'poster'>('trinity');
   const [selectedHouse, setSelectedHouse] = useState<AstrologicalHouse | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [hoveredAspect, setHoveredAspect] = useState<AspectInfo | null>(null);
@@ -251,6 +251,16 @@ export function NatalChartCalculator() {
             }`}
           >
             12 Astrolojik Ev
+          </button>
+          <button
+            onClick={() => setActiveTab('poster')}
+            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
+              activeTab === 'poster'
+                ? 'bg-gold text-ink'
+                : 'text-gold hover:text-paper border border-gold/40'
+            }`}
+          >
+            Doğum Kartı Posteri
           </button>
         </div>
       </div>
@@ -888,6 +898,141 @@ export function NatalChartCalculator() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* 4. TAB: POSTER / ARŞİV BELGESİ */}
+      {activeTab === 'poster' && (
+        <div className="space-y-6">
+          <div className="border border-gold/40 bg-ink-2 p-6 sm:p-10 relative overflow-hidden text-paper space-y-8">
+            <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
+              <ZodiacGlyph sign={sunSign.id} size={280} className="text-gold" />
+            </div>
+
+            {/* Poster Header */}
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
+              <div>
+                <div className="label text-gold text-xs tracking-widest uppercase">
+                  ARŞİV BELGESİ № ASTRO-NATALIS-{year}{String(month).padStart(2, '0')}{String(day).padStart(2, '0')}
+                </div>
+                <h3 className="display display-tight text-3xl sm:text-5xl text-paper mt-1">
+                  Doğum Gök Atlası & Kozmik İmzası
+                </h3>
+              </div>
+              <div className="text-right font-mono text-xs text-muted">
+                <div>DOĞUM KOORDİNATI</div>
+                <div className="text-paper font-bold">{city}</div>
+                <div>{location.latitude.toFixed(2)}°K, {location.longitude.toFixed(2)}°D</div>
+              </div>
+            </div>
+
+            {/* Poster Core Grid */}
+            <div className="grid gap-8 lg:grid-cols-12 items-center">
+              {/* Scaled Wheel */}
+              <div className="lg:col-span-6 flex justify-center">
+                <div className="relative w-full max-w-[340px] aspect-square border border-line rounded-full p-2 bg-ink/60 shadow-[0_0_30px_rgba(255,215,0,0.06)]">
+                  {/* Wheel SVG */}
+                  <svg viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`} className="w-full h-full">
+                    <circle cx={CENTER} cy={CENTER} r={R_OUTER} fill="none" stroke="var(--gold)" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+                    <circle cx={CENTER} cy={CENTER} r={R_ZODIAC} fill="none" stroke="var(--line)" strokeWidth="0.8" />
+                    <circle cx={CENTER} cy={CENTER} r={R_HOUSES} fill="none" stroke="var(--gold)" strokeWidth="0.5" opacity="0.4" />
+                    <circle cx={CENTER} cy={CENTER} r={R_INNER} fill="var(--ink)" stroke="var(--line)" strokeWidth="1" />
+
+                    {/* 12 Zodiac Segments */}
+                    {ZODIAC_SIGNS.map((s, idx) => {
+                      const rot = idx * 30 - 90;
+                      const rad = (rot * Math.PI) / 180;
+                      const x = CENTER + (R_ZODIAC + 15) * Math.cos(rad + (15 * Math.PI) / 180);
+                      const y = CENTER + (R_ZODIAC + 15) * Math.sin(rad + (15 * Math.PI) / 180);
+                      return (
+                        <g key={s.id}>
+                          <line
+                            x1={CENTER + R_HOUSES * Math.cos(rad)}
+                            y1={CENTER + R_HOUSES * Math.sin(rad)}
+                            x2={CENTER + R_OUTER * Math.cos(rad)}
+                            y2={CENTER + R_OUTER * Math.sin(rad)}
+                            stroke="var(--line)"
+                            strokeWidth="0.8"
+                          />
+                          <g transform={`translate(${x - 9}, ${y - 9})`}>
+                            <ZodiacGlyph sign={s.id} size={18} className="text-gold opacity-90" />
+                          </g>
+                        </g>
+                      );
+                    })}
+
+                    <circle cx={CENTER} cy={CENTER} r={2} fill="var(--gold)" />
+                    <circle cx={CENTER} cy={CENTER} r={18} fill="none" stroke="var(--gold)" strokeWidth="0.6" strokeDasharray="2 2" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Trinity & Placement Badges */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="grid grid-cols-2 gap-px border border-line bg-line">
+                  <div className="bg-ink p-4 space-y-1">
+                    <span className="label text-gold text-[10px]">GÜNEŞ (ÖZ KİMLİK)</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <ZodiacGlyph sign={sunSign.id} size={22} className="text-gold" />
+                      <div className="text-sm font-bold text-paper">{sunSign.name}</div>
+                    </div>
+                    <div className="text-[10px] text-muted">{sunSign.element} · {sunSign.modality}</div>
+                  </div>
+
+                  <div className="bg-ink p-4 space-y-1">
+                    <span className="label text-paper text-[10px]">AY (DUYGU & BİLİNÇDIŞI)</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <ZodiacGlyph sign={moonSign.id} size={22} className="text-paper" />
+                      <div className="text-sm font-bold text-paper">{moonSign.name}</div>
+                    </div>
+                    <div className="text-[10px] text-muted">{moonSign.element} · {moonSign.modality}</div>
+                  </div>
+
+                  <div className="bg-ink p-4 space-y-1">
+                    <span className="label text-violet text-[10px]">YÜKSELEN (ASC / MASKE)</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <ZodiacGlyph sign={risingSign.id} size={22} className="text-violet" />
+                      <div className="text-sm font-bold text-paper">{risingSign.name}</div>
+                    </div>
+                    <div className="text-[10px] text-muted">{risingSign.element} · {risingSign.modality}</div>
+                  </div>
+
+                  <div className="bg-ink p-4 space-y-1">
+                    <span className="label text-gold text-[10px]">YAŞAM YOLU SAYISI</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="display display-tight text-2xl text-gold">{lifePath.number}</span>
+                      <span className="text-xs font-semibold text-paper truncate">{lifePath.title}</span>
+                    </div>
+                    <div className="text-[10px] text-muted">Pisagor Kutsal Sayısı</div>
+                  </div>
+                </div>
+
+                <div className="border-l-2 border-gold pl-4 py-2 bg-ink/40">
+                  <div className="label text-gold text-[10px]">KOZMİK YAŞAM REHBERİ</div>
+                  <p className="text-xs leading-relaxed text-paper/85 mt-1">
+                    {sunSign.name} Güneşi’nin iradesi, {risingSign.name} Yükseleni’nin dış dünyayla kurduğu temas ve {moonSign.name} Ayı’nın sezgisel derinliğiyle birleşiyor. Yaşam yolunuzdaki {lifePath.title} misyonu sizi daima hakikate taşır.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Poster Actions Footer */}
+            <div className="border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="label text-muted text-xs">
+                SPACETOUR.TR · İSVİÇRE GRAVÜR STANDARDI · {day}.{month}.{year} {String(hour).padStart(2, '0')}:{String(minute).padStart(2, '0')}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="label px-5 py-2.5 border border-gold bg-gold text-ink font-bold hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <span>Posteri Yazdır / PDF Olarak Kaydet</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
