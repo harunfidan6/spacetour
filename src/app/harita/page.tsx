@@ -2,10 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import { type CSSProperties } from 'react';
-import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
-import { RotatingBadge, Ticks } from '@/components/motion/primitives';
+import { ChapterHero } from '@/components/doc/ChapterHero';
+import { PartHeading } from '@/components/doc/PartHeading';
+import { DOC_IMAGES } from '@/data/docImages';
 import { LabDeck, type LabEntry } from '@/components/ui/LabDeck';
-import { HaritaGraphic } from '@/components/home/ModuleGraphics';
 
 const Planetarium3D = dynamic(() => import('@/components/space/Planetarium3D').then((mod) => mod.Planetarium3D), {
   ssr: false,
@@ -39,41 +39,29 @@ const TOOLS: LabEntry[] = [
 export default function HaritaPage() {
   return (
     <div className="relative" style={{ '--page-accent': 'var(--lime)' } as CSSProperties}>
-      <PageHero
-        index="01"
+      <ChapterHero
+        chapter="01"
         section="Gök Haritası"
-        accent="var(--lime)"
-        lines={['Gök', <Em key="a">kubbesi</Em>]}
+        headline={['GÖK', 'kubbesi']}
         lede="Konumuna göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği analizi ve Messier derin uzay atlası."
+        accent="var(--lime)"
+        image={DOC_IMAGES['sec-harita']}
         meta={[
           { k: 'Görünür Yıldız', v: '9,000+' },
           { k: 'Takımyıldızı', v: 88 },
           { k: 'Messier Hedefi', v: 110 },
           { k: 'Optik Mod', v: 'Alt-Az & AR' },
         ]}
-        graphic={
-          <div className="flex flex-col items-center justify-center p-4">
-            <div className="aspect-square w-24 text-lime">
-              <HaritaGraphic />
-            </div>
-            <span className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted">360° AR Gözlem</span>
-          </div>
-        }
-        ticker={['Polaris', 'Sirius', 'Vega', 'Betelgeuse', 'Arcturus', 'Rigel', 'Capella', 'Antares', 'Andromeda (M31)', 'Orion (M42)']}
       />
 
       <div className="space-y-20 px-[var(--gutter)] pb-28 pt-12">
         {/* 01.1 - 3D Interactive Planetarium Dome */}
-        <section>
-          <SectionHead
-            index="01.1"
-            kicker="Canlı planetaryum simülasyonu"
-            title={
-              <>
-                360° <Em>gözlem kubbesi</Em>
-              </>
-            }
-            lede="Bulunduğun konumun şu anki gökyüzü. Mouse ile sürükle, yakınlaş, yıldızlara dokun veya AR kamera modunu aç."
+        <section id="planetaryum" className="scroll-mt-24">
+          <PartHeading
+            part={1}
+            title="360° Gözlem"
+            serif="kubbesi"
+            description="Bulunduğun konumun şu anki gökyüzü. Mouse ile sürükle, yakınlaş, yıldızlara dokun veya AR kamera modunu aç."
             aside={
               <span className="inline-flex items-center gap-2 rounded-full border border-lime/30 bg-lime/10 px-3 py-1 font-mono text-xs text-lime">
                 <span className="live-dot" /> Yerel Ufuk Aktif
@@ -86,16 +74,13 @@ export default function HaritaPage() {
           </div>
         </section>
 
-        <section>
-          <SectionHead
-            index="01.2"
-            kicker="Gözlem araçları"
-            title={
-              <>
-                Gözlemcinin <Em>alet çantası</Em>
-              </>
-            }
-            lede="Parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi. Soldan birini seç."
+        {/* 01.2 - Observer Toolkit */}
+        <section id="araclar" className="scroll-mt-24">
+          <PartHeading
+            part={2}
+            title="Gözlemcinin"
+            serif="alet çantası"
+            description="Parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi. Soldan birini seç."
           />
           <LabDeck labs={TOOLS} prefix="A" accent="var(--lime)" />
         </section>

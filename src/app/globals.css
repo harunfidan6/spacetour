@@ -477,3 +477,69 @@ body {
 }
 
 
+
+/* --------------------------------------------------------------------------
+   Sinematik Belgesel — documentary title cards, captions and film treatment
+   -------------------------------------------------------------------------- */
+.doc-title {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-weight: 800;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.035em;
+  line-height: 0.88;
+}
+
+.doc-serif {
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: 100%;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.doc-kicker {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.doc-caption {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(244 243 238 / 0.5);
+}
+
+/* Shades that let full-bleed photographs carry type */
+.doc-shade-b {
+  background: linear-gradient(to top, var(--ink) 0%, rgb(5 5 8 / 0.82) 24%, rgb(5 5 8 / 0.2) 62%, rgb(5 5 8 / 0.6) 100%);
+}
+.doc-shade-l {
+  background: linear-gradient(90deg, rgb(5 5 8 / 0.92) 0%, rgb(5 5 8 / 0.45) 55%, rgb(5 5 8 / 0) 100%);
+}
+.doc-shade-card {
+  background: linear-gradient(to top, rgb(5 5 8 / 0.96) 0%, rgb(5 5 8 / 0.55) 45%, rgb(5 5 8 / 0.05) 100%);
+}
+
+.doc-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--page-accent, var(--gold)), transparent);
+}
+
+/* Slow settle of a still photograph, the documentary "Ken Burns" move */
+@keyframes doc-settle {
+  from { transform: scale(1.12); }
+  to { transform: scale(1); }
+}
+.doc-settle { animation: doc-settle 9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Episode cards: the photograph leans in on hover */
+.doc-episode img { transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease; }
+.doc-episode:hover img,
+.doc-episode:focus-visible img { transform: scale(1.06); filter: brightness(1.08); }
+.doc-episode:hover .doc-arrow,
+.doc-episode:focus-visible .doc-arrow { background: var(--ep-accent, var(--gold)); border-color: transparent; color: var(--ink); }

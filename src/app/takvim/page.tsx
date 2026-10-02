@@ -18,7 +18,9 @@ import { tr } from 'date-fns/locale';
 import { ArrowLeft, ArrowRight, MapPin, X } from 'lucide-react';
 import { events, EventType, eventTypeLabels, eventTypeTones } from '@/data/events';
 import { CosmicEventSimulator } from '@/components/space/CosmicEventSimulator';
-import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
+import { ChapterHero } from '@/components/doc/ChapterHero';
+import { PartHeading } from '@/components/doc/PartHeading';
+import { DOC_IMAGES } from '@/data/docImages';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { Reveal, Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
@@ -170,24 +172,19 @@ export default function CalendarPage() {
 
   return (
     <div className="relative" style={{ '--page-accent': 'var(--solar)' } as CSSProperties}>
-      <PageHero
-        index="02"
-        section="Olay takvimi"
-        accent="var(--solar)"
-        lines={[
-          <>
-            Gök <Em>olayları</Em>
-          </>,
-          'Takvimi',
-        ]}
+      <ChapterHero
+        chapter="02"
+        section="Olay Takvimi"
+        headline={['Gök olayları', 'takvimi']}
         lede="Güneş ve Ay tutulmaları, meteor yağmurları, gezegen kavuşumları, ekinokslar. Gözlem planını yap, geri sayımı başlat, gökyüzüyle randevulaş."
+        accent="var(--solar)"
+        image={DOC_IMAGES['sec-takvim']}
         meta={[
           { k: 'Kayıtlı olay', v: counts.total },
           { k: 'Tutulma', v: counts.eclipses },
           { k: 'Meteor yağmuru', v: counts.meteors },
           { k: 'Kavuşum', v: counts.conjunctions },
         ]}
-        ticker={Object.values(eventTypeLabels)}
       />
 
       <div className="space-y-20 px-[var(--gutter)] pb-28 pt-16">
@@ -196,15 +193,12 @@ export default function CalendarPage() {
         </Reveal>
 
         <section id="takvim-izgara" className="scroll-mt-24">
-          <SectionHead
-            index="02.1"
-            kicker="Ay görünümü"
-            title={
-              <>
-                Gün gün <Em>gökyüzü</Em>
-              </>
-            }
-            lede="Bir güne dokun, o günün olaylarını ve gözlem ipuçlarını aç. Filtrelerle yalnızca ilgilendiğin olay türlerini göster."
+          <PartHeading
+            part={1}
+            title="Gün gün"
+            serif="gökyüzü"
+            aside="Aylık Efemeris"
+            description="Bir güne dokun, o günün olaylarını ve gözlem ipuçlarını aç. Filtrelerle yalnızca ilgilendiğin olay türlerini göster."
           />
 
           {/* Filters */}

@@ -13,8 +13,10 @@ import { SynastryChartCalculator } from '@/components/space/SynastryChartCalcula
 import { LunarPhaseTracker } from '@/components/space/LunarPhaseTracker';
 import { CosmicRetrogradeRadar } from '@/components/space/CosmicRetrogradeRadar';
 import { CosmicNumerologyMatrix } from '@/components/space/CosmicNumerologyMatrix';
+import { ZodiacCompatibility } from '@/components/space/ZodiacCompatibility';
+import { ChapterHero } from '@/components/doc/ChapterHero';
+import { DOC_IMAGES } from '@/data/docImages';
 import { PageHero, SectionHead, Em } from '@/components/ui/Headings';
-import { AstrolojiGraphic } from '@/components/home/ModuleGraphics';
 import { Reveal, Ticks } from '@/components/motion/primitives';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
@@ -46,15 +48,6 @@ function Chapter({ index, title, children }: { index: string; title: string; chi
       <Reveal mode="clip">{children}</Reveal>
     </section>
   );
-}
-
-function compatibilityScore(a: ZodiacSign, b: ZodiacSign) {
-  if (a.loveCompatibility.includes(b.id)) return 94;
-  if (a.element === b.element) return 88;
-  const pair = new Set([a.element, b.element]);
-  if (pair.has('Ateş') && pair.has('Hava')) return 91;
-  if (pair.has('Toprak') && pair.has('Su')) return 93;
-  return 74;
 }
 
 /* Slide-in dossier for a sign */
@@ -263,14 +256,9 @@ export default function AstrolojiPage() {
   const [workspace, setWorkspace] = useState<AstroWorkspace>('charts');
   const [element, setElement] = useState<(typeof ELEMENTS)[number]>('Tümü');
   const [active, setActive] = useState<ZodiacSign | null>(null);
-  const [signA, setSignA] = useState('koc');
-  const [signB, setSignB] = useState('aslan');
   const grid = useRef<HTMLDivElement>(null);
 
   const signs = useMemo(() => ZODIAC_SIGNS.filter((s) => element === 'Tümü' || s.element === element), [element]);
-  const a = ZODIAC_SIGNS.find((s) => s.id === signA) ?? ZODIAC_SIGNS[0];
-  const b = ZODIAC_SIGNS.find((s) => s.id === signB) ?? ZODIAC_SIGNS[4];
-  const score = compatibilityScore(a, b);
   const closePanel = useCallback(() => setActive(null), []);
 
   useGsap(
@@ -281,30 +269,23 @@ export default function AstrolojiPage() {
     [element, workspace]
   );
 
-  const ringLength = 2 * Math.PI * 88;
-
   const currentWorkspace = WORKSPACES.find((w) => w.id === workspace) || WORKSPACES[0];
 
   return (
     <div className="relative" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
-      <PageHero
-        index="04"
+      <ChapterHero
+        chapter="04"
         section="Astroloji"
-        accent="var(--gold)"
-        lines={['Zodyak', <Em key="a">atlası</Em>]}
+        headline={['Zodyak', 'atlası']}
         lede="Kadim gökyüzü gözlemleriyle şekillenen on iki arketip. Doğum haritanı çıkar, günlük transitleri oku, tarot çek, iki haritayı karşılaştır."
+        accent="var(--gold)"
+        image={DOC_IMAGES['sec-astroloji']}
         meta={[
           { k: 'Burç', v: ZODIAC_SIGNS.length },
           { k: 'Element', v: 4 },
           { k: 'Ev', v: ASTROLOGICAL_HOUSES.length },
           { k: 'Nitelik', v: 3 },
         ]}
-        graphic={
-          <div className="aspect-square w-full max-w-[300px] text-gold">
-            <AstrolojiGraphic />
-          </div>
-        }
-        ticker={ZODIAC_SIGNS.map((s) => `${s.name} (${s.latinName})`)}
       />
 
       <div className="space-y-16 px-[var(--gutter)] pb-28 pt-8">
@@ -364,7 +345,7 @@ export default function AstrolojiPage() {
             </div>
 
             {/* Compatibility */}
-            <section id="burc-uyumu">
+            <section id="burc-uyumu" className="scroll-mt-24">
               <SectionHead
                 index="04.3"
                 kicker="Kozmik kimya"
@@ -375,54 +356,7 @@ export default function AstrolojiPage() {
                 }
                 lede="İki burç seç: element sinerjisi, nitelik dengesi ve kadim uyum tablolarına göre bir çekim skoru hesaplıyoruz."
               />
-              <div className="ticks relative grid items-center gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12">
-                <Ticks />
-                {[
-                  { value: signA, set: setSignA, sign: a, label: '1. burç' },
-                  { value: signB, set: setSignB, sign: b, label: '2. burç' },
-                ].map((side, i) => (
-                  <label key={side.label} className={`flex flex-col items-center text-center lg:col-span-4 ${i === 1 ? 'lg:order-3' : ''}`}>
-                    <span className="label text-muted">{side.label}</span>
-                    <div className="mt-4 h-24 flex items-center justify-center">
-                      <ZodiacGlyph sign={side.sign.id} size={80} className="text-gold" />
-                    </div>
-                    <select
-                      value={side.value}
-                      onChange={(e) => side.set(e.target.value)}
-                      className="display display-tight mt-4 w-full max-w-[16rem] cursor-pointer appearance-none border-b-2 border-line bg-transparent py-2 text-center text-3xl text-paper focus:border-gold focus:outline-none"
-                    >
-                      {ZODIAC_SIGNS.map((s) => (
-                        <option key={s.id} value={s.id} className="bg-ink font-sans text-base normal-case">
-                          {s.name} ({s.latinName})
-                        </option>
-                      ))}
-                    </select>
-                    <span className="label mt-3 text-muted">
-                      {side.sign.element} · {side.sign.modality}
-                    </span>
-                  </label>
-                ))}
-                <div className="relative mx-auto grid aspect-square w-full max-w-[240px] place-items-center lg:order-2 lg:col-span-4">
-                  <svg viewBox="-100 -100 200 200" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
-                    <circle r="88" fill="none" stroke="var(--line)" strokeWidth="6" />
-                    <circle
-                      r="88"
-                      fill="none"
-                      stroke="var(--gold)"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      strokeDasharray={ringLength}
-                      strokeDashoffset={ringLength * (1 - score / 100)}
-                      style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(.76,0,.24,1)' }}
-                    />
-                  </svg>
-                  <div className="text-center">
-                    <div className="label text-muted">Uyum skoru</div>
-                    <div className="display display-tight mt-2 text-6xl text-paper">%{score}</div>
-                    <div className="label mt-2 text-gold">{score >= 90 ? 'Kozmik çekim' : score >= 80 ? 'Güçlü ahenk' : 'Öğretici gerilim'}</div>
-                  </div>
-                </div>
-              </div>
+              <ZodiacCompatibility />
             </section>
           </div>
         )}
