@@ -57,6 +57,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing sessionId' }, { status: 400 });
     }
 
+    // Ignore admin and internal API routes
+    if (path && (path.startsWith('/admin') || path.startsWith('/api'))) {
+      return NextResponse.json({ success: true, ignored: true });
+    }
+
     // Heartbeat only
     if (type === 'heartbeat') {
       recordHeartbeat(sessionId);

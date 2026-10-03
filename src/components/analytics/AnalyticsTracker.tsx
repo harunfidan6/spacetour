@@ -8,7 +8,7 @@ import { isFilm } from '@/lib/film';
 
 // Exportable custom event tracking utility
 export function trackEvent(eventName: string, metadata?: Record<string, unknown>) {
-  if (typeof window === 'undefined' || isFilm()) return;
+  if (typeof window === 'undefined' || isFilm() || window.location.pathname.startsWith('/admin')) return;
   try {
     const sessionId = getOrCreateSessionId();
     fetch('/api/analytics/track', {
@@ -52,9 +52,9 @@ export function AnalyticsTracker() {
   // Film mode (promo recording) stays out of the statistics.
   const insights = useSyncExternalStore(subscribeNever, () => !isFilm(), () => false);
 
-  // Track page views on route change
+  // Track page views on route change (ignore admin routes)
   useEffect(() => {
-    if (typeof window === 'undefined' || isFilm()) return;
+    if (typeof window === 'undefined' || isFilm() || pathname?.startsWith('/admin')) return;
 
     const sessionId = getOrCreateSessionId();
     const screen = `${window.innerWidth}x${window.innerHeight}`;
@@ -81,9 +81,9 @@ export function AnalyticsTracker() {
     }
   }, [pathname]);
 
-  // Periodic heartbeat every 25 seconds for live active visitor telemetry
+  // Periodic heartbeat every 25 seconds for live active visitor telemetry (ignore admin routes)
   useEffect(() => {
-    if (typeof window === 'undefined' || isFilm()) return;
+    if (typeof window === 'undefined' || isFilm() || pathname?.startsWith('/admin')) return;
 
     const sessionId = getOrCreateSessionId();
 
@@ -100,7 +100,7 @@ export function AnalyticsTracker() {
     }, 25000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [pathname]);
 
   if (!insights) return null;
   return (
