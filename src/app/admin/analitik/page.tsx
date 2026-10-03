@@ -437,7 +437,7 @@ export default function AdminAnalyticsPage() {
       </div>
     </div>
 
-    {/* Active Mode Notice Banner */}
+    {/* Active Mode & Storage Status Notice Banner */}
     <div
       className={`p-4 border text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
         !isDemoMode
@@ -445,18 +445,27 @@ export default function AdminAnalyticsPage() {
           : 'border-violet/30 bg-violet/10 text-violet'
       }`}
     >
-      <div className="flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-current shrink-0" />
-        <span>
-          {!isDemoMode
-            ? 'CANLI GERÇEK MOD AKTİF: Yalnızca siteye giren GERÇEK ziyaretçi ve IP telemetrisi görüntüleniyor.'
-            : 'SİMÜLASYON MODU AKTİF: Grafikleri ve rapor yapısını incelemek için örnek test verileri görüntüleniyor.'}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-current shrink-0" />
+          <span>
+            {!isDemoMode
+              ? 'CANLI GERÇEK MOD AKTİF: Yalnızca siteye giren GERÇEK ziyaretçi ve IP telemetrisi görüntüleniyor.'
+              : 'SİMÜLASYON MODU AKTİF: Grafikleri ve rapor yapısını incelemek için örnek test verileri görüntüleniyor.'}
+          </span>
+        </div>
+        <span className={`px-2 py-0.5 text-[10px] font-bold border uppercase tracking-wider shrink-0 ${
+          stats?.isPersistent
+            ? 'border-lime/50 bg-lime/20 text-lime'
+            : 'border-solar/40 bg-solar/10 text-solar'
+        }`}>
+          {stats?.isPersistent ? '✓ KALICI REDIS/KV BAĞLI' : '⚡ SERVERLESS CANLI AKIŞ'}
         </span>
       </div>
       {!isDemoMode && (
         <div className="text-paper/75 text-[11px] flex items-center gap-1.5">
           <span className="text-solar font-bold border border-solar/40 px-1 py-0.2 text-[9px] shrink-0">BİLGİ</span>
-          <em>Telefonunuzdan veya başka sekmeden siteye girdiğiniz an canlı akışta anında belireceksiniz!</em>
+          <em>Telefonunuzdan siteye girdiğiniz an canlı akışta anında belireceksiniz!</em>
         </div>
       )}
     </div>

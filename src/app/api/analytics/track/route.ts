@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { recordPageView, recordHeartbeat, recordCustomTelemetry } from '@/lib/analyticsStore';
+import { savePersistentPageView, savePersistentHeartbeat, savePersistentEvent } from '@/lib/persistentAnalytics';
 import { PageViewRecord } from '@/types/analytics';
 
 // Simple fast string hashing for IP privacy
@@ -59,12 +60,13 @@ export async function POST(req: NextRequest) {
     // Heartbeat only
     if (type === 'heartbeat') {
       recordHeartbeat(sessionId);
+      savePersistentHeartbeat(sessionId).catch(() => {});
       return NextResponse.json({ success: true, active: true });
     }
 
     // Custom telemetry event
     if (type === 'custom') {
-      recordCustomTelemetry({
+      const customEvent = {
         id: `ev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         timestamp: Date.now(),
         type: eventName || 'etkilesim',
@@ -72,7 +74,9 @@ export async function POST(req: NextRequest) {
         path: path || '/',
         metadata,
         sessionId
-      });
+      };
+      recordCustomTelemetry(customEvent);
+      savePersistentEvent(customEvent).catch(() => {});
       return NextResponse.json({ success: true, custom: true });
     }
 
@@ -101,6 +105,7 @@ export async function POST(req: NextRequest) {
     };
 
     recordPageView(record);
+    savePersistentPageView(record).catch(() => {});
 
     return NextResponse.json({ success: true, recorded: record.id });
   } catch (err: unknown) {

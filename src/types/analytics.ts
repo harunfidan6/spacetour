@@ -40,4 +40,5 @@ export interface AnalyticsStatsResponse {
   recentEvents: CustomEventRecord[];
   recentStream: PageViewRecord[];
   hourlyTimeline: { hour: string; views: number; uniques: number }[];
+  isPersistent?: boolean;
 }
