@@ -75,6 +75,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               "window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init();",
           }}
         />
+        {/* Google Analytics 4 (GA4) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-5F797S90G9" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5F797S90G9',{send_page_view:true});",
+          }}
+        />
       </head>
       <body className="min-h-full bg-ink text-paper">
         <SpaceProvider>

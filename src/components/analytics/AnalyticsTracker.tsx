@@ -30,6 +30,13 @@ export function trackEvent(eventName: string, metadata?: Record<string, unknown>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).plausible(eventName, metadata ? { props: metadata } : undefined);
     }
+
+    // Forward to Google Analytics if initialized
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof (window as any).gtag === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).gtag('event', eventName, metadata);
+    }
   } catch {}
 }
 
@@ -78,6 +85,17 @@ export function AnalyticsTracker() {
         }),
         keepalive: true
       }).catch(() => {});
+
+      // Forward to Google Analytics on route change
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof (window as any).gtag === 'function') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).gtag('event', 'page_view', {
+          page_path: pathname,
+          page_title: title,
+          page_location: window.location.href
+        });
+      }
     }
   }, [pathname]);
 
