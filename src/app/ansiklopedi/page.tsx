@@ -37,7 +37,7 @@ export default function AnsiklopediPage() {
             <div className="min-w-0 lg:col-span-7">
               <EpisodeCard href={bodies.href} index="01" title={bodies.title} blurb={bodies.blurb} kind={bodies.kind} image={bodies.image} accent={section.accent} size="lg" sizes="(min-width: 1024px) 58vw, 100vw" />
             </div>
-            <ol className="grid grid-cols-2 content-start gap-px bg-white/10 sm:grid-cols-3 lg:col-span-5 lg:grid-cols-2">
+            <ol className="grid grid-cols-2 content-start gap-px bg-white/10 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:col-span-5 lg:grid-cols-2 lg:fill-row-2">
               {planets.map((p, i) => (
                 <li key={p.id}>
                   <Link href={`/ansiklopedi/${p.id}`} className="group flex h-full items-baseline gap-3 bg-ink px-5 py-5 transition-colors hover:bg-ink-2">

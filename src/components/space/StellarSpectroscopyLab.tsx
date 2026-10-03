@@ -337,7 +337,7 @@ export function StellarSpectroscopyLab() {
       </div>
 
       {/* Class Selector Grid (O, B, A, F, G, K, M) */}
-      <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-px border border-line bg-line max-sm:fill-row-2 sm:grid-cols-4 sm:max-lg:fill-row-4 lg:grid-cols-7">
         {SPECTRAL_CLASSES.map((cls) => {
           const isSelected = selectedClass.classLetter === cls.classLetter;
           return (
@@ -515,7 +515,7 @@ export function StellarSpectroscopyLab() {
             {selectedClass.description}
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-px border border-line bg-line max-sm:fill-row-2 sm:grid-cols-3 sm:fill-row-3">
             <div className="bg-ink-2 p-3">
               <span className="label block text-muted">Ortalama Kütle</span>
               <span className="font-mono text-xs text-paper">{selectedClass.massSolar}</span>

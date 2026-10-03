@@ -70,7 +70,7 @@ export function GravityCalculator() {
       </div>
 
       {/* Grid of Celestial Bodies */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border border-line bg-line">
+      <div className="grid grid-cols-1 sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:fill-row-3 gap-px border border-line bg-line">
         {BODIES.map((body) => {
           const weightOnBody = (earthWeight * body.gravityRatio).toFixed(1);
           const jumpHeightCm = Math.round(50 * body.jumpMultiplier);

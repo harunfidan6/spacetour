@@ -1,0 +1,14 @@
+{
+  "_aciklama": "SpaceTour TR tanıtım filmi (30 sn) ekran yazıları. t: yazının girdiği saniye, sure: ekranda kalma süresi. metin: Archivo büyük harf satırı, serif: ikinci satır (Instrument Serif italik, renk vurgusunda), kunye: üstteki Geist Mono künye. Yazılar ve sahneler senaryo.js'te bu dosyadan okunur.",
+  "seslendirme": false,
+  "seslendirme_aciklama": "false: anlatıcı yok, yalnızca özgün müzik + efekt (şartname 2.8: tekdüze TTS 'yapay zekâ' gibi duyuluyor). Ses kapalı izlenince de yazılar her şeyi anlatır.",
+  "satirlar": [
+    { "id": "00-acilis", "t": 0.35, "sure": 2.4, "kunye": "Bölüm 00", "kunye2": "Bir uzay belgeseli", "metin": "Gökyüzü hiç durmadı.", "alt": "NASA · ESA · NOAA açık verileriyle" },
+    { "id": "02-gok",    "t": 7.35,  "sure": 3.4, "kunye": "Bölüm 01", "kunye2": "Gök haritası",   "metin": "Göğü",         "serif": "oku.",         "renk": "#38bdf8" },
+    { "id": "03-spek",   "t": 11.35, "sure": 3.4, "kunye": "Bölüm 05", "kunye2": "Gözlemevi",      "metin": "Görünmeyeni",  "serif": "gör.",         "renk": "#f43f5e" },
+    { "id": "04-kara",   "t": 15.35, "sure": 3.4, "kunye": "Bölüm 03", "kunye2": "Ansiklopedi",    "metin": "Zamanı",       "serif": "bük.",         "renk": "#818cf8" },
+    { "id": "05-burc",   "t": 19.35, "sure": 3.4, "kunye": "Bölüm 04", "kunye2": "Astroloji",      "metin": "Yıldızlarını", "serif": "keşfet.",      "renk": "#f5c542" },
+    { "id": "06-iss",    "t": 23.9,  "sure": 1.9, "kunye": "Bölüm 06", "kunye2": "Canlı gökyüzü",  "metin": "Şu an,",       "serif": "gökyüzünde.",  "renk": "#38bdf8" },
+    { "id": "07-son",    "t": 26.9,  "sure": 3.1, "metin": "Evren", "serif": "hiç durmaz.", "adres": "spacetour.com.tr", "kunye": "Görseller: NASA, ESA, CSA, STScI, ESO, Wikimedia Commons ve ilgili sahipleri. Bazı görseller CC BY / CC BY-SA lisanslıdır." }
+  ]
+}

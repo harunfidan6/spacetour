@@ -1,0 +1,21 @@
+{
+  "_aciklama": "Retro TV reklamı seslendirme metni. t: başlangıç saniyesi, sure: satırın sığması gereken süre (uzun gelirse hızlandırılır). Filmdeki yazılar ve seslendirme bu dosyadan okunur; okunus alanı varsa seslendirme onu okur (ekrandaki yazı metin alanından gelir).",
+  "seslendirme": false,
+  "seslendirme_aciklama": "false: anonsçu miksten çıkar, yalnızca jingle + efekt. Ekrandaki yazılar satirlar'dan gelmeye devam eder.",
+  "satirlar": [
+    { "id": "01-sunar",    "t": 1.9,   "sure": 1.9, "metin": "Neşe Gazozcusu sunar!" },
+    { "id": "02-tatlar",   "t": 4.3,   "sure": 2.6, "metin": "Unutulmuş tatlar, yeniden sofranızda!" },
+    { "id": "03-anadolu",  "t": 10.6,  "sure": 3.3, "metin": "Anadolu'nun dört bir yanından, koleksiyonluk gazozlar!" },
+    { "id": "04-renk",     "t": 14.3,  "sure": 3.2, "metin": "Her şişenin kendi rengi, kendi hikâyesi var.", "okunus": "Her şişenin kendi rengi, kendi hikâyesi var!" },
+    { "id": "05-kasa",     "t": 18.3,  "sure": 1.9, "metin": "Beğendiğini kasaya at…", "okunus": "Beğendiğini kasaya at!" },
+    { "id": "06-odeme",    "t": 21.6,  "sure": 2.3, "metin": "…güvenli ödeme, kapına kadar!" },
+    { "id": "07-final",    "t": 26.35, "sure": 2.4, "metin": "Kapağı aç, hikâyesini iç!" }
+  ],
+  "ses_zinciri_aciklama": "Anonsçu tınısı (ffmpeg -af): yarım ton gülümseme (örnekleme hızıyla, artefaktsız), 80'ler yayın EQ'su, kompresör, limitör. Whisper kontrolü de sesi bu işlenmiş hâliyle dinler.",
+  "ses_zinciri": "aresample=48000,asetrate=49440,aresample=48000,atempo=0.9709,highpass=f=85,equalizer=f=5500:t=q:w=1.5:g=2,equalizer=f=220:t=q:w=1:g=1.5,equalizer=f=3000:t=q:w=1.2:g=3,lowpass=f=11500,acompressor=threshold=-20dB:ratio=4:attack=3:release=60:makeup=2.5,alimiter=limit=0.9",
+  "koro": {
+    "_aciklama": "Vokoder koronun söylediği slogan: heceler tek tek okunur, koro.mjs her heceyi melodideki notaya yerleştirir.",
+    "heceler": "Ne. Şe. Ga. Zoz. Cu. Su.",
+    "ses": "tr-TR-AhmetNeural"
+  }
+}

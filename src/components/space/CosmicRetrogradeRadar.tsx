@@ -60,7 +60,7 @@ export function CosmicRetrogradeRadar() {
       </div>
 
       {/* Retrograde List Grid Selector */}
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:fill-row-3">
         {PLANETARY_RETROGRADES.map((retro) => {
           const isSelected = selectedRetro.id === retro.id;
           return (

@@ -6,6 +6,8 @@ import { matchesQuery } from '@/lib/text';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { registerFilm } from '@/lib/film';
 import {
   stars,
   constellationLines,
@@ -612,6 +614,12 @@ function CameraConstellationDirector({
   useLocalHorizon: boolean;
 }) {
   const { camera } = useThree();
+  // Re-aim only when the target or the observer changes. Following every sidereal
+  // tick snapped the view back once a second and made free looking impossible.
+  const lstRef = useRef(lst);
+  useEffect(() => {
+    lstRef.current = lst;
+  }, [lst]);
 
   useEffect(() => {
     if (!targetConstellation) return;
@@ -622,7 +630,7 @@ function CameraConstellationDirector({
         targetConstellation.centerRa,
         targetConstellation.centerDec,
         location.latitude,
-        lst
+        lstRef.current
       );
       const [x, y, z] = altAzToCartesian(alt, az, 1);
       targetDir = new THREE.Vector3(x, y, z).normalize();
@@ -638,8 +646,24 @@ function CameraConstellationDirector({
 
     camera.position.set(-targetDir.x * 0.1, -targetDir.y * 0.1, -targetDir.z * 0.1);
     camera.lookAt(targetDir.x * 10, targetDir.y * 10, targetDir.z * 10);
-  }, [targetConstellation?.id, location, lst, useLocalHorizon, camera]);
+  }, [targetConstellation, location, useLocalHorizon, camera]);
 
+  return null;
+}
+
+/** Film mode: lets the promo recorder turn the sky through the real look-around controls. */
+function FilmSkyControl() {
+  const controls = useThree((state) => state.controls) as OrbitControlsImpl | null;
+  useEffect(() => {
+    if (!controls) return;
+    return registerFilm('gokyuzu', {
+      aci: () => [controls.getAzimuthalAngle(), controls.getPolarAngle()],
+      bak: (az, polar) => {
+        controls.setAzimuthalAngle(Number(az));
+        controls.setPolarAngle(Number(polar));
+      },
+    });
+  }, [controls]);
   return null;
 }
 
@@ -1033,6 +1057,7 @@ export function Planetarium3D() {
 
         {/* Look-around Orbit Controls */}
         <OrbitControls
+          makeDefault
           enableZoom={true}
           enablePan={false}
           rotateSpeed={-0.45}
@@ -1040,6 +1065,8 @@ export function Planetarium3D() {
           minDistance={0.05}
           maxDistance={45}
         />
+
+        <FilmSkyControl />
 
         {/* Real-Time Milky Way (Samanyolu) Dust Belt */}
         <MilkyWayDustBelt

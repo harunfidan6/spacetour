@@ -16,7 +16,7 @@ export default function Home() {
           <span aria-hidden className="doc-rule flex-1" />
           <span className="doc-caption">{SECTIONS.length} bölüm</span>
         </div>
-        <ol className="mt-10 grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-7">
+        <ol className="mt-10 grid gap-px bg-white/10 sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-7">
           {SECTIONS.map((s) => (
             <li key={s.id}>
               <Link href={s.href} className="group flex h-full flex-col gap-6 bg-ink p-5 transition-colors hover:bg-ink-2">

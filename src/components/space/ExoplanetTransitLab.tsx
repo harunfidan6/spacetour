@@ -375,7 +375,7 @@ export function ExoplanetTransitLab() {
       {/* Exoplanet Presets Bar */}
       <div>
         <span className="label text-muted block mb-3">Tarihi Ötegezegen Keşif Referansları</span>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px border border-line bg-line">
+        <div className="grid grid-cols-2 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-5 lg:fill-row-5 gap-px border border-line bg-line">
           {EXOPLANET_PRESETS.map((preset) => {
             const isSelected = preset.id === selectedPreset.id;
             return (

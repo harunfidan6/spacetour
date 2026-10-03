@@ -9,6 +9,7 @@ import { PageTransitionProvider } from "@/components/motion/PageTransition";
 import { Preloader } from "@/components/motion/Preloader";
 import { StarfieldBackdrop } from "@/components/motion/StarfieldBackdrop";
 import { CosmicTerminal } from "@/components/ui/CosmicTerminal";
+import { FilmMode } from "@/components/film/FilmMode";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -63,7 +64,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "document.documentElement.classList.add('js');try{if(sessionStorage.getItem('spacetour:intro')==='1')document.documentElement.dataset.introSeen=''}catch(e){}",
+              "document.documentElement.classList.add('js');try{if(/[?&]film=1/.test(location.search)){document.documentElement.dataset.film='';sessionStorage.setItem('spacetour:intro','1')}if(sessionStorage.getItem('spacetour:intro')==='1')document.documentElement.dataset.introSeen=''}catch(e){}",
+          }}
+        />
+        {/* Privacy-friendly analytics by Plausible */}
+        <script async src="https://plausible.io/js/pa-yn8cD-_8qia_GwJOYv-e8.js" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init();",
           }}
         />
       </head>
@@ -77,6 +86,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Footer />
             <Preloader />
             <CosmicTerminal />
+            <FilmMode />
             <div aria-hidden className="grain" />
           </PageTransitionProvider>
         </SpaceProvider>

@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { isFilm } from '@/lib/film';
 
 // Exportable custom event tracking utility
 export function trackEvent(eventName: string, metadata?: Record<string, unknown>) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || isFilm()) return;
   try {
     const sessionId = getOrCreateSessionId();
     fetch('/api/analytics/track', {
@@ -22,6 +23,13 @@ export function trackEvent(eventName: string, metadata?: Record<string, unknown>
       }),
       keepalive: true
     }).catch(() => {});
+
+    // Forward to Plausible analytics if initialized
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof (window as any).plausible === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).plausible(eventName, metadata ? { props: metadata } : undefined);
+    }
   } catch {}
 }
 
@@ -35,13 +43,18 @@ function getOrCreateSessionId(): string {
   return sid;
 }
 
+const subscribeNever = () => () => {};
+
 export function AnalyticsTracker() {
   const pathname = usePathname();
   const lastPathname = useRef<string | null>(null);
 
+  // Film mode (promo recording) stays out of the statistics.
+  const insights = useSyncExternalStore(subscribeNever, () => !isFilm(), () => false);
+
   // Track page views on route change
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isFilm()) return;
 
     const sessionId = getOrCreateSessionId();
     const screen = `${window.innerWidth}x${window.innerHeight}`;
@@ -70,7 +83,7 @@ export function AnalyticsTracker() {
 
   // Periodic heartbeat every 25 seconds for live active visitor telemetry
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isFilm()) return;
 
     const sessionId = getOrCreateSessionId();
 
@@ -89,6 +102,7 @@ export function AnalyticsTracker() {
     return () => clearInterval(interval);
   }, []);
 
+  if (!insights) return null;
   return (
     <>
       {/* Official Native Vercel Edge Analytics & Web Vitals */}

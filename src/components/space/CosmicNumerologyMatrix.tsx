@@ -134,7 +134,7 @@ export function CosmicNumerologyMatrix() {
       </div>
 
       {/* 5 Core Pillars Selector Cards */}
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-5 lg:fill-row-5">
         {[
           {
             id: 'lifePath',

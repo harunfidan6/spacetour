@@ -28,8 +28,6 @@ export function LogoMark({ className = '' }: { className?: string }) {
 
 export default function Navbar() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/studio')) return null;
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -68,6 +66,10 @@ export default function Navbar() {
     setLastPath(pathname);
     setMenuOpen(false);
   }
+
+  // The studio stage is a full-viewport instrument without site chrome.
+  // (Checked after every hook so the hook order never changes between routes.)
+  if (pathname?.startsWith('/studio')) return null;
 
   return (
     <>

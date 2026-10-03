@@ -7,7 +7,7 @@ import { getSection, moduleHref, type DocCollection, type DocModule, type DocSec
 
 type Entry = { kind: 'module'; item: DocModule } | { kind: 'collection'; item: DocCollection };
 
-function entryCard(section: DocSection, entry: Entry, number: string, size: 'md' | 'lg') {
+function entryCard(section: DocSection, entry: Entry, number: string, size: 'md' | 'lg', wide: boolean) {
   const { item } = entry;
   const href = entry.kind === 'module' ? moduleHref(section, entry.item) : entry.item.href;
   const title = entry.kind === 'module' ? entry.item.short : entry.item.title;
@@ -22,20 +22,40 @@ function entryCard(section: DocSection, entry: Entry, number: string, size: 'md'
       image={item.image}
       accent={section.accent}
       size={size}
-      sizes={size === 'lg' ? '(min-width: 1024px) 66vw, 100vw' : undefined}
+      sizes={wide ? '(min-width: 1024px) 66vw, 100vw' : undefined}
     />
   );
 }
 
+// Literal class names so Tailwind generates them
+const SPAN_SM = { 1: 'sm:col-span-1', 2: 'sm:col-span-2' } as const;
+const SPAN_LG = { 1: 'lg:col-span-1', 2: 'lg:col-span-2', 3: 'lg:col-span-3' } as const;
+
+/**
+ * Column spans per breakpoint (2 columns on sm, 3 on lg). The featured first card spans two;
+ * the last card stretches over whatever the final row has left, so the hairline grid never
+ * shows its background through an empty cell.
+ */
+function layoutSpans(count: number, featureFirst: boolean) {
+  const spans = Array.from({ length: count }, (_, i) => (featureFirst && i === 0 && count > 2 ? { sm: 2, lg: 2 } : { sm: 1, lg: 1 }));
+  for (const [bp, cols] of [['sm', 2], ['lg', 3]] as const) {
+    const used = spans.reduce((n, s) => n + s[bp], 0) % cols;
+    if (used && count > 0) spans[count - 1][bp] += cols - used;
+  }
+  return spans as { sm: 1 | 2; lg: 1 | 2 | 3 }[];
+}
+
 /** A grid of episode cards; the first can be featured across two columns. */
 export function EpisodeGrid({ section, entries, featureFirst = true }: { section: DocSection; entries: Entry[]; featureFirst?: boolean }) {
+  const spans = layoutSpans(entries.length, featureFirst);
   return (
     <Reveal items="[data-ep]" stagger={0.06} className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
       {entries.map((entry, i) => {
         const featured = featureFirst && i === 0 && entries.length > 2;
+        const { sm, lg } = spans[i];
         return (
-          <div key={i} className={`min-w-0 ${featured ? 'sm:col-span-2 lg:col-span-2' : ''}`}>
-            {entryCard(section, entry, String(i + 1).padStart(2, '0'), featured ? 'lg' : 'md')}
+          <div key={i} className={`min-w-0 ${SPAN_SM[sm]} ${SPAN_LG[lg]}`}>
+            {entryCard(section, entry, String(i + 1).padStart(2, '0'), featured ? 'lg' : 'md', lg > 1)}
           </div>
         );
       })}

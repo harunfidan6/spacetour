@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* The promo-video toolkit and docs are not part of the site */
+@source not "../../tools";
+@source not "../../docs";
+@source not "../../video";
 
 /* ==========================================================================
    SPACETOUR — KİNETİK KOZMOS
@@ -543,3 +547,30 @@ body {
 .doc-episode:focus-visible img { transform: scale(1.06); filter: brightness(1.08); }
 .doc-episode:hover .doc-arrow,
 .doc-episode:focus-visible .doc-arrow { background: var(--ep-accent, var(--gold)); border-color: transparent; color: var(--ink); }
+
+/* Hairline grids (gap-px + a background colour) show that background through empty cells as a
+   gray box. fill-row-N closes the last row of an N-column grid by stretching the final cell over
+   the empty columns. Scope it to the breakpoint where the grid has N columns, e.g.
+   `max-sm:fill-row-2 sm:max-lg:fill-row-3 lg:fill-row-5`. */
+@utility fill-row-2 {
+  & > :last-child:nth-child(2n + 1) { grid-column: span 2 / span 2; }
+}
+@utility fill-row-3 {
+  & > :last-child:nth-child(3n + 1) { grid-column: span 3 / span 3; }
+  & > :last-child:nth-child(3n + 2) { grid-column: span 2 / span 2; }
+}
+@utility fill-row-4 {
+  & > :last-child:nth-child(4n + 1) { grid-column: span 4 / span 4; }
+  & > :last-child:nth-child(4n + 2) { grid-column: span 3 / span 3; }
+  & > :last-child:nth-child(4n + 3) { grid-column: span 2 / span 2; }
+}
+@utility fill-row-5 {
+  & > :last-child:nth-child(5n + 1) { grid-column: span 5 / span 5; }
+  & > :last-child:nth-child(5n + 2) { grid-column: span 4 / span 4; }
+  & > :last-child:nth-child(5n + 3) { grid-column: span 3 / span 3; }
+  & > :last-child:nth-child(5n + 4) { grid-column: span 2 / span 2; }
+}
+
+/* Film mode (?film=1): the promo recorder in tools/film drives the page itself */
+html[data-film] { scroll-behavior: auto !important; }
+html[data-film] .preloader { display: none !important; }

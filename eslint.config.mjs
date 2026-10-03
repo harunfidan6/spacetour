@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Promo-video renders and reference material (docs/video-motoru/referans) are not site code
+    "video/**",
+    "docs/**",
   ]),
 ]);
 

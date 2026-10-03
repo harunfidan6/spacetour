@@ -67,6 +67,9 @@ export default function AdminAnalyticsPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   const now = useNow(1000);
+  // Report state for custom time range
+  const [report, setReport] = useState<any>(null);
+  const [isLoadingReport, setIsLoadingReport] = useState<boolean>(false);
 
   // Check initial authentication
   useEffect(() => {
@@ -154,6 +157,26 @@ export default function AdminAnalyticsPage() {
     setIsRefreshing(true);
     requestStats(isDemoMode).then(applyStats);
   }, [isDemoMode, isAuthenticated, applyStats]);
+
+  // Fetch custom report from 22:00 onward
+  const fetchReport = useCallback(async () => {
+    setIsLoadingReport(true);
+    try {
+      const res = await fetch('/api/analytics/report?from=2026-10-03T22:00:00+03:00', {
+        cache: 'no-store',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReport(data);
+      } else {
+        console.error('Failed to fetch report', res.status);
+      }
+    } catch (e) {
+      console.error('Error fetching report', e);
+    }
+    setIsLoadingReport(false);
+  }, []);
 
   // Load on mount & source toggle
   useEffect(() => {

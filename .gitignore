@@ -43,3 +43,6 @@ next-env.d.ts
 .claude/
 
 .vercel
+
+# promo video renders (tools/film)
+/video/
