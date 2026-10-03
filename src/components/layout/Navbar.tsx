@@ -28,6 +28,8 @@ export function LogoMark({ className = '' }: { className?: string }) {
 
 export default function Navbar() {
   const pathname = usePathname();
+  if (pathname?.startsWith('/studio')) return null;
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
