@@ -53,6 +53,13 @@ export function getActiveVisitorsCount(): number {
   return Math.max(count, 1);
 }
 
+export function getAnalyticsRecords(includeDemo: boolean = false): { records: PageViewRecord[]; events: CustomEventRecord[] } {
+  const effectiveRecords = includeDemo
+    ? (records.length >= 10 ? records : getBaselineRecords(records))
+    : records;
+  return { records: effectiveRecords, events: customEvents };
+}
+
 // Generate Aggregate Analytics
 export function computeAnalyticsStats(includeDemo: boolean = false): AnalyticsStatsResponse {
   const activeNow = getActiveVisitorsCount();
