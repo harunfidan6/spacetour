@@ -6,7 +6,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { FitText } from '@/components/motion/FitText';
 import { Marquee } from '@/components/motion/Marquee';
 import { SplitReveal } from '@/components/motion/SplitReveal';
-import { LiveClock, Magnetic } from '@/components/motion/primitives';
+import { LiveClock } from '@/components/motion/primitives';
 import { SITE_ROUTES } from '@/lib/routes';
 
 const SOURCES = [

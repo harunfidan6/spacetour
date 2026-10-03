@@ -136,7 +136,7 @@ export function ChapterHero({
               {meta.map((m) => (
                 <div key={m.k} className="border-t border-white/15 pt-3">
                   <dt className="doc-caption">{m.k}</dt>
-                  <dd className="doc-title mt-2 text-2xl text-paper sm:text-3xl">{m.v}</dd>
+                  <dd className="doc-title mt-2 text-xl text-paper sm:text-2xl">{m.v}</dd>
                 </div>
               ))}
             </dl>

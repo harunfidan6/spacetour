@@ -20,7 +20,7 @@ const FEATURED_IMAGE: ApodData = {
   date: '19 Ekim 2022',
   explanation:
     'Kartal Bulutsusu (M16) içerisindeki yıldızlararası gaz ve toz kuleleri, yeni doğan protostarların yoğun ultraviyole radyasyonu ile şekillenmektedir. James Webb Uzay Teleskobu’nun yakın-kızılötesi kamerası (NIRCam), bu sütunların derinliklerindeki toz perdelerini delerek yıldız doğumunun en berrak detaylarını ortaya çıkarmaktadır.',
-  url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Pillars_of_Creation_(NIRCam_Image).jpg/1280px-Pillars_of_Creation_(NIRCam_Image).jpg',
+  url: '/images/space/pillars-of-creation-nircam-image-e97a7a.jpg',
   media_type: 'image',
   copyright: 'NASA, ESA, CSA, STScI'
 };

@@ -1,10 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
-import { LiveClock, RotatingBadge } from '@/components/motion/primitives';
+import { LiveClock } from '@/components/motion/primitives';
 import { SITE_ROUTES } from '@/lib/routes';
 import { Terminal } from 'lucide-react';
 import { CosmicAudioEngine } from '@/components/space/CosmicAudioEngine';
@@ -90,8 +91,8 @@ export default function Navbar() {
                     {r.index}
                   </span>
                   <span className={`roll ${active ? 'text-paper font-semibold' : 'text-paper/70'}`}>
-                    <span>{r.label}</span>
-                    <span style={{ color: 'var(--gold)' }}>{r.label}</span>
+                    <span>{r.short}</span>
+                    <span style={{ color: 'var(--gold)' }}>{r.short}</span>
                   </span>
                 </Link>
               );
@@ -288,13 +289,26 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
 
           <aside className="flex flex-col justify-between gap-10 lg:col-span-4 lg:pl-10">
             <div data-menu-fade className="hidden lg:block">
-              <div
-                className="relative grid aspect-square w-full max-w-[320px] place-items-center rounded-full transition-colors duration-500"
-                style={{ background: preview?.accent ?? 'var(--ink-3)' }}
-              >
-                <RotatingBadge text="SpaceTour TR · Kinetik Uzay Atlası · 2026 · " size={300} className="absolute text-ink/80">
-                  <span className="display text-[4.5rem] text-ink">{preview?.index ?? '✺'}</span>
-                </RotatingBadge>
+              {/* Hovered chapter's opening still */}
+              <div className="relative aspect-[4/5] w-full max-w-[340px] overflow-hidden bg-ink-3">
+                {items.map((r, i) => (
+                  <Image
+                    key={r.href}
+                    src={r.image.src}
+                    alt=""
+                    fill
+                    sizes="340px"
+                    className="object-cover transition-opacity duration-500"
+                    style={{ opacity: (hovered ?? 0) === i ? 1 : 0 }}
+                  />
+                ))}
+                <div aria-hidden className="doc-shade-card absolute inset-0" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <span className="doc-kicker" style={{ color: (preview ?? items[0]).accent }}>
+                    Bölüm {(preview ?? items[0]).index}
+                  </span>
+                  <span className="doc-title mt-2 block text-3xl text-paper">{(preview ?? items[0]).label}</span>
+                </div>
               </div>
             </div>
             <dl data-menu-fade className="grid grid-cols-2 gap-6 text-paper">
@@ -310,7 +324,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
               </div>
               <div className="col-span-2">
                 <dt className="label text-muted">Veri kaynakları</dt>
-                <dd className="mt-2 text-sm text-paper/70">NASA · ESA · NOAA SWPC · JPL Horizons · USGS</dd>
+                <dd className="mt-2 text-sm text-paper/70">NASA · ESA · NOAA SWPC · JPL · Wikimedia Commons</dd>
               </div>
             </dl>
           </aside>

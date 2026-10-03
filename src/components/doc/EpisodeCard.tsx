@@ -55,7 +55,7 @@ export function EpisodeCard({
         </h3>
         <p className="mt-3 line-clamp-2 max-w-md text-sm leading-relaxed text-paper/70">{blurb}</p>
         <div className="mt-5 flex items-center justify-between gap-4">
-          <span className="doc-caption truncate">{image.credit}</span>
+          <span className="doc-caption min-w-0 truncate">{image.credit}</span>
           <span
             aria-hidden
             className="doc-arrow grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/25 text-paper transition-colors duration-300"

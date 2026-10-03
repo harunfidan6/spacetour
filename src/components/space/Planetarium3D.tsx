@@ -3,7 +3,7 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useInView } from '@/lib/useInView';
 import { matchesQuery } from '@/lib/text';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import {
@@ -433,11 +433,8 @@ function AnimatedConstellationTracer({
   const [animProgress, setAnimProgress] = useState(0);
 
   useEffect(() => {
-    if (!constellation) {
-      setAnimProgress(0);
-      return;
-    }
-    setAnimProgress(0);
+    if (!constellation) return;
+    // The first frame starts the stroke from zero, so no synchronous reset is needed
     let startTime: number | null = null;
     const duration = 2200; // 2.2s smooth laser stroke
 
@@ -489,7 +486,7 @@ function AnimatedConstellationTracer({
     const fullPathPoints: THREE.Vector3[] = constellation.animatedPath.map((idx) => getCoords(idx));
     const numSegments = fullPathPoints.length - 1;
     const currentSegmentIndex = Math.min(numSegments - 1, Math.floor(animProgress * numSegments));
-    const segmentFraction = (animProgress * numSegments) - currentSegmentIndex;
+    const segmentFraction = animProgress * numSegments - currentSegmentIndex;
 
     const drawnPoints: THREE.Vector3[] = [];
     for (let i = 0; i < currentSegmentIndex; i++) {
@@ -1730,5 +1727,4 @@ export function Planetarium3D() {
     </div>
   );
 }
-
 

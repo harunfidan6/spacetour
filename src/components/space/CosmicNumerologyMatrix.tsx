@@ -7,13 +7,12 @@ import {
   CoreNumberAnalysis
 } from '@/data/numerology';
 import {
-  SacredTetractysGlyph,
-  PlanetGlyph
+  SacredTetractysGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { Ticks } from '@/components/motion/primitives';
 import { NumericInput } from '@/components/ui/NumericInput';
 import { daysInMonth } from '@/data/zodiac';
-import { Sparkles, Compass, Shield, Feather, Key, Flame } from 'lucide-react';
+import { Compass, Shield, Feather, Key, Flame } from 'lucide-react';
 
 export function CosmicNumerologyMatrix() {
   const [firstName, setFirstName] = useState('Atlas');
@@ -183,7 +182,7 @@ export function CosmicNumerologyMatrix() {
             <button
               key={pillar.id}
               type="button"
-              onClick={() => setActivePillar(pillar.id as any)}
+              onClick={() => setActivePillar(pillar.id as typeof activePillar)}
               className={`p-5 text-left transition-all cursor-pointer flex flex-col justify-between ${
                 isSelected
                   ? 'bg-gold text-ink font-semibold'

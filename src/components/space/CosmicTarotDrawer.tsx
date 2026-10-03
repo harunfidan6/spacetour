@@ -1,20 +1,12 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   Shuffle,
-  Shield,
   Lightbulb,
   HeartHandshake,
-  Compass,
-  RotateCw,
-  Eye,
-  Layers,
-  Flame,
-  Globe2,
-  Wind,
-  Droplets
+  Compass
 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import {
@@ -37,72 +29,74 @@ interface DrawnCard {
   positionDesc: string;
 }
 
+// Spread definitions
+const SPREAD_CONFIGS: Record<SpreadType, { name: string; count: number; desc: string; slots: { label: string; desc: string }[] }> = {
+  single: {
+    name: 'Günün Rehber Kartı',
+    count: 1,
+    desc: 'Bugünün temel enerjisini, içsel sınavını ve kozmik olumlamasını ortaya koyar.',
+    slots: [
+      { label: 'GÜNÜN REHBERİ', desc: 'Bugünün ana kozmik teması ve odak noktası' }
+    ]
+  },
+  three: {
+    name: 'Keltik Zaman Triadı',
+    count: 3,
+    desc: 'Geçmişin köklerini, şu anki eşiği ve geleceğin kadersel potansiyelini okur.',
+    slots: [
+      { label: '01. GEÇMİŞİN KÖKÜ', desc: 'Şu anki durumu hazırlayan temel dinamik' },
+      { label: '02. ŞİMDİKİ EŞİK', desc: 'Aşılması gereken anlık sınav veya meydan okuma' },
+      { label: '03. GELECEK POTANSİYELİ', desc: 'Eylemlerinizin evrileceği en yüksek sonuç' }
+    ]
+  },
+  decision: {
+    name: 'Karar & İkilem Aynası',
+    count: 3,
+    desc: 'İki farklı yol arasındaki enerjiyi ve her iki yolun sentezini çözümler.',
+    slots: [
+      { label: 'YOL A (BİRİNCİ SEÇENEK)', desc: 'İlk tercihin getireceği deneyim ve enerji' },
+      { label: 'YOL B (İKİNCİ SEÇENEK)', desc: 'İkinci tercihin olası yansımaları ve bedeli' },
+      { label: 'KOZMİK SENTEZ', desc: 'İki yolun ötesindeki en bilgece ortak payda' }
+    ]
+  }
+};
+
+/** Shuffle the major arcana and lay out one spread (random, so only ever run on the client). */
+function dealSpread(type: SpreadType): DrawnCard[] {
+  const config = SPREAD_CONFIGS[type];
+  const shuffled = [...MAJOR_ARCANA_DECK].sort(() => Math.random() - 0.5);
+  return config.slots.slice(0, config.count).map((slot, i) => ({
+    card: shuffled[i],
+    isReversed: Math.random() > 0.65, // 35% chance of reversed
+    positionLabel: slot.label,
+    positionDesc: slot.desc,
+  }));
+}
+
 export function CosmicTarotDrawer() {
   const [spreadType, setSpreadType] = useState<SpreadType>('three');
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
-  const [isShuffling, setIsShuffling] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(true);
   const [selectedCardIdx, setSelectedCardIdx] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<'genel' | 'ask' | 'kariyer' | 'ruhsal'>('genel');
-
-  // Spread definitions
-  const SPREAD_CONFIGS: Record<SpreadType, { name: string; count: number; desc: string; slots: { label: string; desc: string }[] }> = {
-    single: {
-      name: 'Günün Rehber Kartı',
-      count: 1,
-      desc: 'Bugünün temel enerjisini, içsel sınavını ve kozmik olumlamasını ortaya koyar.',
-      slots: [
-        { label: 'GÜNÜN REHBERİ', desc: 'Bugünün ana kozmik teması ve odak noktası' }
-      ]
-    },
-    three: {
-      name: 'Keltik Zaman Triadı',
-      count: 3,
-      desc: 'Geçmişin köklerini, şu anki eşiği ve geleceğin kadersel potansiyelini okur.',
-      slots: [
-        { label: '01. GEÇMİŞİN KÖKÜ', desc: 'Şu anki durumu hazırlayan temel dinamik' },
-        { label: '02. ŞİMDİKİ EŞİK', desc: 'Aşılması gereken anlık sınav veya meydan okuma' },
-        { label: '03. GELECEK POTANSİYELİ', desc: 'Eylemlerinizin evrileceği en yüksek sonuç' }
-      ]
-    },
-    decision: {
-      name: 'Karar & İkilem Aynası',
-      count: 3,
-      desc: 'İki farklı yol arasındaki enerjiyi ve her iki yolun sentezini çözümler.',
-      slots: [
-        { label: 'YOL A (BİRİNCİ SEÇENEK)', desc: 'İlk tercihin getireceği deneyim ve enerji' },
-        { label: 'YOL B (İKİNCİ SEÇENEK)', desc: 'İkinci tercihin olası yansımaları ve bedeli' },
-        { label: 'KOZMİK SENTEZ', desc: 'İki yolun ötesindeki en bilgece ortak payda' }
-      ]
-    }
-  };
 
   // Perform draw
   const performDraw = (type: SpreadType) => {
     setIsShuffling(true);
     setTimeout(() => {
-      const config = SPREAD_CONFIGS[type];
-      const shuffled = [...MAJOR_ARCANA_DECK].sort(() => Math.random() - 0.5);
-      const drawn: DrawnCard[] = [];
-
-      for (let i = 0; i < config.count; i++) {
-        const isReversed = Math.random() > 0.65; // 35% chance of reversed
-        drawn.push({
-          card: shuffled[i],
-          isReversed,
-          positionLabel: config.slots[i].label,
-          positionDesc: config.slots[i].desc
-        });
-      }
-
-      setDrawnCards(drawn);
+      setDrawnCards(dealSpread(type));
       setSelectedCardIdx(0);
       setIsShuffling(false);
     }, 600);
   };
 
-  // Initial draw on mount
+  // First spread once mounted — random cards can't be prerendered without a hydration mismatch
   React.useEffect(() => {
-    performDraw('three');
+    const timer = setTimeout(() => {
+      setDrawnCards(dealSpread('three'));
+      setIsShuffling(false);
+    }, 600);
+    return () => clearTimeout(timer);
   }, []);
 
   const activeDrawnCard = drawnCards[selectedCardIdx] || drawnCards[0];

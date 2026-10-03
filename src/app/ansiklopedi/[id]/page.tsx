@@ -56,7 +56,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
       <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
         <div className="flex items-center gap-4 border-b border-line pb-4">
-          <Link href="/ansiklopedi" className="label group flex items-center gap-2 text-paper transition-colors hover:text-violet">
+          <Link href="/ansiklopedi/gok-cisimleri" className="label group flex items-center gap-2 text-paper transition-colors hover:text-violet">
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> Arşiv
           </Link>
           <span className="label text-muted">

@@ -1,26 +1,57 @@
+import { SECTIONS } from '@/data/sections';
+import { DOC_IMAGES } from '@/data/docImages';
+import type { AstroImage } from '@/data/astroImages';
+
 export interface SiteRoute {
   href: string;
   label: string;
+  /** Compact label for the desktop bar. */
+  short: string;
   index: string;
   accent: string;
   blurb: string;
+  image: AstroImage;
 }
 
+const SHORT: Record<string, string> = {
+  harita: 'Harita',
+  takvim: 'Takvim',
+  ansiklopedi: 'Ansiklopedi',
+  astroloji: 'Astroloji',
+  gozlemevi: 'Gözlemevi',
+  canli: 'Canlı',
+  yolculuk: 'Yolculuk',
+};
+
 export const SITE_ROUTES: SiteRoute[] = [
-  { href: '/', label: 'Ana Sayfa', index: '00', accent: 'var(--solar)', blurb: 'Kinetik uzay atlası' },
-  { href: '/harita', label: 'Gök Haritası', index: '01', accent: 'var(--lime)', blurb: '360° planetaryum & AR' },
-  { href: '/takvim', label: 'Olay Takvimi', index: '02', accent: 'var(--solar)', blurb: 'Tutulmalar, yağmurlar, kavuşumlar' },
-  { href: '/ansiklopedi', label: 'Ansiklopedi', index: '03', accent: 'var(--violet)', blurb: 'Gezegenler, laboratuvar, orrery' },
-  { href: '/astroloji', label: 'Astroloji', index: '04', accent: 'var(--gold)', blurb: 'Doğum haritası, tarot, sinastri' },
-  { href: '/gozlemevi', label: 'Gözlemevi', index: '05', accent: 'var(--rose)', blurb: 'Çok dalgaboylu derin uzay' },
+  {
+    href: '/',
+    label: 'Ana Sayfa',
+    short: 'Ana Sayfa',
+    index: '00',
+    accent: 'var(--gold)',
+    blurb: 'Bir uzay belgeseli',
+    image: DOC_IMAGES['sec-yolculuk'],
+  },
+  ...SECTIONS.map((s) => ({
+    href: s.href,
+    label: s.title,
+    short: SHORT[s.id] ?? s.title,
+    index: s.chapter,
+    accent: s.accent,
+    blurb: s.kicker,
+    image: s.image,
+  })),
 ];
 
 export const TELEMETRY_ROUTE: SiteRoute = {
   href: '/admin/analitik',
   label: 'Canlı Telemetri',
-  index: '06',
+  short: 'Telemetri',
+  index: '08',
   accent: 'var(--lime)',
   blurb: 'Ziyaretçi & trafik paneli',
+  image: DOC_IMAGES['sec-canli'],
 };
 
 export function routeFor(pathname: string): SiteRoute {

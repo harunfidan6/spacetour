@@ -22,7 +22,7 @@ import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
 import { DOC_IMAGES } from '@/data/docImages';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
-import { Reveal, Ticks } from '@/components/motion/primitives';
+import { Reveal } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 import { upcomingEvents } from '@/lib/sky';
 import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';

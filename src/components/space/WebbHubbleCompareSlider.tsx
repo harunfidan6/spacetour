@@ -47,7 +47,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'Hubble (Görünür Işık)',
       instrument: 'ACS + WFPC2 (2006–2008)',
       wavelength: 'Hα · [S II] · [O III]',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/NGC_3324_Hubble.jpg/1280px-NGC_3324_Hubble.jpg',
+      image: '/images/space/ngc-3324-hubble-30d280.jpg',
       credit: 'NASA, ESA, Hubble Heritage Team (STScI/AURA)',
       details: 'Yoğun toz perdesi arka plandaki bebek yıldızları ve proto-gezegen disklerini tamamen gizler.'
     },
@@ -55,7 +55,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'James Webb (Kızılötesi)',
       instrument: 'NIRCam / Yakın Kızılötesi',
       wavelength: '0.9 – 4.4 µm',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/NASA%E2%80%99s_Webb_Reveals_Cosmic_Cliffs%2C_Glittering_Landscape_of_Star_Birth.jpg/1280px-NASA%E2%80%99s_Webb_Reveals_Cosmic_Cliffs%2C_Glittering_Landscape_of_Star_Birth.jpg',
+      image: '/images/space/nasas-webb-reveals-cosmic-cliffs-glittering-landscape-of-sta-fe9eb0.jpg',
       credit: 'NASA, ESA, CSA, STScI',
       details: 'Kızılötesi dalgalar kalın tozu delip geçer; yüzlerce gizli proto-yıldız ve gaz fışkırması görünür hale gelir.'
     },
@@ -71,7 +71,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'Hubble (Görünür Spektrum)',
       instrument: 'WFC3/UVIS (2014)',
       wavelength: '0.50 – 0.67 µm',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg/1280px-Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg',
+      image: '/images/space/pillars-of-creation-2014-hst-wfc3-uvis-full-res-denoised-0dddac.jpg',
       credit: 'NASA, ESA, Hubble Heritage Team (STScI/AURA)',
       details: 'Sütunlar karanlık monolitik heykeller gibi durur. Sadece kenarlardaki iyonize hidrojen ışıması seçilebilir.'
     },
@@ -79,7 +79,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'James Webb (Kızılötesi)',
       instrument: 'NIRCam / Yakın Kızılötesi',
       wavelength: '0.9 – 4.4 µm',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Pillars_of_Creation_(NIRCam_Image).jpg/1280px-Pillars_of_Creation_(NIRCam_Image).jpg',
+      image: '/images/space/pillars-of-creation-nircam-image-e97a7a.jpg',
       credit: 'NASA, ESA, CSA, STScI; J. DePasquale, A. Koekemoer, A. Pagan',
       details: 'Sütunların içindeki gaz düğümleri parlak lav lavraları gibi ışıma yapar; dışarı püsküren kırmızı şok dalgaları görülür.'
     },
@@ -95,7 +95,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'Hubble (Optik)',
       instrument: 'WFPC2 (1998)',
       wavelength: 'Görünür Işık',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/a/af/NGC_3132.jpg',
+      image: '/images/space/ngc-3132-d7d4b6.jpg',
       credit: 'Hubble Heritage Team (STScI/AURA/NASA)',
       details: 'Merkezde sadece parlak beyaz bir yıldız seçilebilir; gaz halkaları simetrik görünür.'
     },
@@ -103,7 +103,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'James Webb (MIRI)',
       instrument: 'MIRI / Orta Kızılötesi',
       wavelength: '7.7 – 18 µm',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/5/54/Southern_Ring_Nebula_%28MIRI_Image%29_%28weic2207c%29.jpeg',
+      image: '/images/space/southern-ring-nebula-miri-image-weic2207c-c1206e.jpg',
       credit: 'ESA/Webb, NASA & CSA, STScI (CC BY 4.0)',
       details: 'İlk kez gaz fırlatan asıl ölmekte olan ikinci yıldızın kalın toz kılıfı içinde saklandığı ortaya çıkarıldı.'
     },
@@ -119,7 +119,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'Hubble Derin Alan',
       instrument: 'ACS + WFC3 · RELICS (2017)',
       wavelength: 'Optik + Yakın IR',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/5/5b/NASA-HubbleSpaceTelescope-DeepField-2017.jpg',
+      image: '/images/space/nasa-hubblespacetelescope-deepfield-2017-25ff9d.jpg',
       credit: 'NASA, ESA, RELICS',
       details: 'Galaksiler soluk leke halindedir; arka plandaki bükülmüş kütleçekim yayları belirsizdir.'
     },
@@ -127,7 +127,7 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
       label: 'Webb İlk Derin Alan (Deep Field)',
       instrument: 'NIRCam (12.5 saatlik pozlama)',
       wavelength: '0.9 – 4.4 µm',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Webb%27s_First_Deep_Field.jpg/1280px-Webb%27s_First_Deep_Field.jpg',
+      image: '/images/space/webb-s-first-deep-field-f6498c.jpg',
       credit: 'NASA, ESA, CSA, STScI',
       details: '13.1 milyar yıl öncesine ait binlerce ilk nesil galaksi, kızıla kaymış keskin kütleçekim yayları halinde netleşir.'
     },

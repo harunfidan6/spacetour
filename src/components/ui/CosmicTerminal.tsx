@@ -51,6 +51,11 @@ export function CosmicTerminal() {
     setOpen(false);
   }, [router]);
 
+  // Orbit commands drive the 3D voyage, which lives on its own page now
+  const goVoyage = useCallback(() => {
+    if (window.location.pathname !== '/yolculuk') router.push('/yolculuk');
+  }, [router]);
+
   // Define commands
   const commands: CommandItem[] = useMemo(() => [
     // --- ORBIT & CELESTIAL DESTINATIONS ---
@@ -63,6 +68,7 @@ export function CosmicTerminal() {
       icon: Flame,
       action: () => {
         setDestination('sun');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -75,6 +81,7 @@ export function CosmicTerminal() {
       icon: Globe,
       action: () => {
         setDestination('earth');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -87,6 +94,7 @@ export function CosmicTerminal() {
       icon: Compass,
       action: () => {
         setDestination('mars');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -99,6 +107,7 @@ export function CosmicTerminal() {
       icon: Orbit,
       action: () => {
         setDestination('jupiter');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -111,6 +120,7 @@ export function CosmicTerminal() {
       icon: Moon,
       action: () => {
         setDestination('saturn');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -123,6 +133,7 @@ export function CosmicTerminal() {
       icon: Sparkles,
       action: () => {
         setDestination('blackhole');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -135,6 +146,7 @@ export function CosmicTerminal() {
       icon: Maximize2,
       action: () => {
         setDestination('solar-overview');
+        goVoyage();
         setOpen(false);
       },
     },
@@ -147,7 +159,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'NOBEL 2017',
       icon: Activity,
-      action: () => navigateTo('/ansiklopedi', '#lab-ligo'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/kutlecekim-dalgalari'),
     },
     {
       id: 'lab-cmb',
@@ -156,7 +168,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'KOZMOLOJİ',
       icon: Globe,
-      action: () => navigateTo('/ansiklopedi', '#lab-cmb'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/kozmik-arka-plan'),
     },
     {
       id: 'lab-orrery',
@@ -165,7 +177,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L1',
       icon: Orbit,
-      action: () => navigateTo('/ansiklopedi', '#lab-orrery'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/kepler-orrery'),
     },
     {
       id: 'lab-scale',
@@ -174,7 +186,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L2',
       icon: Maximize2,
-      action: () => navigateTo('/ansiklopedi', '#lab-olcek'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/olcek'),
     },
     {
       id: 'lab-gravity',
@@ -183,7 +195,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L3',
       icon: Activity,
-      action: () => navigateTo('/ansiklopedi', '#lab-kutlecekim'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/kutlecekim'),
     },
     {
       id: 'lab-time',
@@ -192,7 +204,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L4',
       icon: Sparkles,
-      action: () => navigateTo('/ansiklopedi', '#lab-zaman'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/zaman-makinesi'),
     },
     {
       id: 'lab-exoplanet',
@@ -201,7 +213,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L5',
       icon: Compass,
-      action: () => navigateTo('/ansiklopedi', '#lab-otegezegen'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/otegezegenler'),
     },
     {
       id: 'lab-impact',
@@ -210,7 +222,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L6',
       icon: Flame,
-      action: () => navigateTo('/ansiklopedi', '#lab-asteroit'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/asteroit-carpmasi'),
     },
     {
       id: 'lab-blackhole',
@@ -219,7 +231,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L7',
       icon: Sparkles,
-      action: () => navigateTo('/ansiklopedi', '#lab-karadelik'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/kara-delik'),
     },
     {
       id: 'lab-hohmann',
@@ -228,7 +240,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'L8',
       icon: Compass,
-      action: () => navigateTo('/ansiklopedi', '#lab-hohmann'),
+      action: () => navigateTo('/ansiklopedi/laboratuvar/hohmann-transferi'),
     },
 
     // --- OBSERVATORY INSTRUMENTS ---
@@ -239,7 +251,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'TELESKOP',
       icon: Eye,
-      action: () => navigateTo('/gozlemevi', '#lab-webb-hubble'),
+      action: () => navigateTo('/gozlemevi/webb-hubble'),
     },
     {
       id: 'inst-radio',
@@ -248,7 +260,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'RADYO',
       icon: Activity,
-      action: () => navigateTo('/gozlemevi', '#lab-radyo'),
+      action: () => navigateTo('/gozlemevi/radyo'),
     },
     {
       id: 'inst-spectroscopy',
@@ -257,7 +269,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'SPEKTRUM',
       icon: Sparkles,
-      action: () => navigateTo('/gozlemevi', '#lab-spektroskopi'),
+      action: () => navigateTo('/gozlemevi/spektroskopi'),
     },
     {
       id: 'inst-transit',
@@ -266,7 +278,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'FOTOMETRİ',
       icon: Orbit,
-      action: () => navigateTo('/gozlemevi', '#lab-transit'),
+      action: () => navigateTo('/gozlemevi/transit'),
     },
 
     // --- SKY MAP TOOLS ---
@@ -277,7 +289,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'KERTERİZ',
       icon: Sparkles,
-      action: () => navigateTo('/harita', '#lab-parlak-yildizlar'),
+      action: () => navigateTo('/harita/parlak-yildizlar'),
     },
     {
       id: 'tool-bortle',
@@ -286,7 +298,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'BORTLE',
       icon: Eye,
-      action: () => navigateTo('/harita', '#lab-bortle'),
+      action: () => navigateTo('/harita/bortle'),
     },
     {
       id: 'tool-messier',
@@ -295,7 +307,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'MESSIER',
       icon: Compass,
-      action: () => navigateTo('/harita', '#lab-messier'),
+      action: () => navigateTo('/harita/messier'),
     },
     {
       id: 'tool-polaris',
@@ -304,7 +316,7 @@ export function CosmicTerminal() {
       category: 'LAB',
       badge: 'POLARİS',
       icon: Compass,
-      action: () => navigateTo('/harita', '#lab-polaris'),
+      action: () => navigateTo('/harita/polaris'),
     },
 
     // --- NAVIGATION ---
@@ -345,6 +357,24 @@ export function CosmicTerminal() {
       action: () => navigateTo('/gozlemevi'),
     },
     {
+      id: 'nav-live',
+      title: 'Modül: Canlı Gökyüzü',
+      subtitle: 'Bu gece görünen gezegenler, ISS canlı konum, NOAA uzay havası ve derin uzay sondaları',
+      category: 'NAV',
+      badge: 'CANLI',
+      icon: Activity,
+      action: () => navigateTo('/canli'),
+    },
+    {
+      id: 'nav-voyage',
+      title: 'Modül: Göklerde Yolculuk',
+      subtitle: 'Güneş Sistemi’nde 3D yolculuk, didaktik ve J2000 yörünge modları',
+      category: 'NAV',
+      badge: '3D',
+      icon: Orbit,
+      action: () => navigateTo('/yolculuk'),
+    },
+    {
       id: 'nav-astrology',
       title: 'Modül: Astroloji & Zodyak Atlası',
       subtitle: 'Doğum haritası, günlük göksel transitler, sinastri analizi ve kozmik tarot',
@@ -364,6 +394,7 @@ export function CosmicTerminal() {
       icon: Orbit,
       action: () => {
         toggleOrbitMode();
+        goVoyage();
         setOpen(false);
       },
     },
@@ -376,6 +407,7 @@ export function CosmicTerminal() {
       icon: Orbit,
       action: () => {
         focusCurrentDestination();
+        goVoyage();
         setOpen(false);
       },
     },
@@ -388,10 +420,11 @@ export function CosmicTerminal() {
       icon: Compass,
       action: () => {
         toggleAutoPilot();
+        goVoyage();
         setOpen(false);
       },
     },
-  ], [orbitMode, setDestination, toggleOrbitMode, focusCurrentDestination, toggleAutoPilot, navigateTo]);
+  ], [orbitMode, setDestination, toggleOrbitMode, focusCurrentDestination, toggleAutoPilot, navigateTo, goVoyage]);
 
   const resetSearch = () => {
     setQuery('');

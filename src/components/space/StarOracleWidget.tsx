@@ -1,54 +1,40 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNow } from '@/lib/useNow';
 import {
   Sparkles,
-  Compass,
   Clock,
   Star,
   CheckCircle2,
   XCircle,
-  Telescope,
-  ArrowRight,
-  ShieldAlert,
-  Flame,
-  Globe2
+  ShieldAlert
 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import {
   PlanetGlyph,
-  AstrolabeGlyph,
-  GalaxySpiralGlyph,
-  UrsaMajorGlyph,
-  LyraGlyph
+  GalaxySpiralGlyph
 } from '@/components/ui/CosmicGlyphs';
 import {
   FIXED_STARS_CATALOG,
   getCurrentPlanetaryHour,
-  PLANETARY_HOUR_DETAILS,
-  CHALDEAN_ORDER,
   type FixedStar,
   type PlanetaryHour
 } from '@/data/fixedStars';
 
 export function StarOracleWidget() {
   const [selectedStar, setSelectedStar] = useState<FixedStar>(FIXED_STARS_CATALOG[0]);
-  const [planetaryHour, setPlanetaryHour] = useState<PlanetaryHour | null>(null);
-  const [selectedTimelineHour, setSelectedTimelineHour] = useState<number>(new Date().getHours());
+  // Clock-driven values are only known after mount; the page itself is prerendered
+  const now = useNow(60_000);
+  const planetaryHour: PlanetaryHour | null = now ? getCurrentPlanetaryHour(now) : null;
+  const [pickedHour, setSelectedTimelineHour] = useState<number | null>(null);
+  const currentHour = now ? now.getHours() : null;
+  const selectedTimelineHour = pickedHour ?? currentHour ?? 12;
   const [isOracleSpinning, setIsOracleSpinning] = useState(false);
-
-  // Update current planetary hour
-  useEffect(() => {
-    setPlanetaryHour(getCurrentPlanetaryHour(new Date()));
-    const timer = setInterval(() => {
-      setPlanetaryHour(getCurrentPlanetaryHour(new Date()));
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Compute Chaldean planet for a given hour today
   const getHourRuler = (targetHour: number) => {
-    const d = new Date();
+    const d = now ? new Date(now) : new Date(2026, 0, 1);
     d.setHours(targetHour, 0, 0, 0);
     return getCurrentPlanetaryHour(d);
   };
@@ -106,7 +92,7 @@ export function StarOracleWidget() {
             <span className="h-2 w-2 rounded-full bg-lime animate-ping" />
           </div>
           <div className="font-mono text-xs text-muted">
-            Aktif Zaman Dilimi: <strong className="text-paper">{new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</strong>
+            Aktif Zaman Dilimi: <strong className="text-paper">{now ? now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '—'}</strong>
           </div>
         </div>
 
@@ -178,7 +164,7 @@ export function StarOracleWidget() {
           <div className="grid grid-cols-6 sm:grid-cols-12 md:grid-cols-24 gap-1">
             {Array.from({ length: 24 }).map((_, h) => {
               const info = getHourRuler(h);
-              const isCurrent = h === new Date().getHours();
+              const isCurrent = h === currentHour;
               const isSelected = h === selectedTimelineHour;
 
               return (

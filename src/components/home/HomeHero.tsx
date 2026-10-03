@@ -1,16 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { gsap, useGsap, prefersReducedMotion, whenIntroDone } from '@/components/motion/gsap';
 import { SplitReveal } from '@/components/motion/SplitReveal';
-import { Magnetic } from '@/components/motion/primitives';
 import { moonPhase, upcomingEvents, daysUntil } from '@/lib/sky';
 import { useNow } from '@/lib/useNow';
 import { HeroSolarSystem3D, HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
-import { HeroKineticHUD } from './HeroKineticHUD';
 import { MoonOrb } from '@/components/space/PlanetOrb';
 import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
 
@@ -92,12 +89,8 @@ export function HomeHero() {
   );
 
   return (
-    <div>
-    <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
-      {/* 1. Motion Graphics Kinetic HUD Background */}
-      <HeroKineticHUD />
-
-      {/* 2. Live 3D solar system */}
+    <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-ink" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
+      {/* Live 3D solar system as the opening shot */}
       <div className="pointer-events-none absolute inset-0">
         <HeroSolarSystem3D project={placeLabel} active={inView} />
         {HERO_BODIES.map((b, i) => (
@@ -107,7 +100,7 @@ export function HomeHero() {
               labels.current[i] = node;
             }}
             aria-hidden
-            className="label absolute left-0 top-0 whitespace-nowrap pl-5 text-[10px] text-paper will-change-transform"
+            className="doc-caption absolute left-0 top-0 whitespace-nowrap pl-5 text-paper/80 will-change-transform"
             style={{ opacity: 0, marginTop: '-1.6em' }}
           >
             <span className="mr-1.5 inline-block h-px w-3 bg-paper/60 align-middle" />
@@ -115,101 +108,89 @@ export function HomeHero() {
           </span>
         ))}
       </div>
-      <div data-solar aria-hidden className="pointer-events-none absolute inset-0 bg-solar" style={{ visibility: 'hidden' }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgb(5_5_8/0.85)_100%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink to-transparent" />
 
-      {/* Copy */}
-      <div className="relative flex h-full flex-col justify-between px-[var(--gutter)] pb-6 pt-24 sm:pt-28">
-        <div data-hero-top>
-          <div data-hero-fade className="flex items-center gap-3 pb-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-ink-2/80 px-3.5 py-1.5 backdrop-blur-md">
-              <span className="font-mono text-xs font-semibold text-gold">00</span>
-              <span className="h-3 w-[1px] bg-white/20" />
-              <span className="font-mono text-xs uppercase tracking-wider text-paper/90">Kozmik Gözlem Atlası</span>
-            </div>
-            <div className="ml-auto hidden items-center gap-2 rounded-full border border-white/[0.06] bg-ink-2/50 px-3 py-1 font-mono text-[11px] text-muted sm:inline-flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>J2000 Efemeris · Canlı Yörünge Ağı</span>
-            </div>
-          </div>
+      {/* Title card */}
+      <div className="relative flex h-full flex-col justify-between px-[var(--gutter)] pb-8 pt-24 sm:pt-28">
+        <div data-hero-top data-hero-fade className="flex items-center gap-4">
+          <span className="doc-kicker text-gold">Bölüm 00</span>
+          <span aria-hidden className="doc-rule w-16 sm:w-28" />
+          <span className="doc-kicker text-paper/70">Bir uzay belgeseli</span>
         </div>
 
-        <h1 data-hero-title className="display mt-6 text-[clamp(2.8rem,6.2vw,5.5rem)] font-bold tracking-tight text-paper sm:mt-8">
-          <SplitReveal as="span" className="block text-shimmer" trigger="intro" effect="fade">
-            Evren
-          </SplitReveal>
-          <SplitReveal as="span" className="block" trigger="intro" effect="fade" delay={0.1}>
-            <span className="serif-i text-gold font-normal">hiç</span> durmaz.
-          </SplitReveal>
-        </h1>
+        <div data-hero-title>
+          <h1 className="doc-title text-[clamp(3.6rem,12vw,12.5rem)] text-paper">
+            <SplitReveal as="span" className="block pt-[0.08em]" trigger="intro" effect="rise">
+              Evren
+            </SplitReveal>
+            <SplitReveal as="span" className="doc-serif block lowercase text-gold" trigger="intro" effect="rise" delay={0.12}>
+              hiç durmaz.
+            </SplitReveal>
+          </h1>
+        </div>
 
-        <div data-hero-bottom className="mt-auto grid gap-6 pt-10 lg:grid-cols-12 lg:items-end">
+        <div data-hero-bottom className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div data-hero-fade className="lg:col-span-5">
-            <p className="max-w-md text-base leading-relaxed text-paper/75 sm:text-lg">
-              Güneş Sistemi&apos;ni 3D olarak gezin, 360° planetaryumda gökyüzünü okuyun, tutulmaları takviminize işleyin. NASA ve ESA verileriyle, hareket halinde.
+            <p className="max-w-md text-base leading-relaxed text-paper/80 sm:text-lg">
+              Yedi bölümlük bir gökyüzü belgeseli: Güneş Sistemi&apos;ni 3D gezin, 360° planetaryumda gökyüzünü okuyun, tutulmaları takviminize işleyin. NASA ve ESA verileriyle.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link
-                href="/harita"
-                className="group flex items-center gap-3 rounded-full bg-gold py-3 pl-6 pr-3 text-sm font-bold text-ink transition-all hover:bg-paper hover:scale-105 shadow-2xl cursor-pointer"
-              >
-                <span>360° Planetaryumu Başlat</span>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-gold">
-                  <ArrowUpRight size={16} />
-                </span>
-              </Link>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
-                href="#istasyonlar"
+                href="#bolumler"
                 onClick={(e) => {
                   e.preventDefault();
-                  const target = document.getElementById('istasyonlar');
-                  if (target) target.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('bolumler')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="group flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.04] backdrop-blur-xl px-5 py-3 text-sm font-medium text-paper transition-all hover:border-gold/50 hover:bg-gold/10 hover:text-gold cursor-pointer"
+                className="group flex items-center gap-3 rounded-full bg-gold py-3 pl-6 pr-3 text-sm font-bold text-ink transition-transform hover:scale-[1.03]"
               >
-                <span>Kozmik İstasyonlar</span>
-                <ArrowDown size={15} />
+                <span>Belgeseli başlat</span>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-gold">
+                  <ArrowDown size={16} />
+                </span>
               </a>
+              <Link
+                href="/harita/planetaryum"
+                className="group flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-medium text-paper backdrop-blur-xl transition-colors hover:border-gold/60 hover:text-gold"
+              >
+                <span>360° planetaryum</span>
+                <ArrowUpRight size={15} />
+              </Link>
             </div>
           </div>
 
-          <dl data-hero-fade className="grid grid-cols-2 gap-3 lg:col-span-4 lg:col-start-7">
-            <div className="rounded-2xl border border-white/[0.08] bg-ink-2/80 p-4.5 backdrop-blur-xl shadow-xl transition-all duration-300 hover:border-white/20">
-              <dt className="font-mono text-[10px] uppercase tracking-wider text-muted">Ay evresi</dt>
+          <dl data-hero-fade className="grid grid-cols-2 gap-x-8 lg:col-span-5 lg:col-start-8">
+            <div className="border-t border-white/15 pt-3">
+              <dt className="doc-caption">Ay evresi</dt>
               <dd className="mt-3 flex items-center gap-3">
                 <MoonOrb fraction={moon?.fraction ?? 0.5} className="h-10 w-10" />
-                <div>
-                  <span className="display block text-xl sm:text-2xl font-semibold text-paper">%{moon ? Math.round(moon.illumination * 100) : '--'}</span>
-                  <span className="text-xs text-muted">{moon?.name ?? 'Hesaplanıyor'}</span>
-                </div>
+                <span>
+                  <span className="doc-title block text-3xl text-paper">%{moon ? Math.round(moon.illumination * 100) : '--'}</span>
+                  <span className="doc-caption block">{moon?.name ?? 'Hesaplanıyor'}</span>
+                </span>
               </dd>
             </div>
-            <div className="rounded-2xl border border-white/[0.08] bg-ink-2/80 p-4.5 backdrop-blur-xl shadow-xl transition-all duration-300 hover:border-white/20">
-              <dt className="font-mono text-[10px] uppercase tracking-wider text-muted">Sıradaki olay</dt>
+            <div className="border-t border-white/15 pt-3">
+              <dt className="doc-caption">Sıradaki olay</dt>
               <dd className="mt-3">
-                <span className="display block text-xl sm:text-2xl text-gold font-bold">{next && now ? `${daysUntil(next.date, now)} gün` : '—'}</span>
-                <span className="flex items-center gap-1.5 text-xs text-paper/70 mt-1">
-                  {next ? (
-                    <>
-                      <AstronomicalEventGlyph type={next.type} size={14} className="text-gold shrink-0" />
-                      <span className="truncate">{next.title}</span>
-                    </>
-                  ) : (
-                    'Takvim yükleniyor'
-                  )}
-                </span>
+                <Link href="/takvim" className="group block">
+                  <span className="doc-title block text-3xl text-gold">{next && now ? `${daysUntil(next.date, now)} gün` : '—'}</span>
+                  <span className="mt-1 flex items-center gap-1.5 text-xs text-paper/70 group-hover:text-paper">
+                    {next ? (
+                      <>
+                        <AstronomicalEventGlyph type={next.type} size={14} className="shrink-0 text-gold" />
+                        <span className="truncate">{next.title}</span>
+                      </>
+                    ) : (
+                      'Takvim yükleniyor'
+                    )}
+                  </span>
+                </Link>
               </dd>
             </div>
           </dl>
-
-          <div data-hero-fade className="hidden items-center justify-end gap-3 lg:col-span-2 lg:col-start-11 lg:flex">
-            <span className="label text-muted">Kaydır</span>
-            <span className="relative h-14 w-px overflow-hidden bg-line">
-              <span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_1.8s_cubic-bezier(.76,0,.24,1)_infinite] bg-solar" />
-            </span>
-          </div>
         </div>
       </div>
     </section>
-    </div>
   );
 }

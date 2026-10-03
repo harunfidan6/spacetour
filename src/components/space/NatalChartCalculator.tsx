@@ -98,7 +98,7 @@ export function NatalChartCalculator() {
   const [hoveredAspect, setHoveredAspect] = useState<AspectInfo | null>(null);
 
   // Compute Core Signs & Planetary Placements
-  const { sunSign, risingSign, risingSignIndex, moonSign, planetaryPlacements } = useMemo(() => {
+  const { sunSign, risingSign, risingSignIndex, moonSign, planetaryPlacements } = (() => {
     const sun = getSunSign(month, day);
     const sunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === sun.id);
     const rising = calculateAscendant(sunIdx, solarHourNorm);
@@ -110,7 +110,7 @@ export function NatalChartCalculator() {
       moonSign: calculateMoonSign(sunIdx, day),
       planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year),
     };
-  }, [month, day, solarHourNorm, year]);
+  })();
 
   const lifePath = useMemo(() => {
     return calculateLifePathNumber(day, month, year);
@@ -125,7 +125,7 @@ export function NatalChartCalculator() {
   };
 
   // Compute exact celestial angles for planets (0° - 360°)
-  const planetPositions = useMemo(() => {
+  const planetPositions = (() => {
     return planetaryPlacements.map((p) => {
       // Find sign index
       const sIdx = ZODIAC_SIGNS.findIndex((s) => s.name === p.sign);
@@ -155,10 +155,10 @@ export function NatalChartCalculator() {
         totalDeg: signDeg
       };
     });
-  }, [planetaryPlacements, risingSignIndex]);
+  })();
 
   // Compute Major Aspects between Planets
-  const aspects = useMemo<AspectInfo[]>(() => {
+  const aspects = ((): AspectInfo[] => {
     const list: AspectInfo[] = [];
     const aspectTypes = [
       { type: 'conjunction' as const, name: 'Kavuşum (0°)', target: 0, orb: 8, color: '#00d4ff', interp: 'Enerjilerin yoğunlaşması ve odaklı birlik' },
@@ -200,7 +200,7 @@ export function NatalChartCalculator() {
       }
     }
     return list;
-  }, [planetPositions]);
+  })();
 
   return (
     <div id="dogum-haritasi" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">

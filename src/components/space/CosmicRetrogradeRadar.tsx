@@ -11,7 +11,7 @@ import {
   PlanetGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { Ticks } from '@/components/motion/primitives';
-import { ShieldAlert, Compass, CheckCircle2, XCircle, Clock, Calendar } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 export function CosmicRetrogradeRadar() {
   const [selectedRetroId, setSelectedRetroId] = useState<string>(PLANETARY_RETROGRADES[2].id); // Mercury Autumn 2026 default

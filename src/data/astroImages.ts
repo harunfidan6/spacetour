@@ -10,75 +10,75 @@ export interface AstroImage {
 
 export const ASTRO_IMAGES = {
   m31: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Andromeda_Galaxy_560mm_FL.jpg/1280px-Andromeda_Galaxy_560mm_FL.jpg',
+    src: '/images/space/andromeda-galaxy-560mm-fl-3885b3.jpg',
     credit: 'David (Deddy) Dayag · CC BY-SA 4.0',
   },
   m42: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg/1280px-Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg',
+    src: '/images/space/orion-nebula-hubble-2006-mosaic-18000-cb452b.jpg',
     credit: 'NASA, ESA, M. Robberto (STScI/ESA), Hubble Orion Treasury Team',
   },
   m45: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Pleiades_large.jpg/1280px-Pleiades_large.jpg',
+    src: '/images/space/pleiades-large-0942fb.jpg',
     credit: 'NASA, ESA, AURA/Caltech, Palomar Gözlemevi',
   },
   m13: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Messier_13_Hubble_WikiSky.jpg/1280px-Messier_13_Hubble_WikiSky.jpg',
+    src: '/images/space/messier-13-hubble-wikisky-64f677.jpg',
     credit: 'NASA, STScI, WikiSky',
   },
   m51: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Messier51_sRGB.jpg/1280px-Messier51_sRGB.jpg',
+    src: '/images/space/messier51-srgb-5eaed2.jpg',
     credit: 'NASA, ESA, S. Beckwith (STScI), Hubble Heritage Team',
   },
   m57: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Hubble_image_of_the_Ring_Nebula_%28Messier_57%29.jpg/1280px-Hubble_image_of_the_Ring_Nebula_%28Messier_57%29.jpg',
+    src: '/images/space/hubble-image-of-the-ring-nebula-messier-57-fa7adc.jpg',
     credit: 'NASA, ESA, C. R. O’Dell (Vanderbilt Üniversitesi)',
   },
   m1: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Crab_Nebula.jpg/1280px-Crab_Nebula.jpg',
+    src: '/images/space/crab-nebula-bf6d6a.jpg',
     credit: 'NASA, ESA, J. Hester, A. Loll (Arizona State Üniversitesi)',
   },
   crabInfrared: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Crab_Nebula_%28MIRI_and_NIRCam_image%29_%28weic2417a%29.jpg/1280px-Crab_Nebula_%28MIRI_and_NIRCam_image%29_%28weic2417a%29.jpg',
+    src: '/images/space/crab-nebula-miri-and-nircam-image-weic2417a-d51f45.jpg',
     credit: 'NASA, ESA, CSA, STScI, T. Temim · CC BY 4.0',
   },
   crabXray: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Chandra_X-ray_Images_of_Crab_Nebula_%282009-crab-more-1_-_crab_xray%29.jpg',
+    src: '/images/space/chandra-x-ray-images-of-crab-nebula-2009-crab-more-1-crab-xr-b3708e.jpg',
     credit: 'NASA/CXC/SAO/F. Seward',
   },
   crabRadio: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/VLA_Radio_Image_of_the_Crab_Nebula_%28M1-Comparison-Radio-NRAO-2001-cc%29.jpg/1280px-VLA_Radio_Image_of_the_Crab_Nebula_%28M1-Comparison-Radio-NRAO-2001-cc%29.jpg',
+    src: '/images/space/vla-radio-image-of-the-crab-nebula-m1-comparison-radio-nrao--03b656.jpg',
     credit: 'NRAO/AUI, M. Bietenholz · CC BY 4.0',
   },
   m31Infrared: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/The_Infrared_Face_of_the_Andromeda_Galaxy_%28PIA26276%29.jpg/1280px-The_Infrared_Face_of_the_Andromeda_Galaxy_%28PIA26276%29.jpg',
+    src: '/images/space/the-infrared-face-of-the-andromeda-galaxy-pia26276-8d528b.jpg',
     credit: 'NASA/JPL-Caltech',
   },
   m31Xray: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/5/59/Chandra_X-ray_Image_of_Andromeda_Galaxy_%28M31%29_%282007-m31-more-1_-%29.jpg',
+    src: '/images/space/chandra-x-ray-image-of-andromeda-galaxy-m31-2007-m31-more-1-f487a3.jpg',
     credit: 'NASA/CXC/MPE/W. Pietsch ve ark.',
   },
   m31Radio: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Infrared-Radio_Image_of_the_Andromeda_Galaxy_%28M31%29_%282022-027%29.png/1280px-Infrared-Radio_Image_of_the_Andromeda_Galaxy_%28M31%29_%282022-027%29.png',
+    src: '/images/space/infrared-radio-image-of-the-andromeda-galaxy-m31-2022-027-70560a.jpg',
     credit: 'ESA, NASA/JPL-Caltech, C. Clark (STScI), R. Braun, C. Nieten, M. Smith',
   },
   jwst: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/James_Webb_Space_Telescope_Mirror_Seen_in_Full_Bloom_%2833433274343%29.jpg/1280px-James_Webb_Space_Telescope_Mirror_Seen_in_Full_Bloom_%2833433274343%29.jpg',
+    src: '/images/space/james-webb-space-telescope-mirror-seen-in-full-bloom-3343327-520afa.jpg',
     credit: 'NASA/Chris Gunn',
   },
   elt: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Outlines_of_the_ELT_on_Cerro_Armazones_%28armazones_2022_1%29.jpg/1280px-Outlines_of_the_ELT_on_Cerro_Armazones_%28armazones_2022_1%29.jpg',
+    src: '/images/space/outlines-of-the-elt-on-cerro-armazones-armazones-2022-1-672c19.jpg',
     credit: 'G. Hüdepohl (atacamaphoto.com)/ESO · CC BY 4.0',
   },
   alma: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/ALMA_antennas_on_Chajnantor.jpg/1280px-ALMA_antennas_on_Chajnantor.jpg',
+    src: '/images/space/alma-antennas-on-chajnantor-c0b13a.jpg',
     credit: 'ESO/B. Tafreshi (twanight.org) · CC BY 4.0',
   },
   hubble: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/View_of_Hubble_after_Being_Released_from_the_Shuttle_Atlantis_%2828223588012%29.jpg/1280px-View_of_Hubble_after_Being_Released_from_the_Shuttle_Atlantis_%2828223588012%29.jpg',
+    src: '/images/space/view-of-hubble-after-being-released-from-the-shuttle-atlanti-b09060.jpg',
     credit: 'NASA',
   },
   tug: {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/TUG_full_site.jpg/1280px-TUG_full_site.jpg',
+    src: '/images/space/tug-full-site-130fed.jpg',
     credit: 'Azizkayihan · CC BY-SA 4.0',
   },
 } satisfies Record<string, AstroImage>;

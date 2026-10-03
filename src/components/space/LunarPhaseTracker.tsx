@@ -10,11 +10,10 @@ import {
 } from '@/data/lunarPhases';
 import {
   MoonPhaseVectorGlyph,
-  ZodiacGlyph,
-  PlanetGlyph
+  ZodiacGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { Ticks } from '@/components/motion/primitives';
-import { ShieldAlert, Compass, Sparkles, Moon, Clock, HeartHandshake } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 
 export function LunarPhaseTracker() {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>('full-moon');
@@ -206,7 +205,7 @@ export function LunarPhaseTracker() {
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setActiveTab(t.id as any)}
+                onClick={() => setActiveTab(t.id as typeof activeTab)}
                 className={`label px-3 py-1.5 rounded-full border transition-colors cursor-pointer text-xs ${
                   activeTab === t.id
                     ? 'border-gold bg-gold text-ink font-bold'

@@ -6,16 +6,11 @@ import {
   Heart,
   Briefcase,
   Zap,
-  Flame,
-  Globe2,
-  Wind,
-  Droplets,
   Calendar,
   AlertTriangle,
   Clock,
   Gem,
-  Award,
-  ArrowRight
+  Award
 } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import {
@@ -27,7 +22,7 @@ import {
   AirElementGlyph,
   WaterElementGlyph
 } from '@/components/ui/CosmicGlyphs';
-import { ZODIAC_SIGNS, type ZodiacSign, type ZodiacElement } from '@/data/zodiac';
+import { ZODIAC_SIGNS, type ZodiacElement } from '@/data/zodiac';
 
 export function DailyHoroscopeDeck() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
