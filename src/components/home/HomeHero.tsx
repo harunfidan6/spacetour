@@ -122,7 +122,7 @@ export function HomeHero() {
         <div data-hero-title>
           <h1 className="doc-title text-[clamp(3.6rem,12vw,12.5rem)] text-paper">
             <SplitReveal as="span" className="block pt-[0.08em]" trigger="intro" effect="rise">
-              Evren
+              EVREN
             </SplitReveal>
             <SplitReveal as="span" className="doc-serif block lowercase text-gold" trigger="intro" effect="rise" delay={0.12}>
               hiç durmaz.
