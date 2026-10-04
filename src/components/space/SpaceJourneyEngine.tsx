@@ -556,8 +556,8 @@ function Saturn() {
       uniforms: {
         planetMap: { value: textures.planet },
         sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
-        ringInner: { value: 3.1 },
-        ringOuter: { value: 7.2 },
+        ringInner: { value: 2.75 },
+        ringOuter: { value: 6.8 },
       },
       vertexShader: SaturnGlobeShader.vertexShader,
       fragmentShader: SaturnGlobeShader.fragmentShader,
@@ -570,6 +570,8 @@ function Saturn() {
         ringMap: { value: textures.ring },
         sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
         saturnRadius: { value: 2.5 },
+        ringInner: { value: 2.75 },
+        ringOuter: { value: 6.8 },
       },
       vertexShader: SaturnRingShader.vertexShader,
       fragmentShader: SaturnRingShader.fragmentShader,
@@ -619,22 +621,13 @@ function Saturn() {
         />
       </mesh>
 
-      {/* 3. The Rings - 128 Radial Segments with Analytical Globe Shadow */}
+      {/* 3. The Rings - 160 Concentric Segments with Exact Analytical Globe Shadow */}
       <mesh
         ref={ringRef}
         rotation={[-Math.PI / 2, 0, 0]}
-        material={textures.ring ? saturnRingMaterial : undefined}
+        material={saturnRingMaterial}
       >
-        <ringGeometry args={[3.1, 7.2, 128]} />
-        {!textures.ring && (
-          <meshStandardMaterial
-            color="#c7b48a"
-            side={THREE.DoubleSide}
-            transparent
-            opacity={0.92}
-            roughness={0.35}
-          />
-        )}
+        <ringGeometry args={[2.75, 6.8, 160]} />
       </mesh>
     </group>
   );
@@ -649,9 +642,10 @@ function BlackHole() {
   const diskShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
-        time: { value: 0 },
-        innerRadius: { value: 3.2 },
-        outerRadius: { value: 9.5 },
+        uTime: { value: 0 },
+        uDoppler: { value: 0.85 },
+        innerRadius: { value: 3.4 },
+        outerRadius: { value: 9.8 },
       },
       vertexShader: AccretionDiskShader.vertexShader,
       fragmentShader: AccretionDiskShader.fragmentShader,
@@ -662,9 +656,9 @@ function BlackHole() {
   }, []);
 
   useFrame((_, delta) => {
-    diskShaderMaterial.uniforms.time.value += delta;
-    if (diskRef.current) diskRef.current.rotation.z += delta * 0.5;
-    if (lensRef.current) lensRef.current.rotation.z -= delta * 0.3;
+    diskShaderMaterial.uniforms.uTime.value += delta;
+    if (diskRef.current) diskRef.current.rotation.z += delta * 0.4;
+    if (lensRef.current) lensRef.current.rotation.z -= delta * 0.25;
   });
 
   return (
@@ -689,12 +683,12 @@ function BlackHole() {
 
       {/* 3. Relativistic Accretion Disk */}
       <mesh ref={diskRef} rotation={[-Math.PI / 2, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.45, 10.2, 128]} />
+        <ringGeometry args={[3.4, 9.8, 160]} />
       </mesh>
 
       {/* 4. Gravitational Lensing Vertical Arch */}
       <mesh ref={lensRef} rotation={[0, 0, 0]} material={diskShaderMaterial}>
-        <ringGeometry args={[3.55, 7.6, 128]} />
+        <ringGeometry args={[3.4, 7.8, 160]} />
       </mesh>
     </group>
   );

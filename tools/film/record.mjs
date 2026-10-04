@@ -32,6 +32,8 @@ const SCENES = {
     dur: 30, out: 'spacetour-tanitim',
     veri: { 'https://api.wheretheiss.at/v1/satellites/25544': 'iss.json' },
   },
+  // Yalnızca astroloji bölümü
+  astroloji: { dur: 30, out: 'spacetour-astroloji', veri: {} },
 };
 const SCENE = process.argv[3] || 'tanitim', SC = SCENES[SCENE];
 if (!SC) throw new Error(`Bilinmeyen senaryo: ${SCENE} (${Object.keys(SCENES).join(', ')})`);

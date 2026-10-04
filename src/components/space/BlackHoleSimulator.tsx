@@ -59,54 +59,71 @@ function BlackHole3DMesh({
     return [pos];
   }, []);
 
-  // GLSL Shader Material for Relativistic Accretion Disk with Doppler Beaming
+  // Relativistic Accretion Disk Shader Material (Seamless Continuous Local Polar Geometry)
   const accretionMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uTexture: { value: diskTexture },
         uDoppler: { value: 0.85 },
+        uInnerRadius: { value: 2.15 },
+        uOuterRadius: { value: 7.6 },
       },
       vertexShader: `
-        varying vec2 vUv;
+        varying vec3 vLocalPos;
         varying vec3 vWorldPosition;
         void main() {
-          vUv = uv;
+          vLocalPos = position;
           vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
         uniform float uTime;
-        uniform sampler2D uTexture;
         uniform float uDoppler;
-        varying vec2 vUv;
+        uniform float uInnerRadius;
+        uniform float uOuterRadius;
+        varying vec3 vLocalPos;
         varying vec3 vWorldPosition;
 
         void main() {
-          vec2 center = vec2(0.5, 0.5);
-          vec2 d = vUv - center;
-          float r = length(d);
-          float angle = atan(d.y, d.x);
+          float r = length(vLocalPos.xy);
+          float norm = clamp((r - uInnerRadius) / (uOuterRadius - uInnerRadius), 0.0, 1.0);
 
-          // Relativistic differential rotation: inner disk spins faster
-          float spin = angle + (uTime * 0.45) / max(r * 2.0, 0.4);
-          vec2 uvSample = center + vec2(cos(spin), sin(spin)) * r;
+          // Continuous angle in [-PI, PI] (ZERO seam discontinuity!)
+          float angle = atan(vLocalPos.y, vLocalPos.x);
 
-          vec4 base = texture2D(uTexture, uvSample);
+          // Relativistic Keplerian differential rotation (omega ~ r^-1.4)
+          float omega = (uTime * 2.2) / pow(max(r, 1.2), 1.25);
+          float spinAngle = angle - omega;
 
-          // Doppler Beaming: Approaching side (left) is brighter and blue-shifted
-          float doppler = clamp(sin(angle) * uDoppler + 1.0, 0.3, 2.2);
+          // Multi-frequency plasma filaments
+          float wave1 = sin(spinAngle * 8.0 + r * 3.8);
+          float wave2 = sin(spinAngle * 14.0 - r * 5.2 + uTime * 1.1);
+          float wave3 = cos(spinAngle * 24.0 + r * 8.0);
+          float plasma = 0.68 + 0.18 * wave1 + 0.10 * wave2 + 0.04 * wave3;
 
-          // Spectral shift: blue-shift approaching, red-shift receding
-          vec3 blueShift = vec3(0.9, 1.15, 1.4);
-          vec3 redShift = vec3(1.3, 0.8, 0.45);
-          vec3 shift = mix(redShift, blueShift, clamp(sin(angle) * 0.5 + 0.5, 0.0, 1.0));
+          // Relativistic Doppler beaming: approaching side (x < 0) boosted
+          float approach = -sin(angle);
+          float dopplerFactor = clamp(1.0 + approach * uDoppler * 0.85, 0.22, 2.7);
 
-          vec3 color = base.rgb * doppler * shift;
-          float alpha = base.a * smoothstep(0.12, 0.22, r) * (1.0 - smoothstep(0.46, 0.5, r));
+          // Relativistic temperature / color ramp:
+          // Inner: Ultra-hot white-blue (25,000K) -> Radiant gold -> Amber -> Deep crimson
+          vec3 colCore = vec3(1.0, 0.98, 0.92);
+          vec3 colMid = vec3(1.0, 0.68, 0.18);
+          vec3 colOuter = vec3(0.85, 0.22, 0.04);
+          vec3 colSmoke = vec3(0.25, 0.04, 0.01);
 
-          gl_FragColor = vec4(color, alpha * 0.95);
+          vec3 col = mix(colCore, colMid, smoothstep(0.0, 0.35, norm));
+          col = mix(col, colOuter, smoothstep(0.35, 0.85, norm));
+          col = mix(col, colSmoke, smoothstep(0.85, 1.0, norm));
+
+          // Spectral shift
+          vec3 dopplerCol = mix(vec3(0.8, 0.95, 1.25), vec3(1.2, 0.75, 0.4), clamp(-approach * 0.5 + 0.5, 0.0, 1.0));
+          col *= plasma * dopplerFactor * dopplerCol;
+
+          // Smooth inner rim & outer smoke falloff
+          float alpha = smoothstep(0.0, 0.06, norm) * (1.0 - smoothstep(0.80, 1.0, norm));
+          gl_FragColor = vec4(col * 1.35, alpha * 0.95);
         }
       `,
       side: THREE.DoubleSide,
@@ -114,51 +131,66 @@ function BlackHole3DMesh({
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
-  }, [diskTexture]);
+  }, []);
 
-  // GLSL Shader Material for Gravitational Lensing Halo (Far side Einstein bending)
+  // Einstein Gravitational Lensing Arch Shader Material (Bent Light from the Far Side of Disk)
   const lensHaloMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uTexture: { value: lensTexture },
+        uInnerRadius: { value: 1.86 },
+        uOuterRadius: { value: 4.8 },
       },
       vertexShader: `
-        varying vec2 vUv;
+        varying vec3 vLocalPos;
         void main() {
-          vUv = uv;
+          vLocalPos = position;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
         uniform float uTime;
-        uniform sampler2D uTexture;
-        varying vec2 vUv;
+        uniform float uInnerRadius;
+        uniform float uOuterRadius;
+        varying vec3 vLocalPos;
 
         void main() {
-          vec2 center = vec2(0.5, 0.5);
-          vec2 d = vUv - center;
-          float r = length(d);
-          float angle = atan(d.y, d.x);
+          float r = length(vLocalPos.xy);
+          float norm = clamp((r - uInnerRadius) / (uOuterRadius - uInnerRadius), 0.0, 1.0);
+          float angle = atan(vLocalPos.y, vLocalPos.x);
 
-          float spin = angle + uTime * 0.3;
-          vec2 uvSample = center + vec2(cos(spin), sin(spin)) * r;
-          vec4 base = texture2D(uTexture, uvSample);
+          // Gravitational lensing arches concentrate light above and below the horizon (Y axis)
+          float archIntensity = pow(abs(sin(angle)), 1.35);
+          float horizontalMask = smoothstep(0.12, 0.52, abs(sin(angle)));
 
-          // Gravitational lensing upper and lower arches
-          float arch = abs(sin(angle));
-          float intensity = smoothstep(0.18, 0.28, r) * (1.0 - smoothstep(0.42, 0.5, r)) * arch;
+          // Swirling plasma along the bent arch
+          float omega = (uTime * 1.4) / pow(max(r, 1.2), 1.2);
+          float wave = sin((angle - omega) * 9.0 + r * 4.2);
+          float plasma = 0.74 + 0.26 * wave;
 
-          gl_FragColor = vec4(base.rgb * 1.4, base.a * intensity * 0.45);
+          // Doppler asymmetry
+          float approach = -cos(angle);
+          float doppler = clamp(1.0 + approach * 0.55, 0.35, 1.8);
+
+          vec3 colCore = vec3(1.0, 0.96, 0.90);
+          vec3 colMid = vec3(1.0, 0.66, 0.16);
+          vec3 colOuter = vec3(0.78, 0.18, 0.03);
+
+          vec3 col = mix(colCore, colMid, smoothstep(0.0, 0.38, norm));
+          col = mix(col, colOuter, smoothstep(0.38, 1.0, norm));
+          col *= plasma * doppler * 1.45;
+
+          // Soft smooth falloffs
+          float alpha = smoothstep(0.0, 0.05, norm) * (1.0 - smoothstep(0.72, 1.0, norm)) * horizontalMask;
+          gl_FragColor = vec4(col, alpha * 0.88);
         }
       `,
       side: THREE.DoubleSide,
       transparent: true,
       depthWrite: false,
-      depthTest: false,
       blending: THREE.AdditiveBlending,
     });
-  }, [lensTexture]);
+  }, []);
 
   const lensRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
@@ -166,15 +198,15 @@ function BlackHole3DMesh({
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
     if (isAccretionRotating) {
-      const dMat = diskRef.current?.material as THREE.ShaderMaterial | undefined;
-      if (dMat?.uniforms?.uTime) dMat.uniforms.uTime.value += dt;
-      const lMat = lensRef.current?.material as THREE.ShaderMaterial | undefined;
-      if (lMat?.uniforms?.uTime) lMat.uniforms.uTime.value += dt;
+      if (accretionMaterial.uniforms.uTime) accretionMaterial.uniforms.uTime.value += dt;
+      if (lensHaloMaterial.uniforms.uTime) lensHaloMaterial.uniforms.uTime.value += dt;
     }
-    // The photon ring and the lensed image of the far side of the disk always face the
-    // observer: they are images formed by bent light, not objects lying in a plane.
-    for (const m of [photonRingRef.current, lensRef.current]) {
-      if (m) m.quaternion.copy(camera.quaternion);
+    // Lensed arch and photon sphere softly orient towards camera
+    if (lensRef.current) {
+      lensRef.current.quaternion.copy(camera.quaternion);
+    }
+    if (photonRingRef.current) {
+      photonRingRef.current.quaternion.copy(camera.quaternion);
     }
     if (jetsRef.current) {
       // particles stream outward along the poles and recycle
@@ -197,27 +229,27 @@ function BlackHole3DMesh({
         <meshBasicMaterial color="#000000" />
       </mesh>
 
-      {/* 2. Photon Sphere / Einstein Lensing Shadow Ring */}
+      {/* 2. Razor-Sharp Photon Sphere Glow Ring */}
       <mesh ref={photonRingRef}>
-        <ringGeometry args={[1.84, 2.0, 128]} />
+        <ringGeometry args={[1.82, 1.96, 160]} />
         <meshBasicMaterial
-          color="#ffd9a8"
+          color="#ffebc6"
           side={THREE.DoubleSide}
           transparent
-          opacity={0.7}
+          opacity={0.88}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* 3. Swirling Relativistic Accretion Disk (Gargantua Style with Doppler Beaming Shader) */}
+      {/* 3. Swirling Relativistic Equatorial Accretion Disk */}
       <mesh ref={diskRef} rotation={[-Math.PI / 2.3, 0, 0]} material={accretionMaterial}>
-        <ringGeometry args={[2.4, 7.5, 96]} />
+        <ringGeometry args={[2.15, 7.6, 160]} />
       </mesh>
 
-      {/* Lensed image of the disk's far side (Einstein Gravitational Lensing Halo Shader), always facing the observer */}
+      {/* 4. Gravitational Lensing Einstein Arch (Bent Light over and under the Horizon) */}
       <mesh ref={lensRef} renderOrder={2} material={lensHaloMaterial}>
-        <ringGeometry args={[2.2, 4.2, 128]} />
+        <ringGeometry args={[1.86, 4.8, 160]} />
       </mesh>
 
       {/* 4. Relativistic Jets */}

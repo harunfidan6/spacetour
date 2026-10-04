@@ -188,6 +188,33 @@ function HologramMesh({
     );
   }
 
+  // Concentric Radial Ring Geometries (remaps UVs so textures wrap around circularly)
+  const saturnRingGeometry = useMemo(() => {
+    const inner = 2.22;
+    const outer = 5.2;
+    const g = new THREE.RingGeometry(inner, outer, 128);
+    const pos = g.attributes.position;
+    const uv = g.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const r = Math.hypot(pos.getX(i), pos.getY(i));
+      uv.setXY(i, (r - inner) / (outer - inner), 0.5);
+    }
+    return g;
+  }, []);
+
+  const uranusRingGeometry = useMemo(() => {
+    const inner = 2.45;
+    const outer = 3.6;
+    const g = new THREE.RingGeometry(inner, outer, 96);
+    const pos = g.attributes.position;
+    const uv = g.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const r = Math.hypot(pos.getX(i), pos.getY(i));
+      uv.setXY(i, (r - inner) / (outer - inner), 0.5);
+    }
+    return g;
+  }, []);
+
   // 3. SATURN
   if (id === 'saturn') {
     return (
@@ -200,8 +227,7 @@ function HologramMesh({
             wireframe={isWireframe}
           />
         </mesh>
-        <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[2.6, 5.2, 64]} />
+        <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]} geometry={saturnRingGeometry}>
           <meshStandardMaterial
             map={ringTexture || undefined}
             side={THREE.DoubleSide}
@@ -227,8 +253,7 @@ function HologramMesh({
           />
         </mesh>
         {ringTexture && (
-          <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[2.5, 3.6, 64]} />
+          <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]} geometry={uranusRingGeometry}>
             <meshStandardMaterial
               map={ringTexture}
               side={THREE.DoubleSide}

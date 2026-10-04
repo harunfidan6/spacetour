@@ -1,0 +1,68 @@
+/* SpaceTour TR tanıtım filmi · çekim sayfası. Yazı tipleri ve .doc-* sınıfları sitenin kendi CSS'inden gelir (senaryo.js ekler). */
+html, body { margin: 0; padding: 0; background: #050508; overflow: hidden; }
+body.fmt-v { --W: 540px; --H: 960px; --g: 30px; }
+body.fmt-h { --W: 960px; --H: 540px; --g: 44px; }
+
+#stage { position: relative; width: var(--W); height: var(--H); overflow: hidden; background: #050508; color: #f4f3ee; isolation: isolate; }
+
+/* Sahneler: gerçek site, üst üste; yalnızca etkin olan görünür */
+#frames { position: absolute; inset: 0; }
+#frames iframe { position: absolute; left: 0; top: 0; border: 0; opacity: 0; transform-origin: 0 0; background: #050508; }
+/* Yatay: site ortada küçük bir pencerede, yazı pencerenin altında (siteyle üst üste binmez) */
+body.fmt-h #frames { background: radial-gradient(ellipse 70% 60% at 50% 42%, rgb(245 197 66 / 0.07), transparent 70%), #050508; }
+body.fmt-h #frames iframe { transform: translate(96px, 26px) scale(0.6); border-radius: 22px;
+  box-shadow: 0 0 0 2px rgb(244 243 238 / 0.1), 0 40px 120px rgb(0 0 0 / 0.7); }
+
+/* Bölüm yazıları: altta ortada tek satır; büyük harfli kelime + renkli italik serif */
+#shade { position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  background: linear-gradient(to top, rgb(5 5 8 / 0.97) 0%, rgb(5 5 8 / 0.9) 22%, rgb(5 5 8 / 0.4) 34%, rgb(5 5 8 / 0) 46%); }
+#caps { position: absolute; inset: 0; pointer-events: none; }
+.cap { position: absolute; left: var(--g); right: var(--g); bottom: 8%; display: flex; justify-content: center; align-items: baseline; gap: 0.3em;
+  font-size: 44px; line-height: 1.1; white-space: nowrap; color: #f4f3ee; }
+.cap .c-serif { color: var(--acc); font-size: 1.15em; }
+body.fmt-h #shade { display: none; }
+body.fmt-h .cap { bottom: 22px; font-size: 34px; }
+
+/* Kartlar (açılış ve kapanış) */
+.card { position: absolute; inset: 0; background: #050508; opacity: 0; visibility: hidden; overflow: hidden; }
+.card .stars { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fx-grain { position: absolute; inset: -100%; opacity: 0.08; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 0.9s steps(6) infinite; }
+@keyframes grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-6%, 4%); } 40% { transform: translate(5%, -7%); } 60% { transform: translate(-3%, 9%); } 80% { transform: translate(8%, 2%); } 100% { transform: translate(0, 0); } }
+
+#slate .s-copy { position: absolute; left: var(--g); right: var(--g); text-align: center; }
+body.fmt-v #slate .s-copy { top: 41%; }
+body.fmt-h #slate .s-copy { top: 38%; }
+#slate .s-kick { margin: 0; font-size: 12px; letter-spacing: 0.4em; padding-left: 0.4em; color: #f5c542; }
+#slate .s-line { margin: 22px 0 0; font-size: 52px; line-height: 1.02; color: #f4f3ee; overflow: hidden; padding-bottom: 0.08em; }
+body.fmt-h #slate .s-line { font-size: 58px; }
+#slate .s-line .ch { display: inline-block; }
+
+#end .e-glow { position: absolute; left: 50%; top: 40%; width: 140%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgb(245 158 11 / 0.16), rgb(245 158 11 / 0.05) 45%, transparent 70%); }
+body.fmt-h #end .e-glow { width: 90%; top: 44%; }
+#end .e-copy { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+body.fmt-v #end .e-copy { top: 27%; }
+body.fmt-h #end .e-copy { top: 15%; }
+#end .e-logo { width: 150px; height: 150px; overflow: visible; }
+body.fmt-h #end .e-logo { width: 104px; height: 104px; }
+#end .e-word { margin-top: 30px; font-family: var(--font-display), sans-serif; font-weight: 800; font-stretch: 118%; letter-spacing: -0.035em; font-size: 64px; line-height: 1; }
+body.fmt-h #end .e-word { margin-top: 20px; font-size: 50px; }
+#end .e-word span { color: #f5c542; }
+#end .ch { display: inline-block; }
+#end .e-slogan { margin-top: 28px; font-size: 34px; display: flex; gap: 0.28em; align-items: baseline; }
+body.fmt-h #end .e-slogan { margin-top: 20px; font-size: 28px; }
+#end .e-slogan .w2 { color: #f5c542; font-size: 1.12em; }
+#end .e-url { margin-top: 30px; display: flex; align-items: center; gap: 16px; }
+body.fmt-h #end .e-url { margin-top: 24px; }
+#end .e-url .u-text { font-size: 17px; letter-spacing: 0.3em; color: #f4f3ee; }
+body.fmt-h #end .e-url .u-text { font-size: 15px; }
+#end .u-rule { display: block; width: 48px; height: 1px; background: #f5c542; }
+#end .e-credit { position: absolute; left: var(--g); right: var(--g); bottom: 26px; margin: 0; text-align: center; font-size: 8.5px; line-height: 1.6; letter-spacing: 0.1em; color: rgb(244 243 238 / 0.42); }
+body.fmt-v #end .e-credit { bottom: 34px; }
+
+/* Geçişler */
+#flash { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: radial-gradient(circle at 62% 44%, #fff8ea 0%, #ffd9a0 40%, #f59e0b 100%); }
+#dip { position: absolute; inset: 0; background: #050508; opacity: 0; pointer-events: none; }
+

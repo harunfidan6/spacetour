@@ -89,48 +89,68 @@ export const AtmosphereShader = {
 // -------------------------------------------------------------
 export const AccretionDiskShader = {
   uniforms: {
-    time: { value: 0 },
-    innerRadius: { value: 3.2 },
-    outerRadius: { value: 9.5 },
+    uTime: { value: 0 },
+    uDoppler: { value: 0.85 },
+    innerRadius: { value: 2.2 },
+    outerRadius: { value: 7.8 },
   },
   vertexShader: `
-    varying vec2 vUv;
-    varying vec3 vPosition;
+    varying vec3 vLocalPos;
+    varying vec3 vWorldPos;
     void main() {
-      vUv = uv;
-      vPosition = position;
+      vLocalPos = position;
+      vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
   fragmentShader: `
-    uniform float time;
-    varying vec2 vUv;
-    varying vec3 vPosition;
+    uniform float uTime;
+    uniform float uDoppler;
+    uniform float innerRadius;
+    uniform float outerRadius;
+    varying vec3 vLocalPos;
+    varying vec3 vWorldPos;
+
     void main() {
-      // Distance from center
-      float r = length(vPosition.xy);
-      float norm = clamp((r - 3.2) / (9.5 - 3.2), 0.0, 1.0);
-      
-      // Relativistic Doppler beaming: approaching side (x < 0) is brighter and shifted blue-white
-      float doppler = 1.0 - 0.45 * (vPosition.x / r);
-      
-      // Multi-frequency spiral plasma temperature
-      float angle = atan(vPosition.y, vPosition.x);
-      float spiral = sin(angle * 8.0 - time * 3.0 + r * 2.0);
-      float turbulence = 0.8 + 0.2 * spiral;
-      
-      // Color ramp: Inner ultra-hot blue-white (15,000K) -> Mid golden-orange -> Outer deep crimson
-      vec3 colInner = vec3(1.0, 0.95, 0.85);
-      vec3 colMid = vec3(1.0, 0.6, 0.15);
-      vec3 colOuter = vec3(0.8, 0.15, 0.02);
-      
-      vec3 col = mix(colInner, colMid, smoothstep(0.0, 0.4, norm));
-      col = mix(col, colOuter, smoothstep(0.4, 1.0, norm));
-      col *= doppler * turbulence;
-      
-      // Soft alpha falloff at edges
-      float alpha = smoothstep(0.0, 0.1, norm) * (1.0 - smoothstep(0.85, 1.0, norm));
-      gl_FragColor = vec4(col, alpha * 0.92);
+      // Distance from singularity in local plane
+      float r = length(vLocalPos.xy);
+      float norm = clamp((r - innerRadius) / (outerRadius - innerRadius), 0.0, 1.0);
+
+      // Continuous polar angle in [-PI, PI] (zero seam discontinuity)
+      float angle = atan(vLocalPos.y, vLocalPos.x);
+
+      // Relativistic Keplerian differential rotation: inner orbits spin much faster (omega ~ r^-1.5)
+      float omega = (uTime * 2.2) / pow(max(r, 1.2), 1.25);
+      float spinAngle = angle - omega;
+
+      // Multi-frequency spiral turbulent plasma filaments
+      float wave1 = sin(spinAngle * 8.0 + r * 3.8);
+      float wave2 = sin(spinAngle * 14.0 - r * 5.5 + uTime * 1.1);
+      float wave3 = cos(spinAngle * 24.0 + r * 8.5);
+      float plasma = 0.68 + 0.18 * wave1 + 0.10 * wave2 + 0.04 * wave3;
+
+      // Relativistic Doppler beaming: approaching side (x < 0) boosted by aberration
+      float approach = -sin(angle);
+      float dopplerFactor = clamp(1.0 + approach * uDoppler * 0.85, 0.22, 2.7);
+
+      // Relativistic temperature / color ramp:
+      // Inner ISCO: Ultra-hot (25,000K) white-blue -> Radiant gold -> Amber -> Deep crimson
+      vec3 colCore = vec3(1.0, 0.98, 0.92);
+      vec3 colMid = vec3(1.0, 0.68, 0.18);
+      vec3 colOuter = vec3(0.85, 0.22, 0.04);
+      vec3 colSmoke = vec3(0.25, 0.04, 0.01);
+
+      vec3 col = mix(colCore, colMid, smoothstep(0.0, 0.35, norm));
+      col = mix(col, colOuter, smoothstep(0.35, 0.85, norm));
+      col = mix(col, colSmoke, smoothstep(0.85, 1.0, norm));
+
+      // Relativistic Doppler spectral shift
+      vec3 dopplerCol = mix(vec3(0.8, 0.95, 1.25), vec3(1.2, 0.75, 0.4), clamp(-approach * 0.5 + 0.5, 0.0, 1.0));
+      col *= plasma * dopplerFactor * dopplerCol;
+
+      // Razor-sharp inner edge at ISCO, smooth exponential smoke falloff at outer rim
+      float alpha = smoothstep(0.0, 0.06, norm) * (1.0 - smoothstep(0.82, 1.0, norm));
+      gl_FragColor = vec4(col * 1.35, alpha * 0.95);
     }
   `,
 };
@@ -207,8 +227,8 @@ export const SaturnGlobeShader = {
   uniforms: {
     planetMap: { value: null as THREE.Texture | null },
     sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
-    ringInner: { value: 3.1 },
-    ringOuter: { value: 7.2 },
+    ringInner: { value: 2.75 },
+    ringOuter: { value: 6.8 },
   },
   vertexShader: `
     varying vec2 vUv;
@@ -234,43 +254,52 @@ export const SaturnGlobeShader = {
     void main() {
       vec3 norm = normalize(vNormal);
       vec3 sunDir = normalize(sunDirectionLocal);
-      float NdotL = max(0.06, dot(norm, sunDir));
+      float NdotL = max(0.08, dot(norm, sunDir));
 
-      // Raycast from globe surface towards Sun: intersects ring plane y=0?
+      // Raycast from globe surface towards Sun: does ray cross the equatorial ring plane y=0?
       float shadowFactor = 1.0;
-      if (abs(sunDir.y) > 0.0001) {
+      if (abs(sunDir.y) > 0.001) {
         float t = -vLocalPos.y / sunDir.y;
         if (t > 0.0) {
           vec3 hit = vLocalPos + t * sunDir;
           float r = length(hit.xz);
           if (r >= ringInner && r <= ringOuter) {
-            // Point is covered by the ring shadow!
-            shadowFactor = 0.20;
+            // Point is shaded by the rings!
+            // Cassini gap at norm ~0.60 lets light through!
+            float normR = (r - ringInner) / (ringOuter - ringInner);
+            if (normR > 0.58 && normR < 0.63) {
+              shadowFactor = 0.85; // Cassini division lets sunlight leak through
+            } else {
+              shadowFactor = 0.22; // Dense rings cast prominent shadow
+            }
           }
         }
       }
 
       vec4 tex = texture2D(planetMap, vUv);
-      gl_FragColor = vec4(tex.rgb * NdotL * shadowFactor, 1.0);
+      vec3 globeColor = tex.a > 0.0 ? tex.rgb : vec3(0.91, 0.83, 0.67);
+      gl_FragColor = vec4(globeColor * NdotL * shadowFactor, 1.0);
     }
   `,
 };
 
 // -------------------------------------------------------------
-// SATURN RING WITH ANALYTICAL GLOBE SHADOW PROJECTION
+// SATURN RING WITH CONCENTRIC RADIAL MAPPING & ANALYTICAL GLOBE SHADOW
 // -------------------------------------------------------------
 export const SaturnRingShader = {
   uniforms: {
     ringMap: { value: null as THREE.Texture | null },
     sunDirectionLocal: { value: new THREE.Vector3(-0.95, 0.18, 0.25) },
     saturnRadius: { value: 2.5 },
+    ringInner: { value: 2.75 },
+    ringOuter: { value: 6.8 },
   },
   vertexShader: `
-    varying vec2 vUv;
     varying vec3 vLocalPos;
+    varying float vRadius;
     void main() {
-      vUv = uv;
       vLocalPos = position;
+      vRadius = length(position.xy);
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
@@ -278,30 +307,74 @@ export const SaturnRingShader = {
     uniform sampler2D ringMap;
     uniform vec3 sunDirectionLocal;
     uniform float saturnRadius;
+    uniform float ringInner;
+    uniform float ringOuter;
 
-    varying vec2 vUv;
     varying vec3 vLocalPos;
+    varying float vRadius;
 
     void main() {
+      // 1. Concentric Radial Distance (100% circular, NO diagonal stripes!)
+      float norm = clamp((vRadius - ringInner) / (ringOuter - ringInner), 0.0, 1.0);
+
+      // 2. Sample Texture Radially or Procedural High-Precision Cassini Profile
+      vec4 tex = texture2D(ringMap, vec2(norm, 0.5));
+      
+      // Photorealistic Ring Bands Profile:
+      // C Ring (Crepe): 0.0 - 0.20
+      // B Ring (Dense & Bright): 0.20 - 0.58
+      // Cassini Division (Empty Gap): 0.58 - 0.63
+      // A Ring: 0.63 - 0.92 (Encke gap at 0.82)
+      // F Ring: 0.95 - 1.0
+      vec3 ringColor = vec3(0.88, 0.80, 0.65);
+      float ringAlpha = 0.85;
+
+      if (norm < 0.20) {
+        // C Ring
+        ringColor = vec3(0.55, 0.48, 0.38);
+        ringAlpha = smoothstep(0.0, 0.08, norm) * 0.45;
+      } else if (norm < 0.58) {
+        // B Ring (brightest, high albedo icy particles)
+        float fineBands = 0.92 + 0.08 * sin(norm * 180.0);
+        ringColor = vec3(0.95, 0.88, 0.72) * fineBands;
+        ringAlpha = 0.95;
+      } else if (norm < 0.63) {
+        // Cassini Division (dark prominent gap)
+        ringAlpha = 0.04;
+      } else if (norm < 0.92) {
+        // A Ring with Encke gap
+        float isEncke = (norm > 0.81 && norm < 0.835) ? 0.08 : 1.0;
+        float fineBands = 0.93 + 0.07 * sin(norm * 220.0);
+        ringColor = vec3(0.86, 0.78, 0.64) * fineBands;
+        ringAlpha = 0.78 * isEncke;
+      } else {
+        // Outer falloff to F ring
+        ringAlpha = (1.0 - smoothstep(0.92, 1.0, norm)) * 0.35;
+      }
+
+      // If texture loaded successfully with color, blend it
+      if (tex.a > 0.05 && (tex.r + tex.g + tex.b) > 0.1) {
+        ringColor = mix(ringColor, tex.rgb * 1.15, 0.6);
+        ringAlpha *= tex.a;
+      }
+
+      // 3. Exact Analytical Globe Shadow onto the Rings:
+      // Ring is in XZ plane of Saturn, local position (x, 0, -y)
+      vec3 posInSaturn = vec3(vLocalPos.x, 0.0, -vLocalPos.y);
       vec3 sunDir = normalize(sunDirectionLocal);
       
-      // Ring vertices lie in local XY, rotated by -90 deg into group XZ plane
-      vec3 posInGroup = vec3(vLocalPos.x, 0.0, vLocalPos.y);
-      float b = dot(posInGroup, sunDir);
-      float c = dot(posInGroup, posInGroup) - (saturnRadius * saturnRadius);
-      float disc = b * b - c;
-      
+      float t = -dot(posInSaturn, sunDir);
       float shadow = 1.0;
-      if (disc > 0.0) {
-        float t = -b - sqrt(disc);
-        if (t > 0.0) {
-          // Blocked by Saturn's spherical body!
-          shadow = 0.16;
+      if (t > 0.0) {
+        float d2 = dot(posInSaturn, posInSaturn) - t * t;
+        float rSat2 = saturnRadius * saturnRadius;
+        if (d2 < rSat2 * 1.05) {
+          // Penumbra smooth transition at shadow boundary
+          shadow = smoothstep(rSat2 * 0.92, rSat2 * 1.05, d2) * 0.84 + 0.16;
         }
       }
 
-      vec4 tex = texture2D(ringMap, vUv);
-      gl_FragColor = vec4(tex.rgb * shadow, tex.a * 0.94);
+      gl_FragColor = vec4(ringColor * shadow, ringAlpha);
     }
   `,
 };

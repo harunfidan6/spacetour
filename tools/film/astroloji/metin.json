@@ -1,0 +1,84 @@
+{
+  "_aciklama": "SpaceTour TR astroloji bölümü tanıtım filmi (30 sn) ekran yazıları. t: giriş saniyesi, sure: ekranda kalma süresi. Yazılar senaryo.js'te bu dosyadan okunur.",
+  "seslendirme": false,
+  "satirlar": [
+    {
+      "id": "00-acilis",
+      "t": 0.35,
+      "sure": 2.4,
+      "kunye": "Bölüm 04",
+      "kunye2": "Astroloji",
+      "metin": "Gökyüzünün kadim dili.",
+      "alt": "Gerçek gök konumlarıyla hesaplanır"
+    },
+    {
+      "id": "01-usturlap",
+      "t": 3.35,
+      "sure": 3.4,
+      "kunye": "Usturlap",
+      "kunye2": "12 burç",
+      "metin": "Zodyağı",
+      "serif": "çevir.",
+      "renk": "#f5c542"
+    },
+    {
+      "id": "02-dogum",
+      "t": 7.35,
+      "sure": 3.4,
+      "kunye": "Doğum haritası",
+      "kunye2": "Kişisel yorum",
+      "metin": "Haritan",
+      "serif": "sana özel.",
+      "renk": "#f5c542"
+    },
+    {
+      "id": "03-sinastri",
+      "t": 11.35,
+      "sure": 3.4,
+      "kunye": "Sinastri",
+      "kunye2": "İki doğum haritası",
+      "metin": "İki harita,",
+      "serif": "tek hikâye.",
+      "renk": "#f43f5e"
+    },
+    {
+      "id": "04-gunluk",
+      "t": 15.35,
+      "sure": 3.4,
+      "kunye": "Günlük burç",
+      "kunye2": "Ay'ın konumuyla",
+      "metin": "Gökyüzü",
+      "serif": "her gün yeni.",
+      "renk": "#38bdf8"
+    },
+    {
+      "id": "05-numeroloji",
+      "t": 19.35,
+      "sure": 3.4,
+      "kunye": "Numeroloji",
+      "kunye2": "Pisagor geleneği",
+      "metin": "Sayılar",
+      "serif": "konuşur.",
+      "renk": "#a78bfa"
+    },
+    {
+      "id": "06-burc",
+      "t": 23.6,
+      "sure": 2.2,
+      "kunye": "Burç dosyaları",
+      "kunye2": "Urania's Mirror · 1824",
+      "metin": "On iki",
+      "serif": "arketip.",
+      "renk": "#f5c542"
+    },
+    {
+      "id": "07-son",
+      "t": 26.9,
+      "sure": 3.1,
+      "metin": "Yıldızların",
+      "serif": "dili.",
+      "adres": "spacetour.com.tr/astroloji",
+      "kunye": "Görseller: Sidney Hall, Urania's Mirror (1824) ve Wikimedia Commons. Astroloji kültürel bir gelenek olarak sunulur."
+    }
+  ]
+}

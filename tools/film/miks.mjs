@@ -8,6 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { SR, bus, decode, writeWav } from './dsp.mjs';
 import { synthSfx } from './sfx.mjs';
 import { renderMusic } from './muzik.mjs';
+import { renderMusic as renderAstroloji } from './muzik-astroloji.mjs';
+
+// Senaryoya özel müzik; listede yoksa ana tanıtım müziği
+const MUSIC = { astroloji: renderAstroloji };
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -46,7 +50,7 @@ export function mixAudio({ scene, events, dur, meta = {}, out }) {
   const text = JSON.parse(fs.readFileSync(path.join(DIR, scene, 'metin.json'), 'utf8'));
   const withVo = text.seslendirme === true;
   const sfx = synthSfx(events, dur);
-  const mus = renderMusic(dur, meta);
+  const mus = (MUSIC[scene] || renderMusic)(dur, meta);
   const { b: vo, report } = withVo
     ? voiceBus(text.satirlar, path.join(ROOT, 'video', '_ses', scene), dur, tmpDir, text.ses_zinciri)
     : { b: bus(dur + 1), report: ['seslendirme kapalı: özgün müzik + efekt'] };

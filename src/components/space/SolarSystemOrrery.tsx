@@ -7,6 +7,19 @@ import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Orbit, Play, Pause, Eye } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { NASA_TEXTURES, loadNasaTexture } from './nasaTextures';
+import {
+  createSunTexture,
+  createMercuryTexture,
+  createVenusTexture,
+  createEarthTexture,
+  createMarsTexture,
+  createJupiterTexture,
+  createSaturnTexture,
+  createSaturnRingTexture,
+  createUranusTexture,
+  createNeptuneTexture
+} from './textures';
 
 interface OrreryPlanet {
   id: string;
@@ -150,12 +163,59 @@ function PlanetBody({
   // Keplerian angular speed (faster inside, slower outside)
   const angularSpeed = (2 * Math.PI) / (planet.orbitalPeriod * 24);
 
+  // Planet texture loading with guaranteed procedural fallback
+  const texture = useMemo(() => {
+    switch (planet.id) {
+      case 'mercury':
+        return loadNasaTexture(NASA_TEXTURES.mercury) || createMercuryTexture();
+      case 'venus':
+        return loadNasaTexture(NASA_TEXTURES.venus) || createVenusTexture();
+      case 'earth':
+        return loadNasaTexture(NASA_TEXTURES.earthMap) || createEarthTexture().map;
+      case 'mars':
+        return loadNasaTexture(NASA_TEXTURES.mars) || createMarsTexture();
+      case 'jupiter':
+        return loadNasaTexture(NASA_TEXTURES.jupiter) || createJupiterTexture();
+      case 'saturn':
+        return loadNasaTexture(NASA_TEXTURES.saturn) || createSaturnTexture();
+      case 'uranus':
+        return loadNasaTexture(NASA_TEXTURES.uranus) || createUranusTexture();
+      case 'neptune':
+        return loadNasaTexture(NASA_TEXTURES.neptune) || createNeptuneTexture();
+      default:
+        return null;
+    }
+  }, [planet.id]);
+
+  const ringTexture = useMemo(() => {
+    if (!planet.hasRings) return null;
+    return loadNasaTexture(NASA_TEXTURES.saturnRing) || createSaturnRingTexture();
+  }, [planet.hasRings]);
+
+  // Concentric radial UV remapping for Saturn rings
+  const ringGeometry = useMemo(() => {
+    if (!planet.hasRings) return null;
+    const inner = planet.size * 1.25;
+    const outer = planet.size * 2.45;
+    const g = new THREE.RingGeometry(inner, outer, 96);
+    const pos = g.attributes.position;
+    const uv = g.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const r = Math.hypot(pos.getX(i), pos.getY(i));
+      uv.setXY(i, (r - inner) / (outer - inner), 0.5);
+    }
+    return g;
+  }, [planet.hasRings, planet.size]);
+
   useFrame((_, delta) => {
     if (!isPaused && orbitGroupRef.current) {
       orbitGroupRef.current.rotation.y += angularSpeed * speedMultiplier * delta;
     }
     if (meshRef.current) {
       meshRef.current.rotation.y += planet.rotationSpeed * delta * 2;
+    }
+    if (ringRef.current) {
+      ringRef.current.rotation.z += delta * 0.05;
     }
   });
 
@@ -186,7 +246,7 @@ function PlanetBody({
       {/* Orbit Rotating Group */}
       <group ref={orbitGroupRef}>
         <group position={[planet.distance, 0, 0]}>
-          {/* Planet Sphere */}
+          {/* Planet Sphere with High-Def Surface Map */}
           <mesh
             ref={meshRef}
             onClick={(e) => {
@@ -194,25 +254,27 @@ function PlanetBody({
               onSelect();
             }}
           >
-            <sphereGeometry args={[planet.size, 32, 32]} />
+            <sphereGeometry args={[planet.size, 48, 48]} />
             <meshStandardMaterial
-              color={planet.color}
-              roughness={0.6}
-              metalness={0.2}
-              emissive={isSelected ? planet.color : '#000000'}
+              map={texture || undefined}
+              color={texture ? '#ffffff' : planet.color}
+              roughness={0.65}
+              metalness={0.1}
+              emissive={isSelected ? '#00d4ff' : '#000000'}
               emissiveIntensity={isSelected ? 0.35 : 0}
             />
           </mesh>
 
-          {/* Saturn's Rings */}
-          {planet.hasRings && (
-            <mesh ref={ringRef} rotation={[-Math.PI / 2.5, 0, 0]}>
-              <ringGeometry args={[planet.size * 1.4, planet.size * 2.3, 32]} />
-              <meshBasicMaterial
-                color="#dfc58e"
+          {/* Concentric Photorealistic Saturn's Rings */}
+          {planet.hasRings && ringGeometry && (
+            <mesh ref={ringRef} rotation={[-Math.PI / 2.5, 0, 0]} geometry={ringGeometry}>
+              <meshStandardMaterial
+                map={ringTexture || undefined}
+                color={ringTexture ? '#ffffff' : '#dfc58e'}
                 side={THREE.DoubleSide}
                 transparent
-                opacity={0.7}
+                opacity={0.92}
+                roughness={0.4}
               />
             </mesh>
           )}
@@ -249,9 +311,10 @@ function PlanetBody({
   );
 }
 
-// Sun at the center
+// Sun at the center with Solar Texture & Corona Glow
 function OrrerySun() {
   const sunRef = useRef<THREE.Mesh>(null);
+  const sunTexture = useMemo(() => loadNasaTexture(NASA_TEXTURES.sun) || createSunTexture(), []);
 
   useFrame((_, delta) => {
     if (sunRef.current) sunRef.current.rotation.y += delta * 0.05;
@@ -259,19 +322,31 @@ function OrrerySun() {
 
   return (
     <group position={[0, 0, 0]}>
-      {/* Sun Sphere */}
+      {/* Sun Sphere with Solar Texture */}
       <mesh ref={sunRef}>
-        <sphereGeometry args={[2.8, 32, 32]} />
-        <meshBasicMaterial color="#ffaa00" />
+        <sphereGeometry args={[2.8, 48, 48]} />
+        <meshBasicMaterial map={sunTexture || undefined} color={sunTexture ? '#ffffff' : '#ffaa00'} />
       </mesh>
 
-      {/* Corona Glow */}
-      <mesh scale={1.25}>
+      {/* Primary Corona Glow */}
+      <mesh scale={1.18}>
         <sphereGeometry args={[2.8, 32, 32]} />
         <meshBasicMaterial
-          color="#ff6600"
+          color="#ff7700"
           transparent
-          opacity={0.3}
+          opacity={0.35}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Outer Golden Aura */}
+      <mesh scale={1.42}>
+        <sphereGeometry args={[2.8, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffaa00"
+          transparent
+          opacity={0.16}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />

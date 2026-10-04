@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useInView } from '@/lib/useInView';
 import { matchesQuery } from '@/lib/text';
@@ -31,6 +31,7 @@ import {
   galacticToEquatorial,
   generateMilkyWayParticles
 } from '@/lib/astrophysics/skyDomeEphemeris';
+import { getBackgroundStarfield } from '@/lib/astrophysics/starfieldCatalog';
 import {
   PlanetGlyph,
   TelescopeGlyph,
@@ -38,7 +39,18 @@ import {
   VectorMoonPhase,
   ConstellationGlyph
 } from '@/components/ui/CosmicGlyphs';
-import { ArCameraOverlay } from './ArCameraOverlay';
+import { ArCameraOverlay, type OffScreenTarget } from './ArCameraOverlay';
+import { NASA_TEXTURES, loadNasaTexture } from './nasaTextures';
+import {
+  createSunTexture,
+  createMercuryTexture,
+  createVenusTexture,
+  createMarsTexture,
+  createJupiterTexture,
+  createSaturnTexture,
+  createSaturnRingTexture,
+  createMoonTexture
+} from './textures';
 import { Ticks } from '@/components/motion/primitives';
 import {
   Compass,
@@ -102,9 +114,10 @@ function getMilkyWayTexture(): THREE.Texture {
   if (!ctx) return new THREE.Texture();
 
   const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
-  gradient.addColorStop(0.35, 'rgba(210, 230, 255, 0.35)');
-  gradient.addColorStop(0.7, 'rgba(160, 190, 255, 0.1)');
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+  gradient.addColorStop(0.2, 'rgba(220, 235, 255, 0.22)');
+  gradient.addColorStop(0.5, 'rgba(170, 200, 255, 0.08)');
+  gradient.addColorStop(0.8, 'rgba(130, 160, 240, 0.02)');
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
   ctx.fillStyle = gradient;
@@ -116,7 +129,7 @@ function getMilkyWayTexture(): THREE.Texture {
 }
 
 // -------------------------------------------------------------
-// 1. REAL-TIME STARS WITH ATMOSPHERIC EXTINCTION
+// 1. REAL-TIME STARS WITH PRECISION GPU SHADER & BACKGROUND STARFIELD
 // -------------------------------------------------------------
 function RealTimeStars({
   location,
@@ -136,67 +149,178 @@ function RealTimeStars({
   selectedStar: StarData | null;
 }) {
   const pointsRef = useRef<THREE.Points>(null);
+  const shaderMatRef = useRef<THREE.ShaderMaterial>(null);
 
-  // Compute 3D positions and colors based on real-time Alt/Az or Equatorial
-  const { positions, colors, starPositionsMap } = useMemo(() => {
-    const pos = new Float32Array(stars.length * 3);
-    const col = new Float32Array(stars.length * 3);
+  // Background Hipparcos Starfield (~2800 stars across the sky vault)
+  const bgStarfield = useMemo(() => getBackgroundStarfield(2800), []);
+
+  const totalStarCount = stars.length + bgStarfield.length;
+
+  // Compute 3D positions, colors, sizes and twinkle phases
+  const { positions, colors, sizes, twinkles, starPositionsMap } = useMemo(() => {
+    const pos = new Float32Array(totalStarCount * 3);
+    const col = new Float32Array(totalStarCount * 3);
+    const sz = new Float32Array(totalStarCount);
+    const tw = new Float32Array(totalStarCount);
     const map = new Map<string, [number, number, number]>();
 
+    // 1. Major Named Navigational Stars (91 stars)
     stars.forEach((star, idx) => {
       let x = 0, y = 0, z = 0;
+      let extinction = 1.0;
 
       if (useLocalHorizon) {
-        // True Topocentric Alt-Azimuth projection
         const { alt, az, isVisible } = raDecToAltAz(star.ra, star.dec, location.latitude, lst);
         [x, y, z] = altAzToCartesian(alt, az, SPHERE_RADIUS);
-
-        // Realistic atmospheric airmass extinction factor
-        // Stars close to 0° horizon dim significantly due to thick atmosphere
-        const extinction = isVisible
-          ? Math.min(1.0, Math.max(0.18, Math.sin((alt * Math.PI) / 180) * 1.45))
-          : 0.05;
-
-        const c = new THREE.Color(star.color);
-        if (nightVision) {
-          col[idx * 3] = 0.9 * extinction;
-          col[idx * 3 + 1] = 0.08 * extinction;
-          col[idx * 3 + 2] = 0.08 * extinction;
-        } else {
-          col[idx * 3] = c.r * extinction;
-          col[idx * 3 + 1] = c.g * extinction;
-          col[idx * 3 + 2] = c.b * extinction;
-        }
+        extinction = isVisible ? Math.min(1.0, Math.max(0.12, Math.sin((alt * Math.PI) / 180) * 1.5)) : 0.02;
       } else {
-        // Celestial Equatorial Sphere
         const raRad = (star.ra * Math.PI) / 180;
         const decRad = (star.dec * Math.PI) / 180;
         x = SPHERE_RADIUS * Math.cos(decRad) * Math.cos(raRad);
         y = SPHERE_RADIUS * Math.sin(decRad);
         z = SPHERE_RADIUS * Math.cos(decRad) * Math.sin(raRad);
-
-        const c = new THREE.Color(star.color);
-        if (nightVision) {
-          col[idx * 3] = 0.9;
-          col[idx * 3 + 1] = 0.1;
-          col[idx * 3 + 2] = 0.1;
-        } else {
-          col[idx * 3] = c.r;
-          col[idx * 3 + 1] = c.g;
-          col[idx * 3 + 2] = c.b;
-        }
       }
 
       pos[idx * 3] = x;
       pos[idx * 3 + 1] = y;
       pos[idx * 3 + 2] = z;
       map.set(star.name, [x, y, z]);
+
+      const c = new THREE.Color(star.color);
+      if (nightVision) {
+        col[idx * 3] = 0.95 * extinction;
+        col[idx * 3 + 1] = 0.08 * extinction;
+        col[idx * 3 + 2] = 0.08 * extinction;
+      } else {
+        col[idx * 3] = c.r * extinction;
+        col[idx * 3 + 1] = c.g * extinction;
+        col[idx * 3 + 2] = c.b * extinction;
+      }
+
+      // Pogson magnitude scaling for major stars: Sirius ~8.5, Vega ~6.8, Polaris ~4.6
+      const pointSize = Math.max(2.8, Math.min(8.8, 7.2 - star.magnitude * 1.15));
+      sz[idx] = pointSize;
+      tw[idx] = (idx * 1.37) % (Math.PI * 2);
     });
 
-    return { positions: pos, colors: col, starPositionsMap: map };
-  }, [location, lst, useLocalHorizon, nightVision]);
+    // 2. High-Density Background Stars (~2800 stars)
+    const offset = stars.length;
+    bgStarfield.forEach((bg, i) => {
+      const idx = offset + i;
+      let x = 0, y = 0, z = 0;
+      let extinction = 1.0;
 
-  const starTexture = useMemo(() => getStarTexture(), []);
+      if (useLocalHorizon) {
+        const { alt, az, isVisible } = raDecToAltAz(bg.ra, bg.dec, location.latitude, lst);
+        if (!isVisible) {
+          extinction = 0.0;
+        } else {
+          extinction = Math.min(1.0, Math.max(0.15, Math.sin((alt * Math.PI) / 180) * 1.6));
+        }
+        [x, y, z] = altAzToCartesian(alt, az, SPHERE_RADIUS * 0.995);
+      } else {
+        const raRad = (bg.ra * Math.PI) / 180;
+        const decRad = (bg.dec * Math.PI) / 180;
+        x = SPHERE_RADIUS * 0.995 * Math.cos(decRad) * Math.cos(raRad);
+        y = SPHERE_RADIUS * 0.995 * Math.sin(decRad);
+        z = SPHERE_RADIUS * 0.995 * Math.cos(decRad) * Math.sin(raRad);
+      }
+
+      pos[idx * 3] = x;
+      pos[idx * 3 + 1] = y;
+      pos[idx * 3 + 2] = z;
+
+      if (nightVision) {
+        col[idx * 3] = 0.9 * extinction;
+        col[idx * 3 + 1] = 0.06 * extinction;
+        col[idx * 3 + 2] = 0.06 * extinction;
+      } else {
+        col[idx * 3] = bg.color[0] * extinction;
+        col[idx * 3 + 1] = bg.color[1] * extinction;
+        col[idx * 3 + 2] = bg.color[2] * extinction;
+      }
+
+      sz[idx] = Math.max(1.6, bg.size * 1.4);
+      tw[idx] = bg.twinklePhase;
+    });
+
+    return {
+      positions: pos,
+      colors: col,
+      sizes: sz,
+      twinkles: tw,
+      starPositionsMap: map
+    };
+  }, [bgStarfield, location, lst, useLocalHorizon, nightVision]);
+
+  // GPU Shader for Photorealistic Diamonds with Gaussian Cores and Diffraction Spikes
+  const starShaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uOpacity: { value: 1.0 },
+      },
+      vertexShader: `
+        attribute float aSize;
+        attribute float aTwinkle;
+        varying vec3 vColor;
+        varying float vTwinkle;
+        varying float vSize;
+        uniform float uTime;
+
+        void main() {
+          vColor = color;
+          vSize = aSize;
+          // Subtle atmospheric scintillation
+          float tw = 0.85 + 0.15 * sin(uTime * 3.2 + aTwinkle);
+          vTwinkle = tw;
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * tw * 2.8;
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vTwinkle;
+        varying float vSize;
+        uniform float uOpacity;
+
+        void main() {
+          vec2 coord = gl_PointCoord - vec2(0.5);
+          float dist = length(coord);
+          if (dist > 0.5) discard;
+
+          // 1. Brilliant solid Gaussian stellar core
+          float core = exp(-dist * dist * 24.0);
+          // 2. Soft luminous Airy disk halo
+          float halo = exp(-dist * 5.0) * 0.45;
+          // 3. Delicate 4-point cross diffraction spike for bright stars
+          float spike = 0.0;
+          if (vSize > 3.8) {
+            float spikeWeight = smoothstep(3.8, 8.5, vSize);
+            float sX = exp(-abs(coord.x) * 36.0) * exp(-abs(coord.y) * 4.0);
+            float sY = exp(-abs(coord.y) * 36.0) * exp(-abs(coord.x) * 4.0);
+            spike = max(sX, sY) * 0.55 * spikeWeight;
+          }
+
+          float totalAlpha = clamp((core * 1.3 + halo + spike) * uOpacity, 0.0, 1.0);
+          vec3 starCore = mix(vColor, vec3(1.0, 1.0, 1.0), core * 0.7);
+          vec3 finalColor = starCore * (core * 2.2 + halo * 1.2 + spike * 1.0);
+          gl_FragColor = vec4(finalColor, totalAlpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
+
+  useFrame(({ clock }) => {
+    if (shaderMatRef.current) {
+      shaderMatRef.current.uniforms.uTime.value = clock.getElapsedTime();
+      shaderMatRef.current.uniforms.uOpacity.value = opacity;
+    }
+  });
 
   return (
     <>
@@ -204,48 +328,52 @@ function RealTimeStars({
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
           <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+          <bufferAttribute attach="attributes-aSize" args={[sizes, 1]} />
+          <bufferAttribute attach="attributes-aTwinkle" args={[twinkles, 1]} />
         </bufferGeometry>
-        <pointsMaterial
-          map={starTexture}
-          size={3.6}
-          vertexColors
-          transparent
-          opacity={opacity}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          sizeAttenuation={true}
-        />
+        <primitive object={starShaderMaterial} ref={shaderMatRef} attach="material" />
       </points>
 
-      {/* Interactive Selection Rings for the 25 Brightest Stars */}
-      {stars.slice(0, 25).map((star) => {
+      {/* Invisible Clickable Hit Targets & Sleek Selection Reticle for Major Stars */}
+      {stars.map((star) => {
         const coords = starPositionsMap.get(star.name);
         if (!coords) return null;
         const isSelected = selectedStar?.name === star.name;
 
         return (
-          <mesh
-            key={star.name}
-            position={coords}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectStar(star);
-            }}
-          >
-            <sphereGeometry args={[isSelected ? 1.6 : 0.8, 16, 16]} />
-            <meshBasicMaterial
-              color={isSelected ? '#00e5ff' : nightVision ? '#ff3333' : star.color}
-              transparent
-              opacity={isSelected ? 0.95 : 0.35}
-            />
-          </mesh>
+          <group key={star.name} position={coords}>
+            {/* Invisible large click hitbox so stars are easy to tap/click */}
+            <mesh
+              visible={false}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectStar(star);
+              }}
+            >
+              <sphereGeometry args={[2.5, 8, 8]} />
+              <meshBasicMaterial transparent opacity={0} />
+            </mesh>
+
+            {/* Sleek Minimalist Targeting Reticle ONLY when star is selected */}
+            {isSelected && (
+              <mesh>
+                <ringGeometry args={[0.9, 1.15, 32]} />
+                <meshBasicMaterial
+                  color={nightVision ? '#ff3333' : '#00e5ff'}
+                  transparent
+                  opacity={0.9}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+            )}
+          </group>
         );
       })}
 
       {/* Selected star tracking label */}
       <Html position={(selectedStar && starPositionsMap.get(selectedStar.name)) || [0, 0, 0]} distanceFactor={40} center>
         <div
-          className={`pointer-events-none select-none rounded-full border border-primary/80 bg-ink/90 px-3 py-1 text-[10px] font-mono font-bold text-primary shadow-[0_0_15px_rgba(255,91,34,0.6)] backdrop-blur-md ${
+          className={`pointer-events-none select-none rounded-full border border-primary/80 bg-ink/90 px-3 py-1 text-[10px] font-mono font-bold text-primary shadow-[0_0_15px_rgba(0,229,255,0.6)] backdrop-blur-md ${
             selectedStar ? '' : 'hidden'
           }`}
         >
@@ -333,10 +461,10 @@ function MilkyWayDustBelt({
       </bufferGeometry>
       <pointsMaterial
         map={mwTexture}
-        size={5.2}
+        size={1.5}
         vertexColors
         transparent
-        opacity={opacity * 0.75}
+        opacity={opacity * 0.22}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         sizeAttenuation={true}
@@ -561,29 +689,29 @@ function AnimatedConstellationTracer({
         </group>
       )}
 
-      {/* 3. Glowing Target Rings around each Star in the Constellation */}
-      {starNodes.map(({ star, pos }) => (
-        <group key={star.name} position={pos}>
-          <mesh>
-            <ringGeometry args={[1.2, 1.8, 24]} />
-            <meshBasicMaterial
-              color={nightVision ? '#ff3333' : star.name === 'Polaris' ? '#ffd700' : '#00e5ff'}
-              transparent
-              opacity={0.85}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
-          <Html center distanceFactor={42}>
-            <div className={`pointer-events-none select-none rounded px-1.5 py-0.5 text-[10px] font-mono font-bold whitespace-nowrap mt-4 ${
-              star.name === 'Polaris'
-                ? 'bg-gold text-ink border border-gold font-extrabold shadow-[0_0_12px_rgba(255,215,0,0.9)]'
-                : 'bg-ink/85 text-paper/90 border border-line'
-            }`}>
-              {star.turkishName || star.name}
-            </div>
-          </Html>
-        </group>
-      ))}
+      {/* 3. Polaris Navigation Reticle (Clean & Uncluttered) */}
+      {starNodes.map(({ star, pos }) => {
+        const isPolaris = star.name === 'Polaris';
+        if (!isPolaris) return null;
+        return (
+          <group key={star.name} position={pos}>
+            <mesh>
+              <ringGeometry args={[0.6, 0.85, 24]} />
+              <meshBasicMaterial
+                color="#ffd700"
+                transparent
+                opacity={0.9}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+            <Html center distanceFactor={42}>
+              <div className="pointer-events-none select-none rounded px-2 py-0.5 text-[10px] font-mono font-extrabold whitespace-nowrap mt-4 bg-gold text-ink border border-gold shadow-[0_0_12px_rgba(255,215,0,0.8)]">
+                Kutup Yıldızı (Polaris)
+              </div>
+            </Html>
+          </group>
+        );
+      })}
 
       {/* 4. Constellation Title Badge at Centroid */}
       <Html position={centroid} center distanceFactor={50}>
@@ -721,93 +849,260 @@ function FilmSkyControl() {
   return null;
 }
 
+function ArTelemetryTracker({
+  active,
+  solarBodies,
+  onUpdateTelemetry
+}: {
+  active: boolean;
+  solarBodies: CelestialBodyDomeState[];
+  onUpdateTelemetry: (azimuth: number, pitch: number, targets: OffScreenTarget[]) => void;
+}) {
+  const { camera } = useThree();
+  const lastTime = useRef(0);
+  const dir = useRef(new THREE.Vector3());
+
+  useFrame((state) => {
+    if (!active) return;
+    const now = state.clock.getElapsedTime();
+    if (now - lastTime.current < 0.08) return; // ~12 fps telemetry calculation
+    lastTime.current = now;
+
+    camera.getWorldDirection(dir.current);
+    const pitch = THREE.MathUtils.radToDeg(Math.asin(Math.max(-1, Math.min(1, dir.current.y))));
+    let az = THREE.MathUtils.radToDeg(Math.atan2(dir.current.x, -dir.current.z));
+    if (az < 0) az += 360;
+
+    const targets: OffScreenTarget[] = [];
+    const camQuat = camera.quaternion;
+    const invQuat = camQuat.clone().invert();
+
+    for (const body of solarBodies) {
+      if (!body.isVisible) continue;
+      const bodyPos = new THREE.Vector3(...body.cartesian);
+      const localPos = bodyPos.clone().applyQuaternion(invQuat);
+      const angleFromCenter = THREE.MathUtils.radToDeg(localPos.angleTo(new THREE.Vector3(0, 0, -1)));
+      if (angleFromCenter > 28) {
+        let direction: 'left' | 'right' | 'up' | 'down' = 'right';
+        if (Math.abs(localPos.x) > Math.abs(localPos.y)) {
+          direction = localPos.x > 0 ? 'right' : 'left';
+        } else {
+          direction = localPos.y > 0 ? 'up' : 'down';
+        }
+        targets.push({
+          id: body.id,
+          name: body.name.split(' ')[0],
+          type: body.type === 'sun' ? 'sun' : body.type === 'moon' ? 'moon' : 'planet',
+          direction,
+          degrees: Math.round(angleFromCenter),
+          color: body.color
+        });
+      }
+    }
+
+    onUpdateTelemetry(Math.round(az), Math.round(pitch), targets.slice(0, 3));
+  });
+
+  return null;
+}
+
 // -------------------------------------------------------------
 // 4. SOLAR SYSTEM BODIES IN TOPOCENTRIC ALT-AZ COORDINATES
 // -------------------------------------------------------------
+function PhotorealisticDomePlanet({
+  body,
+  isSelected,
+  nightVision,
+  onSelect
+}: {
+  body: CelestialBodyDomeState;
+  isSelected: boolean;
+  nightVision: boolean;
+  onSelect: () => void;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
+
+  const texture = useMemo(() => {
+    switch (body.id) {
+      case 'sun':
+        return loadNasaTexture(NASA_TEXTURES.sun) || createSunTexture();
+      case 'moon':
+        return loadNasaTexture(NASA_TEXTURES.moon) || createMoonTexture();
+      case 'mercury':
+        return loadNasaTexture(NASA_TEXTURES.mercury) || createMercuryTexture();
+      case 'venus':
+        return loadNasaTexture(NASA_TEXTURES.venus) || createVenusTexture();
+      case 'mars':
+        return loadNasaTexture(NASA_TEXTURES.mars) || createMarsTexture();
+      case 'jupiter':
+        return loadNasaTexture(NASA_TEXTURES.jupiter) || createJupiterTexture();
+      case 'saturn':
+        return loadNasaTexture(NASA_TEXTURES.saturn) || createSaturnTexture();
+      default:
+        return null;
+    }
+  }, [body.id]);
+
+  const saturnRingTexture = useMemo(() => {
+    if (body.id !== 'saturn') return null;
+    return loadNasaTexture(NASA_TEXTURES.saturnRing) || createSaturnRingTexture();
+  }, [body.id]);
+
+  const saturnRingGeom = useMemo(() => {
+    if (body.id !== 'saturn') return null;
+    const inner = 2.4;
+    const outer = 4.8;
+    const g = new THREE.RingGeometry(inner, outer, 64);
+    const pos = g.attributes.position;
+    const uv = g.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const r = Math.hypot(pos.getX(i), pos.getY(i));
+      uv.setXY(i, (r - inner) / (outer - inner), 0.5);
+    }
+    return g;
+  }, [body.id]);
+
+  useFrame((_, delta) => {
+    if (meshRef.current) meshRef.current.rotation.y += delta * 0.12;
+    if (ringRef.current) ringRef.current.rotation.z += delta * 0.03;
+  });
+
+  const [x, y, z] = body.cartesian;
+  const radius =
+    body.type === 'sun'
+      ? 3.6
+      : body.type === 'moon'
+      ? 2.8
+      : body.id === 'jupiter'
+      ? 2.6
+      : body.id === 'saturn'
+      ? 2.1
+      : 1.6;
+
+  return (
+    <group position={[x, y, z]}>
+      {/* 3D Photorealistic Celestial Sphere */}
+      <mesh
+        ref={meshRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+        }}
+      >
+        <sphereGeometry args={[radius, 32, 32]} />
+        <meshStandardMaterial
+          map={texture || undefined}
+          color={nightVision ? '#ff4444' : texture ? '#ffffff' : body.color}
+          roughness={body.type === 'sun' ? 0.2 : 0.65}
+          metalness={0.1}
+          emissive={body.type === 'sun' ? '#ff9900' : isSelected ? '#00e5ff' : '#000000'}
+          emissiveIntensity={body.type === 'sun' ? 0.75 : isSelected ? 0.5 : 0}
+          transparent={!body.isVisible}
+          opacity={body.isVisible ? 1.0 : 0.2}
+        />
+      </mesh>
+
+      {/* Saturn's 3D Concentric Rings in the Sky Dome */}
+      {body.id === 'saturn' && saturnRingGeom && body.isVisible && (
+        <mesh ref={ringRef} rotation={[-Math.PI / 2.3, 0, 0]} geometry={saturnRingGeom}>
+          <meshStandardMaterial
+            map={saturnRingTexture || undefined}
+            color={saturnRingTexture ? '#ffffff' : '#dfc58e'}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={0.88}
+            roughness={0.4}
+          />
+        </mesh>
+      )}
+
+      {/* Sun Solar Corona Flame Aura */}
+      {body.type === 'sun' && body.isVisible && (
+        <>
+          <mesh scale={1.22}>
+            <sphereGeometry args={[radius, 24, 24]} />
+            <meshBasicMaterial
+              color="#ff7700"
+              transparent
+              opacity={0.4}
+              side={THREE.BackSide}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+          <mesh scale={1.45}>
+            <sphereGeometry args={[radius, 24, 24]} />
+            <meshBasicMaterial
+              color="#ffaa00"
+              transparent
+              opacity={0.18}
+              side={THREE.BackSide}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        </>
+      )}
+
+      {/* Selection Halo */}
+      {isSelected && (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[radius * 1.35, radius * 1.55, 32]} />
+          <meshBasicMaterial color="#00e5ff" side={THREE.DoubleSide} transparent opacity={0.8} />
+        </mesh>
+      )}
+
+      {/* Interactive HTML Badge */}
+      <Html distanceFactor={44} center>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          className={`cursor-pointer pointer-events-auto select-none rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            isSelected
+              ? 'border-gold bg-gold/30 text-gold scale-110 shadow-[0_0_15px_rgba(255,180,0,0.8)]'
+              : body.isVisible
+              ? 'border-paper/30 bg-ink/85 text-paper hover:border-paper/60 backdrop-blur-md'
+              : 'border-line/40 bg-ink/50 text-muted opacity-40'
+          }`}
+        >
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: body.color }} />
+          <span>{body.name.split(' ')[0]}</span>
+          {body.type === 'moon' && body.phaseFraction !== undefined && (
+            <span className="text-[10px] opacity-75">%{Math.round(body.phaseFraction * 100)}</span>
+          )}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
 function RealTimeSolarSystem({
   visible,
-  currentTime,
-  location,
-  lst,
+  bodies,
   nightVision,
   onSelectBody,
   selectedBody
 }: {
   visible: boolean;
-  currentTime: Date;
-  location: UserLocation;
-  lst: number;
+  bodies: CelestialBodyDomeState[];
   nightVision: boolean;
   onSelectBody: (body: CelestialBodyDomeState) => void;
   selectedBody: CelestialBodyDomeState | null;
 }) {
-  const bodies = useMemo(() => {
-    return computeSkyDomeSolarSystem(currentTime, location.latitude, lst, SPHERE_RADIUS);
-  }, [currentTime, location.latitude, lst]);
-
   if (!visible) return null;
 
   return (
     <group>
-      {bodies.map((body) => {
-        const isSelected = selectedBody?.id === body.id;
-        const [x, y, z] = body.cartesian;
-
-        return (
-          <group key={body.id} position={[x, y, z]}>
-            {/* Clickable hit mesh */}
-            <mesh
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelectBody(body);
-              }}
-            >
-              <sphereGeometry args={[body.type === 'sun' ? 3.0 : body.type === 'moon' ? 2.5 : 1.6, 16, 16]} />
-              <meshBasicMaterial
-                color={nightVision ? '#ff4444' : body.color}
-                transparent
-                opacity={body.isVisible ? 0.95 : 0.15}
-              />
-            </mesh>
-
-            {/* Sun Solar Corona Glow Ring */}
-            {body.type === 'sun' && body.isVisible && (
-              <mesh>
-                <ringGeometry args={[3.2, 5.0, 32]} />
-                <meshBasicMaterial
-                  color="#ffa940"
-                  transparent
-                  opacity={0.4}
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-            )}
-
-            {/* Interactive HTML Badge */}
-            <Html distanceFactor={42} center>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectBody(body);
-                }}
-                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'border-gold bg-gold/20 text-gold scale-110 shadow-[0_0_15px_rgba(255,180,0,0.7)]'
-                    : body.isVisible
-                    ? 'border-paper/20 bg-ink/80 text-paper hover:border-paper/50'
-                    : 'border-line/40 bg-ink/50 text-muted opacity-40'
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: body.color }} />
-                <span>{body.name.split(' ')[0]}</span>
-                {body.type === 'moon' && body.phaseFraction !== undefined && (
-                  <span className="text-[10px] opacity-75">%{Math.round(body.phaseFraction * 100)}</span>
-                )}
-              </div>
-            </Html>
-          </group>
-        );
-      })}
+      {bodies.map((body) => (
+        <PhotorealisticDomePlanet
+          key={body.id}
+          body={body}
+          isSelected={selectedBody?.id === body.id}
+          nightVision={nightVision}
+          onSelect={() => onSelectBody(body)}
+        />
+      ))}
     </group>
   );
 }
@@ -1029,6 +1324,15 @@ export function Planetarium3D() {
     setIsArActive(true);
   };
   const [arOpacity, setArOpacity] = useState(0.85);
+  const [arAzimuth, setArAzimuth] = useState(0);
+  const [arPitch, setArPitch] = useState(0);
+  const [arOffScreenTargets, setArOffScreenTargets] = useState<OffScreenTarget[]>([]);
+
+  const handleUpdateTelemetry = useCallback((az: number, p: number, targets: OffScreenTarget[]) => {
+    setArAzimuth(az);
+    setArPitch(p);
+    setArOffScreenTargets(targets);
+  }, []);
 
   const [selectedStar, setSelectedStar] = useState<StarData | null>(null);
   const [selectedDso, setSelectedDso] = useState<DeepSkyObject | null>(null);
@@ -1109,6 +1413,16 @@ export function Planetarium3D() {
     return [...starMatches, ...dsoMatches];
   }, [searchQuery]);
 
+  // Real-time Solar System Bodies (Sun, Moon with live phase, Mercury, Venus, Mars, Jupiter, Saturn)
+  const solarBodies = useMemo(() => {
+    return computeSkyDomeSolarSystem(
+      currentTime,
+      selectedLocation.latitude,
+      selectedLocation.longitude,
+      SPHERE_RADIUS * 0.95
+    );
+  }, [currentTime, selectedLocation]);
+
   return (
     <div ref={stageRef} className={`relative h-full w-full overflow-hidden select-none ${nightVision ? 'bg-[#090000]' : 'bg-[#020206]'}`}>
       {/* 1. Optional Live AR Camera Overlay */}
@@ -1118,6 +1432,12 @@ export function Planetarium3D() {
         onClose={() => setIsArActive(false)}
         opacity={arOpacity}
         setOpacity={setArOpacity}
+        azimuth={arAzimuth}
+        pitch={arPitch}
+        offScreenTargets={arOffScreenTargets}
+        onRequestSensor={toggleAr}
+        nightVision={nightVision}
+        onToggleNightVision={() => setNightVision(!nightVision)}
       />
 
       {/* 2. 3D WebGL Canvas */}
@@ -1144,6 +1464,11 @@ export function Planetarium3D() {
 
         <FilmSkyControl />
         <DeviceSkyControl active={isArActive} onTracking={setArTracking} />
+        <ArTelemetryTracker
+          active={isArActive}
+          solarBodies={solarBodies}
+          onUpdateTelemetry={handleUpdateTelemetry}
+        />
 
         {/* Real-Time Milky Way (Samanyolu) Dust Belt */}
         <MilkyWayDustBelt
@@ -1173,14 +1498,13 @@ export function Planetarium3D() {
         {/* Solar System Bodies (Sun, Moon with Live Phase, Venus, Mars, Jupiter, Saturn) */}
         <RealTimeSolarSystem
           visible={showPlanets}
-          currentTime={currentTime}
-          location={selectedLocation}
-          lst={currentLst}
+          bodies={solarBodies}
           nightVision={nightVision}
           onSelectBody={(body) => {
             setSelectedBody(body);
             setSelectedStar(null);
             setSelectedDso(null);
+            setIsInspectorOpen(true);
           }}
           selectedBody={selectedBody}
         />
