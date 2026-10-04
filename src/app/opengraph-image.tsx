@@ -64,7 +64,10 @@ export default async function Image() {
                 fontSize: '20px',
               }}
             >
-              ✦
+              {/* Four-point star drawn as SVG: the ✦ glyph has no font in the OG renderer */}
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#00d4ff" />
+              </svg>
             </div>
             <span
               style={{

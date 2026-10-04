@@ -85,7 +85,7 @@ export function CelestialAstrolabeHub() {
             {/* Left: The Astrolabe Wheel Dial */}
             <div className="relative mx-auto flex w-full max-w-[420px] flex-col items-center justify-center lg:col-span-6 lg:max-w-none">
               {/* Outer decorative ring */}
-              <div className="relative aspect-square w-full max-w-[380px] sm:max-w-[440px]">
+              <div className="relative aspect-square w-[calc(100%-2.5rem)] max-w-[380px] sm:w-full sm:max-w-[440px]">
                 {/* SVG Astrolabe Background Glow matching selected sign element */}
                 <div
                   aria-hidden
