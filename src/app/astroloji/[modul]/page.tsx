@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ModuleScreen } from '@/components/doc/ModuleScreen';
+import { AstrologyModuleScreen } from '@/components/astrology/AstrologyModuleScreen';
 import { findModule, getSection } from '@/data/sections';
 
 export const dynamicParams = false;
@@ -19,5 +19,5 @@ export async function generateMetadata(props: PageProps<'/astroloji/[modul]'>): 
 export default async function ModulePage(props: PageProps<'/astroloji/[modul]'>) {
   const { modul } = await props.params;
   if (!findModule('astroloji', modul)) notFound();
-  return <ModuleScreen sectionId="astroloji" slug={modul} />;
+  return <AstrologyModuleScreen slug={modul} />;
 }

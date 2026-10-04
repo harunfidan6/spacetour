@@ -1,21 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import {
-  Compass,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  ShieldAlert,
-  Sun,
-  Clock
 } from 'lucide-react';
 import {
   ZodiacGlyph,
   PlanetGlyph,
-  MoonPhaseVectorGlyph,
   AstrolabeGlyph,
   FireElementGlyph,
   EarthElementGlyph,
@@ -27,26 +22,11 @@ import { PartHeading } from '@/components/doc/PartHeading';
 import { EpisodeCard } from '@/components/doc/EpisodeCard';
 import { NextChapter } from '@/components/doc/NextChapter';
 import { AstrologyBasics } from '@/components/doc/AstrologyBasics';
+import { CelestialHorizonBar } from './CelestialHorizonBar';
 import { ZODIAC_SIGNS, type ZodiacElement } from '@/data/zodiac';
 import { ELEMENT_INFO } from '@/data/zodiacProfiles';
 import { DOC_IMAGES } from '@/data/docImages';
 import { getSection } from '@/data/sections';
-import { useNow } from '@/lib/useNow';
-import {
-  calculateCurrentMoonPhase,
-  calculateCurrentMoonSign,
-  getMoonVoidOfCourseStatus
-} from '@/data/lunarPhases';
-import {
-  planetaryHourAt,
-  sunSign,
-  longitude,
-  SIGN_NAMES,
-  SIGN_IN,
-  BODY_NAMES
-} from '@/lib/astrology/dailySky';
-
-const FIRST_FRAME = new Date('2026-01-01T09:00:00Z');
 
 const ELEMENT_ICONS: Record<ZodiacElement, React.ComponentType<{ size?: number; className?: string }>> = {
   Ateş: FireElementGlyph,
@@ -59,18 +39,6 @@ export function CelestialAstrolabeHub() {
   const section = getSection('astroloji');
   const [selectedSignIndex, setSelectedSignIndex] = useState(0);
   const [activeElement, setActiveElement] = useState<ZodiacElement | 'all'>('all');
-
-  // Live real-sky calculations for Türkiye (İstanbul UTC+3)
-  const live = useNow(60_000);
-  const isMounted = live !== null;
-  const now = live ?? FIRST_FRAME;
-
-  const currentCalc = useMemo(() => calculateCurrentMoonPhase(now), [now]);
-  const currentMoonSign = useMemo(() => calculateCurrentMoonSign(now), [now]);
-  const voidStatus = useMemo(() => getMoonVoidOfCourseStatus(now), [now]);
-  const currentSunSignIndex = useMemo(() => sunSign(now), [now]);
-  const currentSunDegree = useMemo(() => Math.floor(longitude('sun', now) % 30), [now]);
-  const currentHourSlot = useMemo(() => planetaryHourAt(now), [now]);
 
   // Selected sign from zodiac signs
   const currentSign = ZODIAC_SIGNS[selectedSignIndex] || ZODIAC_SIGNS[0];
@@ -98,95 +66,7 @@ export function CelestialAstrolabeHub() {
       />
 
       {/* 2. Live Celestial Horizon Telemetry Bar */}
-      <section aria-label="Anlık Göksel Ufuk Saati" className="border-y border-white/10 bg-ink-2/90 px-[var(--gutter)] py-6 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
-            <div className="flex items-center gap-3">
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/40 bg-gold/10 text-gold">
-                <Compass size={15} />
-              </span>
-              <div>
-                <span className="doc-kicker text-gold">Canlı Göksel Ufuk Saati</span>
-                <span className="doc-caption block text-[11px] text-paper/60">İstanbul Efemerisi · UTC+3</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block h-2 w-2 rounded-full bg-lime animate-pulse" />
-              <span className="font-mono text-xs text-paper/70">
-                {isMounted ? now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '09:00'}
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Solar degree */}
-            <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-ink/60 p-3.5">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-solar/30 bg-solar/10 text-solar">
-                <Sun size={20} />
-              </div>
-              <div className="min-w-0">
-                <span className="doc-caption block text-[10px] text-paper/50">GÜNEŞ KONUMU</span>
-                <span className="doc-title block truncate text-base text-paper">
-                  {isMounted ? `${SIGN_NAMES[currentSunSignIndex]} ${currentSunDegree}°` : 'Hesaplanıyor…'}
-                </span>
-                <span className="doc-caption block truncate text-[10px] text-paper/50">
-                  {isMounted ? `${SIGN_NAMES[currentSunSignIndex]} Mevsimi` : 'Efemeris'}
-                </span>
-              </div>
-            </div>
-
-            {/* Moon illumination & sign */}
-            <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-ink/60 p-3.5">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-gold/30 bg-gold/10 text-gold">
-                <MoonPhaseVectorGlyph phaseId={currentCalc.phase.id} size={22} className="text-gold" />
-              </div>
-              <div className="min-w-0">
-                <span className="doc-caption block text-[10px] text-paper/50">AY FAZI & BURCU</span>
-                <span className="doc-title block truncate text-base text-paper">
-                  {isMounted ? `${currentCalc.phase.name} · %${currentCalc.illuminationPercent}` : 'Hesaplanıyor…'}
-                </span>
-                <span className="doc-caption block truncate text-[10px] text-gold/80">
-                  {isMounted ? `Ay ${SIGN_IN[SIGN_NAMES.indexOf(currentMoonSign.sign)] ?? currentMoonSign.sign}` : 'Hesaplanıyor…'}
-                </span>
-              </div>
-            </div>
-
-            {/* Planetary hour */}
-            <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-ink/60 p-3.5">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-violet/30 bg-violet/10 text-violet">
-                <Clock size={20} />
-              </div>
-              <div className="min-w-0">
-                <span className="doc-caption block text-[10px] text-paper/50">KELDANİ GEZEGEN SAATİ</span>
-                <span className="doc-title block truncate text-base text-paper">
-                  {isMounted ? `${BODY_NAMES[currentHourSlot.ruler]} Saati` : 'Hesaplanıyor…'}
-                </span>
-                <span className="doc-caption block truncate text-[10px] text-paper/50">
-                  {isMounted ? (currentHourSlot.isDay ? 'Gündüz Döngüsü' : 'Gece Döngüsü') : '—'}
-                </span>
-              </div>
-            </div>
-
-            {/* Void of course or flow */}
-            <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-ink/60 p-3.5">
-              <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-md border ${
-                isMounted && voidStatus.isVoidNow ? 'border-rose/40 bg-rose/10 text-rose' : 'border-lime/40 bg-lime/10 text-lime'
-              }`}>
-                <ShieldAlert size={20} />
-              </div>
-              <div className="min-w-0">
-                <span className="doc-caption block text-[10px] text-paper/50">BOŞLUKTAKİ AY (VoC)</span>
-                <span className="doc-title block truncate text-base text-paper">
-                  {isMounted ? (voidStatus.isVoidNow ? 'Boşlukta (VoC)' : 'Göksel Akışta') : 'Hesaplanıyor…'}
-                </span>
-                <span className="doc-caption block truncate text-[10px] text-paper/50">
-                  {isMounted ? (voidStatus.isVoidNow ? 'Yeni kararlar beklemede' : 'Girişimler için açık') : '—'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CelestialHorizonBar />
 
       {/* 3. CENTERPIECE: The 360° Interactive Celestial Astrolabe */}
       <section aria-label="360 Derece Zodyak Usturlabı" className="px-[var(--gutter)] py-20 sm:py-28">

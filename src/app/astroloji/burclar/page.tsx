@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
 import { ZodiacAtlas } from '@/components/space/ZodiacAtlas';
+import { CelestialHorizonBar } from '@/components/astrology/CelestialHorizonBar';
 import { DOC_IMAGES } from '@/data/docImages';
 
 export const metadata: Metadata = {
@@ -23,7 +24,8 @@ export default function BurclarPage() {
         image={DOC_IMAGES['astro-burclar']}
         crumbs={[{ label: 'Ana sayfa', href: '/' }, { label: 'Astroloji', href: '/astroloji' }, { label: '12 burç' }]}
       />
-      <section className="px-[var(--gutter)] pb-28 pt-20">
+      <CelestialHorizonBar compact />
+      <section className="px-[var(--gutter)] pb-28 pt-16">
         <PartHeading
           part={1}
           title="12 zodyak"
