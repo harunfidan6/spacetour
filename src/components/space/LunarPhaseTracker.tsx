@@ -27,6 +27,7 @@ export function LunarPhaseTracker() {
   // Real-time lunar calculations
   // Live clock (null until mount, so server and client render the same frame first)
   const live = useNow(60_000);
+  const isMounted = live !== null;
   const now = live ?? FIRST_FRAME;
   const currentCalc = useMemo(() => calculateCurrentMoonPhase(now), [now]);
   const currentSign = useMemo(() => calculateCurrentMoonSign(now), [now]);
@@ -38,51 +39,46 @@ export function LunarPhaseTracker() {
   }, [selectedPhaseId, currentCalc.phase]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-10">
-      <Ticks />
-
+    <div className="relative border border-line bg-ink p-6 sm:p-10 space-y-10">
       {/* Header telemetry badge */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />
-            <span className="label text-gold">CANLI AY TAKVİMİ & KOZMİK EFEMERİS</span>
-          </div>
-          <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-1">
-            Ay Evreleri & Boşluktaki Ay (VoC) Rehberi
+          <span className="doc-kicker text-gold">Kozmik Takvim · Ay Efemerisi</span>
+          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
+            Ay Evreleri <span className="doc-serif text-gold">& Boşluktaki Ay (VoC)</span>
           </h3>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="label text-muted text-[10px]">GÜNCEL AY BURCU</div>
+            <div className="doc-caption text-muted text-[10px]">GÜNCEL AY BURCU</div>
             <div className="text-sm font-semibold text-paper flex items-center justify-end gap-1.5 mt-0.5">
               <ZodiacGlyph sign={currentSign.latinSign.toLowerCase()} size={15} className="text-gold" />
-              <span>Ay {SIGN_IN[SIGN_NAMES.indexOf(currentSign.sign)] ?? currentSign.sign}</span>
+              <span>{isMounted ? `Ay ${SIGN_IN[SIGN_NAMES.indexOf(currentSign.sign)] ?? currentSign.sign}` : '—'}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Top 3 Interactive Readout Cards */}
-      <div className="grid gap-px border border-line bg-line md:grid-cols-3">
+      <div className={`grid gap-px border border-line bg-line md:grid-cols-3 transition-opacity duration-300 ${isMounted ? 'opacity-100' : 'opacity-70'}`}>
         {/* Card 1: Live Phase Geometry */}
         <div className="bg-ink-2 p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="label text-gold">ANLIK GÖK AYDINLANMASI</span>
-            <span className="label px-2 py-0.5 border border-line bg-ink text-paper/80 text-[10px]">
-              {currentCalc.isWaxing ? 'Büyüyen Ay (Waxing)' : 'Küçülen Ay (Waning)'}
+            <span className="doc-caption text-gold font-bold">GÖK AYDINLANMASI</span>
+            <span className="px-2 py-0.5 border border-line bg-ink text-paper/80 font-mono text-[10px]">
+              {isMounted ? (currentCalc.isWaxing ? 'Büyüyen Ay (Waxing)' : 'Küçülen Ay (Waning)') : '—'}
             </span>
           </div>
 
           <div className="my-6 flex items-center gap-6">
-            <div className="relative grid place-items-center h-20 w-20 shrink-0 border border-line bg-ink rounded-full shadow-[0_0_25px_rgba(255,215,0,0.1)]">
+            <div className="relative grid place-items-center h-20 w-20 shrink-0 border border-line bg-ink rounded-full shadow-[0_0_25px_rgba(245,197,66,0.1)]">
               <MoonPhaseVectorGlyph phaseId={currentCalc.phase.id} size={54} className="text-gold" />
             </div>
             <div>
-              <div className="serif-i text-xl text-gold">{currentCalc.phase.name}</div>
-              <div className="display display-tight text-3xl text-paper mt-0.5">%{currentCalc.illuminationPercent}</div>
-              <div className="label text-muted text-[10px] mt-1">
-                Ay Yaşı: {currentCalc.ageDays} gün · Açı: {currentCalc.angleDeg}°
+              <div className="doc-serif text-xl text-gold">{isMounted ? currentCalc.phase.name : '—'}</div>
+              <div className="doc-title text-2xl sm:text-3xl text-paper mt-0.5">{isMounted ? `%${currentCalc.illuminationPercent}` : '—'}</div>
+              <div className="font-mono text-muted text-[10px] mt-1">
+                {isMounted ? `Ay Yaşı: ${currentCalc.ageDays} gün · Açı: ${currentCalc.angleDeg}°` : 'Hesaplanıyor…'}
               </div>
             </div>
           </div>
@@ -90,11 +86,11 @@ export function LunarPhaseTracker() {
           <div className="grid grid-cols-2 gap-2 border-t border-line pt-3 text-[11px] font-mono">
             <div>
               <span className="text-muted block text-[9px] uppercase">Sonraki Dolunay</span>
-              <span className="text-paper">{currentCalc.nextFullMoonDays} gün sonra</span>
+              <span className="text-paper">{isMounted ? `${currentCalc.nextFullMoonDays} gün sonra` : '—'}</span>
             </div>
             <div>
               <span className="text-muted block text-[9px] uppercase">Sonraki Yeni Ay</span>
-              <span className="text-paper">{currentCalc.nextNewMoonDays} gün sonra</span>
+              <span className="text-paper">{isMounted ? `${currentCalc.nextNewMoonDays} gün sonra` : '—'}</span>
             </div>
           </div>
         </div>
@@ -102,52 +98,52 @@ export function LunarPhaseTracker() {
         {/* Card 2: Current Zodiac Atmosphere */}
         <div className="bg-ink-2 p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="label text-gold">AY BURÇ ATMOSFERİ</span>
-            <span className="label text-muted text-[10px]">{currentSign.element} Elementi</span>
+            <span className="doc-caption text-gold font-bold">AY BURÇ ETKİSİ</span>
+            <span className="font-mono text-muted text-[10px]">{isMounted ? `${currentSign.element} Elementi` : '—'}</span>
           </div>
 
           <div className="my-4 space-y-2">
             <div className="flex items-center gap-2">
               <ZodiacGlyph sign={currentSign.latinSign.toLowerCase()} size={28} className="text-gold" />
               <div>
-                <div className="text-lg font-bold text-paper">Ay {currentSign.sign} Burcunda</div>
-                <div className="label text-muted text-[10px]">Yönetici: {currentSign.governingPlanet}</div>
+                <div className="text-base font-bold text-paper">{isMounted ? `Ay ${currentSign.sign} Burcunda` : 'Ay Burcu Hesaplanıyor…'}</div>
+                <div className="font-mono text-muted text-[10px]">{isMounted ? `Yönetici: ${currentSign.governingPlanet}` : '—'}</div>
               </div>
             </div>
             <p className="text-xs text-paper/75 leading-relaxed line-clamp-3">
-              {currentSign.emotionalClimate}
+              {isMounted ? currentSign.emotionalClimate : 'Güncel gökyüzü konumları yerel saate göre işleniyor.'}
             </p>
           </div>
 
           <div className="border-t border-line pt-3 space-y-1">
-            <div className="text-[11px] text-paper/85">
-              <span className="text-gold font-semibold">Beslenme & Beden:</span> {currentSign.nourishmentTip}
+            <div className="text-[11px] text-paper/85 font-mono">
+              <span className="text-gold font-semibold">Beslenme & Beden:</span> {isMounted ? currentSign.nourishmentTip : '—'}
             </div>
           </div>
         </div>
 
         {/* Card 3: Moon Void of Course Live Detector */}
-        <div className={`p-6 flex flex-col justify-between border-l border-line ${voidStatus.isVoidNow ? 'bg-rose-signal/10' : 'bg-ink-2'}`}>
+        <div className={`p-6 flex flex-col justify-between border-l border-line ${isMounted && voidStatus.isVoidNow ? 'bg-rose-signal/10' : 'bg-ink-2'}`}>
           <div className="flex items-center justify-between">
-            <span className="label text-gold">BOŞLUKTAKİ AY (VOID OF COURSE)</span>
-            <span className={`label px-2 py-0.5 border text-[10px] ${voidStatus.isVoidNow ? 'border-rose-signal bg-rose-signal text-ink font-bold' : 'border-line bg-ink text-lime'}`}>
-              {voidStatus.isVoidNow ? 'BOŞLUKTA' : 'DURGUN & AKIŞTA'}
+            <span className="doc-caption text-gold font-bold">BOŞLUKTAKİ AY (VOID OF COURSE)</span>
+            <span className={`px-2 py-0.5 border text-[10px] font-mono ${isMounted && voidStatus.isVoidNow ? 'border-rose-signal bg-rose-signal text-ink font-bold' : 'border-line bg-ink text-lime'}`}>
+              {isMounted ? (voidStatus.isVoidNow ? 'BOŞLUKTA' : 'AKIŞTA') : '—'}
             </span>
           </div>
 
           <div className="my-4 space-y-2">
             <div className="flex items-center gap-2 text-paper">
-              <ShieldAlert size={20} className={voidStatus.isVoidNow ? 'text-rose-signal' : 'text-gold'} />
-              <span className="text-sm font-semibold">{voidStatus.statusText}</span>
+              <ShieldAlert size={20} className={isMounted && voidStatus.isVoidNow ? 'text-rose-signal' : 'text-gold'} />
+              <span className="text-sm font-semibold">{isMounted ? voidStatus.statusText : 'Hesaplanıyor…'}</span>
             </div>
             <p className="text-xs text-paper/80 leading-relaxed">
-              {voidStatus.advice}
+              {isMounted ? voidStatus.advice : 'Açı tablosu hesaplanıyor.'}
             </p>
           </div>
 
           <div className="border-t border-line pt-3 flex items-center justify-between text-[11px] font-mono text-muted">
-            <span>{voidStatus.nextVoidStart}</span>
-            <span className="text-paper">{voidStatus.nextVoidEnd}</span>
+            <span>{isMounted ? voidStatus.nextVoidStart : '—'}</span>
+            <span className="text-paper">{isMounted ? voidStatus.nextVoidEnd : '—'}</span>
           </div>
         </div>
       </div>
@@ -155,8 +151,8 @@ export function LunarPhaseTracker() {
       {/* 8 Lunar Phases Navigation Selector */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="label text-muted">8 KOZMİK AY EVRESİ ARŞİVİ</span>
-          <span className="label text-gold text-[10px]">BİR EVRE SEÇİN VE REHBERİNİ OKUYUN</span>
+          <span className="doc-caption text-muted uppercase font-bold tracking-wider">Sekiz Ay Evresi Arşivi</span>
+          <span className="font-mono text-gold text-[10px]">BİR EVRE SEÇİP DETAYLARI İNCELEYİN</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line">
