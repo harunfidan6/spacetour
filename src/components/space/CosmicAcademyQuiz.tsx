@@ -154,18 +154,303 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
     correctAnswer: 1,
     explanation: 'Yaşanabilir Kuşak (Circumstellar Habitable Zone) veya Goldilocks Kuşağı; yıldızdan ne çok sıcak ne de çok soğuk olan, atmosferik basınç altında sıvı suyun varlığını koruyabildiği ideal yörünge mesafesidir.',
     scientificConcept: 'Yaşanabilir Bölge (Habitable Zone)'
+  },
+  {
+    id: 11,
+    category: 'Nötron Yıldızları & Pulsarlar',
+    question: 'Kendi ekseni etrafında saniyede onlarca kez dönen ve manyetik kutuplarından periyodik radyo ışınımı yayan son derece yoğun nötron yıldızlarına ne ad verilir?',
+    options: [
+      'Beyaz Cüce',
+      'Kızıl Dev',
+      'Pulsar (Atarca)',
+      'Kuasar'
+    ],
+    correctAnswer: 2,
+    explanation: '1967’de Jocelyn Bell Burnell tarafından keşfedilen pulsarlar, süpernova patlaması sonrası çöken ve manyetik kutuplarından deniz feneri gibi ışın fışkırtan hızla dönen nötron yıldızlarıdır.',
+    scientificConcept: 'Nötron Yıldızı Manyetosfer Dinamiği'
+  },
+  {
+    id: 12,
+    category: 'Elektromanyetik Spektrum',
+    question: 'İnsan gözünün algılayabildiği görünür ışık tayfı yaklaşık hangi dalgaboyu aralığına denk gelir?',
+    options: [
+      '10 nm ila 100 nm',
+      '380 nm ila 750 nm',
+      '1 mikron ila 10 mikron',
+      '1 mm ila 1 metre'
+    ],
+    correctAnswer: 1,
+    explanation: 'Görünür ışık tayfı yaklaşık 380 nm (mor) ile 750 nm (kırmızı) arasındadır. Bu aralığın altı morötesi (UV), üstü ise kızılötesi (IR) bölgesidir.',
+    scientificConcept: 'Optik Görünür Spektrum Sınırları'
+  },
+  {
+    id: 13,
+    category: 'Yıldız Spektroskopisi',
+    question: 'Güneş’in ve diğer yıldızların ışık tayfında görülen karanlık soğurma çizgileri ilk kez hangi Alman optikçi tarafından haritalanmıştır?',
+    options: [
+      'Joseph von Fraunhofer',
+      'Johannes Kepler',
+      'Max Planck',
+      'Wilhelm Röntgen'
+    ],
+    correctAnswer: 0,
+    explanation: 'Fraunhofer, Güneş spektrumunda yüzlerce karanlık çizgi tespit etmiştir. Bu çizgiler yıldız atmosferindeki elementlerin atomik soğurma çizgileridir.',
+    scientificConcept: 'Fraunhofer Soğurma Çizgileri'
+  },
+  {
+    id: 14,
+    category: 'Karanlık Madde Fiziği',
+    question: 'Spiral galaksilerin dış kollarındaki yıldızların beklenenden çok daha hızlı döndüğünü ölçerek galaksileri saran görünmez "karanlık madde" halesinin varlığını kanıtlayan astronom kimdir?',
+    options: [
+      'Edwin Hubble',
+      'Vera Rubin',
+      'Carl Sagan',
+      'Stephen Hawking'
+    ],
+    correctAnswer: 1,
+    explanation: 'Vera Rubin, galaksi dönüş eğrilerini inceleyerek dış kollardaki yıldızların Kepler yasalarına göre yavaşlamadığını, görünmeyen devasa bir kütleçekim halesi (karanlık madde) etkisi altında hızla döndüğünü kanıtlamıştır.',
+    scientificConcept: 'Galaktik Dönüş Eğrileri ve Karanlık Madde'
+  },
+  {
+    id: 15,
+    category: 'Kozmoloji & İvmelenme',
+    question: '1998 yılında Tip Ia süpernovaları gözlemleyerek evrenin genişlemesinin yavaşlamadığını, aksine hızlanarak ivmelendiğini ortaya koyan ve Nobel Ödülü kazandıran itici güç nedir?',
+    options: [
+      'Karanlık Enerji (Kozmolojik Sabit)',
+      'Kara Delik Emisyonu',
+      'Kozmik Toz Saçılması',
+      'Kütleçekimsel Çöküş'
+    ],
+    correctAnswer: 0,
+    explanation: 'Evrenin yaklaşık %68’ini oluşturan ve uzay dokusunun kendisini hızlanarak genişleten gizemli negatif basınçlı enerjiye Karanlık Enerji adı verilir.',
+    scientificConcept: 'Karanlık Enerji ve İvmelenen Evren'
+  },
+  {
+    id: 16,
+    category: 'Astronomik Mesafe Merdiveni',
+    question: 'Uzak galaksilerin mesafesini ölçmede "standart mum" olarak kullanılan ve zonklama periyodu ile gerçek parlaklığı arasında kesin bağıntı bulunan yıldız türü hangisidir?',
+    options: [
+      'Sefeid (Cepheid) Değişenleri',
+      'T Tauri Yıldızları',
+      'Kırmızı Cüceler',
+      'Kahverengi Cüceler'
+    ],
+    correctAnswer: 0,
+    explanation: 'Henrietta Swan Leavitt tarafından keşfedilen Dönem-Parlaklık Bağıntısı uyarınca Sefeid değişkenlerinin zonklama periyodu ölçülerek gerçek aydınlatma gücü bulunur ve ters-kare kanunuyla uzaklık kesin olarak hesaplanır.',
+    scientificConcept: 'Leavitt Yasası ve Standart Mumlar'
+  },
+  {
+    id: 17,
+    category: 'Uzay Havası & Güneş',
+    question: 'Güneş yüzeyinden milyarlarca tonluk plazma ve manyetik alanın uzaya fırlatılmasıyla oluşan ve Dünya’da kutup ışıklarını tetikleyen devasa patlamalara ne ad verilir?',
+    options: [
+      'Koronal Kütle Atımı (CME)',
+      'Zodyak Işıması',
+      'Güneş Tutulması',
+      'Heliosferik Kırılma'
+    ],
+    correctAnswer: 0,
+    explanation: 'Koronal Kütle Atımları (Coronal Mass Ejections - CME), saatte milyonlarca kilometre hızla Dünya manyetosferine çarparak jeomanyetik fırtınalara ve auroralara yol açar.',
+    scientificConcept: 'Koronal Kütle Atımı (CME)'
+  },
+  {
+    id: 18,
+    category: 'Kara Delik Termodinamiği',
+    question: 'Olay ufku civarındaki kuantum vakum dalgalanmaları nedeniyle kara deliklerin parçacık yayarak zamanla buharlaşabileceğini öngören kuram kime aittir?',
+    options: [
+      'Stephen Hawking',
+      'Albert Einstein',
+      'Niels Bohr',
+      'Roger Penrose'
+    ],
+    correctAnswer: 0,
+    explanation: 'Hawking Işıması kuramına göre, olay ufkunda oluşan sanal parçacık çiftlerinden biri kara deliğe düşerken diğeri kaçarak kara deliğin kütle kaybetmesine (kuantum buharlaşmasına) neden olur.',
+    scientificConcept: 'Hawking Işıması ve Kuantum Buharlaşması'
+  },
+  {
+    id: 19,
+    category: 'Yörünge Mekaniği',
+    question: 'Bir gezegenin Güneş’e en yakın (günberi) noktasındayken yörüngesinde en yüksek hıza ulaşmasının ardındaki temel fizik yasası hangisidir?',
+    options: [
+      'Kepler’in Eşit Alanlar Yasası (Açısal Momentumun Korunumu)',
+      'Hooke Yasası',
+      'Boyle-Mariotte Yasası',
+      'Snell Kırılma Yasası'
+    ],
+    correctAnswer: 0,
+    explanation: 'Kepler’in 2. Yasası uyarınca gezegeni Güneş’e bağlayan yarıçap vektörü eşit zaman aralıklarında eşit alanlar süpürür; bu açısal momentumun korunumunun doğal bir sonucudur.',
+    scientificConcept: 'Kepler İkinci Yasası ve Açısal Momentum'
+  },
+  {
+    id: 20,
+    category: 'Kütleçekim Fiziği',
+    question: 'Bir cismin Dünya’nın kütleçekim kuyusundan tamamen kurtulup uzaya açılabilmesi için yüzeyden sahip olması gereken minimum kaçış hızı yaklaşık ne kadardır?',
+    options: [
+      'Yaklaşık 3.2 km/s',
+      'Yaklaşık 7.9 km/s',
+      'Yaklaşık 11.2 km/s',
+      'Yaklaşık 29.8 km/s'
+    ],
+    correctAnswer: 2,
+    explanation: 'Kaçış hızı v = √(2GM/R) formülüyle hesaplanır ve Dünya yüzeyinde yaklaşık 11.2 km/s (saatte yaklaşık 40.320 km) değerindedir.',
+    scientificConcept: 'Kütleçekimsel Kaçış Hızı'
+  },
+  {
+    id: 21,
+    category: 'Gök Mekaniği',
+    question: 'Dünya’dan bakıldığında Ay’ın her zaman aynı yüzünün görünmesinin nedeni nedir?',
+    options: [
+      'Ay’ın kendi ekseni etrafında hiç dönmemesi.',
+      'Kütleçekimsel kilitlenme (Kendi etrafındaki dönüşün Dünya çevresindeki dolanmaya eşitlenmesi).',
+      'Ay’ın diğer yüzünün daima Güneş’ten gizlenmiş olması.',
+      'Dünya’nın manyetik alanının Ay’ı sabitlemesi.'
+    ],
+    correctAnswer: 1,
+    explanation: 'Dünya ve Ay arasındaki gelgit sürtünmesi zamanla Ay’ın kendi eksenindeki dönüş periyodunu Dünya etrafındaki 27.3 günlük dolanma periyoduna eşitlemiştir (Tidal Locking).',
+    scientificConcept: 'Gelgit Kilitlenmesi (Tidal Locking)'
+  },
+  {
+    id: 22,
+    category: 'Galaksi Astrofiziği',
+    question: 'Samanyolu galaksimizin tam merkezinde yer alan yaklaşık 4.3 milyon Güneş kütlesindeki süper kütleli kara deliğin adı nedir?',
+    options: [
+      'Yay A* (Sagittarius A*)',
+      'Cygnus X-1',
+      'M87*',
+      'Centaurus A'
+    ],
+    correctAnswer: 0,
+    explanation: 'Yay takımyıldızı yönünde bulunan Sagittarius A*, 2020 Nobel Fizik Ödülü’ne ve 2022 Event Horizon Telescope fotoğrafına konu olan galaktik merkezimizdeki süper kütleli kara deliktir.',
+    scientificConcept: 'Galaktik Merkez Süper Kütleli Kara Deliği'
+  },
+  {
+    id: 23,
+    category: 'Nükleer Astrofizik',
+    question: 'Evrende demirden (Fe) daha ağır elementlerin (altın, platin, uranyum) büyük kısmı hangi şiddetli kozmik olaylarda sentezlenir?',
+    options: [
+      'Süpernova patlamaları ve nötron yıldızı çarpışmaları (Kilonova)',
+      'Güneş benzeri yıldızların sakin çekirdek füzyonu',
+      'Gezegenimsi bulutsu salınımı',
+      'Kozmik mikrodalga arka plan ışıması'
+    ],
+    correctAnswer: 0,
+    explanation: 'Demirden ağır elementlerin füzyonu enerji tüketir. Bu elementler süpernovalar ve nötron yıldızı birleşmelerindeki hızlı nötron yakalama (r-süreci) yoluyla sentezlenir.',
+    scientificConcept: 'r-Süreci Nükleosentezi ve Kilonovalar'
+  },
+  {
+    id: 24,
+    category: 'Kozmoloji',
+    question: 'Evrenin genişleme hızını kilometre/saniye/megaparsek cinsinden ifade eden temel kozmolojik parametre hangisidir?',
+    options: [
+      'Planck Sabiti',
+      'Hubble Sabiti (H0)',
+      'Boltzmann Sabiti',
+      'İnce Yapı Sabiti'
+    ],
+    correctAnswer: 1,
+    explanation: 'Hubble-Lemaître Yasası’nda (v = H0 · d) yer alan Hubble sabiti, bir galaksinin uzaklığı arttıkça bizden uzaklaşma hızının ne oranda arttığını belirler (yaklaşık 70 km/s/Mpc).',
+    scientificConcept: 'Hubble Sabiti ve Kozmik Genişleme'
+  },
+  {
+    id: 25,
+    category: 'Teleskop Optiği',
+    question: 'Bir teleskobun birincil ayna çapı 2 katına çıkarıldığında, teleskobun ışık toplama kapasitesi nasıl değişir?',
+    options: [
+      '2 katına çıkar.',
+      '4 katına çıkar.',
+      '8 katına çıkar.',
+      '16 katına çıkar.'
+    ],
+    correctAnswer: 1,
+    explanation: 'Işık toplama gücü ayna alanına (A = π r²) bağlıdır. Çap 2 katına çıktığında yüzey alanı ve toplanan foton sayısı karesiyle orantılı olarak 4 katına (2² = 4) çıkar.',
+    scientificConcept: 'Apertür ve Işık Toplama Gücü'
+  },
+  {
+    id: 26,
+    category: 'Güneş Fiziği & Yıldızlararası',
+    question: 'Güneş rüzgarının yıldızlararası plazma basıncıyla durdurulduğu ve Voyager 1’in 2012’de aştığı Güneş Sistemi’nin sınır eşiğine ne ad verilir?',
+    options: [
+      'Heliopoz (Heliopause)',
+      'Kuiper Hattı',
+      'Oort Sınırı',
+      'Troya Noktası'
+    ],
+    correctAnswer: 0,
+    explanation: 'Güneş’in manyetik ve plazma egemenliğinin bittiği ve yıldızlararası uzayın başladığı sınıra Heliopoz denir; Dünya’dan yaklaşık 120-125 AU mesafededir.',
+    scientificConcept: 'Heliosfer ve Heliopoz Sınırı'
+  },
+  {
+    id: 27,
+    category: 'Yıldız Termodinamiği',
+    question: 'Wien Kayma Yasası’na göre bir yıldızın yüzey sıcaklığı arttıkça yaydığı tepe ışımanın dalgaboyu ve rengi nasıl değişir?',
+    options: [
+      'Dalgaboyu uzar, yıldız kırmızılaşır.',
+      'Dalgaboyu kısalır, yıldız mavi-beyaza kayar.',
+      'Renk sıcaklıktan bağımsızdır.',
+      'Dalgaboyu sabit kalır, parlaklık azalır.'
+    ],
+    correctAnswer: 1,
+    explanation: 'Wien yasasına göre (λ_maks · T = sabit), sıcaklık arttıkça maksimum ışıma dalgaboyu kısalır. Bu yüzden 3.000 K yıldızlar kırmızı, 25.000 K yıldızlar mavi parıldar.',
+    scientificConcept: 'Wien Kayma Yasası ve Yıldız Sıcaklıkları'
+  },
+  {
+    id: 28,
+    category: 'Gök Mekaniği',
+    question: 'Bir doğal uydunun ana gezegenine yaklaşırken gelgit kuvvetlerinin kendi kütleçekimini aşarak parçalandığı ve halkaya dönüştüğü kritik mesafe sınırına ne ad verilir?',
+    options: [
+      'Roche Limiti',
+      'Chandrasekhar Sınırı',
+      'Oppenheimer Limiti',
+      'Schwarzschild Yarıçapı'
+    ],
+    correctAnswer: 0,
+    explanation: 'Édouard Roche tarafından hesaplanan Roche Limiti dahilinde gezegenin gelgit kuvvetleri uydunun kendi kütleçekimsel bütünlüğünden daha büyüktür ve uydu parçalanıp halkaya dönüşür.',
+    scientificConcept: 'Roche Limiti ve Gezegen Halkaları'
+  },
+  {
+    id: 29,
+    category: 'Genel Görelilik',
+    question: 'Büyük kütleli bir galaksinin arkasında kalan uzak bir kuasarın ışığını bükerek bir çember veya çoklu parlak yaylar halinde göstermesi fenomenine ne ad verilir?',
+    options: [
+      'Gravitasyonel Mercekleme (Kütleçekimsel Mercek)',
+      'Doppler Kayması',
+      'Rayleigh Saçılması',
+      'Kozmik Serap'
+    ],
+    correctAnswer: 0,
+    explanation: 'Genel Görelilik uyarınca dev kütleler uzay-zamanı büker. Bu bükülmüş uzaydan geçen ışık optik bir mercek gibi odaklanarak "Einstein Halkaları" oluşturur.',
+    scientificConcept: 'Gravitasyonel Mercekleme (Gravitational Lensing)'
+  },
+  {
+    id: 30,
+    category: 'Uzay Teleskopları Teknolojisi',
+    question: 'James Webb Uzay Teleskobu’nun 6.5 metrelik dev aynası neden özellikle altın kaplama berilyumdan üretilmiştir?',
+    options: [
+      'Görsel olarak estetik durması için.',
+      'Berilyumun aşırı soğukta şeklini koruması ve altının kızılötesi ışığı %98 oranında mükemmel yansıtması için.',
+      'Güneş rüzgarından elektrik enerjisi üretmek için.',
+      'Radyo dalgalarını Dünya’ya odaklamak için.'
+    ],
+    correctAnswer: 1,
+    explanation: 'Berilyum hafif ve kriyojenik sıcaklıklarda (-233°C) termal genleşmesi sıfıra yakın bir metaldir. İnce altın tabakası ise kızılötesi dalgaboylarındaki fotonları olağanüstü yüksek verimle (%98+) yansıtır.',
+    scientificConcept: 'Kriyojenik Ayna Malzeme Fiziği'
   }
 ];
 
 export function CosmicAcademyQuiz() {
+  const [quizSize, setQuizSize] = useState<10 | 30>(10);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [candidateName, setCandidateName] = useState<string>('Kozmik Kaşif');
 
-  const currentQ = QUIZ_QUESTIONS[currentQuestionIndex];
-  const totalQuestions = QUIZ_QUESTIONS.length;
+  const activeQuestions = useMemo(() => {
+    return quizSize === 30 ? QUIZ_QUESTIONS : QUIZ_QUESTIONS.slice(0, 10);
+  }, [quizSize]);
+
+  const totalQuestions = activeQuestions.length;
+  const currentQ = activeQuestions[currentQuestionIndex] ?? activeQuestions[0];
 
   const handleSelectOption = (index: number) => {
     if (selectedAnswers[currentQuestionIndex] !== undefined) return;
@@ -182,7 +467,8 @@ export function CosmicAcademyQuiz() {
     }
   };
 
-  const handleRestart = () => {
+  const handleRestart = (newSize?: 10 | 30) => {
+    if (newSize) setQuizSize(newSize);
     setSelectedAnswers({});
     setCurrentQuestionIndex(0);
     setShowExplanation(false);
@@ -191,13 +477,13 @@ export function CosmicAcademyQuiz() {
 
   const score = useMemo(() => {
     let correct = 0;
-    QUIZ_QUESTIONS.forEach((q, idx) => {
+    activeQuestions.forEach((q, idx) => {
       if (selectedAnswers[idx] === q.correctAnswer) {
         correct++;
       }
     });
     return correct;
-  }, [selectedAnswers]);
+  }, [selectedAnswers, activeQuestions]);
 
   const percentage = Math.round((score / totalQuestions) * 100);
 
@@ -255,12 +541,30 @@ export function CosmicAcademyQuiz() {
             Astrofizik <span className="serif-i text-violet">& yetkinlik testi</span>
           </h3>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            10 soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza kişisel bir Kozmik Kaşif sertifikası oluşturun.
+            {quizSize} soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza kişisel bir Kozmik Kaşif sertifikası oluşturun.
           </p>
         </div>
 
-        {/* Progress Pill */}
-        <div className="flex items-center gap-2">
+        {/* Progress Pill & Mode Switch */}
+        <div className="flex flex-wrap items-center gap-2">
+          {!isFinished && (
+            <div className="flex border border-line bg-ink-2 p-0.5">
+              <button
+                type="button"
+                onClick={() => handleRestart(10)}
+                className={`px-2.5 py-1 text-xs font-mono transition-colors ${quizSize === 10 ? 'bg-violet text-ink font-semibold' : 'text-muted hover:text-paper'}`}
+              >
+                10 Soru
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRestart(30)}
+                className={`px-2.5 py-1 text-xs font-mono transition-colors ${quizSize === 30 ? 'bg-violet text-ink font-semibold' : 'text-muted hover:text-paper'}`}
+              >
+                30 Soru
+              </button>
+            </div>
+          )}
           <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
             Soru: <span className="text-paper font-bold">{currentQuestionIndex + 1} / {totalQuestions}</span>
           </div>
@@ -462,7 +766,7 @@ export function CosmicAcademyQuiz() {
               <span>Sertifikayı Yazdır / PDF Kaydet</span>
             </button>
             <button
-              onClick={handleRestart}
+              onClick={() => handleRestart()}
               className="label px-6 py-3 border border-line bg-ink-2 text-paper/80 flex items-center gap-2 hover:bg-ink-3 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
