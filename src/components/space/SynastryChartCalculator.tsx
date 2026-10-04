@@ -18,15 +18,6 @@ import { NumericInput } from '@/components/ui/NumericInput';
 const IST_LONGITUDE = 28.9784;
 const TR_UTC_OFFSET = 3;
 
-/** Turkish genitive suffix with vowel harmony: Ayşe'nin, Ahmet'in, Mert'in, Doğu'nun. */
-function withGenitive(name: string): string {
-  const trimmed = name.trim() || 'Partner';
-  const lower = trimmed.toLocaleLowerCase('tr-TR');
-  const lastVowel = [...lower].reverse().find((ch) => 'aıoueiöü'.includes(ch)) ?? 'e';
-  const suffix = { a: 'ın', ı: 'ın', e: 'in', i: 'in', o: 'un', u: 'un', ö: 'ün', ü: 'ün' }[lastVowel] ?? 'in';
-  const endsWithVowel = 'aıoueiöü'.includes(lower[lower.length - 1]);
-  return `${trimmed}'${endsWithVowel ? 'n' : ''}${suffix}`;
-}
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -406,7 +397,7 @@ export function SynastryChartCalculator() {
           </h4>
           <p className="text-xs text-paper/75 leading-relaxed font-sans">
             {isSunMoonHarmonious
-              ? `${withGenitive(p1Name)} temel karakteri, ${withGenitive(p2Name)} içsel duygusal gereksinimleriyle derin bir huzur içinde örtüşüyor.`
+              ? `${p1Name} ve ${p2Name} arasında temel karakter ile içsel duygusal gereksinimler derin bir huzur içinde örtüşüyor.`
               : 'Duygusal tepkilerinizi ifade ederken birbirinizin diline saygı göstermeniz bağı güçlendirir.'}
           </p>
         </div>

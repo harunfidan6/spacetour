@@ -123,13 +123,13 @@ const PHASES: Record<MoonPhaseKey, string> = {
 };
 
 const DAY_TIPS: Record<SkyBody, string[]> = {
-  sun: ['Günün yöneticisi Güneş: kendine zaman ayır, seni mutlu eden bir şeyi yap.', 'Pazar Güneş’in günü: gün ışığında kısa bir yürüyüş enerjini tazeler.'],
-  moon: ['Günün yöneticisi Ay: duygularını yazmak ve suyla temas iyi gelir.', 'Pazartesi Ay’ın günü: evine ve beslenmene özen göster.'],
-  mars: ['Günün yöneticisi Mars: fazla enerjiyi spora ya da fiziksel bir işe aktar.', 'Salı Mars’ın günü: cesaret gerektiren o adımı bugün at, ama öfkeni dizginle.'],
-  mercury: ['Günün yöneticisi Merkür: yazışmalarını toparla, bir şey öğren.', 'Çarşamba Merkür’ün günü: kısa bir not, bir telefon ya da bir kitap sayfası fark yaratır.'],
-  jupiter: ['Günün yöneticisi Jüpiter: cömert ol, büyük düşün ve şükret.', 'Perşembe Jüpiter’in günü: öğrenmek ve öğretmek için bereketli bir gün.'],
-  venus: ['Günün yöneticisi Venüs: güzellik, sanat ve sevdiklerine ayrılan zaman seni besler.', 'Cuma Venüs’ün günü: kendini şımart, bir ilişkiye özen göster.'],
-  saturn: ['Günün yöneticisi Satürn: sabırla bir işi bitir, sınırlarını netleştir.', 'Cumartesi Satürn’ün günü: düzen ve planlama sana huzur verir.'],
+  sun: ['Günün yöneticisi Güneş: kendine zaman ayır, seni mutlu eden bir şeyi yap.', 'Pazar Güneş günü: gün ışığında kısa bir yürüyüş enerjini tazeler.'],
+  moon: ['Günün yöneticisi Ay: duygularını yazmak ve suyla temas iyi gelir.', 'Pazartesi Ay günü: evine ve beslenmene özen göster.'],
+  mars: ['Günün yöneticisi Mars: fazla enerjiyi spora ya da fiziksel bir işe aktar.', 'Salı Mars günü: cesaret gerektiren o adımı bugün at, ama öfkeni dizginle.'],
+  mercury: ['Günün yöneticisi Merkür: yazışmalarını toparla, bir şey öğren.', 'Çarşamba Merkür günü: kısa bir not, bir telefon ya da bir kitap sayfası fark yaratır.'],
+  jupiter: ['Günün yöneticisi Jüpiter: cömert ol, büyük düşün ve şükret.', 'Perşembe Jüpiter günü: öğrenmek ve öğretmek için bereketli bir gün.'],
+  venus: ['Günün yöneticisi Venüs: güzellik, sanat ve sevdiklerine ayrılan zaman seni besler.', 'Cuma Venüs günü: kendini şımart, bir ilişkiye özen göster.'],
+  saturn: ['Günün yöneticisi Satürn: sabırla bir işi bitir, sınırlarını netleştir.', 'Cumartesi Satürn günü: düzen ve planlama sana huzur verir.'],
 };
 
 /* ---------- Reading ---------- */
@@ -209,7 +209,7 @@ export function dailyReading(signId: string, date: Date): DailyReading {
     mercuryRetro,
     moonChange,
     energy: `${pick(H.energy, `${seed}|e`)} ${tone.line} ${PHASES[phase.key]}`,
-    love: pick(H.love, `${seed}|l`) + (dayRuler === 'venus' ? ' Venüs’ün gününde romantik jestler iki kat etkili.' : ''),
+    love: pick(H.love, `${seed}|l`) + (dayRuler === 'venus' ? ' Venüs gününde romantik jestler iki kat etkili.' : ''),
     career:
       pick(H.career, `${seed}|c`) +
       (mercuryRetro ? ' Merkür geri harekette: imzalamadan önce iki kez oku, yazışmaları yedekle.' : ''),

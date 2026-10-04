@@ -34,9 +34,9 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'Koç, zodyakın ilk burcu olarak her şeye “ilk” olma isteğiyle yaklaşır. Düşünmekten çok harekete geçerek öğrenir; bir fikir onu heyecanlandırdığında beklemeye tahammülü yoktur. Açık sözlü, rekabetçi ve korumacıdır; öfkesi çabuk parlar ama kin tutmaz. Hayatı bir mücadele alanı olarak görür ve en iyi hâlini zorlukların karşısında gösterir.',
     love: 'Aşkta avcı ruhludur: ilgisini çeken kişiye doğrudan yaklaşır, oyun oynamaz. Heyecanı ve tutkuyu canlı tutan, ona alan tanıyan ama gerektiğinde meydan da okuyabilen partnerlerle mutlu olur. En büyük düşmanı sıkılmaktır; ilişkiyi rutine kaptırmamak için ortak maceralar iyi gelir.',
-    career: 'Liderlik, girişimcilik, spor, acil durum meslekleri ve hızlı karar gerektiren her alan Koç’a göredir. Projeleri başlatmakta ustadır; uzun soluklu takipte sabırlı bir ekip arkadaşı onu tamamlar. Parayı kazanmakta olduğu kadar harcamakta da hızlıdır.',
+    career: 'Liderlik, girişimcilik, spor, acil durum meslekleri ve hızlı karar gerektiren her alan Koç burcuna göredir. Projeleri başlatmakta ustadır; uzun soluklu takipte sabırlı bir ekip arkadaşı onu tamamlar. Parayı kazanmakta olduğu kadar harcamakta da hızlıdır.',
     friendship: 'Sadık, cesur ve eğlenceli bir dosttur; arkadaşı zor durumdayken ilk koşan odur. Rekabeti dostluğa da taşıyabilir; spor, oyun ve yol arkadaşlığı bağlarını güçlendirir.',
-    growth: 'Sabır ve dinlemek Koç’un en büyük gelişim alanıdır. Bir işe başlamadan önce durup düşünmek, bitirmeden yenisine geçmemek ve öfkeyi fiziksel enerjiye dönüştürmek onu güçlendirir.',
+    growth: 'Sabır ve dinlemek Koç burcunun en büyük gelişim alanıdır. Bir işe başlamadan önce durup düşünmek, bitirmeden yenisine geçmemek ve öfkeyi fiziksel enerjiye dönüştürmek onu güçlendirir.',
     body: 'Baş ve yüz',
     myth: {
       title: 'Altın Post’un koçu',
@@ -62,7 +62,7 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     love: 'Aşkta yavaş başlar ama derin ve kalıcı bağlar kurar. Güven, sadakat ve fiziksel yakınlık onun için temel taşlardır; sevgisini sözden çok emek ve özenle gösterir. Belirsizlikten ve aceleden hoşlanmaz; sahiplenici yanını fark etmek ilişkisine iyi gelir.',
     career: 'Finans, mimarlık, tasarım, gastronomi, tarım, müzik ve sanat gibi hem estetik hem somut sonuç isteyen alanlarda parlar. Düzenli ve güvenilir çalışır; değişimi yönetmekten çok sürekliliği korumakta başarılıdır. Para biriktirmekte ve kalıcı değer yaratmakta yeteneklidir.',
     friendship: 'Yıllar geçse de değişmeyen, güvenilir bir dosttur. Arkadaşlarını sofrasında ağırlamayı, birlikte doğada vakit geçirmeyi sever; az ama öz insanla derin bağ kurar.',
-    growth: 'Esneklik Boğa’nın gelişim alanıdır. Değişimi bir tehdit değil fırsat olarak görmek, inatla sabrı birbirinden ayırmak ve konfor alanının dışına küçük adımlarla çıkmak onu büyütür.',
+    growth: 'Esneklik Boğa burcunun gelişim alanıdır. Değişimi bir tehdit değil fırsat olarak görmek, inatla sabrı birbirinden ayırmak ve konfor alanının dışına küçük adımlarla çıkmak onu büyütür.',
     body: 'Boyun, boğaz ve ses telleri',
     myth: {
       title: 'Zeus ve Europa',
@@ -74,7 +74,7 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
       season: 'Ocak akşamları',
       highlights: [
         'Ülker (Pleiades, M45) yıldız kümesi',
-        'Boğa’nın yüzünü çizen Hyades kümesi',
+        'Boğa takımyıldızının yüzünü çizen Hyades kümesi',
         '1054 yılında gözlenen süpernovanın kalıntısı Yengeç Bulutsusu (M1)',
       ],
     },
@@ -86,9 +86,9 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'İkizler, zihni hiç durmayan meraklı bir gezgindir. Her konuda bir şey bilmek, herkesle konuşmak ve fikirleri birbirine bağlamak ister. Esprili, uyumlu ve hızlıdır; aynı anda birkaç işi yürütebilir. İkili doğası onu hem eğlenceli hem de zaman zaman kararsız kılar.',
     love: 'Aşkta önce zihinsel bir kıvılcım arar: iyi bir sohbet, ortak kahkahalar ve sürprizler. Onu merakta tutan, kendini tekrar etmeyen partnerlerle bağ kurar. Duygularını analiz etmeye eğilimlidir; hissettiklerini sözle ifade etmesi ilişkiyi derinleştirir.',
-    career: 'Gazetecilik, yazarlık, öğretmenlik, pazarlama, satış, çeviri ve medya İkizler’in doğal sahasıdır. Değişken ve tempolu ortamlarda parlar; tekdüze işler onu çabuk köreltir. Ağ kurmakta ve bilgiyi yaymakta eşsizdir.',
+    career: 'Gazetecilik, yazarlık, öğretmenlik, pazarlama, satış, çeviri ve medya İkizler burcunun doğal sahasıdır. Değişken ve tempolu ortamlarda parlar; tekdüze işler onu çabuk köreltir. Ağ kurmakta ve bilgiyi yaymakta eşsizdir.',
     friendship: 'Geniş bir çevresi vardır; her gruba uyum sağlar ve sohbeti canlandırır. Dostluklarında hafiflik ve oyun arar; ona fikir alışverişi sunan arkadaşlarla bağı güçlenir.',
-    growth: 'Derinleşmek İkizler’in gelişim alanıdır. Bir konuyu sonuna kadar götürmek, sözlerini eylemle tutarlı kılmak ve dağınık enerjisini tek bir hedefte toplamak onu güçlendirir.',
+    growth: 'Derinleşmek İkizler burcunun gelişim alanıdır. Bir konuyu sonuna kadar götürmek, sözlerini eylemle tutarlı kılmak ve dağınık enerjisini tek bir hedefte toplamak onu güçlendirir.',
     body: 'Kollar, eller, omuzlar ve akciğerler',
     myth: {
       title: 'Kastor ve Polluks',
@@ -114,7 +114,7 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     love: 'Aşkta güven ve duygusal yakınlık arar; kalbini açması zaman alır ama açtığında bütünüyle bağlanır. Sevdiğini besleyen, kollayan bir partnerdir. Kırıldığında kabuğuna çekilebilir; duygularını açıkça konuşmak ilişkisini korur.',
     career: 'Sağlık, bakım, eğitim, psikoloji, gastronomi, gayrimenkul ve tarih gibi insanlara dokunan ya da geçmişi koruyan alanlarda başarılıdır. Ekibini aile gibi sahiplenir; güven duyduğu ortamda çok verimli çalışır.',
     friendship: 'Arkadaşlarını ailesinin bir parçası sayar; doğum günlerini hatırlar, zor günde sofrasını açar. Az sayıda ama ömür boyu süren dostluklar kurar.',
-    growth: 'Geçmişi bırakmak ve kendi duygularını başkalarının ruh hâlinden ayırmak Yengeç’in gelişim alanıdır. Başkalarına gösterdiği şefkati kendine de göstermesi onu güçlendirir.',
+    growth: 'Geçmişi bırakmak ve kendi duygularını başkalarının ruh hâlinden ayırmak Yengeç burcunun gelişim alanıdır. Başkalarına gösterdiği şefkati kendine de göstermesi onu güçlendirir.',
     body: 'Göğüs ve mide',
     myth: {
       title: 'Herakles’in yengeci',
@@ -140,7 +140,7 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     love: 'Aşkta romantik ve tutkuludur; büyük jestleri, ilgiyi ve hayranlığı sever. Sevdiğine sadakatle bağlanır ve onu her ortamda gururla sahiplenir. Takdir edilmediğini hissettiğinde kırılır; karşılıklı ilgi ve övgü ilişkisini canlı tutar.',
     career: 'Sahne sanatları, yöneticilik, eğitim, tasarım, eğlence ve marka yönetimi gibi görünür olduğu, yaratıcılığını kullandığı alanlarda parlar. Doğal bir liderdir; ekibini motive eder. Lüksü sever, harcamalarında cömerttir.',
     friendship: 'Sıcak, koruyucu ve eğlenceli bir dosttur; buluşmaların merkezi olur. Arkadaşlarını yürekten destekler, karşılığında da sadakat bekler.',
-    growth: 'Alçakgönüllülük ve dinlemek Aslan’ın gelişim alanıdır. Spot ışığını başkalarıyla paylaşmak, eleştiriyi kişisel algılamamak ve onaya ihtiyaç duymadan değerini bilmek onu güçlendirir.',
+    growth: 'Alçakgönüllülük ve dinlemek Aslan burcunun gelişim alanıdır. Spot ışığını başkalarıyla paylaşmak, eleştiriyi kişisel algılamamak ve onaya ihtiyaç duymadan değerini bilmek onu güçlendirir.',
     body: 'Kalp, sırt ve omurga',
     myth: {
       title: 'Nemea Aslanı',
@@ -166,11 +166,11 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     love: 'Aşkta temkinli ve sadıktır; sevgisini küçük ama anlamlı ilgilerle, pratik destekle gösterir. Güvenilirlik ve zihinsel uyum onun için önemlidir. Kusur aramak yerine kusuru kabullenmeyi öğrendiğinde ilişkisi derinleşir.',
     career: 'Sağlık, araştırma, mühendislik, editörlük, muhasebe, veri analizi ve beslenme gibi kesinlik ve özen gerektiren alanlarda üstün başarı gösterir. Sistem kurar, süreçleri iyileştirir. Parayı dikkatli ve planlı yönetir.',
     friendship: 'Zor günde pratik bir çözümle gelen, sözünü tutan bir dosttur. Kalabalık yerine samimi sohbetleri tercih eder; yardım etmek onun sevgi dilidir.',
-    growth: 'Mükemmeliyetçiliği bırakmak Başak’ın gelişim alanıdır. “Yeterince iyi”nin de değerli olduğunu kabul etmek, kendine şefkat göstermek ve kontrolü zaman zaman bırakmak onu rahatlatır.',
+    growth: 'Mükemmeliyetçiliği bırakmak Başak burcunun gelişim alanıdır. “Yeterince iyi”nin de değerli olduğunu kabul etmek, kendine şefkat göstermek ve kontrolü zaman zaman bırakmak onu rahatlatır.',
     body: 'Sindirim sistemi ve bağırsaklar',
     myth: {
       title: 'Başak tutan genç kız',
-      text: 'Başak çoğunlukla elinde buğday başağı tutan bir genç kadın olarak çizilir. Bazı anlatılarda o, hasat tanrıçası Demeter ya da kızı Persephone’dir. Bir başka anlatıda ise insanlar kötüleşince Dünya’yı en son terk eden adalet tanrıçası Astraea’dır. En parlak yıldızı Spika’nın adı Latincede “başak” demektir.',
+      text: 'Başak çoğunlukla elinde buğday başağı tutan bir genç kadın olarak çizilir. Bazı anlatılarda o, hasat tanrıçası Demeter ya da kızı Persephone’dir. Bir başka anlatıda ise insanlar kötüleşince Dünya’yı en son terk eden adalet tanrıçası Astraea’dır. En parlak yıldızı olan Spika adı Latincede “başak” demektir.',
     },
     sky: {
       sunTransit: '16 Eylül – 30 Ekim',
@@ -190,13 +190,13 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'Terazi, hayatın her alanında denge ve uyum arar. Zarif, nazik ve adil olmaya özen gösterir; çatışmayı yumuşatmakta ve farklı tarafları buluşturmakta ustadır. Güzelliğe, sanata ve iyi ilişkilere değer verir. Her iki tarafı da görebilmesi onu bilge kılar, ama karar vermesini de zorlaştırabilir.',
     love: 'İlişki Terazi için hayatın merkezindedir; ortaklık içinde kendini tamamlanmış hisseder. Romantik, düşünceli ve incelikli bir partnerdir. Uyumu korumak için kendi isteklerini geri planda bırakabilir; ihtiyaçlarını açıkça söylemek ilişkisini dengeler.',
-    career: 'Hukuk, diplomasi, insan kaynakları, tasarım, moda, sanat yönetimi ve arabuluculuk Terazi’nin yeteneklerini öne çıkarır. Ekip çalışmasında ve müzakerede başarılıdır; estetik bir çalışma ortamı verimini artırır.',
+    career: 'Hukuk, diplomasi, insan kaynakları, tasarım, moda, sanat yönetimi ve arabuluculuk Terazi burcunun yeteneklerini öne çıkarır. Ekip çalışmasında ve müzakerede başarılıdır; estetik bir çalışma ortamı verimini artırır.',
     friendship: 'Sosyal, davetkâr ve uyumlu bir dosttur; arkadaş gruplarını bir arada tutan kişidir. Herkesle iyi geçinir, kırıcı olmamaya özen gösterir.',
-    growth: 'Karar vermek ve gerektiğinde “hayır” demek Terazi’nin gelişim alanıdır. Herkesi memnun etmeye çalışmak yerine kendi sesini duyurmak, iç dengesini dış onaydan bağımsız kurmak onu güçlendirir.',
+    growth: 'Karar vermek ve gerektiğinde “hayır” demek Terazi burcunun gelişim alanıdır. Herkesi memnun etmeye çalışmak yerine kendi sesini duyurmak, iç dengesini dış onaydan bağımsız kurmak onu güçlendirir.',
     body: 'Böbrekler ve bel bölgesi',
     myth: {
       title: 'Kıskaçtan teraziye',
-      text: 'Terazi, zodyakta cansız bir nesneyle simgelenen tek burçtur. Antik Yunanlar bu yıldızları uzun süre komşusu Akrep’in kıskaçları olarak görmüştür; yıldız adları Zubenelgenubi (“güney kıskacı”) ve Zubeneschamali (“kuzey kıskacı”) hâlâ bunu hatırlatır. Romalılar ise onu yanındaki Başak’ın, yani adalet tanrıçası Astraea’nın elindeki terazi olarak benimsemiştir.',
+      text: 'Terazi, zodyakta cansız bir nesneyle simgelenen tek burçtur. Antik Yunanlar bu yıldızları uzun süre komşusu Akrep takımyıldızının kıskaçları olarak görmüştür; yıldız adları Zubenelgenubi (“güney kıskacı”) ve Zubeneschamali (“kuzey kıskacı”) hâlâ bunu hatırlatır. Romalılar ise onu yanındaki Başak takımyıldızının, yani adalet tanrıçası Astraea’nın elindeki terazi olarak benimsemiştir.',
     },
     sky: {
       sunTransit: '30 Ekim – 23 Kasım',
@@ -218,10 +218,10 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     love: 'Aşkta ya hep ya hiç der; yüzeysel ilişkiler onu tatmin etmez. Derin bir duygusal ve fiziksel bağ, mutlak güven ve sadakat ister. Kıskançlık ve kontrol eğilimini fark edip kırılganlığını paylaştığında ilişkileri dönüştürücü bir derinlik kazanır.',
     career: 'Araştırma, psikoloji, cerrahi, kriminoloji, finans, kriz yönetimi ve dedektiflik gibi derinlemesine inceleme ve dayanıklılık gerektiren alanlarda güçlüdür. Gizli kalanı ortaya çıkarmakta ve kaynakları stratejik yönetmekte ustadır.',
     friendship: 'Seçici ama son derece sadık bir dosttur; sırrını emanet edebileceğin kişidir. Az insana güvenir, güvendiğini de sonuna kadar korur.',
-    growth: 'Bırakmak ve affetmek Akrep’in gelişim alanıdır. Kontrol ihtiyacını gevşetmek, geçmiş kırgınlıkları taşımamak ve savunmasız kalmayı bir güç olarak görmek onu özgürleştirir.',
+    growth: 'Bırakmak ve affetmek Akrep burcunun gelişim alanıdır. Kontrol ihtiyacını gevşetmek, geçmiş kırgınlıkları taşımamak ve savunmasız kalmayı bir güç olarak görmek onu özgürleştirir.',
     body: 'Üreme ve boşaltım organları',
     myth: {
-      title: 'Orion’un akrebi',
+      title: 'Orion efsanesindeki akrep',
       text: 'Avcı Orion dünyadaki bütün hayvanları avlayabileceğiyle övününce, toprak ana Gaia (bazı anlatılarda Artemis) onu durdurmak için bir akrep gönderir ve akrep Orion’u sokarak öldürür. Tanrılar ikisini gökyüzünün karşıt uçlarına yerleştirir: Akrep doğudan yükselirken Orion batıda batar, ikisi asla birlikte görülmez.',
     },
     sky: {
@@ -231,7 +231,7 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
       highlights: [
         'Kızıl süperdev Antares: adı “Mars’ın rakibi” anlamına gelir',
         'Kelebek (M6) ve Ptolemaios (M7) açık kümeleri',
-        'Antares’in hemen yanındaki küresel küme M4',
+        'Antares yıldızının hemen yanındaki küresel küme M4',
       ],
     },
     dignity: { exaltation: null, detriment: 'Venüs', fall: 'Ay' },
@@ -242,13 +242,13 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'Yay, ufkun ötesini merak eden iyimser bir kâşiftir. Seyahat, felsefe, inanç sistemleri ve büyük fikirler onu heyecanlandırır. Neşeli, dürüst ve cömerttir; hayatı bir öğrenme yolculuğu olarak görür. Özgürlüğüne düşkündür; kısıtlandığını hissettiğinde huzursuzlanır.',
     love: 'Aşkta bir macera arkadaşı arar: birlikte gezilecek, öğrenilecek, gülünecek biri. Dürüstlüğü ve açık yürekliliği ilişkilerine tazelik getirir. Bağlanmaktan korkmaz ama boğulmaktan kaçar; özgürlüğüne saygı duyan bir partnerle sadık ve neşeli bir yol arkadaşı olur.',
-    career: 'Akademi, yayıncılık, turizm, hukuk, eğitim, spor ve uluslararası işler Yay’ın vizyonunu besler. Büyük resmi görür, insanlara ilham verir. Ayrıntılarda sabırsızlanabilir; planlı bir ekip onu tamamlar.',
+    career: 'Akademi, yayıncılık, turizm, hukuk, eğitim, spor ve uluslararası işler Yay burcunun vizyonunu besler. Büyük resmi görür, insanlara ilham verir. Ayrıntılarda sabırsızlanabilir; planlı bir ekip onu tamamlar.',
     friendship: 'Geniş ve çok kültürlü bir çevresi vardır; esprili ve cesaret veren bir dosttur. Yeni yerler keşfetmek, uzun sohbetler ve ortak maceralar arkadaşlıklarını besler.',
-    growth: 'Sorumluluk ve tutarlılık Yay’ın gelişim alanıdır. Verdiği sözleri tutmak, düşünmeden söylenen sözlerin etkisini fark etmek ve bir işi bitirmeden yenisine koşmamak onu olgunlaştırır.',
+    growth: 'Sorumluluk ve tutarlılık Yay burcunun gelişim alanıdır. Verdiği sözleri tutmak, düşünmeden söylenen sözlerin etkisini fark etmek ve bir işi bitirmeden yenisine koşmamak onu olgunlaştırır.',
     body: 'Kalçalar, uyluklar ve karaciğer',
     myth: {
       title: 'Bilge kentaur',
-      text: 'Yay, okunu germiş bir kentaur olarak çizilir. Genellikle Herakles, Akhilleus ve Asklepios gibi kahramanların öğretmeni olan bilge kentaur Kheiron ile özdeşleştirilir; bazı kaynaklar ise okçuluğu icat eden satir Krotos’u anar. Okun ucu, yanındaki Akrep’in kalbi Antares’e yönelmiştir.',
+      text: 'Yay, okunu germiş bir kentaur olarak çizilir. Genellikle Herakles, Akhilleus ve Asklepios gibi kahramanların öğretmeni olan bilge kentaur Kheiron ile özdeşleştirilir; bazı kaynaklar ise okçuluğu icat eden satir Krotos’u anar. Okun ucu, yanındaki Akrep takımyıldızındaki Antares’e yönelmiştir.',
     },
     sky: {
       sunTransit: '17 Aralık – 20 Ocak',
@@ -268,9 +268,9 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'Oğlak, zirveye adım adım tırmanan sabırlı bir dağ keçisidir. Hedef koyar, plan yapar ve disiplinle ilerler. Sorumluluk almaktan çekinmez; güvenilir, ciddi ve gerçekçidir. İlk bakışta mesafeli görünse de kuru bir mizah anlayışına ve derin bir sadakate sahiptir.',
     love: 'Aşkta temkinli ve ciddidir; geçici heyecanlar yerine uzun vadeli, sağlam bir birliktelik arar. Sevgisini güven vererek, sorumluluk alarak ve geleceği birlikte planlayarak gösterir. Duygularını ifade etmeyi öğrendikçe ilişkisi ısınır.',
-    career: 'Yöneticilik, mühendislik, mimarlık, finans, hukuk, kamu yönetimi ve uzun vadeli girişimler Oğlak’ın doğal alanıdır. Kariyer onun için kimliğinin önemli bir parçasıdır; yapı kurmakta ve kaynakları korumakta ustadır.',
+    career: 'Yöneticilik, mühendislik, mimarlık, finans, hukuk, kamu yönetimi ve uzun vadeli girişimler Oğlak burcunun doğal alanıdır. Kariyer onun için kimliğinin önemli bir parçasıdır; yapı kurmakta ve kaynakları korumakta ustadır.',
     friendship: 'Az ama yıllar boyu süren dostluklar kurar; zor zamanda pratik destek veren güvenilir bir arkadaştır. Sözünün eridir.',
-    growth: 'Dinlenmek ve duygularına alan açmak Oğlak’ın gelişim alanıdır. Başarıyı tek değer ölçüsü saymamak, yardım istemeyi öğrenmek ve anın tadını çıkarmak onu dengeler.',
+    growth: 'Dinlenmek ve duygularına alan açmak Oğlak burcunun gelişim alanıdır. Başarıyı tek değer ölçüsü saymamak, yardım istemeyi öğrenmek ve anın tadını çıkarmak onu dengeler.',
     body: 'Dizler, kemikler, dişler ve deri',
     myth: {
       title: 'Balık kuyruklu keçi',
@@ -294,9 +294,9 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     personality:
       'Kova, geleceğe bakan ve kalıpları sorgulayan özgün bir düşünürdür. İnsanlığa, toplumsal meselelere ve yeni fikirlere ilgi duyar; kalabalığın içinde bile kendi yolunu çizer. Arkadaş canlısı ama bağımsızdır; mantığı duygularının önüne koyabilir. Sıra dışı olmaktan korkmaz.',
     love: 'Aşkta önce dostluk arar; zihinsel uyum ve kişisel alana saygı onun için şarttır. Kıskançlık ve sahiplenme onu uzaklaştırır. Duygularını göstermekte zorlanabilir, ama sadık ve şaşırtıcı derecede anlayışlı bir partnerdir.',
-    career: 'Teknoloji, bilim, mühendislik, sivil toplum, astronomi, inovasyon ve sosyal girişimcilik Kova’nın vizyonunu yansıtır. Kurallara körü körüne uymak yerine sistemi iyileştirmek ister; ekiplerde fikir üreten kişidir.',
+    career: 'Teknoloji, bilim, mühendislik, sivil toplum, astronomi, inovasyon ve sosyal girişimcilik Kova burcunun vizyonunu yansıtır. Kurallara körü körüne uymak yerine sistemi iyileştirmek ister; ekiplerde fikir üreten kişidir.',
     friendship: 'Kova için dostluk kutsaldır; farklı çevrelerden geniş bir arkadaş ağı vardır. Yargılamayan, ilginç fikirlerle gelen ve gerektiğinde dayanışmayı örgütleyen bir dosttur.',
-    growth: 'Duygusal yakınlık Kova’nın gelişim alanıdır. Fikirlerin yanında hislere de yer açmak, inatla ilkeyi ayırt etmek ve sevdiklerine kendini göstermek onu bütünler.',
+    growth: 'Duygusal yakınlık Kova burcunun gelişim alanıdır. Fikirlerin yanında hislere de yer açmak, inatla ilkeyi ayırt etmek ve sevdiklerine kendini göstermek onu bütünler.',
     body: 'Bilekler, baldırlar ve dolaşım sistemi',
     myth: {
       title: 'Ganymedes’in testisi',
@@ -318,11 +318,11 @@ export const ZODIAC_PROFILES: Record<string, ZodiacProfile> = {
     id: 'balik',
     keywords: ['Empati', 'Hayal gücü', 'Sezgi', 'Şefkat', 'Teslimiyet'],
     personality:
-      'Zodyakın son burcu Balık’ın, diğer on bir burcun deneyimini içinde taşıdığı söylenir. Empatik, hayalperest ve sezgiseldir; başkalarının acısını kendi acısı gibi hisseder. Sanata, müziğe ve maneviyata yatkındır. Sınırları belirsizleştirme eğilimi onu hem yaratıcı hem de kırılgan kılar.',
+      'Zodyakın son burcu Balık, diğer on bir burcun deneyimini içinde taşır. Empatik, hayalperest ve sezgiseldir; başkalarının acısını kendi acısı gibi hisseder. Sanata, müziğe ve maneviyata yatkındır. Sınırları belirsizleştirme eğilimi onu hem yaratıcı hem de kırılgan kılar.',
     love: 'Aşkta romantik ve fedakârdır; bir ruh eşi arar. Sevdiğini koşulsuz kabul eder ve onun için büyük özveride bulunabilir. Gerçekçi sınırlar koymak ve partnerini idealleştirmemek ilişkisini sağlıklı tutar.',
-    career: 'Sanat, müzik, sinema, şiir, psikoloji, sağlık, sosyal hizmet ve maneviyat Balık’ın yeteneklerine alan açar. Sezgisiyle çalışır; katı ve rekabetçi ortamlar yerine anlam ve ilham bulduğu işlerde parlar.',
+    career: 'Sanat, müzik, sinema, şiir, psikoloji, sağlık, sosyal hizmet ve maneviyat Balık burcunun yeteneklerine alan açar. Sezgisiyle çalışır; katı ve rekabetçi ortamlar yerine anlam ve ilham bulduğu işlerde parlar.',
     friendship: 'Şefkatli, dinleyen ve yargılamayan bir dosttur; arkadaşları ona her şeyi anlatabilir. Bazen başkalarının yükünü fazla üstlenir.',
-    growth: 'Sınır koymak ve hayalleri somut adımlara dönüştürmek Balık’ın gelişim alanıdır. Kaçmak yerine yüzleşmeyi seçmek ve kendi ihtiyaçlarını da önemsemek onu güçlendirir.',
+    growth: 'Sınır koymak ve hayalleri somut adımlara dönüştürmek Balık burcunun gelişim alanıdır. Kaçmak yerine yüzleşmeyi seçmek ve kendi ihtiyaçlarını da önemsemek onu güçlendirir.',
     body: 'Ayaklar ve lenf sistemi',
     myth: {
       title: 'İple bağlı iki balık',
