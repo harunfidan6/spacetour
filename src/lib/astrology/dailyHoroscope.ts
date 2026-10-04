@@ -6,6 +6,7 @@
  */
 
 import { getMoonPhase, isRetrograde, type MoonPhaseKey } from '@/lib/astrophysics/skyDomeEphemeris';
+import { MOON_SIGN_ATMOSPHERES } from '@/data/lunarPhases';
 import {
   BODY_NAMES, SIGN_IDS, SIGN_IN, SIGN_NAMES, dayKey, formatTime, localMidnight, localWeekday, moonSign, nextMoonIngress,
   planetaryHours, type SkyBody,
@@ -132,6 +133,37 @@ const DAY_TIPS: Record<SkyBody, string[]> = {
   saturn: ['Günün yöneticisi Satürn: sabırla bir işi bitir, sınırlarını netleştir.', 'Cumartesi Satürn günü: düzen ve planlama sana huzur verir.'],
 };
 
+
+// Wellbeing and social life by the solar house the Moon crosses (not medical advice)
+const WELLBEING: string[] = [
+  'Enerjin yüksek ama dalgalı: hareket et, terle, ama bedenini zorlamadan dinlenmeye de vakit ayır.',
+  'Bedenin konfor ve düzen istiyor: iyi beslen, acele etmeden ye ve kendini küçük bir zevkle ödüllendir.',
+  'Zihnin çok hızlı çalışıyor: ekran süresini azalt, kısa bir yürüyüşle düşüncelerini havalandır.',
+  'Duygusal yorgunluk bedenine yansıyabilir: evde sıcak bir yemek ve erken bir uyku iyi gelir.',
+  'Neşe enerjini yükseltiyor: dans, müzik ya da yaratıcı bir hobi bugün en iyi ilaç.',
+  'Rutinlerine dön: su iç, düzenli öğün yap, bedenine küçük ama istikrarlı bir özen göster.',
+  'Başkalarının enerjisi seni etkileyebilir: sınırlarını koru, kendine yalnız birkaç dakika ayır.',
+  'Derin bir dinlenmeye ihtiyacın var: meditasyon, banyo ya da sessiz bir akşam seni yeniler.',
+  'Açık hava ve hareket ruhunu açıyor: doğada kısa bir yürüyüş ya da yeni bir rota dene.',
+  'Yoğun tempoya dikkat: omuzlarındaki yükü fark et, molalarını ihmal etme.',
+  'Sosyal enerji yüksek ama dağınık: arkadaşlarla hafif bir aktivite iyi gelir, uykunu bölme.',
+  'Enerjin içe dönük: bedenini dinle, gerekirse planlarını hafiflet ve erken dinlen.',
+];
+const SOCIAL: string[] = [
+  'İnsanlar senin enerjine çekiliyor; bugün ilk adımı sen atarsan beklenmedik bir bağlantı kurabilirsin.',
+  'Az ama güvendiğin insanlarla vakit geçirmek, kalabalıktan daha çok besler.',
+  'Mesajlar, telefonlar ve kısa buluşmalar yoğun; eski bir arkadaştan haber gelebilir.',
+  'Aile ve ev halkıyla yakınlaşma günü; birlikte bir sofra her şeyden iyi gelir.',
+  'Eğlence ve flört enerjisi yüksek; davetlere evet demek için güzel bir gün.',
+  'İş arkadaşlarınla ilişkiler öne çıkıyor; küçük bir yardım büyük bir güven yaratır.',
+  'Birebir ilişkiler gündemde; bir anlaşmazlığı yüz yüze konuşarak çözebilirsin.',
+  'Yüzeysel sohbetler seni yorabilir; derin ve samimi bir konuşma arayacaksın.',
+  'Farklı kültürlerden ya da farklı çevrelerden insanlarla tanışmak ufkunu açıyor.',
+  'Toplum önündeki duruşun dikkat çekiyor; ağzından çıkanları tart, itibarın güçleniyor.',
+  'Arkadaş grupları ve topluluklar enerjini yükseltiyor; ortak bir plan yapmak için ideal.',
+  'Kendine ayırdığın zaman bugün en değerli sosyal yatırım; yalnız kalmaktan çekinme.',
+];
+
 /* ---------- Reading ---------- */
 
 export interface DailyReading {
@@ -152,6 +184,11 @@ export interface DailyReading {
   love: string;
   career: string;
   tip: string;
+  wellbeing: string;
+  social: string;
+  /** Emotional climate of the day from the Moon's sign */
+  moonMood: string;
+  moonFocus: string;
   luckyHours: string;
   scores: { love: number; career: number; vitality: number; luck: number };
 }
@@ -214,6 +251,10 @@ export function dailyReading(signId: string, date: Date): DailyReading {
       pick(H.career, `${seed}|c`) +
       (mercuryRetro ? ' Merkür geri harekette: imzalamadan önce iki kez oku, yazışmaları yedekle.' : ''),
     tip: pick(DAY_TIPS[dayRuler], `${seed}|t`),
+    wellbeing: WELLBEING[house - 1],
+    social: SOCIAL[house - 1],
+    moonMood: MOON_SIGN_ATMOSPHERES[SIGN_IDS[moon]]?.emotionalClimate ?? '',
+    moonFocus: MOON_SIGN_ATMOSPHERES[SIGN_IDS[moon]]?.cosmicFocus ?? '',
     luckyHours,
     scores: {
       love: clamp(66 + tone.bonus + area([5, 7, 8]) + (dayRuler === 'venus' ? 6 : 0) + v('love', 9)),

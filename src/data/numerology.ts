@@ -189,6 +189,23 @@ export const NUMEROLOGY_PROFILES: Record<number, CoreNumberAnalysis> = {
   }
 };
 
+
+/** Short keys for the supporting numbers (birthday talent, maturity, personal month/day) */
+export const NUMBER_KEYS: Record<number, { talent: string; maturity: string; cycle: string }> = {
+  1: { talent: 'Başlatma ve bağımsız karar verme yeteneği', maturity: 'Olgunlukta kendi yolunu çizen, öncü bir duruşa evrilirsin.', cycle: 'Başlangıç: yeni bir işe, fikre ya da alışkanlığa adım at.' },
+  2: { talent: 'Diplomasi, dinleme ve insanları buluşturma yeteneği', maturity: 'Olgunlukta arabulucu, ilişkileri besleyen bir rol üstlenirsin.', cycle: 'İş birliği: sabırlı ol, ortaklıkları ve ilişkileri besle.' },
+  3: { talent: 'Yaratıcı ifade, yazı ve sahne yeteneği', maturity: 'Olgunlukta yaratıcılığını paylaşan, ilham veren biri olursun.', cycle: 'İfade: konuş, yaz, üret ve sosyalleş.' },
+  4: { talent: 'Düzen kurma, sabır ve sağlam iş çıkarma yeteneği', maturity: 'Olgunlukta kalıcı yapılar kuran, güvenilir bir ustaya dönüşürsün.', cycle: 'Emek: planla, düzenle ve bir temeli sağlamlaştır.' },
+  5: { talent: 'Uyum sağlama, iletişim ve değişimi yönetme yeteneği', maturity: 'Olgunlukta özgürlüğünü bilgelikle kullanan, deneyimli bir gezgin olursun.', cycle: 'Değişim: esnek ol, yeni bir şey dene, yolculuğa açık ol.' },
+  6: { talent: 'Şefkat, sorumluluk ve estetik yeteneği', maturity: 'Olgunlukta ailesine ve topluluğuna yön veren koruyucu bir figür olursun.', cycle: 'Sorumluluk: ev, aile ve sevdiklerinle ilgilen.' },
+  7: { talent: 'Analiz, araştırma ve sezgi yeteneği', maturity: 'Olgunlukta bilgisiyle yol gösteren, içgörüsü derin biri olursun.', cycle: 'İç gözlem: yavaşla, araştır, kendine zaman ayır.' },
+  8: { talent: 'Yönetme, strateji ve kaynakları büyütme yeteneği', maturity: 'Olgunlukta gücünü adaletle kullanan, başarılı bir yöneticiye dönüşürsün.', cycle: 'Hasat: finansal ve mesleki kararlar al, emeğinin karşılığını iste.' },
+  9: { talent: 'Hoşgörü, sanat ve insanlara hizmet yeteneği', maturity: 'Olgunlukta evrensel bir bakışla insanlara katkı sunan biri olursun.', cycle: 'Tamamlama: kapat, affet, bitmeyen işleri sonlandır.' },
+  11: { talent: 'Güçlü sezgi ve ilham verme yeteneği', maturity: 'Olgunlukta sezgileriyle başkalarına ışık tutan bir rehber olursun.', cycle: 'İlham: sezgilerini dinle, vizyonunu paylaş.' },
+  22: { talent: 'Büyük vizyonları somut projelere dönüştürme yeteneği', maturity: 'Olgunlukta kalıcı eserler bırakan usta bir kurucuya dönüşürsün.', cycle: 'İnşa: büyük bir hedef için somut adım at.' },
+  33: { talent: 'Koşulsuz şefkat ve öğretme yeteneği', maturity: 'Olgunlukta şefkatiyle iyileştiren bir öğretmen olursun.', cycle: 'Hizmet: sevgini ve bilgini paylaş.' },
+};
+
 /**
  * Reduce a number down to single digit or Master Numbers (11, 22, 33)
  */
@@ -241,6 +258,11 @@ export interface FullNumerologyReport {
     theme: string;
     advice: string;
   };
+  /** Supporting numbers: birthday talent, maturity, personal month and day */
+  birthdayNumber: number;
+  maturityNumber: number;
+  personalMonth: { month: number; number: number };
+  personalDay: { date: string; number: number };
 }
 
 export function generateNumerologyReport(
@@ -292,6 +314,13 @@ export function generateNumerologyReport(
 
   const pYearInfo = personalYearThemes[pYearRaw] || personalYearThemes[1];
 
+  // Supporting numbers
+  const today = new Date();
+  const toCycle = (n: number) => (n === 33 ? 6 : n);
+  const personalMonthNum = toCycle(reduceNumerology(pYearRaw + today.getMonth() + 1));
+  const personalDayNum = toCycle(reduceNumerology(personalMonthNum + today.getDate()));
+  const maturityNum = reduceNumerology(lifePathRaw + destinyRaw);
+
   return {
     fullName,
     birthDateString: `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.${year}`,
@@ -304,6 +333,10 @@ export function generateNumerologyReport(
       number: pYearRaw,
       theme: pYearInfo.theme,
       advice: pYearInfo.advice
-    }
+    },
+    birthdayNumber: reduceNumerology(day),
+    maturityNumber: maturityNum,
+    personalMonth: { month: today.getMonth() + 1, number: personalMonthNum },
+    personalDay: { date: today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }), number: personalDayNum }
   };
 }

@@ -238,6 +238,22 @@ export function DailyHoroscopeDeck() {
                   </p>
                 </div>
 
+                {reading && (
+                  <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
+                    <div className="bg-ink p-4">
+                      <span className="doc-kicker text-gold block">Ay {reading.moonIn}: günün duygusal iklimi</span>
+                      <p className="text-paper/85 text-xs leading-relaxed mt-2">{reading.moonMood}</p>
+                      <p className="text-paper/60 text-xs leading-relaxed mt-1">{reading.moonFocus}</p>
+                    </div>
+                    <div className="bg-ink p-4">
+                      <span className="doc-kicker text-gold block">Sağlık & enerji</span>
+                      <p className="text-paper/85 text-xs leading-relaxed mt-2">{reading.wellbeing}</p>
+                      <span className="doc-kicker text-gold block mt-3">Sosyal hayat</span>
+                      <p className="text-paper/85 text-xs leading-relaxed mt-2">{reading.social}</p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-4 border border-line bg-ink flex items-start gap-3">
                   <AlertTriangle size={16} className="text-gold shrink-0 mt-0.5" />
                   <div>

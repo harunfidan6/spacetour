@@ -20,6 +20,8 @@ import {
 } from '@/data/zodiac';
 import { longitude, signIndex } from '@/lib/astrology/dailySky';
 import { ascendantLongitude, birthInstant, turkeyUtcOffset } from '@/lib/astrology/natal';
+import { natalReading } from '@/lib/astrology/natalReading';
+import { NatalReadingPanel } from '@/components/astrology/NatalReadingPanel';
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -91,7 +93,7 @@ export function NatalChartCalculator() {
   const instant = birthInstant(year, month, day, hour, minute, zoneOffset);
 
   // Active view tab: 'trinity' | 'planets' | 'houses' | 'poster'
-  const [activeTab, setActiveTab] = useState<'trinity' | 'planets' | 'houses' | 'poster'>('trinity');
+  const [activeTab, setActiveTab] = useState<'reading' | 'trinity' | 'planets' | 'houses' | 'poster'>('reading');
   const [selectedHouse, setSelectedHouse] = useState<AstrologicalHouse | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [hoveredAspect, setHoveredAspect] = useState<AspectInfo | null>(null);
@@ -110,6 +112,9 @@ export function NatalChartCalculator() {
       planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year, month, hour, minute, zoneOffset),
     };
   })();
+
+  // Long-form personal reading from the real sky at the birth moment
+  const reading = natalReading(instant, location.latitude, location.longitude);
 
   const lifePath = useMemo(() => {
     return calculateLifePathNumber(day, month, year);
@@ -221,6 +226,14 @@ export function NatalChartCalculator() {
         </div>
 
         <div className="flex flex-wrap items-center gap-1 border border-line bg-ink-2 p-1 text-xs font-mono">
+          <button
+            onClick={() => setActiveTab('reading')}
+            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
+              activeTab === 'reading' ? 'bg-gold text-ink' : 'text-muted hover:text-paper'
+            }`}
+          >
+            Kişisel Yorum
+          </button>
           <button
             onClick={() => setActiveTab('trinity')}
             className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
@@ -386,6 +399,8 @@ export function NatalChartCalculator() {
       </div>
 
       {/* TAB 1: Core Trinity & High-Precision Interactive Natal Wheel */}
+      {activeTab === 'reading' && <NatalReadingPanel reading={reading} />}
+
       {activeTab === 'trinity' && (
         <div className="space-y-8">
           {/* Trinity Cards */}

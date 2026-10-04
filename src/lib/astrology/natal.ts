@@ -62,8 +62,8 @@ export const MAJOR_ASPECTS = [
 ] as const;
 
 export function aspectBetween(a: number, b: number) {
-  const d = Math.abs((((a - b) % 360) + 540) % 360 - 180);
-  const sep = 180 - d; // 0..180
+  // angular separation along the ecliptic, 0..180
+  const sep = Math.abs((((a - b) % 360) + 540) % 360 - 180);
   for (const asp of MAJOR_ASPECTS) {
     const off = Math.abs(sep - asp.angle);
     if (off <= asp.orb) return { ...asp, orbUsed: Math.round(off * 10) / 10 };
