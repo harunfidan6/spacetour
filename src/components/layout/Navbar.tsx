@@ -108,9 +108,6 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
-  // The studio stage is a full-viewport instrument without site chrome.
-  // (Checked after every hook so the hook order never changes between routes.)
-  if (pathname?.startsWith('/studio')) return null;
 
   return (
     <>

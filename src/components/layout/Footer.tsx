@@ -19,8 +19,8 @@ const SOURCES = [
 
 export function Footer() {
   const pathname = usePathname();
-  // The planetarium and studio are full-viewport instruments; they get no footer.
-  if (pathname.startsWith('/harita') || pathname.startsWith('/studio')) return null;
+  // The planetarium is a full-viewport instrument; it gets no footer.
+  if (pathname.startsWith('/harita')) return null;
 
   return (
     <footer className="relative z-10 overflow-hidden border-t border-white/[0.08] bg-ink">
