@@ -29,8 +29,23 @@ import {
   Pause,
   Layers,
   Sparkles,
-  Eye
+  Eye,
+  Compass
 } from 'lucide-react';
+
+export const PLANET_AXIAL_TILTS: Record<string, number> = {
+  gunes: 7.25,
+  merkur: 0.034,
+  venus: 177.36,
+  dunya: 23.44,
+  ay: 1.54,
+  mars: 25.19,
+  jupiter: 3.13,
+  saturn: 26.73,
+  uranus: 97.77,
+  neptun: 28.32,
+  pluton: 122.53,
+};
 
 interface PlanetHologramProps {
   id: string;
@@ -40,12 +55,14 @@ function HologramMesh({
   id,
   isWireframe,
   showAtmosphere,
-  isPaused
+  isPaused,
+  isTilted
 }: {
   id: string;
   isWireframe: boolean;
   showAtmosphere: boolean;
   isPaused: boolean;
+  isTilted: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
@@ -105,10 +122,12 @@ function HologramMesh({
     }
   });
 
+  const tiltAngle = isTilted ? (((PLANET_AXIAL_TILTS[id] ?? 0) * Math.PI) / 180) : 0;
+
   // 1. THE SUN
   if (id === 'gunes') {
     return (
-      <group>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.5, 64, 64]} />
           <meshBasicMaterial map={texture || undefined} wireframe={isWireframe} />
@@ -132,13 +151,13 @@ function HologramMesh({
   // 2. EARTH
   if (id === 'dunya') {
     return (
-      <group>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.2, 64, 64]} />
           <meshStandardMaterial
             map={texture || undefined}
-            roughness={0.65}
-            metalness={0.1}
+            roughness={0.45}
+            metalness={0.15}
             wireframe={isWireframe}
           />
         </mesh>
@@ -148,7 +167,7 @@ function HologramMesh({
             <meshStandardMaterial
               map={cloudsTexture}
               transparent
-              opacity={0.7}
+              opacity={0.8}
               blending={THREE.AdditiveBlending}
             />
           </mesh>
@@ -157,7 +176,7 @@ function HologramMesh({
           <mesh scale={1.06}>
             <sphereGeometry args={[2.2, 32, 32]} />
             <meshBasicMaterial
-              color="#00aaff"
+              color="#38bdf8"
               transparent
               opacity={0.25}
               side={THREE.BackSide}
@@ -172,7 +191,7 @@ function HologramMesh({
   // 3. SATURN
   if (id === 'saturn') {
     return (
-      <group rotation={[0.42, 0, 0]}>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.0, 64, 64]} />
           <meshStandardMaterial
@@ -198,7 +217,7 @@ function HologramMesh({
   // 4. URANUS (Tilted with Ring)
   if (id === 'uranus') {
     return (
-      <group rotation={[1.4, 0, 0]}>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.1, 64, 64]} />
           <meshStandardMaterial
@@ -237,7 +256,7 @@ function HologramMesh({
   // 5. VENUS (Atmosphere Glow)
   if (id === 'venus') {
     return (
-      <group>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.1, 64, 64]} />
           <meshStandardMaterial
@@ -265,7 +284,7 @@ function HologramMesh({
   // 6. NEPTUNE (Atmosphere Glow)
   if (id === 'neptun') {
     return (
-      <group>
+      <group rotation={[tiltAngle, 0, 0]}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[2.1, 64, 64]} />
           <meshStandardMaterial
@@ -290,17 +309,76 @@ function HologramMesh({
     );
   }
 
-  // 7. MARS, JUPITER, MERCURY, MOON, PLUTO & OTHERS
+  // 7. MARS (Dusty Atmosphere Glow)
+  if (id === 'mars') {
+    return (
+      <group rotation={[tiltAngle, 0, 0]}>
+        <mesh ref={meshRef}>
+          <sphereGeometry args={[2.1, 64, 64]} />
+          <meshStandardMaterial
+            map={texture || undefined}
+            roughness={0.75}
+            metalness={0.08}
+            wireframe={isWireframe}
+          />
+        </mesh>
+        {showAtmosphere && (
+          <mesh scale={1.04}>
+            <sphereGeometry args={[2.1, 32, 32]} />
+            <meshBasicMaterial
+              color="#d1603d"
+              transparent
+              opacity={0.2}
+              side={THREE.BackSide}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+
+  // 8. JUPITER (Gas Giant Haze)
+  if (id === 'jupiter') {
+    return (
+      <group rotation={[tiltAngle, 0, 0]}>
+        <mesh ref={meshRef}>
+          <sphereGeometry args={[2.3, 64, 64]} />
+          <meshStandardMaterial
+            map={texture || undefined}
+            roughness={0.55}
+            wireframe={isWireframe}
+          />
+        </mesh>
+        {showAtmosphere && (
+          <mesh scale={1.03}>
+            <sphereGeometry args={[2.3, 32, 32]} />
+            <meshBasicMaterial
+              color="#e3a857"
+              transparent
+              opacity={0.16}
+              side={THREE.BackSide}
+              blending={THREE.AdditiveBlending}
+            />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+
+  // 9. MERCURY, MOON, PLUTO & OTHERS
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[2.1, 64, 64]} />
-      <meshStandardMaterial
-        map={texture || undefined}
-        roughness={id === 'merkur' || id === 'ay' ? 0.9 : 0.65}
-        metalness={id === 'merkur' ? 0.2 : 0.05}
-        wireframe={isWireframe}
-      />
-    </mesh>
+    <group rotation={[tiltAngle, 0, 0]}>
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[2.1, 64, 64]} />
+        <meshStandardMaterial
+          map={texture || undefined}
+          roughness={id === 'merkur' || id === 'ay' ? 0.9 : 0.65}
+          metalness={id === 'merkur' ? 0.2 : 0.05}
+          wireframe={isWireframe}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -310,6 +388,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
   const [isWireframe, setIsWireframe] = useState<boolean>(false);
   const [showAtmosphere, setShowAtmosphere] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isTilted, setIsTilted] = useState<boolean>(true);
 
   return (
     <div ref={stageRef} className="relative ticks h-80 sm:h-[420px] w-full border border-line bg-ink overflow-hidden">
@@ -333,6 +412,7 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           isWireframe={isWireframe}
           showAtmosphere={showAtmosphere}
           isPaused={isPaused}
+          isTilted={isTilted}
         />
 
         <OrbitControls
@@ -346,9 +426,9 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
       </Canvas>
 
       {/* Top Hologram Telemetry Visor */}
-      <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2">
-        <span className="h-2 w-2 bg-solar animate-ping" />
-        <span className="font-mono text-[10px] tracking-widest text-solar font-bold uppercase">
+      <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2 max-w-[190px] sm:max-w-none">
+        <span className="h-2 w-2 shrink-0 bg-solar animate-ping" />
+        <span className="font-mono text-[10px] tracking-widest text-solar font-bold uppercase truncate">
           NASA FOTOGERÇEKÇİ 3D HOLOGRAM · 360° ETKİLEŞİMLİ
         </span>
       </div>
@@ -365,6 +445,18 @@ export function PlanetHologram3D({ id }: PlanetHologramProps) {
           }`}
         >
           {isPaused ? <Play size={13} /> : <Pause size={13} />}
+        </button>
+
+        <button type="button" aria-label="Eksen eğikliği modu" aria-pressed={isTilted}
+          onClick={() => setIsTilted(!isTilted)}
+          title={`Eksen Eğikliği (${PLANET_AXIAL_TILTS[id] ?? 0}°): ${isTilted ? 'Açık' : 'Kapalı'}`}
+          className={`p-1.5 transition-colors cursor-pointer border ${
+            isTilted
+              ? 'border-gold bg-gold text-ink font-bold'
+              : 'border-transparent text-muted hover:text-paper'
+          }`}
+        >
+          <Compass size={13} />
         </button>
 
         <button type="button" aria-label="Tel kafes (wireframe) modu" aria-pressed={isWireframe}

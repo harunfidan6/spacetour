@@ -183,6 +183,37 @@ export const MODULE_GUIDES: Record<string, ModuleGuide> = {
     ]
   },
 
+  'harita/samanyolu': {
+    kicker: 'Galaktik Kartografya',
+    title: 'Samanyolu 3D Nokta Bulutu',
+    serif: 've Güneş’in konumu',
+    summary: '28.000 yıldız parçacığıyla modellenen çubuklu sarmal galaksimiz, Sagittarius A* süper kütleli çekirdeği ve Güneş Sistemimizin Orion Mahmuzu’ndaki koordinatı.',
+    intro: [
+      'Samanyolu Galaksisi, Evren’deki milyarlarca ada evrenden yalnızca biri olmakla birlikte, insanlığın doğduğu ve içinde yaşadığı kozmik evimizdir. Çapı yaklaşık 100.000 ila 120.000 ışık yılı olan galaksimiz, morfolojik olarak SBbc tipi bir çubuklu sarmal galaksidir.',
+      'Merkezinde yaklaşık 4.3 milyon Güneş kütlesine sahip Sagittarius A* adında süper kütleli bir karadelik yer alır. Karadeliği çevreleyen yoğun nükleer yıldız kümesi ve ~27 bin ışık yılı uzunluğundaki merkezi çubuk, galaksinin dev kütleçekim dinamosunu oluşturur.',
+      'Güneş Sistemimiz bu devasa girdabın ne merkezinde ne de en uç kıyısındadır. Çekirdekten yaklaşık 26.670 ışık yılı (8.2 kiloparsek) uzaklıkta, Yay (Sagittarius) ve Kahraman (Perseus) ana kolları arasında uzanan "Orion Mahmuzu" adlı yerel yapıda saniyede yaklaşık 230 km hızla galaktik yörüngesinde dolanır.'
+    ],
+    howToTitle: 'Galaksi Modelini Nasıl İncelemelisiniz?',
+    howTo: [
+      { step: '01', title: 'Kuşbakışı Disk Görünümüne Geçin', desc: 'Galaksinin tepeden logaritmik sarmal kollarını, Kahraman ve Kalkan-Erboğa ana omurgalarını ve yıldız yoğunluğu gradyanını inceleyin.' },
+      { step: '02', title: 'Güneş’in Konumunu Odaklayın', desc: '"Güneş (Biz)" butonuna tıklayarak Güneş Sistemimizin Orion Mahmuzu’ndaki 3D sarı halka ve fener işaretçisine yaklaşın.' },
+      { step: '03', title: 'Yandan Profil Moduna Geçin', desc: 'Galaktik ince diskin dikeyde yalnızca yaklaşık 1.000 ışık yılı kalınlıkta olduğunu ve merkezdeki küresel şişkinliğin nasıl yükseldiğini gözlemleyin.' }
+    ],
+    factsTitle: 'Galaktik Parametreler',
+    facts: [
+      { label: 'Galaksi Çapı', value: '~105.700 Işık Yılı', desc: 'Görünür yıldız diskinin çapı' },
+      { label: 'Güneş’in Çekirdek Mesafesi', value: '26.670 Işık Yılı', desc: '8.18 kiloparsek (galaktik yarıçapın yarısı)' },
+      { label: 'Güneş Orbital Hızı', value: '828.000 km/sa', desc: '230 km/saniye galaktik dönüş hızı' },
+      { label: 'Kozmik Yıl (Dönüş Süresi)', value: '~230 Milyon Yıl', desc: 'Güneş’in galaksi çevresindeki bir tam turu' },
+      { label: 'Sagittarius A* Kütlesi', value: '4.297 × 10⁶ M☉', desc: 'Merkezi süper kütleli karadeliğin kütlesi' }
+    ],
+    takeawaysTitle: 'Biliyor Muydunuz?',
+    takeaways: [
+      'Güneş Sistemimiz galaksi çevresindeki bir tam turunu yaklaşık 230 milyon yılda tamamlar. Güneş son kez şu anki konumundayken Dünya üzerinde ilk dinozorlar yeni evrimleşmekteydi.',
+      'Geceleri gökyüzünde çıplak gözle gördüğümüz tüm yıldızlar (yaklaşık 9.000 adet), Samanyolu’nun tamamına kıyasla Güneş’in etrafındaki yalnızca birkaç bin ışık yılı genişliğindeki minik bir "mahalle" içinde yer alır.'
+    ]
+  },
+
   // ==========================================
   // ANSİKLOPEDİ LABORATUVARI
   // ==========================================

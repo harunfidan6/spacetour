@@ -52,7 +52,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
   const paragraphs = planet.detay.split('\n').filter(Boolean);
 
   return (
-    <div className="relative" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
+    <div className="relative overflow-x-clip" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
       <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
         <div className="flex items-center gap-4 border-b border-line pb-4">
@@ -87,7 +87,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
         </div>
       </div>
 
-      <div className="mt-16 border-y border-line bg-violet py-3 text-ink">
+      <div className="mt-16 border-y border-line bg-violet py-3 text-ink overflow-hidden max-w-full">
         <Marquee speed={50}>
           {[planet.name, TYPE_LABEL[planet.type] ?? planet.type, planet.facts.çap, planet.facts.sıcaklık].map((t, i) => (
             <span key={i} className="label flex items-center gap-6 px-6 text-sm font-semibold">

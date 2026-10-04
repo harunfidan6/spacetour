@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { useInView } from '@/lib/useInView';
 import { matchesQuery } from '@/lib/text';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -1394,9 +1395,14 @@ export function Planetarium3D() {
               </button>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-1.5 border border-line bg-ink/80 px-3 py-1 rounded-full text-[11px] text-muted font-mono backdrop-blur-xl">
+            <div className="hidden md:flex items-center gap-2 border border-line bg-ink/80 px-3 py-1 rounded-full text-[11px] text-muted font-mono backdrop-blur-xl">
               <span className="live-dot" />
               <span>360° Planetaryum</span>
+              <span className="text-line">|</span>
+              <Link href="/harita/samanyolu" className="text-gold hover:text-paper transition-colors flex items-center gap-1 font-semibold">
+                <span>3D Galaksi</span>
+                <span>→</span>
+              </Link>
             </div>
           )}
         </div>

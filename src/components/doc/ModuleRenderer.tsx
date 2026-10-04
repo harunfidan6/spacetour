@@ -20,6 +20,7 @@ const MODULES: Record<string, ComponentType> = {
   'harita/bortle': dynamic(() => import('@/components/space/BortleScaleSimulator').then((m) => m.BortleScaleSimulator), { loading: () => <Loading /> }),
   'harita/messier': dynamic(() => import('@/components/space/MessierDeepSkyRadar').then((m) => m.MessierDeepSkyRadar), { loading: () => <Loading /> }),
   'harita/polaris': dynamic(() => import('@/components/space/PolarisPrecessionHop').then((m) => m.PolarisPrecessionHop), { loading: () => <Loading /> }),
+  'harita/samanyolu': dynamic(() => import('@/components/space/MilkyWayPointCloud3D').then((m) => m.MilkyWayPointCloud3D), { ssr: false, loading: () => <Loading tall /> }),
 
   // Ansiklopedi laboratuvarı
   'ansiklopedi/kepler-orrery': dynamic(() => import('@/components/space/SolarSystemOrrery').then((m) => m.SolarSystemOrrery), { loading: () => <Loading /> }),

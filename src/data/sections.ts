@@ -109,6 +109,15 @@ export const SECTIONS: DocSection[] = [
         kind: 'Rehber',
         image: img['harita-polaris'],
       },
+      {
+        slug: 'samanyolu',
+        title: '3D Samanyolu Galaksisi & Nokta Bulutu',
+        short: '3D Samanyolu',
+        blurb: '100.000 ışık yılı genişliğindeki galaksimizin 28.000 yıldızlı spiral kolları, Sagittarius A* süper kütleli çekirdeği ve Güneş Sistemimizin konumu.',
+        kind: '3D Galaksi Haritası',
+        image: img['harita-planetaryum'],
+        immersive: true,
+      },
     ],
   },
   {

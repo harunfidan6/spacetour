@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Rocket, Radio } from 'lucide-react';
+import { Rocket, Radio, Box, Activity } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
+import { SpacecraftExplorer3D } from './SpacecraftExplorer3D';
 
 const AU_KM = 149_597_870.7;
 const LIGHT_KM_S = 299_792.458;
@@ -95,6 +96,7 @@ function formatLightTime(seconds: number): string {
 }
 
 export function InterstellarProbes() {
+  const [viewMode, setViewMode] = useState<'3d' | 'telemetry'>('3d');
   const [selectedProbe, setSelectedProbe] = useState<Probe>(PROBES_DATA[0]);
   const now = useNow(60_000);
 
@@ -118,49 +120,83 @@ export function InterstellarProbes() {
               Yıldızlararası Sondalar & Uzay Araçları
             </h3>
             <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
-              DERİN UZAY İLETİŞİM AĞI (NASA DSN)
+              DERİN UZAY İLETİŞİM AĞI & 3D HANGAR
             </span>
           </div>
         </div>
-        <span className="flex items-center gap-1.5 border border-violet/30 bg-violet/10 px-2.5 py-1 text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
-          <Radio size={12} className="animate-spin text-violet" style={{ animationDuration: '4s' }} />
-          {selectedProbe.auPerYear ? 'MESAFE ANLIK TAHMİN' : 'YAKLAŞIK KONUM'}
-        </span>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
-        {PROBES_DATA.map((probe) => {
-          const isActive = selectedProbe.id === probe.id;
-          return (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-ink border border-line p-0.5 font-mono text-[11px]">
             <button
-              key={probe.id}
               type="button"
-              aria-pressed={isActive}
-              onClick={() => setSelectedProbe(probe)}
-              className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
-                isActive
-                  ? 'border-violet bg-violet text-ink font-bold'
-                  : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
+              onClick={() => setViewMode('3d')}
+              className={`px-3 py-1 flex items-center gap-1.5 transition-colors cursor-pointer ${
+                viewMode === '3d'
+                  ? 'bg-paper text-ink font-bold'
+                  : 'text-muted hover:text-paper'
               }`}
             >
-              <span lang="en">{probe.name}</span>
+              <Box size={13} />
+              <span>3D Model Hangarı</span>
             </button>
-          );
-        })}
+            <button
+              type="button"
+              onClick={() => setViewMode('telemetry')}
+              className={`px-3 py-1 flex items-center gap-1.5 transition-colors cursor-pointer ${
+                viewMode === 'telemetry'
+                  ? 'bg-paper text-ink font-bold'
+                  : 'text-muted hover:text-paper'
+              }`}
+            >
+              <Activity size={13} />
+              <span>DSN Telemetri</span>
+            </button>
+          </div>
+          {viewMode === 'telemetry' && (
+            <span className="hidden md:flex items-center gap-1.5 border border-violet/30 bg-violet/10 px-2.5 py-1 text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
+              <Radio size={12} className="animate-spin text-violet" style={{ animationDuration: '4s' }} />
+              {selectedProbe.auPerYear ? 'MESAFE ANLIK TAHMİN' : 'YAKLAŞIK KONUM'}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Detail Showcase */}
-      <div className="border border-line bg-ink-2 p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-          <div>
-            <span className="text-[10px] text-muted font-mono uppercase tracking-wider">{selectedProbe.mission}</span>
-            <h4 className="text-xl font-bold text-paper font-mono mt-0.5">{selectedProbe.name}</h4>
+      {viewMode === '3d' ? (
+        <SpacecraftExplorer3D />
+      ) : (
+        <>
+          {/* Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
+            {PROBES_DATA.map((probe) => {
+              const isActive = selectedProbe.id === probe.id;
+              return (
+                <button
+                  key={probe.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setSelectedProbe(probe)}
+                  className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
+                    isActive
+                      ? 'border-violet bg-violet text-ink font-bold'
+                      : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
+                  }`}
+                >
+                  <span lang="en">{probe.name}</span>
+                </button>
+              );
+            })}
           </div>
-          <span className={`px-2.5 py-1 text-[10px] font-mono font-bold border uppercase tracking-wider ${selectedProbe.badgeColor}`}>
-            {selectedProbe.status}
-          </span>
-        </div>
+
+          {/* Detail Showcase */}
+          <div className="border border-line bg-ink-2 p-5 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+              <div>
+                <span className="text-[10px] text-muted font-mono uppercase tracking-wider">{selectedProbe.mission}</span>
+                <h4 className="text-xl font-bold text-paper font-mono mt-0.5">{selectedProbe.name}</h4>
+              </div>
+              <span className={`px-2.5 py-1 text-[10px] font-mono font-bold border uppercase tracking-wider ${selectedProbe.badgeColor}`}>
+                {selectedProbe.status}
+              </span>
+            </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
           <div className="p-3 bg-ink border border-line">
@@ -206,6 +242,8 @@ export function InterstellarProbes() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

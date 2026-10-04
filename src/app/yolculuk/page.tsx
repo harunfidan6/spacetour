@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
-import { Voyage } from '@/components/home/Voyage';
+import { YolculukExperience } from '@/components/space/YolculukExperience';
 import { getSection } from '@/data/sections';
 
 export default function YolculukPage() {
@@ -15,13 +15,13 @@ export default function YolculukPage() {
         accent={section.accent}
         image={section.image}
         meta={[
-          { k: 'Durak', v: 7 },
-          { k: 'Efemeris', v: 'J2000' },
+          { k: 'Güneş Sistemi', v: '7 Durak' },
+          { k: 'Dikey İrtifa', v: '0 – 35.786 km' },
           { k: 'Motor', v: 'WebGL' },
-          { k: 'Mod', v: 'Didaktik & gerçek' },
+          { k: 'Efemeris', v: 'J2000' },
         ]}
       />
-      <Voyage />
+      <YolculukExperience />
     </div>
   );
 }

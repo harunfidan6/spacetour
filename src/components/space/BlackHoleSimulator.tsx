@@ -35,6 +35,7 @@ function BlackHole3DMesh({
     g.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
   }, []);
+
   // Separate texture instance so the lensed halo can rotate independently of the disk
   const lensTexture = useMemo(() => {
     const t = createAccretionDiskTexture();
@@ -42,7 +43,7 @@ function BlackHole3DMesh({
     return t;
   }, []);
 
-  // Relativistic relativistic jet particles
+  // Relativistic jet particles
   const [jetPositions] = useMemo(() => {
     const rand = seededRandom(4209);
     const count = 600;
@@ -58,23 +59,122 @@ function BlackHole3DMesh({
     return [pos];
   }, []);
 
+  // GLSL Shader Material for Relativistic Accretion Disk with Doppler Beaming
+  const accretionMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uTexture: { value: diskTexture },
+        uDoppler: { value: 0.85 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vWorldPosition;
+        void main() {
+          vUv = uv;
+          vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform sampler2D uTexture;
+        uniform float uDoppler;
+        varying vec2 vUv;
+        varying vec3 vWorldPosition;
+
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          vec2 d = vUv - center;
+          float r = length(d);
+          float angle = atan(d.y, d.x);
+
+          // Relativistic differential rotation: inner disk spins faster
+          float spin = angle + (uTime * 0.45) / max(r * 2.0, 0.4);
+          vec2 uvSample = center + vec2(cos(spin), sin(spin)) * r;
+
+          vec4 base = texture2D(uTexture, uvSample);
+
+          // Doppler Beaming: Approaching side (left) is brighter and blue-shifted
+          float doppler = clamp(sin(angle) * uDoppler + 1.0, 0.3, 2.2);
+
+          // Spectral shift: blue-shift approaching, red-shift receding
+          vec3 blueShift = vec3(0.9, 1.15, 1.4);
+          vec3 redShift = vec3(1.3, 0.8, 0.45);
+          vec3 shift = mix(redShift, blueShift, clamp(sin(angle) * 0.5 + 0.5, 0.0, 1.0));
+
+          vec3 color = base.rgb * doppler * shift;
+          float alpha = base.a * smoothstep(0.12, 0.22, r) * (1.0 - smoothstep(0.46, 0.5, r));
+
+          gl_FragColor = vec4(color, alpha * 0.95);
+        }
+      `,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [diskTexture]);
+
+  // GLSL Shader Material for Gravitational Lensing Halo (Far side Einstein bending)
+  const lensHaloMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uTexture: { value: lensTexture },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform sampler2D uTexture;
+        varying vec2 vUv;
+
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          vec2 d = vUv - center;
+          float r = length(d);
+          float angle = atan(d.y, d.x);
+
+          float spin = angle + uTime * 0.3;
+          vec2 uvSample = center + vec2(cos(spin), sin(spin)) * r;
+          vec4 base = texture2D(uTexture, uvSample);
+
+          // Gravitational lensing upper and lower arches
+          float arch = abs(sin(angle));
+          float intensity = smoothstep(0.18, 0.28, r) * (1.0 - smoothstep(0.42, 0.5, r)) * arch;
+
+          gl_FragColor = vec4(base.rgb * 1.4, base.a * intensity * 0.45);
+        }
+      `,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [lensTexture]);
+
   const lensRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
-    if (isAccretionRotating && diskRef.current) {
-      diskRef.current.rotation.z += dt * 0.4;
+    if (isAccretionRotating) {
+      const dMat = diskRef.current?.material as THREE.ShaderMaterial | undefined;
+      if (dMat?.uniforms?.uTime) dMat.uniforms.uTime.value += dt;
+      const lMat = lensRef.current?.material as THREE.ShaderMaterial | undefined;
+      if (lMat?.uniforms?.uTime) lMat.uniforms.uTime.value += dt;
     }
     // The photon ring and the lensed image of the far side of the disk always face the
     // observer: they are images formed by bent light, not objects lying in a plane.
     for (const m of [photonRingRef.current, lensRef.current]) {
       if (m) m.quaternion.copy(camera.quaternion);
-    }
-    if (lensRef.current && isAccretionRotating) {
-      // spin the lensed texture with the disk so the two read as one flow
-      const map = (lensRef.current.material as THREE.MeshBasicMaterial).map;
-      if (map) map.rotation += dt * 0.4;
     }
     if (jetsRef.current) {
       // particles stream outward along the poles and recycle
@@ -110,31 +210,14 @@ function BlackHole3DMesh({
         />
       </mesh>
 
-      {/* 3. Swirling Relativistic Accretion Disk (Gargantua Style) */}
-      <mesh ref={diskRef} rotation={[-Math.PI / 2.3, 0, 0]}>
+      {/* 3. Swirling Relativistic Accretion Disk (Gargantua Style with Doppler Beaming Shader) */}
+      <mesh ref={diskRef} rotation={[-Math.PI / 2.3, 0, 0]} material={accretionMaterial}>
         <ringGeometry args={[2.4, 7.5, 96]} />
-        <meshBasicMaterial
-          map={diskTexture}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.92}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
       </mesh>
 
-      {/* Lensed image of the disk's far side (gravitational lensing halo), always facing the observer */}
-      <mesh ref={lensRef} renderOrder={2}>
+      {/* Lensed image of the disk's far side (Einstein Gravitational Lensing Halo Shader), always facing the observer */}
+      <mesh ref={lensRef} renderOrder={2} material={lensHaloMaterial}>
         <ringGeometry args={[2.2, 4.2, 128]} />
-        <meshBasicMaterial
-          map={lensTexture}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.3}
-          depthWrite={false}
-          depthTest={false}
-          blending={THREE.AdditiveBlending}
-        />
       </mesh>
 
       {/* 4. Relativistic Jets */}
