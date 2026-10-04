@@ -41,4 +41,5 @@ export interface AnalyticsStatsResponse {
   recentStream: PageViewRecord[];
   hourlyTimeline: { hour: string; views: number; uniques: number }[];
   isPersistent?: boolean;
+  isGoogleAnalytics?: boolean;
 }

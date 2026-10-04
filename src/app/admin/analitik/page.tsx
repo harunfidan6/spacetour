@@ -455,11 +455,15 @@ export default function AdminAnalyticsPage() {
           </span>
         </div>
         <span className={`px-2 py-0.5 text-[10px] font-bold border uppercase tracking-wider shrink-0 ${
-          stats?.isPersistent
+          stats?.isGoogleAnalytics || stats?.isPersistent
             ? 'border-lime/50 bg-lime/20 text-lime'
             : 'border-solar/40 bg-solar/10 text-solar'
         }`}>
-          {stats?.isPersistent ? '✓ KALICI REDIS/KV BAĞLI' : '⚡ SERVERLESS CANLI AKIŞ'}
+          {stats?.isGoogleAnalytics
+            ? '✓ GOOGLE ANALYTICS BAĞLI'
+            : stats?.isPersistent
+            ? '✓ KALICI REDIS/KV BAĞLI'
+            : '⚡ SERVERLESS CANLI AKIŞ'}
         </span>
       </div>
       {!isDemoMode && (

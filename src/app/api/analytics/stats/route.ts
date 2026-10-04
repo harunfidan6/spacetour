@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { computeAnalyticsStats } from '@/lib/analyticsStore';
 import { isAdminRequest } from '@/lib/adminAuth';
 import { getPersistentStats, isRedisConfigured } from '@/lib/persistentAnalytics';
+import { fetchGoogleAnalyticsStats, isGoogleAnalyticsConfigured } from '@/lib/googleAnalyticsApi';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,8 +19,23 @@ export async function GET(req: NextRequest) {
     const includeDemo = demoParam === 'true';
     const stats = computeAnalyticsStats(includeDemo);
 
-    // If persistent Redis is connected, overlay permanent counters
-    if (isRedisConfigured()) {
+    // If Google Analytics Data API is connected, overlay official GA4 data
+    if (isGoogleAnalyticsConfigured()) {
+      const gaStats = await fetchGoogleAnalyticsStats();
+      if (gaStats) {
+        if (gaStats.activeVisitorsNow !== undefined) stats.activeVisitorsNow = gaStats.activeVisitorsNow;
+        if (gaStats.totalPageviews !== undefined) stats.totalPageviews = gaStats.totalPageviews;
+        if (gaStats.uniqueVisitors !== undefined) stats.uniqueVisitors = gaStats.uniqueVisitors;
+        if (gaStats.avgDurationSeconds !== undefined) stats.avgDurationSeconds = gaStats.avgDurationSeconds;
+        if (gaStats.topPages && gaStats.topPages.length > 0) stats.topPages = gaStats.topPages;
+        if (gaStats.topCities && gaStats.topCities.length > 0) stats.topCities = gaStats.topCities;
+        if (gaStats.deviceBreakdown && gaStats.deviceBreakdown.length > 0) stats.deviceBreakdown = gaStats.deviceBreakdown;
+        if (gaStats.osBreakdown && gaStats.osBreakdown.length > 0) stats.osBreakdown = gaStats.osBreakdown;
+        if (gaStats.trafficSources && gaStats.trafficSources.length > 0) stats.trafficSources = gaStats.trafficSources;
+      }
+    }
+    // Else if persistent Redis is connected, overlay permanent counters
+    else if (isRedisConfigured()) {
       const pStats = await getPersistentStats();
       if (pStats.configured && (pStats.totalPageviews || 0) > 0) {
         stats.activeVisitorsNow = pStats.activeNow || stats.activeVisitorsNow;
@@ -58,7 +74,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       ...stats,
-      isPersistent: isRedisConfigured()
+      isPersistent: isRedisConfigured() || isGoogleAnalyticsConfigured(),
+      isGoogleAnalytics: isGoogleAnalyticsConfigured()
     }, {
       headers: {
         'Cache-Control': 'no-store, max-age=0'
