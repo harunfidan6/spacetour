@@ -3,6 +3,8 @@ import type { AnalyticsStatsResponse } from '@/types/analytics';
 
 let analyticsDataClient: BetaAnalyticsDataClient | null = null;
 
+export type AnalyticsPeriod = 'today' | 'yesterday' | '7days' | '30days';
+
 function getClient(): BetaAnalyticsDataClient | null {
   if (analyticsDataClient) return analyticsDataClient;
 
@@ -10,7 +12,6 @@ function getClient(): BetaAnalyticsDataClient | null {
   if (!propertyId) return null;
 
   try {
-    // 1. Option: Full JSON credentials in one env variable
     const credentialsJson = process.env.GA_CREDENTIALS_JSON?.trim();
     if (credentialsJson) {
       const parsed = JSON.parse(credentialsJson);
@@ -23,7 +24,6 @@ function getClient(): BetaAnalyticsDataClient | null {
       return analyticsDataClient;
     }
 
-    // 2. Option: Separate client_email and private_key env variables
     const clientEmail = process.env.GA_CLIENT_EMAIL?.trim();
     const privateKey = process.env.GA_PRIVATE_KEY?.trim()?.replace(/\\n/g, '\n');
 
@@ -52,7 +52,9 @@ export function isGoogleAnalyticsConfigured(): boolean {
   return Boolean(propertyId && hasCreds);
 }
 
-export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStatsResponse> | null> {
+export async function fetchGoogleAnalyticsStats(
+  period: AnalyticsPeriod = 'today'
+): Promise<Partial<AnalyticsStatsResponse> | null> {
   const client = getClient();
   const propertyId = process.env.GA_PROPERTY_ID?.trim();
   if (!client || !propertyId) return null;
@@ -60,7 +62,17 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
   try {
     const property = `properties/${propertyId}`;
 
-    // 1. Run Realtime Report for active users
+    // Define Date Range
+    let dateRange = { startDate: 'today', endDate: 'today' };
+    if (period === 'yesterday') {
+      dateRange = { startDate: 'yesterday', endDate: 'yesterday' };
+    } else if (period === '7days') {
+      dateRange = { startDate: '7daysAgo', endDate: 'today' };
+    } else if (period === '30days') {
+      dateRange = { startDate: '30daysAgo', endDate: 'today' };
+    }
+
+    // 1. Run Realtime Report for currently active users
     const [realtimeResponse] = await client.runRealtimeReport({
       property,
       metrics: [{ name: 'activeUsers' }],
@@ -71,17 +83,17 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
 
     const activeVisitorsNow = Number(realtimeResponse?.rows?.[0]?.metricValues?.[0]?.value || 0);
 
-    // 2. Run Historical Report (last 7 days)
+    // 2. Run Historical Report for Top Pages in selected period
     const [reportResponse] = await client.runReport({
       property,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+      dateRanges: [dateRange],
       dimensions: [{ name: 'pagePath' }],
       metrics: [
         { name: 'screenPageViews' },
         { name: 'totalUsers' },
         { name: 'userEngagementDuration' },
       ],
-      limit: 10,
+      limit: 12,
     }).catch((err) => {
       console.warn('[GA4] Report query warning:', err.message);
       return [{ rows: [] }];
@@ -109,7 +121,6 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
       };
     });
 
-    // Fix percentages
     for (const p of topPages) {
       p.percentage = Math.round((p.views / (totalPageviews || 1)) * 100);
     }
@@ -117,10 +128,10 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
     // 3. Geographic Breakdown (City & Country)
     const [geoResponse] = await client.runReport({
       property,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+      dateRanges: [dateRange],
       dimensions: [{ name: 'city' }, { name: 'country' }],
       metrics: [{ name: 'activeUsers' }],
-      limit: 8,
+      limit: 10,
     }).catch(() => [{ rows: [] }]);
 
     const topCities = (geoResponse?.rows || [])
@@ -140,7 +151,7 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
     // 4. Device Breakdown
     const [deviceResponse] = await client.runReport({
       property,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+      dateRanges: [dateRange],
       dimensions: [{ name: 'deviceCategory' }],
       metrics: [{ name: 'activeUsers' }],
     }).catch(() => [{ rows: [] }]);
@@ -159,7 +170,7 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
     // 5. Operating System Breakdown
     const [osResponse] = await client.runReport({
       property,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+      dateRanges: [dateRange],
       dimensions: [{ name: 'operatingSystem' }],
       metrics: [{ name: 'activeUsers' }],
       limit: 6,
@@ -178,10 +189,10 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
     // 6. Traffic Sources
     const [sourceResponse] = await client.runReport({
       property,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+      dateRanges: [dateRange],
       dimensions: [{ name: 'sessionSource' }],
       metrics: [{ name: 'activeUsers' }],
-      limit: 6,
+      limit: 8,
     }).catch(() => [{ rows: [] }]);
 
     const trafficSources = (sourceResponse?.rows || []).map((row) => {
@@ -193,6 +204,56 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
         percentage: Math.round((count / (uniqueVisitors || 1)) * 100),
       };
     });
+
+    // 7. Timeline Breakdown (Hourly for today/yesterday, Daily for 7days/30days)
+    const isHourly = period === 'today' || period === 'yesterday';
+    const timelineDimension = isHourly ? 'hour' : 'date';
+
+    const [timelineResponse] = await client.runReport({
+      property,
+      dateRanges: [dateRange],
+      dimensions: [{ name: timelineDimension }],
+      metrics: [{ name: 'screenPageViews' }, { name: 'totalUsers' }],
+      orderBys: [{ dimension: { dimensionName: timelineDimension } }],
+    }).catch(() => [{ rows: [] }]);
+
+    let hourlyTimeline: { hour: string; views: number; uniques: number }[] = [];
+
+    if (isHourly) {
+      // 24-hour timeline from 00:00 to 23:00
+      const hourMap: Record<string, { views: number; uniques: number }> = {};
+      for (let h = 0; h < 24; h++) {
+        const hStr = `${String(h).padStart(2, '0')}:00`;
+        hourMap[hStr] = { views: 0, uniques: 0 };
+      }
+
+      for (const row of timelineResponse?.rows || []) {
+        const rawHour = row.dimensionValues?.[0]?.value || '00';
+        const hKey = `${String(rawHour).padStart(2, '0')}:00`;
+        if (hourMap[hKey]) {
+          hourMap[hKey].views = Number(row.metricValues?.[0]?.value || 0);
+          hourMap[hKey].uniques = Number(row.metricValues?.[1]?.value || 0);
+        }
+      }
+
+      hourlyTimeline = Object.entries(hourMap).map(([hour, val]) => ({
+        hour,
+        views: val.views,
+        uniques: val.uniques,
+      }));
+    } else {
+      // Day by day timeline (e.g. 01 Eki, 02 Eki...)
+      hourlyTimeline = (timelineResponse?.rows || []).map((row) => {
+        const dateStr = row.dimensionValues?.[0]?.value || '';
+        // format YYYYMMDD to DD/MM
+        const dayLabel = dateStr.length === 8 ? `${dateStr.slice(6, 8)}.${dateStr.slice(4, 6)}` : dateStr;
+        return {
+          hour: dayLabel,
+          views: Number(row.metricValues?.[0]?.value || 0),
+          uniques: Number(row.metricValues?.[1]?.value || 0),
+        };
+      });
+    }
 
     const avgDurationSeconds = Math.round(totalDuration / (uniqueVisitors || 1));
 
@@ -206,6 +267,7 @@ export async function fetchGoogleAnalyticsStats(): Promise<Partial<AnalyticsStat
       deviceBreakdown,
       osBreakdown,
       trafficSources,
+      hourlyTimeline,
     };
   } catch (err) {
     console.error('[GoogleAnalyticsApi] Error fetching stats:', err);

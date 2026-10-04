@@ -17,11 +17,13 @@ export async function GET(req: NextRequest) {
 
     const demoParam = req.nextUrl.searchParams.get('demo');
     const includeDemo = demoParam === 'true';
-    const stats = computeAnalyticsStats(includeDemo);
+    const periodParam = req.nextUrl.searchParams.get('period') as 'today' | 'yesterday' | '7days' | '30days' | null;
+    const period = periodParam === 'yesterday' || periodParam === '7days' || periodParam === '30days' ? periodParam : 'today';
+    const stats = computeAnalyticsStats(includeDemo, period);
 
-    // If Google Analytics Data API is connected, overlay official GA4 data
+    // If Google Analytics Data API is connected, overlay official GA4 data for selected period
     if (isGoogleAnalyticsConfigured()) {
-      const gaStats = await fetchGoogleAnalyticsStats();
+      const gaStats = await fetchGoogleAnalyticsStats(period);
       if (gaStats) {
         if (gaStats.activeVisitorsNow !== undefined) stats.activeVisitorsNow = gaStats.activeVisitorsNow;
         if (gaStats.totalPageviews !== undefined) stats.totalPageviews = gaStats.totalPageviews;
@@ -32,6 +34,7 @@ export async function GET(req: NextRequest) {
         if (gaStats.deviceBreakdown && gaStats.deviceBreakdown.length > 0) stats.deviceBreakdown = gaStats.deviceBreakdown;
         if (gaStats.osBreakdown && gaStats.osBreakdown.length > 0) stats.osBreakdown = gaStats.osBreakdown;
         if (gaStats.trafficSources && gaStats.trafficSources.length > 0) stats.trafficSources = gaStats.trafficSources;
+        if (gaStats.hourlyTimeline && gaStats.hourlyTimeline.length > 0) stats.hourlyTimeline = gaStats.hourlyTimeline;
       }
     }
     // Else if persistent Redis is connected, overlay permanent counters

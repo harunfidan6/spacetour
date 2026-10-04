@@ -26,16 +26,17 @@ import {
   Download,
   CheckCircle2,
   ShieldCheck,
-  Zap
+  Zap,
+  Calendar
 } from 'lucide-react';
 import { AnalyticsStatsResponse } from '@/types/analytics';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 
-async function requestStats(demo: boolean): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
+async function requestStats(demo: boolean, period: string = 'today'): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
   try {
-    const res = await fetch(`/api/analytics/stats?demo=${demo}`, {
+    const res = await fetch(`/api/analytics/stats?demo=${demo}&period=${period}`, {
       cache: 'no-store',
       credentials: 'include'
     });
@@ -68,6 +69,7 @@ export default function AdminAnalyticsPage() {
   const [isSubmittingAuth, setIsSubmittingAuth] = useState<boolean>(false);
 
   const [stats, setStats] = useState<AnalyticsStatsResponse | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'yesterday' | '7days' | '30days'>('today');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefreshSecs, setAutoRefreshSecs] = useState<number>(5);
   const [lastUpdated, setLastUpdated] = useState<string>('');
@@ -159,8 +161,8 @@ export default function AdminAnalyticsPage() {
   const refresh = useCallback(() => {
     if (!isAuthenticated) return;
     setIsRefreshing(true);
-    requestStats(isDemoMode).then(applyStats);
-  }, [isDemoMode, isAuthenticated, applyStats]);
+    requestStats(isDemoMode, selectedPeriod).then(applyStats);
+  }, [isDemoMode, selectedPeriod, isAuthenticated, applyStats]);
 
   // Export current telemetry dataset as JSON
   const handleExportData = useCallback(() => {
@@ -170,7 +172,7 @@ export default function AdminAnalyticsPage() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `spacetour-telemetry-${new Date().toISOString().slice(0, 10)}.json`);
+      downloadAnchor.setAttribute("download", `spacetour-telemetry-${selectedPeriod}-${new Date().toISOString().slice(0, 10)}.json`);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
@@ -179,19 +181,20 @@ export default function AdminAnalyticsPage() {
     } finally {
       setTimeout(() => setIsExporting(false), 800);
     }
-  }, [stats]);
+  }, [stats, selectedPeriod]);
 
-  // Load on mount & source toggle
+  // Load on mount, source toggle & period toggle
   useEffect(() => {
     if (!isAuthenticated) return;
     let ignore = false;
-    requestStats(isDemoMode).then((result) => {
+    setIsRefreshing(true);
+    requestStats(isDemoMode, selectedPeriod).then((result) => {
       if (!ignore) applyStats(result);
     });
     return () => {
       ignore = true;
     };
-  }, [isAuthenticated, isDemoMode, applyStats]);
+  }, [isAuthenticated, isDemoMode, selectedPeriod, applyStats]);
 
   // Periodic Auto-refresh
   useEffect(() => {
@@ -473,6 +476,45 @@ export default function AdminAnalyticsPage() {
       )}
     </div>
 
+      {/* Time Period Selector Tabs */}
+      <div className="relative ticks border border-line bg-ink-2 p-3 sm:p-4">
+        <Ticks />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="text-solar" size={16} />
+            <span className="font-mono text-xs font-bold uppercase tracking-wider text-paper">
+              Raporlama Zaman Aralığı:
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 font-mono text-xs">
+            {[
+              { id: 'today', label: 'Bugün (Son 24 Saat)', icon: Clock },
+              { id: 'yesterday', label: 'Dün', icon: Calendar },
+              { id: '7days', label: 'Son 7 Gün (Haftalık)', icon: BarChart3 },
+              { id: '30days', label: 'Son 30 Gün (Aylık)', icon: TrendingUp }
+            ].map((p) => {
+              const IconComp = p.icon;
+              const isActive = selectedPeriod === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPeriod(p.id as any)}
+                  className={`flex items-center justify-center gap-2 px-3 py-2 border transition-all cursor-pointer font-bold ${
+                    isActive
+                      ? 'border-solar bg-solar text-ink shadow-[0_0_15px_rgba(255,91,34,0.3)]'
+                      : 'border-line bg-ink text-muted hover:text-paper hover:border-paper/40'
+                  }`}
+                >
+                  <IconComp size={13} className={isActive ? 'text-ink' : 'text-solar'} />
+                  <span>{p.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* 4 Big Real-Time KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Active Visitors Now */}
@@ -491,7 +533,7 @@ export default function AdminAnalyticsPage() {
             <span className="text-xs font-mono text-lime font-bold">Kişi Sitede</span>
           </div>
           <p className="text-xs text-muted mt-2">
-            Son 3 dakika içinde sayfalar arasında gezinen aktif ziyaretçiler.
+            Son 3-5 dakika içinde sitede aktif gezinen kullanıcılar.
           </p>
         </div>
 
@@ -511,7 +553,10 @@ export default function AdminAnalyticsPage() {
             <span className="text-xs font-mono text-solar font-bold">Hit</span>
           </div>
           <p className="text-xs text-muted mt-2">
-            Tüm modüller ve sayfalar genelinde kaydedilen toplam gösterim.
+            {selectedPeriod === 'today' && 'Bugün kaydedilen toplam sayfa gösterimi.'}
+            {selectedPeriod === 'yesterday' && 'Dün gün boyunca kaydedilen toplam gösterim.'}
+            {selectedPeriod === '7days' && 'Son 7 günde kaydedilen toplam sayfa gösterimi.'}
+            {selectedPeriod === '30days' && 'Son 30 günde kaydedilen kümülatif gösterim.'}
           </p>
         </div>
 
@@ -528,10 +573,13 @@ export default function AdminAnalyticsPage() {
             <span className="text-4xl sm:text-5xl font-bold text-paper font-mono">
               {stats ? stats.uniqueVisitors : '—'}
             </span>
-            <span className="text-xs font-mono text-violet font-bold">Benzersiz Kişi</span>
+            <span className="text-xs font-mono text-violet font-bold">Tekil Kişi</span>
           </div>
           <p className="text-xs text-muted mt-2">
-            Gizlilik korumalı benzersiz IP oturumları üzerinden hesaplanır.
+            {selectedPeriod === 'today' && 'Bugünkü benzersiz tekil ziyaretçi sayısı.'}
+            {selectedPeriod === 'yesterday' && 'Dünkü benzersiz tekil ziyaretçi sayısı.'}
+            {selectedPeriod === '7days' && 'Son 7 günlük benzersiz tekil ziyaretçi sayısı.'}
+            {selectedPeriod === '30days' && 'Son 30 günlük benzersiz tekil ziyaretçi sayısı.'}
           </p>
         </div>
 
@@ -551,7 +599,7 @@ export default function AdminAnalyticsPage() {
             <span className="text-xs font-mono text-solar font-bold">Derin Odak</span>
           </div>
           <p className="text-xs text-muted mt-2">
-            Kullanıcıların 3D planetaryum ve astrolojide geçirdiği süre.
+            Seçili dönemde modüllerde geçirilen ortalama oturum süresi.
           </p>
         </div>
       </div>
@@ -639,33 +687,43 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* 24-Hour Timeline Visualizer */}
+      {/* Dynamic Timeline Visualizer */}
       <div className="relative ticks border border-line bg-ink-2 p-6 space-y-4">
         <Ticks />
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-lg font-bold text-paper flex items-center gap-2">
               <BarChart3 className="text-solar" size={18} />
-              24 Saatlik Ziyaret & Trafik Dağılımı
+              {selectedPeriod === 'today' && 'Bugünün Saatlik Trafik Dağılımı (24 Saat)'}
+              {selectedPeriod === 'yesterday' && 'Dünün Saatlik Trafik Dağılımı (24 Saat)'}
+              {selectedPeriod === '7days' && 'Son 7 Günün Günlük Dağılımı (Haftalık)'}
+              {selectedPeriod === '30days' && 'Son 30 Günün Günlük Dağılımı (Aylık)'}
             </h3>
             <p className="text-xs text-muted mt-0.5">
-              Günün saatlerine göre sayfa gösterim yoğunluğu.
+              {selectedPeriod === 'today' || selectedPeriod === 'yesterday'
+                ? 'Günün saatlerine göre sayfa gösterim ve ziyaretçi yoğunluğu.'
+                : 'Gün bazında toplam sayfa gösterimi ve tekil ziyaretçi dağılımı.'}
             </p>
           </div>
-          <span className="text-xs font-mono text-muted uppercase">Zaman ekseni (UTC+3)</span>
+          <span className="text-xs font-mono text-muted uppercase">
+            {selectedPeriod === 'today' || selectedPeriod === 'yesterday'
+              ? 'Zaman ekseni (Saatlik UTC+3)'
+              : 'Zaman ekseni (Günlük)'}
+          </span>
         </div>
 
-        {/* 24 bar columns */}
-        <div className="flex items-end gap-1.5 h-36 pt-4 border-b border-line px-1">
-          {stats?.hourlyTimeline?.map((bucket) => {
+        {/* bar columns */}
+        <div className="flex items-end gap-1 sm:gap-1.5 h-36 pt-4 border-b border-line px-1">
+          {stats?.hourlyTimeline?.map((bucket, idx) => {
             const maxViews = Math.max(...(stats.hourlyTimeline?.map((b) => b.views) || [1]), 1);
             const heightPct = Math.max(Math.round((bucket.views / maxViews) * 100), 6);
+            const isHourly = selectedPeriod === 'today' || selectedPeriod === 'yesterday';
             const currentHourStr = `${String(new Date().getHours()).padStart(2, '0')}:00`;
-            const isCurrentHour = bucket.hour === currentHourStr;
+            const isHighlight = isHourly && selectedPeriod === 'today' && bucket.hour === currentHourStr;
 
             return (
               <div
-                key={bucket.hour}
+                key={bucket.hour || idx}
                 className="flex-1 flex flex-col items-center gap-1 group relative h-full justify-end"
               >
                 {/* Tooltip on hover */}
@@ -676,7 +734,7 @@ export default function AdminAnalyticsPage() {
                 <div
                   style={{ height: `${heightPct}%` }}
                   className={`w-full transition-all duration-500 ${
-                    isCurrentHour
+                    isHighlight
                       ? 'bg-solar shadow-[0_0_12px_rgba(255,91,34,0.5)]'
                       : 'bg-paper/20 group-hover:bg-lime'
                   }`}
@@ -686,14 +744,27 @@ export default function AdminAnalyticsPage() {
           })}
         </div>
 
+        {/* Dynamic Axis Labels */}
         <div className="flex justify-between text-[10px] font-mono text-muted pt-1 px-1">
-          <span>00:00</span>
-          <span>04:00</span>
-          <span>08:00</span>
-          <span>12:00</span>
-          <span>16:00</span>
-          <span>20:00</span>
-          <span>23:00</span>
+          {selectedPeriod === 'today' || selectedPeriod === 'yesterday' ? (
+            <>
+              <span>00:00</span>
+              <span>04:00</span>
+              <span>08:00</span>
+              <span>12:00</span>
+              <span>16:00</span>
+              <span>20:00</span>
+              <span>23:00</span>
+            </>
+          ) : stats?.hourlyTimeline && stats.hourlyTimeline.length > 0 ? (
+            <>
+              <span>{stats.hourlyTimeline[0]?.hour}</span>
+              {stats.hourlyTimeline.length > 2 && (
+                <span>{stats.hourlyTimeline[Math.floor(stats.hourlyTimeline.length / 2)]?.hour}</span>
+              )}
+              <span>{stats.hourlyTimeline[stats.hourlyTimeline.length - 1]?.hour}</span>
+            </>
+          ) : null}
         </div>
       </div>
 
@@ -709,7 +780,10 @@ export default function AdminAnalyticsPage() {
                 En Çok Ziyaret Edilen Sayfalar
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Kullanıcıların en fazla ilgi gösterdiği modüller.
+                {selectedPeriod === 'today' && 'Bugün kullanıcıların en fazla ilgi gösterdiği sayfalar.'}
+                {selectedPeriod === 'yesterday' && 'Dün kullanıcıların en fazla ilgi gösterdiği sayfalar.'}
+                {selectedPeriod === '7days' && 'Son 7 günde kullanıcıların en fazla ilgi gösterdiği sayfalar.'}
+                {selectedPeriod === '30days' && 'Son 30 günde kullanıcıların en fazla ilgi gösterdiği sayfalar.'}
               </p>
             </div>
             <span className="text-xs font-mono text-muted uppercase">Sıralama</span>
@@ -760,7 +834,10 @@ export default function AdminAnalyticsPage() {
                 Şehir & Coğrafi Dağılım
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Ziyaretçilerin bağlandığı iller ve ülkeler.
+                {selectedPeriod === 'today' && 'Bugün ziyaretçilerin bağlandığı iller ve ülkeler.'}
+                {selectedPeriod === 'yesterday' && 'Dün ziyaretçilerin bağlandığı iller ve ülkeler.'}
+                {selectedPeriod === '7days' && 'Son 7 günde ziyaretçilerin bağlandığı iller ve ülkeler.'}
+                {selectedPeriod === '30days' && 'Son 30 günde ziyaretçilerin bağlandığı iller ve ülkeler.'}
               </p>
             </div>
             <span className="text-xs font-mono text-muted uppercase">Konum</span>

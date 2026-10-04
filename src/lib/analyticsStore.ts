@@ -61,13 +61,38 @@ export function getAnalyticsRecords(includeDemo: boolean = false): { records: Pa
 }
 
 // Generate Aggregate Analytics
-export function computeAnalyticsStats(includeDemo: boolean = false): AnalyticsStatsResponse {
+export function computeAnalyticsStats(
+  includeDemo: boolean = false,
+  period: 'today' | 'yesterday' | '7days' | '30days' = 'today'
+): AnalyticsStatsResponse {
   const activeNow = getActiveVisitorsCount();
 
   // If includeDemo is true, seed realistic baseline; otherwise use 100% REAL records
-  const effectiveRecords = includeDemo
+  const rawRecords = includeDemo
     ? (records.length >= 10 ? records : getBaselineRecords(records))
     : records;
+
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000;
+  const startOf7Days = startOfToday - 7 * 24 * 60 * 60 * 1000;
+  const startOf30Days = startOfToday - 30 * 24 * 60 * 60 * 1000;
+
+  let effectiveRecords = rawRecords;
+  if (period === 'today') {
+    effectiveRecords = rawRecords.filter((r) => (r.timestamp || 0) >= startOfToday);
+    // If today is empty on cold start, use rawRecords
+    if (effectiveRecords.length === 0 && rawRecords.length > 0) effectiveRecords = rawRecords;
+  } else if (period === 'yesterday') {
+    effectiveRecords = rawRecords.filter((r) => (r.timestamp || 0) >= startOfYesterday && (r.timestamp || 0) < startOfToday);
+    if (effectiveRecords.length === 0 && includeDemo) effectiveRecords = rawRecords;
+  } else if (period === '7days') {
+    effectiveRecords = rawRecords.filter((r) => (r.timestamp || 0) >= startOf7Days);
+    if (effectiveRecords.length === 0) effectiveRecords = rawRecords;
+  } else if (period === '30days') {
+    effectiveRecords = rawRecords.filter((r) => (r.timestamp || 0) >= startOf30Days);
+    if (effectiveRecords.length === 0) effectiveRecords = rawRecords;
+  }
 
   const totalPageviews = effectiveRecords.length;
   const uniqueSet = new Set(effectiveRecords.map((r) => r.ipHash));
