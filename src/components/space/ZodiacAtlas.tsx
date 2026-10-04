@@ -44,7 +44,7 @@ export function ZodiacAtlas() {
         ))}
       </div>
 
-      <div ref={grid} className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div ref={grid} className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:max-xl:fill-row-3 xl:grid-cols-4 xl:fill-row-4">
         {signs.map((s) => {
           const Icon = ELEMENT_ICON[s.element];
           const image = DOC_IMAGES[`sign-${s.id}` as DocImageKey];
