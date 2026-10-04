@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { useNow } from '@/lib/useNow';
+import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 import { getMoonPhase, isRetrograde, type MoonPhaseKey } from '@/lib/astrophysics/skyDomeEphemeris';
 import { Ticks } from '@/components/motion/primitives';
 import {
@@ -54,7 +55,7 @@ export function DailyCosmicTransitWidget() {
   const sky = useMemo(() => {
     if (!now) return null;
     return {
-      dateFormatted: now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+      dateFormatted: now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }),
       dayName: DAY_NAMES[now.getDay()],
       dayRuler: PLANETARY_RULERS_OF_DAY[now.getDay()],
       moon: getMoonPhase(now),
@@ -62,6 +63,8 @@ export function DailyCosmicTransitWidget() {
     };
   }, [now]);
 
+  const reading = useMemo(() => (now ? dailyReading(selectedSign.id, now) : null), [now, selectedSign.id]);
+  const pending = 'Bugünün gökyüzü hesaplanıyor…';
   const dateFormatted = sky?.dateFormatted ?? '—';
   const dayName = sky?.dayName ?? '';
   const dayRuler = sky?.dayRuler ?? PLANETARY_RULERS_OF_DAY[0];
@@ -204,6 +207,11 @@ export function DailyCosmicTransitWidget() {
                 <div className="label text-muted mt-1">
                   Element: {selectedSign.element} ({selectedSign.modality}) • Yönetici: {selectedSign.rulingPlanet}
                 </div>
+                {reading && (
+                  <div className="label mt-1 text-paper/70">
+                    Ay bugün {reading.moonIn} · {reading.house}. ev: {reading.houseArea}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -211,7 +219,7 @@ export function DailyCosmicTransitWidget() {
               <Hourglass size={16} className="text-gold" />
               <div>
                 <span className="label text-[10px] text-muted block">Günün Şanslı Saatleri</span>
-                <span className="text-paper font-bold">{selectedSign.dailyHoroscope.luckyHours}</span>
+                <span className="text-paper font-bold">{reading ? reading.luckyHours : '—'}</span>
               </div>
             </div>
           </div>
@@ -225,7 +233,7 @@ export function DailyCosmicTransitWidget() {
                 <span>Kozmik Enerji & Odak</span>
               </div>
               <p className="text-xs text-paper/75 leading-relaxed font-sans">
-                {selectedSign.dailyHoroscope.energy}
+                {reading ? reading.energy : pending}
               </p>
             </div>
 
@@ -236,7 +244,7 @@ export function DailyCosmicTransitWidget() {
                 <span>Aşk & İlişkiler</span>
               </div>
               <p className="text-xs text-paper/75 leading-relaxed font-sans">
-                {selectedSign.dailyHoroscope.love}
+                {reading ? reading.love : pending}
               </p>
             </div>
 
@@ -247,7 +255,7 @@ export function DailyCosmicTransitWidget() {
                 <span>Kariyer & Maddiyat</span>
               </div>
               <p className="text-xs text-paper/75 leading-relaxed font-sans">
-                {selectedSign.dailyHoroscope.career}
+                {reading ? reading.career : pending}
               </p>
             </div>
           </div>
@@ -256,7 +264,7 @@ export function DailyCosmicTransitWidget() {
           <div className="mt-6 pt-4 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-2 text-paper/75">
               <span className="text-gold font-bold">Rehber Not:</span>
-              <span>{selectedSign.dailyHoroscope.cosmicTip}</span>
+              <span>{reading ? reading.tip : pending}</span>
             </div>
 
             <div className="label text-muted serif-i">

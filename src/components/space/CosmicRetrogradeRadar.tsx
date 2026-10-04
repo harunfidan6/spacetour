@@ -1,31 +1,36 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import {
-  PLANETARY_RETROGRADES,
-  RetrogradeCycle,
-  getActiveRetrogrades
-} from '@/data/retrogrades';
+import type { RetrogradeCycle } from '@/data/retrogrades';
+import { retrogradeCalendar } from '@/lib/astrology/retrogradeCalendar';
 import {
   RetrogradeGlyph,
   PlanetGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { Ticks } from '@/components/motion/primitives';
+import { useNow } from '@/lib/useNow';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
+const FIRST_FRAME = new Date('2026-10-01T09:00:00Z');
+
 export function CosmicRetrogradeRadar() {
-  const [selectedRetroId, setSelectedRetroId] = useState<string>(PLANETARY_RETROGRADES[2].id); // Mercury Autumn 2026 default
+  const now = useNow(60 * 60_000);
+  // Computed from the ephemeris around today; the prerendered frame uses a fixed instant
+  const calendar = useMemo(() => retrogradeCalendar(now ?? FIRST_FRAME), [now]);
+  const activeRetros = useMemo(() => (now ? calendar.filter((r) => r.isCurrentlyRetrograde) : []), [now, calendar]);
+  const [pickedId, setSelectedRetroId] = useState<string | null>(null);
 
-  const activeRetros = useMemo(() => {
-    return getActiveRetrogrades(new Date());
-  }, []);
-
+  // Default: a retrograde under way, otherwise the next one
   const selectedRetro: RetrogradeCycle = useMemo(() => {
+    const today = (now ?? FIRST_FRAME).toISOString().slice(0, 10);
     return (
-      PLANETARY_RETROGRADES.find((r) => r.id === selectedRetroId) ||
-      PLANETARY_RETROGRADES[0]
+      calendar.find((r) => r.id === pickedId) ??
+      calendar.find((r) => r.isCurrentlyRetrograde && r.planetGlyphKey !== 'pluto') ??
+      calendar.find((r) => r.startDate >= today) ??
+      calendar[0]
     );
-  }, [selectedRetroId]);
+  }, [calendar, pickedId, now]);
+  const years = `${calendar[0]?.startDate.slice(0, 4)} – ${calendar[calendar.length - 1]?.endDate.slice(0, 4)}`;
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-10">
@@ -39,7 +44,7 @@ export function CosmicRetrogradeRadar() {
             <span className="label text-rose-signal">KOZMİK İSTASYON & RETROGRAD RADARI</span>
           </div>
           <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-1">
-            Gezegen Retroları & Gölge Fazları (2026 – 2027)
+            Gezegen Retroları & Gölge Fazları ({years})
           </h3>
         </div>
 
@@ -61,7 +66,7 @@ export function CosmicRetrogradeRadar() {
 
       {/* Retrograde List Grid Selector */}
       <div className="grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:fill-row-3">
-        {PLANETARY_RETROGRADES.map((retro) => {
+        {calendar.map((retro) => {
           const isSelected = selectedRetro.id === retro.id;
           return (
             <button

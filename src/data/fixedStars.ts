@@ -1,3 +1,4 @@
+import { planetaryHourAt } from '@/lib/astrology/dailySky';
 export interface FixedStar {
   id: string;
   name: string;
@@ -258,30 +259,11 @@ export const PLANETARY_HOUR_DETAILS: Record<string, Omit<PlanetaryHour, 'hourInd
   }
 };
 
-/** Compute the current Chaldean planetary hour based on local date/time. */
+/**
+ * Chaldean planetary hour in effect at `date` for İstanbul: the planetary day starts at sunrise
+ * with the weekday's ruler, and day and night are each split into twelve unequal hours.
+ */
 export function getCurrentPlanetaryHour(date = new Date()): PlanetaryHour {
-  const day = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const hour = date.getHours();
-  
-  // Day rulers: Sun(0), Moon(1), Mars(2), Mercury(3), Jupiter(4), Venus(5), Saturn(6)
-  const DAY_RULER_START: Record<number, number> = {
-    0: 3, // Sun
-    1: 6, // Moon
-    2: 2, // Mars
-    3: 5, // Mercury
-    4: 1, // Jupiter
-    5: 4, // Venus
-    6: 0  // Saturn
-  };
-
-  const startIndex = DAY_RULER_START[day] ?? 3;
-  // Chaldean cycle progresses every hour
-  const chaldeanIdx = (startIndex + hour) % 7;
-  const planetKey = CHALDEAN_ORDER[chaldeanIdx];
-  const details = PLANETARY_HOUR_DETAILS[planetKey];
-
-  return {
-    hourIndex: hour,
-    ...details
-  };
+  const slot = planetaryHourAt(date);
+  return { hourIndex: slot.index, ...PLANETARY_HOUR_DETAILS[slot.ruler] };
 }

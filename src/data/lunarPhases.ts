@@ -1,3 +1,5 @@
+import { getMoonEquatorial } from '@/lib/astrophysics/skyDomeEphemeris';
+import { SIGN_IDS, SIGN_NAMES, BODY_NAMES, formatWhen, moonSign, voidOfCourse } from '@/lib/astrology/dailySky';
 /**
  * Lunar Phase, Void-of-Course & Esoteric Moon Cycle Data Engine
  * Astronomical ephemeris calculations coupled with ancient Babylonian lunar wisdom.
@@ -346,12 +348,8 @@ export function calculateCurrentMoonPhase(date: Date = new Date()): {
   nextNewMoonDays: number;
   nextFullMoonDays: number;
 } {
-  // Reference epoch: 2026 Jan 18 16:52 UTC (Known New Moon)
-  const refDate = new Date('2026-01-18T16:52:00Z').getTime();
-  const synodicMonthMs = 29.53058867 * 24 * 60 * 60 * 1000;
-  const nowMs = date.getTime();
-  const diffMs = (nowMs - refDate) % synodicMonthMs;
-  const cycleFraction = (diffMs < 0 ? diffMs + synodicMonthMs : diffMs) / synodicMonthMs;
+  // True Sun–Moon elongation from the ephemeris (0° new, 180° full)
+  const cycleFraction = getMoonEquatorial(date).elongation / 360;
 
   const ageDays = cycleFraction * 29.53058867;
   const angleDeg = cycleFraction * 360;
@@ -398,34 +396,9 @@ export function calculateCurrentMoonPhase(date: Date = new Date()): {
   };
 }
 
-/**
- * Calculates current Moon Zodiac Sign based on mean tropical lunar motion (~13.176° per day)
- */
+/** Zodiac sign the Moon is in at `date`, from its true ecliptic longitude. */
 export function calculateCurrentMoonSign(date: Date = new Date()): MoonSignAtmosphere {
-  // Reference: Jan 18 2026, Moon at 0° Aquarius (approx tropical longitude 300°)
-  const refTime = new Date('2026-01-18T16:52:00Z').getTime();
-  const daysDiff = (date.getTime() - refTime) / (1000 * 60 * 60 * 24);
-  const meanLongitude = (300 + daysDiff * 13.176358) % 360;
-  const normDeg = meanLongitude < 0 ? meanLongitude + 360 : meanLongitude;
-
-  const signKeys = [
-    'koc',
-    'boga',
-    'ikizler',
-    'yengec',
-    'aslan',
-    'basak',
-    'terazi',
-    'akrep',
-    'yay',
-    'oglak',
-    'kova',
-    'balik'
-  ];
-
-  const signIdx = Math.floor(normDeg / 30);
-  const currentKey = signKeys[signIdx % 12];
-  return MOON_SIGN_ATMOSPHERES[currentKey] || MOON_SIGN_ATMOSPHERES.koc;
+  return MOON_SIGN_ATMOSPHERES[SIGN_IDS[moonSign(date)]] || MOON_SIGN_ATMOSPHERES.koc;
 }
 
 /**
@@ -440,30 +413,30 @@ export interface MoonVoidOfCourseState {
   nextIngressSign: string;
 }
 
+/**
+ * Void-of-course Moon from the real sky: from the Moon's last exact major aspect to the Sun or a
+ * classical planet until it enters the next sign (see lib/astrology/dailySky).
+ */
 export function getMoonVoidOfCourseStatus(date: Date = new Date()): MoonVoidOfCourseState {
-  // In astrology, Moon is void of course periodically before changing signs (every 2.5 days for a few hours).
-  // We model a cycle based on the current day hour:
-  const h = date.getHours();
-  // Simulate active void if between 14:00 - 17:30 every other day
-  const isVoid = date.getDate() % 2 === 1 && h >= 14 && h < 18;
-
-  if (isVoid) {
+  const v = voidOfCourse(date);
+  const next = SIGN_NAMES[v.nextSign];
+  const last = v.lastAspect ? `Son açı: Ay–${BODY_NAMES[v.lastAspect.body]} ${v.lastAspect.aspect}` : 'Bu burçta major açı yok';
+  if (v.isVoid) {
     return {
       isVoidNow: true,
-      statusText: 'Ay Şu Anda Boşlukta (Void of Course)',
-      advice: 'Kritik sözleşmeler, yeni iş ortaklıkları ve büyük alışverişler için uygun değildir. Rutin işlere devam edin, meditasyon ve içsel arınma yapın.',
-      nextVoidStart: 'Şu an aktif (14:15 - 18:00)',
-      nextVoidEnd: 'Bugün 18:00',
-      nextIngressSign: 'Bir sonraki burca geçiş: 18:05'
+      statusText: 'Ay şu anda boşlukta (Void of Course)',
+      advice: `${last}. Ay ${next} burcuna geçene dek yeni sözleşme, büyük alışveriş ve önemli başlangıçları ertelemek geleneksel olarak önerilir; rutin işler, dinlenme ve iç gözlem için uygun bir aralık.`,
+      nextVoidStart: `Başladı: ${formatWhen(v.start, date)}`,
+      nextVoidEnd: `Bitiş: ${formatWhen(v.end, date)}`,
+      nextIngressSign: `${next} burcuna geçiş: ${formatWhen(v.end, date)}`,
     };
   }
-
   return {
     isVoidNow: false,
-    statusText: 'Ay Etkin Açıda (Boşlukta Değil)',
-    advice: 'Gezegenlerle açı etkileşimi güçlü ve akışkandır. İletişim, ticari görüşmeler, yeni girişimler ve niyet çalışmaları desteklenmektedir.',
-    nextVoidStart: 'Yarın 15:30',
-    nextVoidEnd: 'Yarın 19:45',
-    nextIngressSign: 'Ay Burç Değişimi: 19:50'
+    statusText: 'Ay etkin açıda (boşlukta değil)',
+    advice: 'Ay hâlâ gezegenlerle açı yapıyor; iletişim, görüşmeler, yeni girişimler ve niyet çalışmaları için akış destekleyici.',
+    nextVoidStart: `Sonraki boşluk: ${formatWhen(v.start, date)}`,
+    nextVoidEnd: `Bitiş: ${formatWhen(v.end, date)}`,
+    nextIngressSign: `${next} burcuna geçiş: ${formatWhen(v.end, date)}`,
   };
 }

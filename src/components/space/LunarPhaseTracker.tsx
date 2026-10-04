@@ -13,14 +13,21 @@ import {
   ZodiacGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { Ticks } from '@/components/motion/primitives';
+import { useNow } from '@/lib/useNow';
+import { SIGN_IN, SIGN_NAMES } from '@/lib/astrology/dailySky';
 import { ShieldAlert } from 'lucide-react';
+
+// Placeholder instant for the prerendered frame; replaced by the real clock right after mount
+const FIRST_FRAME = new Date('2026-01-01T09:00:00Z');
 
 export function LunarPhaseTracker() {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>('full-moon');
   const [activeTab, setActiveTab] = useState<'cycle' | 'rituals' | 'void'>('cycle');
 
   // Real-time lunar calculations
-  const now = useMemo(() => new Date(), []);
+  // Live clock (null until mount, so server and client render the same frame first)
+  const live = useNow(60_000);
+  const now = live ?? FIRST_FRAME;
   const currentCalc = useMemo(() => calculateCurrentMoonPhase(now), [now]);
   const currentSign = useMemo(() => calculateCurrentMoonSign(now), [now]);
   const voidStatus = useMemo(() => getMoonVoidOfCourseStatus(now), [now]);
@@ -50,7 +57,7 @@ export function LunarPhaseTracker() {
             <div className="label text-muted text-[10px]">GÜNCEL AY BURCU</div>
             <div className="text-sm font-semibold text-paper flex items-center justify-end gap-1.5 mt-0.5">
               <ZodiacGlyph sign={currentSign.latinSign.toLowerCase()} size={15} className="text-gold" />
-              <span>Ay {currentSign.sign}&apos;da</span>
+              <span>Ay {SIGN_IN[SIGN_NAMES.indexOf(currentSign.sign)] ?? currentSign.sign}</span>
             </div>
           </div>
         </div>

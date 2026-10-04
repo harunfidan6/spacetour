@@ -23,6 +23,8 @@ import {
   WaterElementGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { ZODIAC_SIGNS, type ZodiacElement } from '@/data/zodiac';
+import { useNow } from '@/lib/useNow';
+import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 
 export function DailyHoroscopeDeck() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
@@ -30,20 +32,12 @@ export function DailyHoroscopeDeck() {
 
   const selectedSign = ZODIAC_SIGNS.find((s) => s.id === selectedSignId) || ZODIAC_SIGNS[0];
 
-  // Dynamic daily energy scores deterministically computed for today
-  const dailyScores = React.useMemo(() => {
-    // Generate deterministic daily scores per sign based on current day of year
-    const today = new Date();
-    const daySeed = today.getFullYear() * 1000 + today.getMonth() * 31 + today.getDate();
-    const signIdx = ZODIAC_SIGNS.findIndex((s) => s.id === selectedSign.id) + 1;
-
-    const love = 70 + ((daySeed * signIdx * 7) % 28);
-    const career = 68 + ((daySeed * signIdx * 11) % 30);
-    const vitality = 65 + ((daySeed * signIdx * 13) % 33);
-    const luck = 72 + ((daySeed * signIdx * 17) % 26);
-
-    return { love, career, vitality, luck };
-  }, [selectedSign.id]);
+  // Today's reading from the real sky; only known after mount so the static HTML never freezes a date
+  const now = useNow(60_000);
+  const reading = React.useMemo(() => (now ? dailyReading(selectedSign.id, now) : null), [now, selectedSign.id]);
+  const dailyScores = reading?.scores ?? { love: 0, career: 0, vitality: 0, luck: 0 };
+  const pending = 'Bugünün gökyüzü hesaplanıyor…';
+  const today = now ? now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }) : '—';
 
   const elementGlyphMap: Record<ZodiacElement, React.ReactNode> = {
     Ateş: <FireElementGlyph size={14} className="text-solar" />,
@@ -73,7 +67,7 @@ export function DailyHoroscopeDeck() {
 
         <div className="flex items-center gap-2 font-mono text-xs text-muted bg-ink-2 p-2.5 border border-line shrink-0">
           <Calendar size={14} className="text-solar" />
-          <span>BUGÜN: <strong className="text-paper">{new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></span>
+          <span>BUGÜN: <strong className="text-paper">{today}</strong></span>
         </div>
       </div>
 
@@ -158,7 +152,7 @@ export function DailyHoroscopeDeck() {
                 activeCategory === 'tilsim' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
               }`}
             >
-              Günün Tılsımları
+              Burç Tılsımları
             </button>
           </div>
         </div>
@@ -218,6 +212,18 @@ export function DailyHoroscopeDeck() {
           </div>
         </div>
 
+        {/* Today's sky behind the reading */}
+        {reading && (
+          <div className="flex flex-wrap gap-2 font-mono text-[11px]">
+            <span className="border border-line bg-ink px-3 py-1.5 text-paper/80">Ay bugün <strong className="text-paper">{reading.moonIn}</strong></span>
+            <span className="border border-line bg-ink px-3 py-1.5 text-paper/80">Senin <strong className="text-paper">{reading.house}. evin</strong> · {reading.houseArea}</span>
+            <span className="border border-line bg-ink px-3 py-1.5 text-paper/80">{reading.phaseName}</span>
+            <span className="border border-line bg-ink px-3 py-1.5 text-paper/80">Günün yöneticisi: {reading.dayRuler}</span>
+            {reading.mercuryRetro && <span className="border border-rose/50 bg-rose/10 px-3 py-1.5 text-rose">Merkür geri harekette</span>}
+          </div>
+        )}
+        {reading?.moonChange && <p className="font-mono text-[11px] text-muted">{reading.moonChange}</p>}
+
         {/* Dynamic Detail Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 font-mono text-xs">
           {/* Main Interpretation Box */}
@@ -229,7 +235,7 @@ export function DailyHoroscopeDeck() {
                     Günün Kozmik Akışı & Gökyüzü Rezonansı
                   </span>
                   <p className="text-paper/90 text-sm leading-relaxed">
-                    {selectedSign.dailyHoroscope.energy}
+                    {reading ? reading.energy : pending}
                   </p>
                 </div>
 
@@ -238,7 +244,7 @@ export function DailyHoroscopeDeck() {
                   <div>
                     <span className="text-solar font-bold uppercase text-[10px] block">Günün Kozmik Tavsiyesi & Sınavı:</span>
                     <p className="text-paper/85 text-xs leading-relaxed mt-1">
-                      {selectedSign.dailyHoroscope.cosmicTip}
+                      {reading ? reading.tip : pending}
                     </p>
                   </div>
                 </div>
@@ -252,7 +258,7 @@ export function DailyHoroscopeDeck() {
                   Kalp Titreşimleri & Aşk Falı
                 </span>
                 <p className="text-paper/90 text-sm leading-relaxed">
-                  {selectedSign.dailyHoroscope.love}
+                  {reading ? reading.love : pending}
                 </p>
                 <div className="pt-3 border-t border-line text-[11px] text-muted">
                   <strong className="text-paper">En Yüksek Aşk Rezonansı:</strong> {selectedSign.loveCompatibility.map((id) => {
@@ -270,11 +276,11 @@ export function DailyHoroscopeDeck() {
                   Kariyer, Başarı & Maddi Fırsatlar
                 </span>
                 <p className="text-paper/90 text-sm leading-relaxed">
-                  {selectedSign.dailyHoroscope.career}
+                  {reading ? reading.career : pending}
                 </p>
                 <div className="pt-3 border-t border-line text-[11px] text-muted flex items-center gap-2">
                   <Clock size={13} className="text-solar" />
-                  <span>En Verimli Eylem Saatleri: <strong className="text-paper">{selectedSign.dailyHoroscope.luckyHours}</strong></span>
+                  <span>En verimli saatler: <strong className="text-paper">{reading ? reading.luckyHours : '—'}</strong></span>
                 </div>
               </div>
             )}
@@ -282,7 +288,7 @@ export function DailyHoroscopeDeck() {
             {activeCategory === 'tilsim' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Günün Uğurlu Taşı</span>
+                  <span className="text-muted block text-[10px] uppercase">Uğurlu Taş</span>
                   <div className="flex items-center gap-2">
                     <Gem size={15} className="text-lime" />
                     <span className="text-paper font-bold text-sm">{selectedSign.details.stone}</span>
@@ -291,7 +297,7 @@ export function DailyHoroscopeDeck() {
                 </div>
 
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Günün Sayıları</span>
+                  <span className="text-muted block text-[10px] uppercase">Uğurlu Sayılar</span>
                   <div className="flex items-center gap-2">
                     <Award size={15} className="text-solar" />
                     <span className="text-paper font-bold text-sm">
@@ -302,7 +308,7 @@ export function DailyHoroscopeDeck() {
                 </div>
 
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Günün Renkleri</span>
+                  <span className="text-muted block text-[10px] uppercase">Uğurlu Renkler</span>
                   <span className="text-paper font-bold text-sm">
                     {selectedSign.details.colors.join(', ')}
                   </span>
