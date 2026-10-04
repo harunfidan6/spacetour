@@ -141,6 +141,79 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           </aside>
         </div>
 
+        {/* Keşif Tarihçesi ve Türkiye'den Gözlem */}
+        <section aria-label="Keşif ve Gözlem" className="grid gap-px border border-line bg-line lg:grid-cols-2 sm:max-lg:fill-row-2">
+          <div className="bg-ink p-7 sm:p-9 flex flex-col">
+            <div className="flex items-center gap-3 border-b border-line pb-4 mb-6">
+              <span className="label text-violet">(K)</span>
+              <span className="label text-paper">Keşif &amp; Gözlem Tarihçesi</span>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <span className="label text-muted">Tarih &amp; Kaşif</span>
+                <p className="doc-serif text-xl text-paper mt-1">{planet.discovery.date} · {planet.discovery.discoverer}</p>
+              </div>
+              <p className="text-sm leading-relaxed text-paper/75 pt-2">{planet.discovery.history}</p>
+            </div>
+          </div>
+
+          <div className="bg-ink p-7 sm:p-9 flex flex-col">
+            <div className="flex items-center gap-3 border-b border-line pb-4 mb-6">
+              <span className="label text-violet">(G)</span>
+              <span className="label text-paper">Türkiye’den Nasıl Gözlenir?</span>
+            </div>
+            <p className="text-sm leading-relaxed text-paper/80">{planet.observationTurkey}</p>
+            {planet.moonsInfo && planet.moonsInfo.notable.length > 0 && (
+              <div className="mt-auto pt-6 border-t border-line">
+                <span className="label text-muted">Önemli Uyduları ({planet.moonsInfo.count} Adet)</span>
+                <p className="font-mono text-xs text-paper/90 mt-1">{planet.moonsInfo.notable.join(' · ')}</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Uzay Görevleri */}
+        {planet.missions && planet.missions.length > 0 && (
+          <section aria-label="Uzay Görevleri">
+            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
+              <span className="label text-violet">(M)</span>
+              <span className="label text-paper">Ziyaret Eden Uzay Görevleri</span>
+            </div>
+            <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4 sm:max-lg:fill-row-2 lg:fill-row-4">
+              {planet.missions.map((m) => (
+                <div key={m.name} className="bg-ink p-6 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-mono text-violet mb-2">
+                      <span>{m.agency}</span>
+                      <span>{m.year}</span>
+                    </div>
+                    <h4 className="doc-title text-xl text-paper mb-2">{m.name}</h4>
+                  </div>
+                  <p className="text-xs leading-relaxed text-paper/70 mt-3">{m.role}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Biliyor Muydunuz */}
+        {planet.biliyorMuydun && planet.biliyorMuydun.length > 0 && (
+          <section aria-label="Biliyor Muydunuz" className="rounded-xl border border-white/[0.08] bg-black/40 p-6 sm:p-8 backdrop-blur-md">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-2 w-2 rounded-full bg-violet" />
+              <h3 className="doc-title text-xl text-paper">Biliyor Muydunuz?</h3>
+            </div>
+            <ul className="space-y-4">
+              {planet.biliyorMuydun.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-4 text-sm sm:text-base leading-relaxed text-paper/75">
+                  <span className="doc-kicker shrink-0 mt-0.5 text-paper/40">—</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <nav className="grid gap-px border border-line bg-line lg:grid-cols-2" aria-label="Kayıtlar arasında gezin">
           {[
             { p: prev, label: 'Önceki kayıt', dir: -1 },

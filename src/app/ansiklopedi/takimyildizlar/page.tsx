@@ -28,7 +28,7 @@ export default function TakimyildizlarPage() {
       />
       <section className="px-[var(--gutter)] pb-28 pt-20">
         <PartHeading part={1} title="Gökyüzünün" serif="haritası" aside={`${constellations.length} takımyıldızı`} />
-        <Reveal items="[data-card]" stagger={0.05} className="grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        <Reveal items="[data-card]" stagger={0.05} className="grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:fill-row-2 lg:fill-row-3">
           {constellations.map((c, i) => (
             <article key={c.id} id={c.id} data-card className="flex scroll-mt-24 flex-col bg-ink p-7 sm:p-8">
               <div className="flex items-start justify-between">
@@ -39,7 +39,17 @@ export default function TakimyildizlarPage() {
               <p className="doc-serif text-xl text-violet">{c.latinName}</p>
               <p className="mt-4 text-sm leading-relaxed text-paper/75">{c.description}</p>
               <p className="mt-4 border-l border-violet/40 pl-4 text-sm leading-relaxed text-paper/55">{c.mythology}</p>
-              <div className="mt-auto flex justify-between border-t border-white/10 pt-4">
+              <div className="mt-6 space-y-1.5 border-t border-white/10 pt-4 text-xs font-mono">
+                <div className="flex justify-between text-paper/80">
+                  <span className="text-muted">En Parlak Yıldız</span>
+                  <span className="text-violet text-right font-sans text-xs">{c.brightestStar}</span>
+                </div>
+                <div className="flex justify-between text-paper/80">
+                  <span className="text-muted">Gözlem Mevsimi</span>
+                  <span>{c.season}</span>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-between border-t border-white/10 pt-4">
                 <span className="doc-caption">{c.mainStars} ana yıldız</span>
                 <span className="doc-caption text-paper/80">En iyi · {c.bestMonth}</span>
               </div>
