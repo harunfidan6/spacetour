@@ -10,7 +10,6 @@ import {
   RotateCcw,
   Volume2,
   VolumeX,
-  Maximize2,
   Smartphone,
   Monitor,
   Eye,
@@ -20,11 +19,8 @@ import {
   Compass,
   Radio,
   Clock,
-  ShieldAlert,
 } from 'lucide-react';
-import { heroScene } from '@/components/home/HeroSolarSystem3D';
-import { HERO_BODIES } from '@/components/home/HeroSolarSystem3D';
-import { DOC_IMAGES } from '@/data/docImages';
+import { heroScene, HERO_BODIES } from '@/components/home/HeroSolarSystem3D';
 
 // Dynamically import heavy 3D & client components to prevent SSR hydration mismatches
 const HeroSolarSystem3D = dynamic(
@@ -140,8 +136,10 @@ function StudioContent() {
   }, [currentScene.id, currentTime, format]);
 
   // Audio & Animation loop
-  const animate = useCallback(
-    (timestamp: number) => {
+  const animateRef = useRef<((timestamp: number) => void) | null>(null);
+
+  useEffect(() => {
+    animateRef.current = (timestamp: number) => {
       if (lastTimeRef.current !== null && isPlaying) {
         const delta = (timestamp - lastTimeRef.current) / 1000;
         setCurrentTime((prev) => {
@@ -156,15 +154,16 @@ function StudioContent() {
         });
       }
       lastTimeRef.current = timestamp;
-      requestRef.current = requestAnimationFrame(animate);
-    },
-    [isPlaying]
-  );
+      if (isPlaying && animateRef.current) {
+        requestRef.current = requestAnimationFrame((ts) => animateRef.current?.(ts));
+      }
+    };
+  }, [isPlaying]);
 
   useEffect(() => {
     if (isPlaying) {
       lastTimeRef.current = performance.now();
-      requestRef.current = requestAnimationFrame(animate);
+      requestRef.current = requestAnimationFrame((ts) => animateRef.current?.(ts));
       if (audioRef.current) {
         audioRef.current.play().catch(() => {});
       }
@@ -177,7 +176,7 @@ function StudioContent() {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [isPlaying, animate]);
+  }, [isPlaying]);
 
   const handleSceneClick = (id: number) => {
     setActiveSceneId(id);
