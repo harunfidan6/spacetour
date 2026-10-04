@@ -8,7 +8,6 @@ import {
   HeartHandshake,
   Compass
 } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -102,21 +101,19 @@ export function CosmicTarotDrawer() {
   const activeDrawnCard = drawnCards[selectedCardIdx] || drawnCards[0];
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8" id="kozmik-tarot">
-      <Ticks />
-
+    <div className="relative border border-line bg-ink p-6 sm:p-10 space-y-8" id="kozmik-tarot">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-line pb-6">
         <div>
-          <div className="label flex items-center gap-2 text-solar">
+          <div className="doc-kicker text-gold flex items-center gap-2">
             <AstrolabeGlyph size={16} />
-            <span>22 MAJÖR ARKANA · KUTSAL GEOMETRİ ORACULUM</span>
+            <span>22 Majör Arkana · Arketipsel Sembolizm</span>
           </div>
-          <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-2">
-            Kozmik Tarot Açılımı
+          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-2">
+            Tarot Kartı Açılımı
           </h3>
           <p className="text-sm text-paper/70 mt-1 max-w-2xl leading-relaxed">
-            Kadim arketiplerin ve zodyak simyasının aynasında ruhsal rehberlik alın. Açılım türünü seçip desteyi karıştırın.
+            Kadim arketiplerin ve sembolizmin aynasında sezgisel bir perspektif edinin. Açılım türünü seçip desteyi karıştırın.
           </p>
         </div>
 
@@ -133,8 +130,8 @@ export function CosmicTarotDrawer() {
                 }}
                 className={`px-3 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer border ${
                   isActive
-                    ? 'border-solar bg-solar text-ink font-bold shadow-xs'
-                    : 'border-transparent text-muted hover:text-paper hover:border-line'
+                    ? 'border-gold bg-gold text-ink font-semibold shadow-xs'
+                    : 'border-transparent text-paper/60 hover:text-paper hover:border-line'
                 }`}
               >
                 {SPREAD_CONFIGS[type].name}
@@ -161,7 +158,7 @@ export function CosmicTarotDrawer() {
         <button
           onClick={() => performDraw(spreadType)}
           disabled={isShuffling}
-          className="inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider border border-solar text-solar hover:bg-solar hover:text-ink transition-colors cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider border border-gold text-gold hover:bg-gold hover:text-ink transition-colors cursor-pointer disabled:opacity-50"
         >
           <Shuffle size={14} className={isShuffling ? 'animate-spin' : ''} />
           <span>{isShuffling ? 'Desteler Karıştırılıyor…' : 'Desteyi Yeniden Karıştır & Çek'}</span>
@@ -180,13 +177,13 @@ export function CosmicTarotDrawer() {
               onClick={() => setSelectedCardIdx(idx)}
               className={`group relative flex flex-col p-6 border transition-all duration-300 cursor-pointer ${
                 isSelected
-                  ? 'border-solar bg-ink-3 ring-1 ring-solar/40 shadow-lg shadow-solar/5'
-                  : 'border-line bg-ink-2 hover:border-solar/40 hover:bg-ink-3/70'
+                  ? 'border-gold bg-ink-3 ring-1 ring-gold/40 shadow-lg shadow-gold/5'
+                  : 'border-line bg-ink-2 hover:border-gold/40 hover:bg-ink-3/70'
               }`}
             >
               {/* Position Header */}
               <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
-                <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-wider">
+                <span className="doc-kicker text-gold uppercase tracking-wider">
                   {positionLabel}
                 </span>
                 <span
@@ -201,7 +198,7 @@ export function CosmicTarotDrawer() {
               </div>
 
               {/* Tarot Card Frame */}
-              <div className="relative aspect-[2/3] w-full border border-line bg-ink p-4 flex flex-col justify-between items-center overflow-hidden group-hover:border-solar/60 transition-colors">
+              <div className="relative aspect-[2/3] w-full border border-line bg-ink p-4 flex flex-col justify-between items-center overflow-hidden group-hover:border-gold/60 transition-colors">
                 {/* Background Sacred Geometric Pattern */}
                 <div className="absolute inset-2 border border-line/40 pointer-events-none" />
                 <div className="absolute inset-3 border border-dashed border-line/20 pointer-events-none" />
@@ -209,7 +206,7 @@ export function CosmicTarotDrawer() {
                 {/* Top Number & Element */}
                 <div className="w-full flex items-center justify-between text-xs font-mono text-muted z-10">
                   <span className="font-bold text-paper">{card.number}</span>
-                  <span className="text-[10px] text-solar border border-solar/30 px-1 py-0.2">
+                  <span className="text-[10px] text-gold border border-gold/30 px-1 py-0.2">
                     {card.element}
                   </span>
                 </div>
@@ -218,14 +215,14 @@ export function CosmicTarotDrawer() {
                 <div className="my-auto flex flex-col items-center text-center z-10 py-3">
                   <div className={`p-4 rounded-full border border-line bg-ink-2/80 mb-3 shadow-inner transition-transform duration-500 ${isReversed ? 'rotate-180' : 'group-hover:scale-105'}`}>
                     {card.glyphType === 'zodiac' ? (
-                      <ZodiacGlyph sign={card.glyphId} size={42} className="text-solar" />
+                      <ZodiacGlyph sign={card.glyphId} size={42} className="text-gold" />
                     ) : card.glyphType === 'planet' ? (
-                      <PlanetGlyph planet={card.glyphId} size={42} className="text-solar" />
+                      <PlanetGlyph planet={card.glyphId} size={42} className="text-gold" />
                     ) : (
-                      <AstrolabeGlyph size={42} className="text-solar" />
+                      <AstrolabeGlyph size={42} className="text-gold" />
                     )}
                   </div>
-                  <h4 className="font-mono text-base font-bold text-paper tracking-wide">
+                  <h4 className="doc-title text-base text-paper tracking-wide">
                     {card.name}
                   </h4>
                   <span className="font-mono text-[10px] text-muted mt-0.5 italic">
@@ -235,7 +232,7 @@ export function CosmicTarotDrawer() {
 
                 {/* Bottom Archetype */}
                 <div className="w-full text-center border-t border-line/60 pt-2 z-10">
-                  <span className="font-mono text-[10px] text-paper/80 line-clamp-1">
+                  <span className="doc-caption text-[10px] text-paper/80 line-clamp-1">
                     {card.archetype}
                   </span>
                 </div>
@@ -244,7 +241,7 @@ export function CosmicTarotDrawer() {
               {/* Click Indicator */}
               <div className="mt-4 pt-2 border-t border-line flex items-center justify-between text-[11px] font-mono text-muted">
                 <span>{card.associatedSignOrPlanet}</span>
-                <span className={isSelected ? 'text-solar font-bold' : 'group-hover:text-paper'}>
+                <span className={isSelected ? 'text-gold font-semibold' : 'group-hover:text-paper'}>
                   {isSelected ? '● İNCELENİYOR' : 'Ayrıntıları Gör →'}
                 </span>
               </div>
@@ -255,13 +252,13 @@ export function CosmicTarotDrawer() {
 
       {/* Selected Card Deep Cosmic Dossier */}
       {activeDrawnCard && (
-        <div className="border border-solar/40 bg-ink-2 p-6 sm:p-8 space-y-6 animate-fadeIn">
+        <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6 animate-fadeIn">
           {/* Card Meta Row */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-line pb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-xs text-solar font-bold uppercase tracking-widest">
-                  SEÇİLİ KART TELEMETRİSİ · {activeDrawnCard.positionLabel}
+                <span className="doc-kicker text-gold uppercase tracking-widest">
+                  SEÇİLİ KART · {activeDrawnCard.positionLabel}
                 </span>
                 <span className="text-muted">·</span>
                 <span className={`font-mono text-[10px] font-bold px-2 py-0.5 border ${
@@ -270,10 +267,10 @@ export function CosmicTarotDrawer() {
                   {activeDrawnCard.isReversed ? 'TERS KONUM' : 'DÜZ KONUM'}
                 </span>
               </div>
-              <h4 className="display text-2xl sm:text-3xl text-paper">
-                {activeDrawnCard.card.number}. {activeDrawnCard.card.name} ({activeDrawnCard.card.nameEn})
+              <h4 className="doc-title text-2xl sm:text-3xl text-paper">
+                {activeDrawnCard.card.number}. {activeDrawnCard.card.name} <span className="doc-serif italic text-lg sm:text-xl text-gold/90">({activeDrawnCard.card.nameEn})</span>
               </h4>
-              <p className="font-mono text-xs text-gold mt-1">
+              <p className="doc-caption text-xs text-gold/80 mt-1">
                 {activeDrawnCard.card.archetype} · {activeDrawnCard.card.associatedSignOrPlanet}
               </p>
             </div>
@@ -283,7 +280,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('genel')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'genel' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                  activeTab === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
                 }`}
               >
                 Genel Rehberlik
@@ -291,7 +288,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('ask')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'ask' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                  activeTab === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
                 }`}
               >
                 Aşk & Kalp
@@ -299,7 +296,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('kariyer')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'kariyer' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                  activeTab === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
                 }`}
               >
                 Kariyer & Para
@@ -307,7 +304,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('ruhsal')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'ruhsal' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                  activeTab === 'ruhsal' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
                 }`}
               >
                 Ruhsal Simya
@@ -321,10 +318,10 @@ export function CosmicTarotDrawer() {
               {activeTab === 'genel' && (
                 <div className="space-y-4 font-mono">
                   <div className="p-4 border border-line bg-ink">
-                    <span className="text-[11px] text-solar uppercase font-bold block mb-1">
+                    <span className="doc-kicker text-gold uppercase block mb-1">
                       {activeDrawnCard.isReversed ? activeDrawnCard.card.reversed.title : activeDrawnCard.card.upright.title}
                     </span>
-                    <p className="text-sm text-paper/90 leading-relaxed">
+                    <p className="text-sm text-paper/90 leading-relaxed font-sans">
                       {activeDrawnCard.isReversed
                         ? activeDrawnCard.card.reversed.warning
                         : activeDrawnCard.card.upright.message}
@@ -333,7 +330,7 @@ export function CosmicTarotDrawer() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div className="p-3 border border-line bg-ink">
-                      <span className="text-muted block uppercase text-[10px]">Aydınlık Anahtarları</span>
+                      <span className="doc-caption text-paper/60 block uppercase text-[10px]">Aydınlık Anahtarları</span>
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {activeDrawnCard.card.upright.keywords.map((kw) => (
                           <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-paper">
@@ -344,7 +341,7 @@ export function CosmicTarotDrawer() {
                     </div>
 
                     <div className="p-3 border border-line bg-ink">
-                      <span className="text-muted block uppercase text-[10px]">Gölge Anahtarları</span>
+                      <span className="doc-caption text-paper/60 block uppercase text-[10px]">Gölge Anahtarları</span>
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {activeDrawnCard.card.reversed.keywords.map((kw) => (
                           <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-rose">
@@ -361,9 +358,9 @@ export function CosmicTarotDrawer() {
                 <div className="p-5 border border-line bg-ink font-mono space-y-3">
                   <div className="flex items-center gap-2 text-rose">
                     <HeartHandshake size={16} />
-                    <span className="text-xs uppercase font-bold">Aşk, Çekim & Duygusal Sinerji</span>
+                    <span className="doc-kicker text-rose uppercase">Aşk, Çekim & Duygusal Sinerji</span>
                   </div>
-                  <p className="text-sm text-paper/90 leading-relaxed">
+                  <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.loveGuidance}
                   </p>
                 </div>
@@ -371,11 +368,11 @@ export function CosmicTarotDrawer() {
 
               {activeTab === 'kariyer' && (
                 <div className="p-5 border border-line bg-ink font-mono space-y-3">
-                  <div className="flex items-center gap-2 text-solar">
+                  <div className="flex items-center gap-2 text-gold">
                     <Compass size={16} />
-                    <span className="text-xs uppercase font-bold">Kariyer, Başarı & Maddi Fırsatlar</span>
+                    <span className="doc-kicker text-gold uppercase">Kariyer, Başarı & Maddi Fırsatlar</span>
                   </div>
-                  <p className="text-sm text-paper/90 leading-relaxed">
+                  <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.careerGuidance}
                   </p>
                 </div>
@@ -385,9 +382,9 @@ export function CosmicTarotDrawer() {
                 <div className="p-5 border border-line bg-ink font-mono space-y-3">
                   <div className="flex items-center gap-2 text-violet">
                     <Lightbulb size={16} />
-                    <span className="text-xs uppercase font-bold">Ruhsal Evrim & Bilinç Seviyesi</span>
+                    <span className="doc-kicker text-violet uppercase">Ruhsal Evrim & Bilinç Seviyesi</span>
                   </div>
-                  <p className="text-sm text-paper/90 leading-relaxed">
+                  <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.spiritualGuidance}
                   </p>
                 </div>
@@ -395,10 +392,10 @@ export function CosmicTarotDrawer() {
 
               {/* Cosmic Affirmation Banner */}
               <div className="p-4 border border-line bg-ink flex items-start gap-3">
-                <Sparkles size={16} className="text-solar shrink-0 mt-0.5" />
+                <Sparkles size={16} className="text-gold shrink-0 mt-0.5" />
                 <div className="font-mono text-xs">
-                  <span className="text-muted uppercase block text-[10px]">Günün Kutsal Olumlaması</span>
-                  <p className="text-paper italic font-serif text-sm mt-0.5">
+                  <span className="doc-caption text-paper/60 uppercase block text-[10px]">Günün Kutsal Olumlaması</span>
+                  <p className="text-paper italic doc-serif text-sm mt-0.5">
                     &quot;{activeDrawnCard.card.affirmation}&quot;
                   </p>
                 </div>
@@ -407,7 +404,7 @@ export function CosmicTarotDrawer() {
 
             {/* Right Astrological Correspondences */}
             <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4 font-mono text-xs">
-              <span className="text-[10px] text-muted uppercase tracking-widest block border-b border-line pb-2">
+              <span className="doc-kicker text-gold tracking-widest block border-b border-line pb-2">
                 ASTROLOJİK HİZALANMA
               </span>
 
@@ -415,7 +412,7 @@ export function CosmicTarotDrawer() {
                 <div className="flex justify-between items-center">
                   <span className="text-muted">Kozmik Element:</span>
                   <span className="text-paper font-bold flex items-center gap-1.5">
-                    {activeDrawnCard.card.element === 'Ateş' && <FireElementGlyph size={14} className="text-solar" />}
+                    {activeDrawnCard.card.element === 'Ateş' && <FireElementGlyph size={14} className="text-gold" />}
                     {activeDrawnCard.card.element === 'Toprak' && <EarthElementGlyph size={14} className="text-lime" />}
                     {activeDrawnCard.card.element === 'Hava' && <AirElementGlyph size={14} className="text-cyan-400" />}
                     {activeDrawnCard.card.element === 'Su' && <WaterElementGlyph size={14} className="text-blue-400" />}

@@ -9,7 +9,6 @@ import {
 import {
   SacredTetractysGlyph
 } from '@/components/ui/CosmicGlyphs';
-import { Ticks } from '@/components/motion/primitives';
 import { NumericInput } from '@/components/ui/NumericInput';
 import { daysInMonth } from '@/data/zodiac';
 import { Compass, Shield, Feather, Key, Flame } from 'lucide-react';
@@ -50,29 +49,27 @@ export function CosmicNumerologyMatrix() {
   }, [activePillar, report]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-10">
-      <Ticks />
-
+    <div className="relative border border-line bg-ink p-6 sm:p-10 space-y-10">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
         <div>
           <div className="flex items-center gap-2">
             <SacredTetractysGlyph size={18} className="text-gold" />
-            <span className="label text-gold">PİSAGOR & KELDANİ KUTSAL MATRİSİ</span>
+            <span className="doc-kicker text-gold">Pisagor ve Keldani Geleneği</span>
           </div>
-          <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-1">
-            Kozmik Numeroloji & Yaşam Yolu Matrisi
+          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
+            Numeroloji & Yaşam Yolu Analizi
           </h3>
         </div>
-        <div className="label px-3 py-1.5 border border-line bg-ink-2 text-paper/80 text-xs">
-          4 TEMEL SÜTUN ANALİZİ
+        <div className="doc-caption px-3 py-1.5 border border-line bg-ink-2 text-paper/80 text-xs">
+          4 Temel Sütun ve Kişisel Yıl
         </div>
       </div>
 
       {/* Interactive Input Form */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 border border-line bg-ink-2 p-6">
         <div className="space-y-1.5">
-          <label className="label text-muted text-[10px] uppercase">Adınız</label>
+          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Adınız</label>
           <input
             type="text"
             value={firstName}
@@ -83,7 +80,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="label text-muted text-[10px] uppercase">Soyadınız</label>
+          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Soyadınız</label>
           <input
             type="text"
             value={lastName}
@@ -94,7 +91,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="label text-muted text-[10px] uppercase">Doğum Günü</label>
+          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Günü</label>
           <NumericInput
             value={day}
             min={1}
@@ -105,7 +102,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="label text-muted text-[10px] uppercase">Doğum Ayı</label>
+          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Ayı</label>
           <NumericInput
             value={month}
             min={1}
@@ -119,7 +116,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="label text-muted text-[10px] uppercase">Doğum Yılı</label>
+          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Yılı</label>
           <NumericInput
             value={year}
             min={1920}
@@ -190,10 +187,10 @@ export function CosmicNumerologyMatrix() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`label text-[10px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                <span className={`doc-caption text-[10px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
                   {pillar.label}
                 </span>
-                <span className={`label text-[9px] px-1.5 py-0.5 border ${
+                <span className={`doc-caption text-[9px] px-1.5 py-0.5 border ${
                   isSelected ? 'border-ink/30 text-ink' : 'border-line text-gold'
                 }`}>
                   {pillar.badge}
@@ -201,7 +198,7 @@ export function CosmicNumerologyMatrix() {
               </div>
 
               <div className="my-4 flex items-baseline gap-2">
-                <span className="display display-tight text-4xl sm:text-5xl">
+                <span className="doc-title text-3xl sm:text-4xl">
                   {pillar.num}
                 </span>
               </div>
@@ -220,13 +217,13 @@ export function CosmicNumerologyMatrix() {
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
             <div className="flex items-center gap-4">
               <div className="grid place-items-center h-16 w-16 border border-line bg-ink rounded-full">
-                <span className="display display-tight text-4xl text-gold">{activeAnalysis.number}</span>
+                <span className="doc-title text-3xl text-gold">{activeAnalysis.number}</span>
               </div>
               <div>
-                <h4 className="display display-tight text-2xl sm:text-3xl text-paper">
+                <h4 className="doc-title text-2xl sm:text-3xl text-paper">
                   {activeAnalysis.title}
                 </h4>
-                <div className="label text-muted text-xs mt-1">
+                <div className="doc-caption text-paper/60 text-xs mt-1">
                   Yönetici Gezegen: {activeAnalysis.rulingCosmicBody} · Zodyak Rezonansı: {activeAnalysis.zodiacAffinity}
                 </div>
               </div>
@@ -234,7 +231,7 @@ export function CosmicNumerologyMatrix() {
 
             <div className="flex flex-wrap gap-2">
               {activeAnalysis.sacredKeywords.map((kw, i) => (
-                <span key={i} className="label px-3 py-1 rounded-full border border-line bg-ink text-paper/85 text-[10px]">
+                <span key={i} className="doc-caption px-3 py-1 rounded-full border border-line bg-ink text-paper/85 text-[10px]">
                   # {kw}
                 </span>
               ))}
@@ -243,14 +240,14 @@ export function CosmicNumerologyMatrix() {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="border border-line bg-ink p-5 space-y-2">
-              <span className="label text-gold">ÖZ ENERJİ & MİZACIN DOĞASI</span>
+              <span className="doc-kicker text-gold">ÖZ ENERJİ & MİZACIN DOĞASI</span>
               <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
                 {activeAnalysis.essence}
               </p>
             </div>
 
             <div className="border border-line bg-ink p-5 space-y-2">
-              <span className="label text-gold">RUHSAL YAŞAM MİSYONU</span>
+              <span className="doc-kicker text-gold">RUHSAL YAŞAM MİSYONU</span>
               <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
                 {activeAnalysis.soulMission}
               </p>
@@ -258,7 +255,7 @@ export function CosmicNumerologyMatrix() {
           </div>
 
           <div className="border border-rose-signal/30 bg-rose-signal/5 p-5 space-y-2">
-            <span className="label text-rose-signal">KARMİK GÖLGE & AŞILMASI GEREKEN İMTİHAN</span>
+            <span className="doc-kicker text-rose-signal">KARMİK GÖLGE & AŞILMASI GEREKEN İMTİHAN</span>
             <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
               {activeAnalysis.shadowChallenge}
             </p>
@@ -269,18 +266,18 @@ export function CosmicNumerologyMatrix() {
         <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
           <div className="flex items-center gap-4 border-b border-line pb-6">
             <div className="grid place-items-center h-16 w-16 border border-line bg-ink rounded-full">
-              <span className="display display-tight text-4xl text-gold">{report.personalYearNumber.number}</span>
+              <span className="doc-title text-3xl text-gold">{report.personalYearNumber.number}</span>
             </div>
             <div>
-              <div className="label text-gold">2026 YILI KİŞİSEL DÖNGÜSÜ</div>
-              <h4 className="display display-tight text-2xl sm:text-3xl text-paper mt-1">
+              <div className="doc-kicker text-gold">2026 YILI KİŞİSEL DÖNGÜSÜ</div>
+              <h4 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
                 {report.personalYearNumber.theme}
               </h4>
             </div>
           </div>
 
           <div className="border border-line bg-ink p-6 space-y-3">
-            <span className="label text-gold">BU YIL İÇİN KOZMİK STRATEJİ & TAVSİYE</span>
+            <span className="doc-kicker text-gold">BU YIL İÇİN STRATEJİ & TAVSİYE</span>
             <p className="text-sm leading-relaxed text-paper/90">
               {report.personalYearNumber.advice}
             </p>
@@ -291,8 +288,8 @@ export function CosmicNumerologyMatrix() {
       {/* Pythagorean Letters Reference Table */}
       <div className="border-t border-line pt-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="label text-muted text-[10px]">PİSAGOR HARF - SAYI FREKANS TABLOSU</span>
-          <span className="label text-muted text-[10px]">1’DEN 9’A KADAR KOZMİK AKORLAR</span>
+          <span className="doc-caption text-paper/60 text-[10px]">PİSAGOR HARF - SAYI FREKANS TABLOSU</span>
+          <span className="doc-caption text-paper/60 text-[10px]">1’DEN 9’A KADAR KOZMİK AKORLAR</span>
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-9 gap-px border border-line bg-line text-center text-xs">
           {[
@@ -307,7 +304,7 @@ export function CosmicNumerologyMatrix() {
             { num: 9, letters: 'I, İ, R' }
           ].map((col) => (
             <div key={col.num} className="bg-ink p-2.5">
-              <div className="label text-gold font-bold">{col.num}</div>
+              <div className="doc-caption text-gold font-bold">{col.num}</div>
               <div className="font-mono text-[10px] text-paper/70 mt-1">{col.letters}</div>
             </div>
           ))}

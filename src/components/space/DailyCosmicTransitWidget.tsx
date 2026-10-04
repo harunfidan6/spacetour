@@ -14,7 +14,6 @@ import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { useNow } from '@/lib/useNow';
 import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 import { getMoonPhase, isRetrograde, type MoonPhaseKey } from '@/lib/astrophysics/skyDomeEphemeris';
-import { Ticks } from '@/components/motion/primitives';
 import {
   VectorMoonPhase,
   ZodiacGlyph,
@@ -74,25 +73,23 @@ export function DailyCosmicTransitWidget() {
   const isMercuryRetro = sky?.mercuryRetro ?? false;
 
   return (
-    <div id="gunluk-transitler" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
+    <div id="gunluk-transitler" className="relative border border-line bg-ink p-6 sm:p-10 space-y-8">
       {/* Widget Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
         <div>
-          <div className="label flex items-center gap-2 text-primary">
-            <Clock className="h-4 w-4 animate-spin-slow" />
-            <span>CANLI KOZMİK HAVA DURUMU & GÜNLÜK TRANSİTLER</span>
+          <div className="doc-kicker text-gold flex items-center gap-2">
+            <Clock className="h-4 w-4 text-gold" />
+            <span>Canlı Efemeris & Günlük Gezegen Konumları</span>
           </div>
-          <h2 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
-            Günün Kozmik Nabzı <span className="serif-i text-primary">& Burç Yorumları</span>
+          <h2 className="doc-title mt-3 text-2xl sm:text-3xl text-paper">
+            Günün Gezegen Hareketleri <span className="doc-serif italic text-gold">& Burç Yorumları</span>
           </h2>
           <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
             {sky ? `${dateFormatted}, ${dayName} • ` : ''}Gökyüzündeki güncel Ay fazı, gezegen yöneticisi ve 12 burç için günlük arketip rehberi.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 label text-paper bg-ink-2 border border-line px-4 py-2 shrink-0">
+        <div className="flex items-center gap-2 doc-caption text-paper bg-ink-2 border border-line px-4 py-2 shrink-0">
           <Calendar size={14} className="text-gold" />
           <span>{dateFormatted}</span>
         </div>
@@ -103,12 +100,12 @@ export function DailyCosmicTransitWidget() {
         {/* 1. Moon Phase (Bespoke Vector Moon) */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="label text-violet">
+            <span className="doc-kicker text-violet">
               GÜNCEL AY FAZI
             </span>
             <VectorMoonPhase illumination={illuminationPct} waning={sky ? !sky.moon.waxing : false} size={30} className="text-paper" />
           </div>
-          <div className="display display-tight text-lg font-bold text-paper">
+          <div className="doc-title text-base sm:text-lg text-paper">
             {moonPhaseName}{sky && ` (%${illuminationPct} Aydınlık)`}
           </div>
           <p className="text-xs text-paper/75 leading-relaxed">
@@ -119,12 +116,12 @@ export function DailyCosmicTransitWidget() {
         {/* 2. Planetary Ruler of the Day */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="label text-gold">
+            <span className="doc-kicker text-gold">
               GÜNÜN GEZEGENSEL YÖNETİCİSİ
             </span>
             <PlanetGlyph planet={dayRuler.planetId} size={22} className={dayRuler.color} />
           </div>
-          <div className="display display-tight text-lg font-bold text-paper">
+          <div className="doc-title text-base sm:text-lg text-paper">
             {dayRuler.planet}
           </div>
           <p className="text-xs text-paper/75 leading-relaxed">
@@ -135,13 +132,13 @@ export function DailyCosmicTransitWidget() {
         {/* 3. Mercury Status */}
         <div className="bg-ink-2 p-5 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="label text-primary">
+            <span className="doc-kicker text-gold">
               MERKÜR İLETİŞİM DÖNGÜSÜ
             </span>
-            <PlanetGlyph planet="mercury" size={20} className="text-primary" />
+            <PlanetGlyph planet="mercury" size={20} className="text-gold" />
           </div>
-          <div className="display display-tight text-lg font-bold text-paper flex items-center gap-2">
-            {isMercuryRetro ? <Hourglass className="text-solar" size={18} /> : <ShieldCheck className="text-lime" size={18} />}
+          <div className="doc-title text-base sm:text-lg text-paper flex items-center gap-2">
+            {isMercuryRetro ? <Hourglass className="text-gold" size={18} /> : <ShieldCheck className="text-lime" size={18} />}
             <span>{!sky ? 'Hesaplanıyor' : isMercuryRetro ? 'Retrograd (Geri Hareket)' : 'Düz Harekette'}</span>
           </div>
           <p className="text-xs text-paper/75 leading-relaxed">
@@ -155,11 +152,11 @@ export function DailyCosmicTransitWidget() {
       {/* 12 Signs Quick Selector */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="label text-paper flex items-center gap-2">
+          <h3 className="doc-kicker text-paper flex items-center gap-2">
             <PlanetGlyph planet="sun" size={14} className="text-gold" />
             Burcunuzu Seçin & Günlük Yorumu Okuyun
           </h3>
-          <span className="label text-muted">
+          <span className="doc-caption text-paper/60">
             Seçili: <strong className="text-paper">{selectedSign.name}</strong>
           </span>
         </div>
@@ -174,8 +171,8 @@ export function DailyCosmicTransitWidget() {
                 onClick={() => setSelectedSignId(s.id)}
                 className={`flex flex-col items-center justify-center p-3 transition-colors cursor-pointer ${
                   isSelected
-                    ? 'bg-gold text-ink'
-                    : 'bg-ink-2 text-muted hover:text-paper hover:bg-ink-3'
+                    ? 'bg-gold text-ink font-semibold'
+                    : 'bg-ink-2 text-paper/60 hover:text-paper hover:bg-ink-3'
                 }`}
               >
                 <ZodiacGlyph
@@ -184,7 +181,7 @@ export function DailyCosmicTransitWidget() {
                   className={`mb-1.5 ${isSelected ? 'text-ink' : 'text-paper/70'}`}
                 />
                 <span className="text-xs font-bold font-sans">{s.name}</span>
-                <span className="label text-[9px] mt-0.5 opacity-70">{s.element}</span>
+                <span className="doc-caption text-[9px] mt-0.5 opacity-70">{s.element}</span>
               </button>
             );
           })}
@@ -197,18 +194,18 @@ export function DailyCosmicTransitWidget() {
               <ZodiacGlyph sign={selectedSign.id} size={48} className="text-gold shrink-0" />
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h3 className="display display-tight text-2xl sm:text-3xl font-black text-paper">
+                  <h3 className="doc-title text-2xl sm:text-3xl text-paper">
                     {selectedSign.name} Burcu Günlük Yorumu
                   </h3>
-                  <span className="label px-2.5 py-0.5 border border-gold/40 bg-gold/10 text-gold font-bold">
+                  <span className="doc-caption px-2.5 py-0.5 border border-gold/40 bg-gold/10 text-gold font-medium">
                     {selectedSign.dates}
                   </span>
                 </div>
-                <div className="label text-muted mt-1">
+                <div className="doc-caption text-paper/60 mt-1">
                   Element: {selectedSign.element} ({selectedSign.modality}) • Yönetici: {selectedSign.rulingPlanet}
                 </div>
                 {reading && (
-                  <div className="label mt-1 text-paper/70">
+                  <div className="doc-caption mt-1 text-paper/70">
                     Ay bugün {reading.moonIn} · {reading.house}. ev: {reading.houseArea}
                   </div>
                 )}
@@ -218,7 +215,7 @@ export function DailyCosmicTransitWidget() {
             <div className="flex items-center gap-3 bg-ink border border-line px-4 py-2.5 shrink-0 font-mono text-xs">
               <Hourglass size={16} className="text-gold" />
               <div>
-                <span className="label text-[10px] text-muted block">Günün Şanslı Saatleri</span>
+                <span className="doc-caption text-[10px] text-paper/60 block">Günün Şanslı Saatleri</span>
                 <span className="text-paper font-bold">{reading ? reading.luckyHours : '—'}</span>
               </div>
             </div>
@@ -228,7 +225,7 @@ export function DailyCosmicTransitWidget() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line mt-6">
             {/* Energy */}
             <div className="bg-ink p-5 space-y-2">
-              <div className="label text-gold flex items-center gap-2">
+              <div className="doc-kicker text-gold flex items-center gap-2">
                 <Zap size={14} className="text-gold" />
                 <span>Kozmik Enerji & Odak</span>
               </div>
@@ -239,7 +236,7 @@ export function DailyCosmicTransitWidget() {
 
             {/* Love & Relations */}
             <div className="bg-ink p-5 space-y-2">
-              <div className="label text-rose-signal flex items-center gap-2">
+              <div className="doc-kicker text-rose-signal flex items-center gap-2">
                 <Heart size={14} className="text-rose-signal" />
                 <span>Aşk & İlişkiler</span>
               </div>
@@ -250,7 +247,7 @@ export function DailyCosmicTransitWidget() {
 
             {/* Career & Wealth */}
             <div className="bg-ink p-5 space-y-2">
-              <div className="label text-paper flex items-center gap-2">
+              <div className="doc-kicker text-paper flex items-center gap-2">
                 <Briefcase size={14} className="text-paper" />
                 <span>Kariyer & Maddiyat</span>
               </div>
@@ -267,7 +264,7 @@ export function DailyCosmicTransitWidget() {
               <span>{reading ? reading.tip : pending}</span>
             </div>
 
-            <div className="label text-muted serif-i">
+            <div className="doc-caption text-paper/60 italic">
               Motto: &quot;{selectedSign.traits.motto}&quot;
             </div>
           </div>

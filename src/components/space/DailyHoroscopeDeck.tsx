@@ -12,7 +12,6 @@ import {
   Gem,
   Award
 } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -40,33 +39,31 @@ export function DailyHoroscopeDeck() {
   const today = now ? now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }) : '—';
 
   const elementGlyphMap: Record<ZodiacElement, React.ReactNode> = {
-    Ateş: <FireElementGlyph size={14} className="text-solar" />,
+    Ateş: <FireElementGlyph size={14} className="text-gold" />,
     Toprak: <EarthElementGlyph size={14} className="text-lime" />,
     Hava: <AirElementGlyph size={14} className="text-cyan-400" />,
     Su: <WaterElementGlyph size={14} className="text-blue-400" />
   };
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8" id="gunluk-burc-fali">
-      <Ticks />
-
+    <div className="relative border border-line bg-ink p-6 sm:p-10 space-y-8" id="gunluk-burc-fali">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-line pb-6">
         <div>
-          <div className="label flex items-center gap-2 text-solar">
+          <div className="doc-kicker text-gold flex items-center gap-2">
             <AstrolabeGlyph size={16} />
-            <span>12 ZODYAK KAPISI · GÜNLÜK HOROSKOP VE YAŞAM ENERJİSİ RADARI</span>
+            <span>12 Zodyak Burcu · Günlük Yorum ve Gezegen Konumları</span>
           </div>
-          <h3 className="display display-tight text-3xl sm:text-4xl text-paper mt-2">
-            Günlük Burç Falı & Enerji Radarı
+          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-2">
+            Günlük Burç Yorumu
           </h3>
           <p className="text-sm text-paper/70 mt-1 max-w-2xl leading-relaxed">
-            Burcunuzu seçerek bugünün aşk, kariyer, zihinsel güç ve kozmik şans potansiyelini anlık efemeris etkileşimiyle inceleyin.
+            Burcunuzu seçerek bugünün aşk, kariyer, zihinsel odak ve gezegensel etkileşimlerini inceleyin.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-muted bg-ink-2 p-2.5 border border-line shrink-0">
-          <Calendar size={14} className="text-solar" />
+        <div className="flex items-center gap-2 doc-caption text-paper/80 bg-ink-2 p-2.5 border border-line shrink-0">
+          <Calendar size={14} className="text-gold" />
           <span>BUGÜN: <strong className="text-paper">{today}</strong></span>
         </div>
       </div>
@@ -81,12 +78,12 @@ export function DailyHoroscopeDeck() {
               onClick={() => setSelectedSignId(sign.id)}
               className={`p-2.5 border text-center transition-all cursor-pointer font-mono flex flex-col items-center justify-between ${
                 isSelected
-                  ? 'border-solar bg-solar text-ink font-bold shadow-md scale-102 z-10'
-                  : 'border-line bg-ink-2 text-muted hover:border-paper hover:text-paper'
+                  ? 'border-gold bg-gold text-ink font-bold shadow-md scale-102 z-10'
+                  : 'border-line bg-ink-2 text-paper/70 hover:border-paper/40 hover:text-paper'
               }`}
             >
               <div className="p-1.5 rounded-full mb-1">
-                <ZodiacGlyph sign={sign.id} size={22} className={isSelected ? 'text-ink' : 'text-solar'} />
+                <ZodiacGlyph sign={sign.id} size={22} className={isSelected ? 'text-ink' : 'text-gold'} />
               </div>
               <span className="text-xs font-bold">{sign.name}</span>
               <span className="text-[9px] opacity-75 mt-0.5 truncate w-full">{sign.element}</span>
@@ -96,25 +93,25 @@ export function DailyHoroscopeDeck() {
       </div>
 
       {/* Active Sign Comprehensive Showcase */}
-      <div className="border border-solar/40 bg-ink-2 p-6 sm:p-8 space-y-8">
+      <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-8">
         {/* Banner with Sign Meta */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-line pb-6">
           <div className="flex items-center gap-5">
             <div className="w-18 h-18 rounded-full border border-line bg-ink flex items-center justify-center p-3 shadow-inner">
-              <ZodiacGlyph sign={selectedSign.id} size={48} className="text-solar" />
+              <ZodiacGlyph sign={selectedSign.id} size={48} className="text-gold" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-xs text-solar font-bold uppercase tracking-wider">
-                  {selectedSign.element} ELEMENTİ · {selectedSign.modality} NİTELİK
+                <span className="doc-kicker text-gold uppercase">
+                  {selectedSign.element} Elementi · {selectedSign.modality} Nitelik
                 </span>
                 <span className="text-muted">·</span>
-                <span className="font-mono text-xs text-muted">{selectedSign.dates}</span>
+                <span className="doc-caption text-paper/60">{selectedSign.dates}</span>
               </div>
-              <h4 className="display text-3xl sm:text-4xl text-paper">
-                {selectedSign.name} Burcu <span className="serif-i text-xl sm:text-2xl text-gold">({selectedSign.latinName})</span>
+              <h4 className="doc-title text-2xl sm:text-3xl text-paper">
+                {selectedSign.name} Burcu <span className="doc-serif italic text-xl sm:text-2xl text-gold/90">({selectedSign.latinName})</span>
               </h4>
-              <p className="font-mono text-xs text-muted mt-1">
+              <p className="doc-caption text-xs text-paper/60 mt-1">
                 Yönetici Gezegen: <strong className="text-paper">{selectedSign.rulingPlanet}</strong> · Arketip: <strong className="text-paper">{selectedSign.traits.archetype}</strong>
               </p>
             </div>
@@ -125,7 +122,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('genel')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'genel' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                activeCategory === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
               }`}
             >
               Günün Genel Falı
@@ -133,7 +130,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('ask')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'ask' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                activeCategory === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
               }`}
             >
               Aşk & Kalp
@@ -141,7 +138,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('kariyer')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'kariyer' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                activeCategory === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
               }`}
             >
               Kariyer & Para
@@ -149,7 +146,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('tilsim')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'tilsim' ? 'border-solar bg-solar text-ink font-bold' : 'border-transparent text-muted hover:text-paper'
+                activeCategory === 'tilsim' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
               }`}
             >
               Burç Tılsımları
@@ -174,13 +171,13 @@ export function DailyHoroscopeDeck() {
 
           <div className="p-4 border border-line bg-ink space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-solar flex items-center gap-1.5 font-bold uppercase text-[11px]">
+              <span className="text-gold flex items-center gap-1.5 font-bold uppercase text-[11px]">
                 <Briefcase size={14} /> Kariyer & Para
               </span>
               <span className="font-bold text-paper text-sm">%{dailyScores.career}</span>
             </div>
             <div className="h-1.5 w-full bg-ink-2 border border-line overflow-hidden">
-              <div className="h-full bg-solar transition-all duration-700" style={{ width: `${dailyScores.career}%` }} />
+              <div className="h-full bg-gold transition-all duration-700" style={{ width: `${dailyScores.career}%` }} />
             </div>
             <span className="text-[10px] text-muted block">Verimlilik ve stratejik fırsatlar</span>
           </div>
@@ -231,7 +228,7 @@ export function DailyHoroscopeDeck() {
             {activeCategory === 'genel' && (
               <div className="space-y-4">
                 <div className="p-5 border border-line bg-ink space-y-2">
-                  <span className="text-solar uppercase font-bold text-[10px] block">
+                  <span className="doc-kicker text-gold uppercase block mb-1">
                     Günün Kozmik Akışı & Gökyüzü Rezonansı
                   </span>
                   <p className="text-paper/90 text-sm leading-relaxed">
@@ -240,9 +237,9 @@ export function DailyHoroscopeDeck() {
                 </div>
 
                 <div className="p-4 border border-line bg-ink flex items-start gap-3">
-                  <AlertTriangle size={16} className="text-solar shrink-0 mt-0.5" />
+                  <AlertTriangle size={16} className="text-gold shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-solar font-bold uppercase text-[10px] block">Günün Kozmik Tavsiyesi & Sınavı:</span>
+                    <span className="doc-kicker text-gold block">Günün Kozmik Tavsiyesi & Sınavı:</span>
                     <p className="text-paper/85 text-xs leading-relaxed mt-1">
                       {reading ? reading.tip : pending}
                     </p>
@@ -253,7 +250,7 @@ export function DailyHoroscopeDeck() {
 
             {activeCategory === 'ask' && (
               <div className="p-5 border border-line bg-ink space-y-3">
-                <span className="text-rose uppercase font-bold text-[10px] flex items-center gap-1.5">
+                <span className="doc-kicker text-rose uppercase flex items-center gap-1.5">
                   <Heart size={14} />
                   Kalp Titreşimleri & Aşk Falı
                 </span>
@@ -271,7 +268,7 @@ export function DailyHoroscopeDeck() {
 
             {activeCategory === 'kariyer' && (
               <div className="p-5 border border-line bg-ink space-y-3">
-                <span className="text-solar uppercase font-bold text-[10px] flex items-center gap-1.5">
+                <span className="doc-kicker text-gold uppercase flex items-center gap-1.5">
                   <Briefcase size={14} />
                   Kariyer, Başarı & Maddi Fırsatlar
                 </span>
@@ -279,7 +276,7 @@ export function DailyHoroscopeDeck() {
                   {reading ? reading.career : pending}
                 </p>
                 <div className="pt-3 border-t border-line text-[11px] text-muted flex items-center gap-2">
-                  <Clock size={13} className="text-solar" />
+                  <Clock size={13} className="text-gold" />
                   <span>En verimli saatler: <strong className="text-paper">{reading ? reading.luckyHours : '—'}</strong></span>
                 </div>
               </div>
@@ -299,7 +296,7 @@ export function DailyHoroscopeDeck() {
                 <div className="p-4 border border-line bg-ink space-y-1">
                   <span className="text-muted block text-[10px] uppercase">Uğurlu Sayılar</span>
                   <div className="flex items-center gap-2">
-                    <Award size={15} className="text-solar" />
+                    <Award size={15} className="text-gold" />
                     <span className="text-paper font-bold text-sm">
                       {selectedSign.details.luckyNumbers.join(', ')}
                     </span>
@@ -327,7 +324,7 @@ export function DailyHoroscopeDeck() {
 
           {/* Right Summary Dossier */}
           <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4">
-            <span className="text-[10px] text-muted uppercase tracking-widest block border-b border-line pb-2">
+            <span className="doc-kicker text-gold tracking-widest block border-b border-line pb-2">
               BURÇ KİMLİK KARTI
             </span>
 
@@ -348,7 +345,7 @@ export function DailyHoroscopeDeck() {
               <div className="flex justify-between items-center">
                 <span className="text-muted">Yönetici Prensip:</span>
                 <span className="text-paper font-bold flex items-center gap-1.5">
-                  <PlanetGlyph planet={selectedSign.rulingPlanetId} size={14} className="text-solar" />
+                  <PlanetGlyph planet={selectedSign.rulingPlanetId} size={14} className="text-gold" />
                   {selectedSign.rulingPlanet}
                 </span>
               </div>
