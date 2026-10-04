@@ -66,7 +66,7 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
 
             <div className="mt-10 space-y-6 text-base leading-relaxed text-paper/80 sm:text-lg">
               {guide.intro.map((p, i) => (
-                <p key={i} className={i === 0 ? 'doc-serif text-xl sm:text-2xl text-paper leading-relaxed' : ''}>
+                <p key={i} className={i === 0 ? 'doc-serif text-xl sm:text-2xl text-paper leading-relaxed break-words' : 'break-words'}>
                   {p}
                 </p>
               ))}
@@ -83,10 +83,10 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
                 </div>
                 <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 sm:max-lg:fill-row-2 lg:fill-row-3">
                   {guide.howTo.map((step) => (
-                    <article key={step.step} className="flex flex-col bg-ink p-6 sm:p-7">
+                    <article key={step.step} className="flex min-w-0 flex-col bg-ink p-6 sm:p-7">
                       <span className="doc-title text-3xl text-paper/40 mb-4">{step.step}</span>
-                      <h4 className="doc-title text-xl text-paper mb-2">{step.title}</h4>
-                      <p className="text-sm leading-relaxed text-paper/70">{step.desc}</p>
+                      <h4 className="doc-title break-words text-xl text-paper mb-2">{step.title}</h4>
+                      <p className="text-sm leading-relaxed text-paper/70 break-words">{step.desc}</p>
                     </article>
                   ))}
                 </div>
@@ -104,10 +104,10 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
                 </div>
                 <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4 sm:max-lg:fill-row-2 lg:fill-row-4">
                   {guide.facts.map((fact, idx) => (
-                    <div key={idx} className="flex flex-col justify-between bg-ink p-5 sm:p-6">
-                      <span className="doc-kicker text-paper/60 mb-3">{fact.label}</span>
-                      <span className="doc-title text-2xl sm:text-3xl text-paper mb-2">{fact.value}</span>
-                      {fact.desc && <span className="doc-caption text-paper/50">{fact.desc}</span>}
+                    <div key={idx} className="flex min-w-0 flex-col justify-between bg-ink p-5 sm:p-6">
+                      <span className="doc-kicker break-words text-paper/60 mb-3">{fact.label}</span>
+                      <span className="doc-title break-words text-xl sm:text-2xl text-paper mb-2">{fact.value}</span>
+                      {fact.desc && <span className="doc-caption break-words text-paper/50">{fact.desc}</span>}
                     </div>
                   ))}
                 </div>

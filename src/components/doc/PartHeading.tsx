@@ -28,7 +28,7 @@ export function PartHeading({
         {aside && <span className="doc-caption">{aside}</span>}
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:items-end">
-        <h2 className="doc-title text-[clamp(2.2rem,5.4vw,5rem)] text-paper lg:col-span-7">
+        <h2 className="doc-title text-[clamp(1.75rem,5.4vw,5rem)] break-words text-paper lg:col-span-7">
           {title}
           {serif && (
             <>
@@ -39,7 +39,7 @@ export function PartHeading({
             </>
           )}
         </h2>
-        {description && <p className="max-w-lg text-sm leading-relaxed text-paper/65 sm:text-base lg:col-span-5">{description}</p>}
+        {description && <p className="max-w-lg text-sm leading-relaxed text-paper/65 sm:text-base lg:col-span-5 break-words">{description}</p>}
       </div>
     </header>
   );

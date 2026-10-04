@@ -12,7 +12,7 @@ import {
   MoonPhaseVectorGlyph,
   ZodiacGlyph
 } from '@/components/ui/CosmicGlyphs';
-import { Ticks } from '@/components/motion/primitives';
+
 import { useNow } from '@/lib/useNow';
 import { SIGN_IN, SIGN_NAMES } from '@/lib/astrology/dailySky';
 import { ShieldAlert } from 'lucide-react';
@@ -199,7 +199,7 @@ export function LunarPhaseTracker() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {[
               { id: 'cycle', label: 'Ezoterik Anlam' },
               { id: 'rituals', label: 'Ritüeller & Niyet' },

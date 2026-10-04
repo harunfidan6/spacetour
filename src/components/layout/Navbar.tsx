@@ -86,7 +86,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <div className="ml-auto hidden items-center gap-5 lg:flex xl:gap-7">
+          <div className="ml-auto hidden items-center gap-5 xl:flex xl:gap-7">
             {SITE_ROUTES.slice(1).map((r) => {
               const active = isActive(pathname, r.href);
               return (

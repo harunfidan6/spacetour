@@ -67,7 +67,7 @@ export function ChapterHero({
       className={`relative isolate flex overflow-hidden bg-ink ${full ? 'min-h-[100svh]' : 'min-h-[72svh]'}`}
       style={{ '--page-accent': accent } as CSSProperties}
     >
-      <div data-hero-photo className="absolute inset-0 -z-10 will-change-transform">
+      <div data-hero-photo className="absolute inset-0 -z-10 overflow-hidden will-change-transform">
         <div className="doc-settle absolute inset-0">
           <Image
             src={image.src}
