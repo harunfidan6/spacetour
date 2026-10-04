@@ -618,3 +618,8 @@ main table { max-width: 100%; }
 h1, h2, h3, .doc-title { text-wrap: balance; }
 p, li { text-wrap: pretty; }
 [id] { scroll-margin-top: 88px; }
+
+/* Photographs fade in once decoded (only with JS, so no-JS visitors still see them) */
+.js .doc-img { transition: opacity 0.7s var(--ease-out); }
+.js .doc-img:not([data-loaded]) { opacity: 0; }
+html[data-film] .doc-img { opacity: 1 !important; transition: none; }

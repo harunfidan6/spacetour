@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { DocImage } from '@/components/ui/DocImage';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { ArrowUpRight } from 'lucide-react';
@@ -38,7 +38,7 @@ export function EpisodeCard({
         size === 'lg' ? 'min-h-[440px] sm:min-h-[520px]' : 'min-h-[360px] sm:min-h-[400px]'
       }`}
     >
-      <Image src={image.src} alt="" fill sizes={sizes} className="-z-10 object-cover" />
+      <DocImage src={image.src} alt="" fill sizes={sizes} className="-z-10 object-cover" />
       <div aria-hidden className="doc-shade-card absolute inset-0 -z-10" />
 
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5 sm:p-6">

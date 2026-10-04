@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { DocImage } from '@/components/ui/DocImage';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, LayoutGrid } from 'lucide-react';
 import type { AstroImage } from '@/data/astroImages';
@@ -18,7 +18,7 @@ export function NextChapter({
   return (
     <nav aria-label="Kısımlar arası gezinme" className="border-t border-white/10">
       <Link href={next.href} className="doc-episode group relative isolate flex min-h-[52svh] items-end overflow-hidden">
-        <Image src={next.image.src} alt="" fill sizes="100vw" className="-z-10 object-cover" />
+        <DocImage src={next.image.src} alt="" fill sizes="100vw" className="-z-10 object-cover" />
         <div aria-hidden className="doc-shade-b absolute inset-0 -z-10" />
         <div className="flex w-full flex-col gap-6 px-[var(--gutter)] pb-14 sm:flex-row sm:items-end sm:justify-between">
           <div>

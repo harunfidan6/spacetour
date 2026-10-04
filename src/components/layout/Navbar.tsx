@@ -267,7 +267,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
                   <Link
                     href={r.href}
                     data-menu-link
-                    className="group flex items-baseline gap-4 py-2 sm:gap-6"
+                    className="group flex items-baseline gap-4 py-1.5 sm:gap-6"
                     tabIndex={open ? 0 : -1}
                     onClick={() => {
                       if (active) onClose();
@@ -277,7 +277,7 @@ function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () =
                       {r.index}
                     </span>
                     <span
-                      className="display pt-[0.14em] text-[clamp(2.2rem,6.4vw,6rem)] transition-[transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-4"
+                      className="display whitespace-nowrap pt-[0.14em] text-[clamp(1.9rem,min(6.4vw,7.6vh),5.5rem)] transition-[transform,color] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-4"
                       style={{ color: active ? r.accent : undefined }}
                     >
                       {r.label}

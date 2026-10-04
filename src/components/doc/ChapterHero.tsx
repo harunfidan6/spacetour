@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { DocImage } from '@/components/ui/DocImage';
 import Link from 'next/link';
 import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
@@ -69,7 +69,7 @@ export function ChapterHero({
     >
       <div data-hero-photo className="absolute inset-0 -z-10 overflow-hidden will-change-transform">
         <div className="doc-settle absolute inset-0">
-          <Image
+          <DocImage
             src={image.src}
             alt=""
             fill
