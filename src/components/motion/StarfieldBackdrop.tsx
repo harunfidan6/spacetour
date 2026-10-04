@@ -31,7 +31,7 @@ export function StarfieldBackdrop() {
     let running = true;
 
     const seed = () => {
-      const count = Math.round(Math.min(420, (w * h) / 4200));
+      const count = Math.round(Math.min(420, (w * h) / (coarse ? 5200 : 4200)));
       stars = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -42,16 +42,23 @@ export function StarfieldBackdrop() {
       }));
     };
 
+    // Phones: lower resolution and half frame rate; the layer is soft background texture
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
+      const nw = window.innerWidth;
+      const nh = window.innerHeight;
+      // Mobile browser bars change the height while scrolling: keep the stars where they are
+      const reseed = !stars.length || nw !== w || Math.abs(nh - h) > 160;
+      dpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2);
+      w = nw;
+      h = nh;
       cv.width = w * dpr;
       cv.height = h * dpr;
       cv.style.width = `${w}px`;
       cv.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      seed();
+      if (reseed) seed();
     };
 
     let lastScroll = 0;
@@ -131,8 +138,9 @@ export function StarfieldBackdrop() {
       }
     };
 
+    let frame = 0;
     const loop = (t: number) => {
-      if (running) draw(t);
+      if (running && (!coarse || frame++ % 2 === 0)) draw(t);
       raf = requestAnimationFrame(loop);
     };
 

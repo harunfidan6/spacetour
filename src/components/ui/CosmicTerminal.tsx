@@ -542,7 +542,7 @@ export function CosmicTerminal() {
             <span className="font-mono text-xs uppercase tracking-wider text-paper font-bold">
               Kozmik Kumanda Terminali
             </span>
-            <span className="border border-line bg-ink px-1.5 py-0.5 font-mono text-[9px] text-muted">
+            <span className="border border-line bg-ink px-1.5 py-0.5 font-mono text-[10px] text-muted">
               v2.4 ASTRO-OS
             </span>
           </div>
@@ -666,7 +666,7 @@ export function CosmicTerminal() {
                           {cmd.title}
                         </span>
                         {cmd.badge && (
-                          <span className="border border-line bg-ink px-1.5 py-0.2 font-mono text-[9px] text-muted shrink-0">
+                          <span className="border border-line bg-ink px-1.5 py-0.2 font-mono text-[10px] text-muted shrink-0">
                             {cmd.badge}
                           </span>
                         )}

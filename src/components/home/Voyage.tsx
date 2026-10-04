@@ -86,7 +86,7 @@ export function Voyage() {
               d.id === s.id ? 'border-solar bg-solar text-ink font-bold' : 'border-line bg-ink text-paper/80 hover:bg-ink-3'
             }`}
           >
-            <span className="mr-1.5 text-[9px] opacity-70">{String(i + 1).padStart(2, '0')}</span>
+            <span className="mr-1.5 text-[10px] opacity-70">{String(i + 1).padStart(2, '0')}</span>
             {s.name}
           </button>
         ))}
@@ -114,7 +114,7 @@ export function Voyage() {
                   <span className={`display text-[clamp(1.6rem,2.6vw,2.6rem)] transition-[color,transform] duration-500 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-2 ${on ? 'text-solar' : 'text-paper/55 group-hover:text-paper'}`}>
                     {s.name}
                   </span>
-                  <span className={`label text-[9px] transition-opacity ${on ? 'text-paper/80 opacity-100' : 'text-muted opacity-0 group-hover:opacity-100'}`}>{s.meta}</span>
+                  <span className={`label text-[10px] transition-opacity ${on ? 'text-paper/80 opacity-100' : 'text-muted opacity-0 group-hover:opacity-100'}`}>{s.meta}</span>
                 </button>
               </li>
             );
@@ -217,7 +217,7 @@ function TelemetryBody({
         <div className="flex items-center gap-2">
           <span className="label text-solar">{d.tag}</span>
           {orbitMode === 'j2000' && (
-            <span className="border border-lime/30 bg-lime/10 px-1.5 py-0.5 font-mono text-[9px] text-lime font-bold">
+            <span className="border border-lime/30 bg-lime/10 px-1.5 py-0.5 font-mono text-[10px] text-lime font-bold">
               J2000 CANLI
             </span>
           )}
@@ -232,7 +232,7 @@ function TelemetryBody({
         <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
           {rows.map((r) => (
             <div key={r.k}>
-              <dt className="label text-[9px] text-muted">{r.k}</dt>
+              <dt className="label text-[10px] text-muted">{r.k}</dt>
               <dd className="mt-1 font-mono text-xs text-paper">
                 <Scramble text={r.v} onView={false} duration={0.7} />
               </dd>

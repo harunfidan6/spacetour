@@ -186,7 +186,7 @@ export function BrightStarsRadar() {
                 <div className="display display-tight text-base font-bold truncate">
                   {s.name.split(' (')[0]}
                 </div>
-                <div className={`label mt-1 text-[9px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                <div className={`label mt-1 text-[10px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
                   {s.magnitude > 0 ? `+${s.magnitude}` : s.magnitude} mag
                 </div>
               </div>

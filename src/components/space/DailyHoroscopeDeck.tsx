@@ -86,7 +86,7 @@ export function DailyHoroscopeDeck() {
                 <ZodiacGlyph sign={sign.id} size={22} className={isSelected ? 'text-ink' : 'text-gold'} />
               </div>
               <span className="text-xs font-bold">{sign.name}</span>
-              <span className="text-[9px] opacity-75 mt-0.5 truncate w-full">{sign.element}</span>
+              <span className="text-[10px] opacity-75 mt-0.5 truncate w-full">{sign.element}</span>
             </button>
           );
         })}

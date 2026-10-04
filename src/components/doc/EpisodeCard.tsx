@@ -43,7 +43,7 @@ export function EpisodeCard({
 
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5 sm:p-6">
         <span className="doc-title text-4xl text-paper/90 sm:text-5xl">{index}</span>
-        <span className="doc-kicker rounded-full border border-white/20 bg-ink/50 px-3 py-1.5 text-[9px] text-paper/80 backdrop-blur-md">
+        <span className="doc-kicker rounded-full border border-white/20 bg-ink/50 px-3 py-1.5 text-[10px] text-paper/80 backdrop-blur-md">
           {kind}
         </span>
       </div>

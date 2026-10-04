@@ -273,7 +273,7 @@ export default function CalendarPage() {
                       >
                         <span className="flex w-full items-center justify-between">
                           <span className={`font-mono text-xs sm:text-sm ${isToday && !selected ? 'grid h-6 w-6 place-items-center rounded-full bg-solar text-ink font-semibold' : ''}`}>{format(day, 'd')}</span>
-                          {dayEvents.length > 1 && <span className="font-mono text-[9px] text-muted">×{dayEvents.length}</span>}
+                          {dayEvents.length > 1 && <span className="font-mono text-[10px] text-muted">×{dayEvents.length}</span>}
                         </span>
                         <span className="mt-auto flex w-full flex-col gap-1">
                           {dayEvents.slice(0, 2).map((e) => (

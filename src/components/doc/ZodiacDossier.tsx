@@ -127,7 +127,7 @@ export function ZodiacDossier({ sign, index, image }: { sign: ZodiacSign; index:
             <p className="mt-3 text-sm leading-relaxed text-paper/80">{element.text}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {sameElement.map((x) => (
-                <Link key={x.id} href={`/astroloji/burclar/${x.id}`} className="rounded-full border border-white/15 px-3 py-1 text-xs text-paper/80 hover:border-gold hover:text-gold">{x.name}</Link>
+                <Link key={x.id} href={`/astroloji/burclar/${x.id}`} className="rounded-full border border-white/15 px-3 py-2 text-xs text-paper/80 hover:border-gold hover:text-gold">{x.name}</Link>
               ))}
             </div>
           </div>
@@ -136,7 +136,7 @@ export function ZodiacDossier({ sign, index, image }: { sign: ZodiacSign; index:
             <p className="mt-3 text-sm leading-relaxed text-paper/80">{MODALITY_INFO[sign.modality]}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {sameModality.map((x) => (
-                <Link key={x.id} href={`/astroloji/burclar/${x.id}`} className="rounded-full border border-white/15 px-3 py-1 text-xs text-paper/80 hover:border-gold hover:text-gold">{x.name}</Link>
+                <Link key={x.id} href={`/astroloji/burclar/${x.id}`} className="rounded-full border border-white/15 px-3 py-2 text-xs text-paper/80 hover:border-gold hover:text-gold">{x.name}</Link>
               ))}
             </div>
           </div>

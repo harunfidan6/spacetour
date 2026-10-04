@@ -109,7 +109,7 @@ export function SkyTonightWidget() {
                     <PlanetGlyph planet={planet.key} size={18} className="text-solar group-hover:text-paper transition-colors" />
                   </div>
                   <span
-                    className={`text-[9px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${RATING_STYLE[planet.rating]}`}
+                    className={`text-[10px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${RATING_STYLE[planet.rating]}`}
                   >
                     {planet.rating}
                   </span>

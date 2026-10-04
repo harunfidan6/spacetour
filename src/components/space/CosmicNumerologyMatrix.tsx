@@ -190,7 +190,7 @@ export function CosmicNumerologyMatrix() {
                 <span className={`doc-caption text-[10px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
                   {pillar.label}
                 </span>
-                <span className={`doc-caption text-[9px] px-1.5 py-0.5 border ${
+                <span className={`doc-caption text-[10px] px-1.5 py-0.5 border ${
                   isSelected ? 'border-ink/30 text-ink' : 'border-line text-gold'
                 }`}>
                   {pillar.badge}

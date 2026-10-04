@@ -432,11 +432,11 @@ export function SolarSystemOrrery() {
 
           <div className="grid grid-cols-2 gap-2 mt-3 text-xs font-mono">
             <div className="p-2 bg-ink-2 border border-line">
-              <span className="text-[9px] text-muted block uppercase">Güneş’e Uzaklık</span>
+              <span className="text-[10px] text-muted block uppercase">Güneş’e Uzaklık</span>
               <span className="font-bold text-paper truncate block">{selectedPlanet.actualDistanceAU}</span>
             </div>
             <div className="p-2 bg-ink-2 border border-line">
-              <span className="text-[9px] text-muted block uppercase">Yıl Süresi</span>
+              <span className="text-[10px] text-muted block uppercase">Yıl Süresi</span>
               <span className="font-bold text-paper truncate block">{selectedPlanet.periodDays}</span>
             </div>
           </div>

@@ -187,7 +187,7 @@ export function CosmicTarotDrawer() {
                   {positionLabel}
                 </span>
                 <span
-                  className={`font-mono text-[9px] px-1.5 py-0.5 border uppercase font-bold tracking-wider ${
+                  className={`font-mono text-[10px] px-1.5 py-0.5 border uppercase font-bold tracking-wider ${
                     isReversed
                       ? 'border-rose/50 bg-rose/10 text-rose'
                       : 'border-lime/50 bg-lime/10 text-lime'

@@ -29,7 +29,7 @@ export function Footer() {
           {['Gökyüzü bu gece açık', 'Gerçek Zamanlı Kozmik Telemetri', 'NASA JPL Efemeris Algoritmaları', '88 Takımyıldızı · 110 Messier Hedefi'].map((t) => (
             <span key={t} className="flex items-center gap-6 px-6 font-mono text-xs uppercase tracking-widest text-paper/60">
               <span>{t}</span>
-              <span className="text-gold text-[8px]">✦</span>
+              <span className="text-gold text-[10px]">✦</span>
             </span>
           ))}
         </Marquee>
@@ -61,7 +61,7 @@ export function Footer() {
               {SITE_ROUTES.map((r) => (
                 <li key={r.href}>
                   <Link href={r.href} className="group flex items-center gap-2 text-sm text-paper/80">
-                    <span className="label text-[9px]" style={{ color: r.accent }}>
+                    <span className="label text-[10px]" style={{ color: r.accent }}>
                       {r.index}
                     </span>
                     <span className="roll">
@@ -93,13 +93,13 @@ export function Footer() {
                 <span className="live-dot" /> Tüm sistemler çalışıyor
               </div>
               <div>
-                <dt className="label text-[9px] text-muted">İstanbul</dt>
+                <dt className="label text-[10px] text-muted">İstanbul</dt>
                 <dd className="font-mono text-paper">
                   <LiveClock />
                 </dd>
               </div>
               <div>
-                <dt className="label text-[9px] text-muted">Koordinat</dt>
+                <dt className="label text-[10px] text-muted">Koordinat</dt>
                 <dd className="font-mono text-paper">41.0082°K · 28.9784°D</dd>
               </div>
             </dl>

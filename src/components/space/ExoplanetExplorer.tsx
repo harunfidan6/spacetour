@@ -162,17 +162,17 @@ export function ExoplanetExplorer() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
             <div className="p-2.5 bg-ink-2 border border-line">
-              <span className="text-[9px] text-muted block uppercase">Dünya’ya Mesafe</span>
+              <span className="text-[10px] text-muted block uppercase">Dünya’ya Mesafe</span>
               <span className="font-bold text-paper">{selectedPlanet.distanceLightYears} Işık Yılı</span>
             </div>
 
             <div className="p-2.5 bg-ink-2 border border-line">
-              <span className="text-[9px] text-muted block uppercase">Yıl Süresi</span>
+              <span className="text-[10px] text-muted block uppercase">Yıl Süresi</span>
               <span className="font-bold text-solar">{selectedPlanet.orbitalPeriodDays} Gün</span>
             </div>
 
             <div className="p-2.5 bg-ink-2 border border-line">
-              <span className="text-[9px] text-muted block uppercase">Kütle / Çap</span>
+              <span className="text-[10px] text-muted block uppercase">Kütle / Çap</span>
               <span className="font-bold text-paper">{selectedPlanet.massEarth}x / {selectedPlanet.radiusEarth}x</span>
             </div>
           </div>

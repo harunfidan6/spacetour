@@ -106,7 +106,7 @@ export function PageHero({
             {ticker.map((t) => (
               <span key={t} className="flex items-center gap-4 px-5 font-mono text-[11px] uppercase tracking-widest text-paper/60">
                 <span>{t}</span>
-                <span className="text-[8px] opacity-40" style={{ color: accent }}>✦</span>
+                <span className="text-[10px] opacity-40" style={{ color: accent }}>✦</span>
               </span>
             ))}
           </Marquee>

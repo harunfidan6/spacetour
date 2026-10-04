@@ -392,7 +392,7 @@ export function ExoplanetTransitLab() {
                   <span className={`label text-[10px] ${isSelected ? 'text-ink/80' : 'text-rose-signal'}`}>
                     {preset.distanceLy} ly
                   </span>
-                  <span className={`label text-[9px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                  <span className={`label text-[10px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
                     {preset.orbitalPeriodDays} gün
                   </span>
                 </div>

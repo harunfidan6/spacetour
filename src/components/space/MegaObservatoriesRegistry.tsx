@@ -151,7 +151,7 @@ export function MegaObservatoriesRegistry() {
                 <span className={`label ${isSelected ? 'text-ink/80 font-bold' : 'text-rose-signal'}`}>
                   {obs.id.toUpperCase()}
                 </span>
-                <span className={`label text-[9px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <span className={`label text-[10px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
                   {obs.apertureDiameterM > 100 ? 'Dizi' : `${obs.apertureDiameterM}m`}
                 </span>
               </div>
@@ -193,7 +193,7 @@ export function MegaObservatoriesRegistry() {
                   alt={obs.name}
                   className="w-full h-full object-cover filter contrast-105"
                 />
-                <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[9px] text-paper/80 backdrop-blur">
+                <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[10px] text-paper/80 backdrop-blur">
                   {obs.altitudeOrOrbit}
                 </div>
               </div>

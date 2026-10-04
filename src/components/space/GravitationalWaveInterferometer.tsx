@@ -361,7 +361,7 @@ export function GravitationalWaveInterferometer() {
                 height={160}
                 className="w-full h-36 bg-black border border-line"
               />
-              <div className="absolute bottom-2 right-2 flex gap-3 font-mono text-[9px] text-muted bg-ink/80 px-2 py-1 border border-line">
+              <div className="absolute bottom-2 right-2 flex gap-3 font-mono text-[10px] text-muted bg-ink/80 px-2 py-1 border border-line">
                 <span>Başlangıç: {fStart} Hz</span>
                 <span className="text-solar">Birleşme: {fMerge} Hz</span>
               </div>

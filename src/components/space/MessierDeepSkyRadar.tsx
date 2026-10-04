@@ -199,7 +199,7 @@ export function MessierDeepSkyRadar() {
                 alt={selectedTarget.name}
                 className="w-full h-full object-cover filter contrast-110"
               />
-              <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[9px] text-paper/80 backdrop-blur">
+              <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[10px] text-paper/80 backdrop-blur">
                 Hubble / Teleskop Gözlemi
               </div>
             </div>

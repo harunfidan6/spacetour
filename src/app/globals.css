@@ -129,14 +129,19 @@ body {
 /* --------------------------------------------------------------------------
    Typography
    -------------------------------------------------------------------------- */
+/* Legacy tool headings share the documentary title treatment (see .doc-title) */
 .display {
   font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  font-stretch: 108%;
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
+/* Only headings go uppercase; numbers, names and units keep their case */
+:is(h1, h2, h3, h4).display { text-transform: uppercase; font-stretch: 112%; line-height: 0.95; }
+.display .serif-i { text-transform: none; }
 
-.display-tight { letter-spacing: -0.035em; line-height: 1.02; }
+.display-tight { letter-spacing: -0.035em; line-height: 0.92; }
 .display-narrow { letter-spacing: -0.015em; }
 
 .serif-i {
@@ -157,8 +162,8 @@ body {
 .label {
   font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
-  line-height: 1.2;
-  letter-spacing: 0.16em;
+  line-height: 1.35;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -218,6 +223,7 @@ body {
 /* Viewfinder corner ticks (title-safe marks) */
 .ticks { position: relative; }
 .ticks > .tick {
+  display: none; /* HUD corner marks retired in the documentary design */
   z-index: 5;
   position: absolute;
   width: 14px;
@@ -574,3 +580,41 @@ body {
 /* Film mode (?film=1): the promo recorder in tools/film drives the page itself */
 html[data-film] { scroll-behavior: auto !important; }
 html[data-film] .preloader { display: none !important; }
+
+/* --------------------------------------------------------------------------
+   UI polish: focus, form controls, touch targets
+   -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+input[type="range"] { accent-color: var(--gold); }
+select, input[type="date"], input[type="time"], input[type="number"], input[type="text"], input[type="search"] { color-scheme: dark; }
+@media (pointer: coarse) {
+  main button:not(.compact), main [role="tab"], main [role="radio"] { min-height: 40px; min-width: 40px; }
+  main input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), main select { min-height: 42px; font-size: 16px; }
+}
+
+/* Range sliders: a finger-sized hit area with a thin visible track */
+html input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: rgb(255 255 255 / 0.14); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: rgb(255 255 255 / 0.14); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px; margin-top: -7px; border-radius: 999px;
+  background: var(--gold); border: 3px solid var(--ink); box-shadow: 0 0 0 1px var(--gold);
+}
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 999px; background: var(--gold); border: 3px solid var(--ink); }
+/* Wide data tables scroll inside their box instead of the page on phones */
+main table { max-width: 100%; }
+
+/* Typography polish: balanced headings, no orphan words, anchors clear the fixed navbar */
+h1, h2, h3, .doc-title { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+[id] { scroll-margin-top: 88px; }

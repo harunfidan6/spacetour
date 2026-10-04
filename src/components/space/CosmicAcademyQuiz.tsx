@@ -744,14 +744,14 @@ export function CosmicAcademyQuiz() {
             <div className="flex justify-between items-end pt-8 max-w-lg mx-auto border-t border-line text-xs font-mono text-muted">
               <div className="text-center">
                 <div className="serif-i text-paper text-sm">SpaceTour TR</div>
-                <div className="label text-[9px] mt-1">Gözlem Masası Şefi</div>
+                <div className="label text-[10px] mt-1">Gözlem Masası Şefi</div>
               </div>
               <div className="w-10 h-10 border border-violet/40 flex items-center justify-center text-violet">
                 <Shield className="w-5 h-5" />
               </div>
               <div className="text-center">
                 <div className="serif-i text-paper text-sm">Kozmik Kurul</div>
-                <div className="label text-[9px] mt-1">Yetkilendirme Mührü</div>
+                <div className="label text-[10px] mt-1">Yetkilendirme Mührü</div>
               </div>
             </div>
           </div>

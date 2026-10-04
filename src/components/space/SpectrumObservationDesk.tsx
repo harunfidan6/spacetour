@@ -74,7 +74,7 @@ export function SpectrumObservationDesk() {
                 <span className="doc-caption">
                   Hedef {String(i + 1).padStart(2, '0')} · {t.catalog}
                 </span>
-                {on && <span className="doc-kicker text-[9px] text-rose">Aktif hedef</span>}
+                {on && <span className="doc-kicker text-[10px] text-rose">Aktif hedef</span>}
               </div>
               <span className="doc-title mt-4 text-3xl text-paper transition-colors group-hover:text-rose">{t.name}</span>
               <span className="doc-serif mt-1 text-lg text-rose/90">{t.type}</span>

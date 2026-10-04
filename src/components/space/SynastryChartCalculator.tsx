@@ -210,7 +210,7 @@ export function SynastryChartCalculator() {
           {/* Person 1 Planetary Snapshot with Bespoke Glyphs */}
           <div className="grid grid-cols-3 gap-px border border-line bg-line pt-0 text-[11px] font-mono">
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="sun" size={11} className="text-gold" />
                 Güneş
               </span>
@@ -220,7 +220,7 @@ export function SynastryChartCalculator() {
               </span>
             </div>
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="moon" size={11} className="text-violet" />
                 Ay
               </span>
@@ -230,7 +230,7 @@ export function SynastryChartCalculator() {
               </span>
             </div>
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <AscendantGlyph size={11} className="text-paper" />
                 Yükselen
               </span>
@@ -315,7 +315,7 @@ export function SynastryChartCalculator() {
           {/* Person 2 Planetary Snapshot with Bespoke Glyphs */}
           <div className="grid grid-cols-3 gap-px border border-line bg-line pt-0 text-[11px] font-mono">
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="sun" size={11} className="text-gold" />
                 Güneş
               </span>
@@ -325,7 +325,7 @@ export function SynastryChartCalculator() {
               </span>
             </div>
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="moon" size={11} className="text-violet" />
                 Ay
               </span>
@@ -335,7 +335,7 @@ export function SynastryChartCalculator() {
               </span>
             </div>
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[9px] text-muted flex items-center gap-1">
+              <span className="label text-[10px] text-muted flex items-center gap-1">
                 <AscendantGlyph size={11} className="text-paper" />
                 Yükselen
               </span>
@@ -353,7 +353,7 @@ export function SynastryChartCalculator() {
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
           <div className="h-20 w-20 bg-rose-signal/15 border border-rose-signal flex flex-col items-center justify-center text-center shrink-0">
             <span className="text-2xl font-black text-rose-signal font-mono">%{synastryScore}</span>
-            <span className="label text-[8px] text-rose-signal">SİNASTRİ</span>
+            <span className="label text-[10px] text-rose-signal">SİNASTRİ</span>
           </div>
 
           <div>

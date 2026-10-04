@@ -181,7 +181,7 @@ export function DailyCosmicTransitWidget() {
                   className={`mb-1.5 ${isSelected ? 'text-ink' : 'text-paper/70'}`}
                 />
                 <span className="text-xs font-bold font-sans">{s.name}</span>
-                <span className="doc-caption text-[9px] mt-0.5 opacity-70">{s.element}</span>
+                <span className="doc-caption text-[10px] mt-0.5 opacity-70">{s.element}</span>
               </button>
             );
           })}

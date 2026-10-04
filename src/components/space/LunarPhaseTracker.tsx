@@ -85,11 +85,11 @@ export function LunarPhaseTracker() {
 
           <div className="grid grid-cols-2 gap-2 border-t border-line pt-3 text-[11px] font-mono">
             <div>
-              <span className="text-muted block text-[9px] uppercase">Sonraki Dolunay</span>
+              <span className="text-muted block text-[10px] uppercase">Sonraki Dolunay</span>
               <span className="text-paper">{isMounted ? `${currentCalc.nextFullMoonDays} gün sonra` : '—'}</span>
             </div>
             <div>
-              <span className="text-muted block text-[9px] uppercase">Sonraki Yeni Ay</span>
+              <span className="text-muted block text-[10px] uppercase">Sonraki Yeni Ay</span>
               <span className="text-paper">{isMounted ? `${currentCalc.nextNewMoonDays} gün sonra` : '—'}</span>
             </div>
           </div>
@@ -177,7 +177,7 @@ export function LunarPhaseTracker() {
                   <MoonPhaseVectorGlyph phaseId={p.id} size={34} className={isSelected ? 'text-ink' : 'text-gold'} />
                 </div>
                 <span className="text-xs leading-tight font-medium mt-1">{p.name}</span>
-                <span className={`label text-[9px] mt-1 ${isSelected ? 'text-ink/80' : 'text-muted'}`}>{p.cycleDegree}</span>
+                <span className={`label text-[10px] mt-1 ${isSelected ? 'text-ink/80' : 'text-muted'}`}>{p.cycleDegree}</span>
               </button>
             );
           })}

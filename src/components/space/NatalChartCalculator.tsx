@@ -677,13 +677,13 @@ export function NatalChartCalculator() {
 
               {/* Center Info Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="label text-[9px] text-muted font-bold">
+                <span className="label text-[10px] text-muted font-bold">
                   {sunSign.name} ☉
                 </span>
                 <span className="font-mono text-xs font-black text-gold">
                   {risingSign.name} ↑
                 </span>
-                <span className="label text-[8px] text-paper/50">
+                <span className="label text-[10px] text-paper/50">
                   {aspects.length} Açı
                 </span>
               </div>

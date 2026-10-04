@@ -54,7 +54,7 @@ export function ZodiacAtlas() {
               <div aria-hidden className="doc-shade-card absolute inset-0 -z-10" />
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5">
                 <span className="doc-title text-4xl text-paper/90">{String(ZODIAC_SIGNS.indexOf(s) + 1).padStart(2, '0')}</span>
-                <span className="doc-kicker inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-ink/50 px-3 py-1.5 text-[9px] text-paper/80 backdrop-blur-md">
+                <span className="doc-kicker inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-ink/50 px-3 py-1.5 text-[10px] text-paper/80 backdrop-blur-md">
                   <Icon size={11} className="text-gold" /> {s.element}
                 </span>
               </div>

@@ -194,12 +194,12 @@ export function StarOracleWidget() {
                     }`}
                     title={`Gündüz ${s.index + 1}. Saat (${formatTime(s.start)} - ${formatTime(s.end)}) · ${details.ruler}`}
                   >
-                    <div className="flex items-center justify-between w-full text-[9px] px-0.5 opacity-75">
+                    <div className="flex items-center justify-between w-full text-[10px] px-0.5 opacity-75">
                       <span>G{s.index + 1}</span>
                       <span>{formatTime(s.start)}</span>
                     </div>
                     <PlanetGlyph planet={details.rulerId} size={13} className="my-1" />
-                    <span className="text-[9px] truncate w-full">{details.ruler.split(' ')[0]}</span>
+                    <span className="text-[10px] truncate w-full">{details.ruler.split(' ')[0]}</span>
                   </button>
                 );
               })}
@@ -235,12 +235,12 @@ export function StarOracleWidget() {
                     }`}
                     title={`Gece ${s.index - 11}. Saat (${formatTime(s.start)} - ${formatTime(s.end)}) · ${details.ruler}`}
                   >
-                    <div className="flex items-center justify-between w-full text-[9px] px-0.5 opacity-75">
+                    <div className="flex items-center justify-between w-full text-[10px] px-0.5 opacity-75">
                       <span>N{s.index - 11}</span>
                       <span>{formatTime(s.start)}</span>
                     </div>
                     <PlanetGlyph planet={details.rulerId} size={13} className="my-1" />
-                    <span className="text-[9px] truncate w-full">{details.ruler.split(' ')[0]}</span>
+                    <span className="text-[10px] truncate w-full">{details.ruler.split(' ')[0]}</span>
                   </button>
                 );
               })}
@@ -278,10 +278,10 @@ export function StarOracleWidget() {
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-[9px] uppercase tracking-widest opacity-80">
+                  <span className="text-[10px] uppercase tracking-widest opacity-80">
                     {star.royalStar ? `${star.royalStar}` : 'YILDIZ'}
                   </span>
-                  <span className="text-[9px]">{star.magnitude}m</span>
+                  <span className="text-[10px]">{star.magnitude}m</span>
                 </div>
                 <div className="text-xs font-bold truncate">{star.name}</div>
                 <div className="text-[10px] opacity-75 truncate">{star.constellation}</div>

@@ -50,7 +50,7 @@ export function CosmicRetrogradeRadar() {
               <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isMounted && activeRetros.length > 0 ? 'bg-rose-signal' : 'bg-lime'}`} />
             </span>
             <div>
-              <div className="font-mono text-muted text-[9px] uppercase">GÜNCEL AKTİF RETROLAR</div>
+              <div className="font-mono text-muted text-[10px] uppercase">GÜNCEL AKTİF RETROLAR</div>
               <div className="text-xs font-bold text-paper font-mono">
                 {isMounted ? `${activeRetros.length} Gezegen Retro Harekette` : 'Hesaplanıyor…'}
               </div>
@@ -90,11 +90,11 @@ export function CosmicRetrogradeRadar() {
 
                 {isMounted ? (
                   retro.isCurrentlyRetrograde ? (
-                    <span className="px-2 py-0.5 border border-rose-signal/50 bg-rose-signal/15 text-rose-signal text-[9px] font-bold font-mono">
+                    <span className="px-2 py-0.5 border border-rose-signal/50 bg-rose-signal/15 text-rose-signal text-[10px] font-bold font-mono">
                       AKTİF
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 border border-line bg-ink text-muted text-[9px] font-mono">
+                    <span className="px-2 py-0.5 border border-line bg-ink text-muted text-[10px] font-mono">
                       PLANLI
                     </span>
                   )

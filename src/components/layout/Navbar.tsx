@@ -91,7 +91,7 @@ export default function Navbar() {
               const active = isActive(pathname, r.href);
               return (
                 <Link key={r.href} href={r.href} className="group flex items-start gap-1.5 whitespace-nowrap text-[13px] font-medium" aria-current={active ? 'page' : undefined}>
-                  <span className="label mt-[1px] text-[9px]" style={{ color: active ? 'var(--gold)' : 'var(--muted)' }}>
+                  <span className="label mt-[1px] text-[10px]" style={{ color: active ? 'var(--gold)' : 'var(--muted)' }}>
                     {r.index}
                   </span>
                   <span className={`roll ${active ? 'text-paper font-semibold' : 'text-paper/70'}`}>

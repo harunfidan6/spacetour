@@ -552,7 +552,7 @@ function AnimatedConstellationTracer({
           </lineSegments>
           {guideLinePoints[1] && guideLinePoints[2] && (
             <Html position={guideLinePoints[1].clone().lerp(guideLinePoints[2], 0.5)} center distanceFactor={45}>
-              <div className="pointer-events-none select-none rounded-full border border-gold/80 bg-ink/90 px-2.5 py-1 text-[9px] font-mono font-bold text-gold shadow-[0_0_15px_rgba(255,215,0,0.5)] backdrop-blur-md whitespace-nowrap animate-pulse">
+              <div className="pointer-events-none select-none rounded-full border border-gold/80 bg-ink/90 px-2.5 py-1 text-[10px] font-mono font-bold text-gold shadow-[0_0_15px_rgba(255,215,0,0.5)] backdrop-blur-md whitespace-nowrap animate-pulse">
                 5x Kılavuz Doğrusu → Polaris
               </div>
             </Html>
@@ -573,7 +573,7 @@ function AnimatedConstellationTracer({
             />
           </mesh>
           <Html center distanceFactor={42}>
-            <div className={`pointer-events-none select-none rounded px-1.5 py-0.5 text-[8px] font-mono font-bold whitespace-nowrap mt-4 ${
+            <div className={`pointer-events-none select-none rounded px-1.5 py-0.5 text-[10px] font-mono font-bold whitespace-nowrap mt-4 ${
               star.name === 'Polaris'
                 ? 'bg-gold text-ink border border-gold font-extrabold shadow-[0_0_12px_rgba(255,215,0,0.9)]'
                 : 'bg-ink/85 text-paper/90 border border-line'
@@ -590,7 +590,7 @@ function AnimatedConstellationTracer({
           <div className="rounded-full border border-primary/80 bg-ink/95 px-4 py-1 text-xs font-mono font-bold text-primary shadow-[0_0_20px_rgba(0,229,255,0.6)] backdrop-blur-md uppercase tracking-widest whitespace-nowrap">
             {constellation.name} · {constellation.latinName}
           </div>
-          <span className="label text-[9px] text-paper/70 font-mono">
+          <span className="label text-[10px] text-paper/70 font-mono">
             {constellation.starIndices.length} Ana Yıldız
           </span>
         </div>
@@ -736,7 +736,7 @@ function RealTimeSolarSystem({
                   e.stopPropagation();
                   onSelectBody(body);
                 }}
-                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2.5 py-0.5 text-[9px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isSelected
                     ? 'border-gold bg-gold/20 text-gold scale-110 shadow-[0_0_15px_rgba(255,180,0,0.7)]'
                     : body.isVisible
@@ -747,7 +747,7 @@ function RealTimeSolarSystem({
                 <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: body.color }} />
                 <span>{body.name.split(' ')[0]}</span>
                 {body.type === 'moon' && body.phaseFraction !== undefined && (
-                  <span className="text-[8px] opacity-75">%{Math.round(body.phaseFraction * 100)}</span>
+                  <span className="text-[10px] opacity-75">%{Math.round(body.phaseFraction * 100)}</span>
                 )}
               </div>
             </Html>
@@ -835,7 +835,7 @@ function LocalGroundHorizon({
           <meshBasicMaterial color={nightVision ? '#ff4444' : '#00e5ff'} transparent opacity={0.6} side={THREE.DoubleSide} />
         </mesh>
         <Html center>
-          <div className="pointer-events-none select-none text-[8px] font-mono text-muted tracking-widest uppercase">
+          <div className="pointer-events-none select-none text-[10px] font-mono text-muted tracking-widest uppercase">
             Başucu (90°)
           </div>
         </Html>
@@ -920,7 +920,7 @@ function RealTimeDeepSky({
                   e.stopPropagation();
                   onSelectDso(dso);
                 }}
-                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2 py-0.5 text-[9px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1 ${
+                className={`cursor-pointer pointer-events-auto select-none rounded-full px-2 py-0.5 text-[10px] font-mono font-bold tracking-wide border whitespace-nowrap transition-all flex items-center gap-1 ${
                   isSelected
                     ? 'border-primary bg-primary/10 text-primary scale-110 shadow-[0_0_15px_rgba(255,91,34,0.7)]'
                     : 'border-paper/10 bg-ink/60 text-paper/75 hover:text-paper'
@@ -1195,7 +1195,7 @@ export function Planetarium3D() {
                 </p>
               )}
 
-              <div className="label text-[9px] text-muted uppercase px-2 pt-2">
+              <div className="label text-[10px] text-muted uppercase px-2 pt-2">
                 Hazır Şehirler
               </div>
 
@@ -1213,7 +1213,7 @@ export function Planetarium3D() {
                     }`}
                   >
                     <span>{loc.city}</span>
-                    <span className="label text-[9px] text-muted">{loc.latitude}°</span>
+                    <span className="label text-[10px] text-muted">{loc.latitude}°</span>
                   </button>
                 ))}
               </div>
@@ -1435,7 +1435,7 @@ export function Planetarium3D() {
 
               {/* Observation & Mythology Tips */}
               <div className="border border-line bg-ink-2 p-3 text-[11px] text-paper/75 leading-relaxed">
-                <span className="label text-muted block text-[9px] mb-1 uppercase tracking-wider">Mitoloji & Gözlem</span>
+                <span className="label text-muted block text-[10px] mb-1 uppercase tracking-wider">Mitoloji & Gözlem</span>
                 {activeConstellation.observationTip}
               </div>
 
@@ -1557,7 +1557,7 @@ export function Planetarium3D() {
                     alt={selectedDso.name}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute bottom-1 right-1 label px-2 py-0.5 bg-ink/80 border border-line text-[9px] text-paper/80">
+                  <div className="absolute bottom-1 right-1 label px-2 py-0.5 bg-ink/80 border border-line text-[10px] text-paper/80">
                     Hubble / JWST
                   </div>
                 </div>
