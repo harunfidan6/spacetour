@@ -364,6 +364,117 @@ export default function CalendarPage() {
             </aside>
           </div>
         </section>
+
+        {/* Belgesel Gök Olayları Rehberi */}
+        <section aria-label="Gök Olayları Rehberi" className="border-t border-white/[0.08] bg-ink-2/40 px-[var(--gutter)] py-16 sm:py-24">
+          <div className="mx-auto max-w-6xl">
+            <PartHeading
+              part={2}
+              title="Gök Olayları"
+              serif="rehberi"
+              aside="Gözlem Kılavuzu & Mekanik"
+              description="Meteor yağmurlarından tutulmalara, kavuşumlardan ekinokslara gökyüzündeki temel astronomik olayların doğası, oluşum fiziği ve gözlem incelikleri."
+            />
+
+            <div className="mt-12 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:fill-row-2 lg:fill-row-3">
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-solar">Atmosfer Fiziği</span>
+                  <AstronomicalEventGlyph type="meteor-yagmuru" size={24} className="text-solar" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Meteor Yağmurları</h3>
+                <p className="doc-serif text-lg text-solar/90 mb-3">Kuyruklu Yıldız Kalıntıları</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Kuyruklu yıldızların yörüngelerinde bıraktığı kum tanesi büyüklüğündeki toz parçacıkları, Dünya bu enkaz kuşağından geçerken saatte 100.000 ila 250.000 km hızla atmosfere dalar. Sürtünmeyle akkorlaşan hava molekülleri arkalarında saniyelik parlayan izler bırakır.
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Ölçüt: ZHR (Saatlik Akı)</span>
+                  <span className="text-paper/80">Çıplak gözle izlenir</span>
+                </div>
+              </article>
+
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-gold">Gölge Geometrisi</span>
+                  <AstronomicalEventGlyph type="gunes-tutulmasi" size={24} className="text-gold" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Güneş Tutulmaları</h3>
+                <p className="doc-serif text-lg text-gold/90 mb-3">Ay’ın Güneş’i Örtmesi</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Ay, Yeni Ay evresindeyken Dünya ile Güneş arasına tam girdiğinde Güneş diski örtülür. Güneş, Ay’dan 400 kat büyük olmasına rağmen tesadüfen Dünya’ya 400 kat daha uzaktadır; bu kozmik denklem sayesinde tam tutulmada Güneş’in inci beyazı tacı (korona) çıplak gözle görünür hale gelir.
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Türler: Tam · Halkalı · Parçalı</span>
+                  <span className="text-rose-400">Güneş filtresi zorunlu</span>
+                </div>
+              </article>
+
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-rose-400">Rayleigh Saçılması</span>
+                  <AstronomicalEventGlyph type="ay-tutulmasi" size={24} className="text-rose-400" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Ay Tutulmaları</h3>
+                <p className="doc-serif text-lg text-rose-400/90 mb-3">Dünya Gölgesinde Kızıllık</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Dolunay evresindeki Ay, Dünya’nın tam gölgesine (umbra) girdiğinde Güneş ışığı kesilir. Ancak Dünya atmosferinden kırılan kırmızı dalgaboylu ışık Ay yüzeyine ulaştığı için Ay tamamen kaybolmak yerine pas kırmızısı veya bakır tonunda parıldar (&ldquo;Kanlı Ay&rdquo;).
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Görünürlük: Tüm Gece Yarıküresi</span>
+                  <span className="text-paper/80">Filtresiz izlenebilir</span>
+                </div>
+              </article>
+
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-violet">Açısal Yakınlaşma</span>
+                  <AstronomicalEventGlyph type="gezegen-kavusumu" size={24} className="text-violet" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Gezegen Kavuşumları</h3>
+                <p className="doc-serif text-lg text-violet/90 mb-3">Göksel Randevular</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  İki ya da daha fazla gezegenin Dünya’dan bakıldığında gök kubbede aynı hizaya gelmesi olayıdır. Gezegenler uzayda aslında yüz milyonlarca kilometre uzaktadır; ancak Dünya’nın bakış açısıyla gece göğünde neredeyse birbirine değecek kadar yakın parıldarlar.
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Örnek: Venüs - Jüpiter</span>
+                  <span className="text-paper/80">Dürbünle çok zarif</span>
+                </div>
+              </article>
+
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-blue-400">Yörünge Zirvesi</span>
+                  <AstronomicalEventGlyph type="super-ay" size={24} className="text-blue-400" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Süper Ay & Dolunay</h3>
+                <p className="doc-serif text-lg text-blue-400/90 mb-3">Yerberi Işıltısı</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Ay’ın yörüngesi kusursuz bir daire değil, basık bir elipstir. Ay, Dünya’ya en yakın olduğu yerberi (Perigee - ~356.000 km) noktasındayken dolunay evresine ulaştığında standart dolunaylara kıyasla %14 daha büyük ve %30 daha parlak görünür.
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Yerberi: ~356.500 km</span>
+                  <span className="text-paper/80">Güçlü gelgit etkisi</span>
+                </div>
+              </article>
+
+              <article className="flex flex-col bg-ink p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="doc-kicker text-lime">Mevsim Dönümleri</span>
+                  <AstronomicalEventGlyph type="equinoks" size={24} className="text-lime" />
+                </div>
+                <h3 className="doc-title text-2xl text-paper mb-2">Ekinoks & Solstis</h3>
+                <p className="doc-serif text-lg text-lime/90 mb-3">Dünya Eksen Eğikliği</p>
+                <p className="text-sm leading-relaxed text-paper/75">
+                  Dünya’nın 23.44 derecelik eksen eğikliği Güneş ışınlarının geliş açısını yıl boyunca değiştirir. 20 Mart ve 22 Eylül’de (Ekinoks) ışınlar ekvatora dik düşerek gece ve gündüzü eşitler. 20 Haziran ve 21 Aralık’ta (Solstis) ise en uzun gündüz veya gece yaşanır.
+                </p>
+                <div className="mt-auto border-t border-white/10 pt-4 flex justify-between text-xs text-muted font-mono">
+                  <span>Eksen Eğikliği: 23° 26′</span>
+                  <span className="text-paper/80">Kozmik takvim kökü</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

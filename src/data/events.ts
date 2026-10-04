@@ -550,5 +550,212 @@ export const events: AstronomicalEvent[] = [
     details: 'Kış yaklaşırken hayvanların semirdiği ve avcıların kışlık erzak hazırladığı dönemde gerçekleşir. Gece boyu gökyüzünü aydınlatır.',
     visibility: 'tüm-dünya',
     emoji: '🏹'
+  },
+
+  // 2028 Gök Olayları (NASA Eclipse & IMO Meteor Takvimi)
+  {
+    id: '2028-ms-1',
+    title: 'Dörtlük (Quadrantid) Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-01-03',
+    time: '23:00',
+    description: 'Yılın ilk ve en yoğun meteor yağmurlarından biri; saatte 100’den fazla meteor görülebilir.',
+    details: '2003 EH1 asteroidinin parçacıklarından oluşur. Zirve süresi yalnızca birkaç saat sürer, gece yarısından sonra kuzey-kuzeydoğu yönüne bakın.',
+    visibility: 'kuzey-yarıküre',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-le-1',
+    title: 'Kısmi Ay Tutulması',
+    type: 'ay-tutulmasi',
+    date: '2028-01-12',
+    time: '04:14',
+    description: 'Avrupa, Afrika, Asya ve Türkiye’den gözlemlenebilecek kısmi ay tutulması.',
+    details: 'Ay’ın güney kenarı Dünya’nın tam gölgesine girerek kararma ve bakır rengi ışıma sergileyecektir. Türkiye’den sabaha karşı net izlenebilir.',
+    visibility: 'türkiye',
+    emoji: '🌑'
+  },
+  {
+    id: '2028-sm-1',
+    title: 'Süper Dolunay',
+    type: 'super-ay',
+    date: '2028-01-12',
+    description: '2028 yılının Dünya’ya en yakın ve en parlak dolunayı.',
+    details: 'Ay yerberi (perigee) noktasındayken tutulmayla birleşerek nadir bir göksel şölen oluşturur; standart dolunaydan yaklaşık %14 daha büyük görünür.',
+    visibility: 'tüm-dünya',
+    emoji: '🌕'
+  },
+  {
+    id: '2028-se-1',
+    title: 'Halkalı Güneş Tutulması',
+    type: 'gunes-tutulmasi',
+    date: '2028-01-26',
+    description: 'Güney Amerika, Atlas Okyanusu ve İspanya’dan izlenebilecek ateş çemberi tutulması.',
+    details: 'Ay Güneş diskini tam örtemeyerek gökyüzünde parlak bir altın halka bırakır. Türkiye’den parçalı olarak gözlenemez.',
+    visibility: 'güney-yarıküre',
+    emoji: '🌞'
+  },
+  {
+    id: '2028-eq-1',
+    title: 'İlkbahar Ekinoksu',
+    type: 'equinoks',
+    date: '2028-03-20',
+    time: '03:17',
+    description: 'Güneş ışınlarının ekvatora dik geldiği ve gece ile gündüzün eşitlendiği an.',
+    details: 'Kuzey yarımkürede astronomik ilkbaharın, güney yarımkürede ise sonbaharın başlangıcıdır.',
+    visibility: 'tüm-dünya',
+    emoji: '🌱'
+  },
+  {
+    id: '2028-cj-1',
+    title: 'Venüs – Jüpiter Büyük Kavuşumu',
+    type: 'gezegen-kavusumu',
+    date: '2028-04-11',
+    time: '20:30',
+    description: 'Gökyüzünün en parlak iki gezegeninin günbatımı ufkunda birbirine kavuşması.',
+    details: 'Batı ufkunda çıplak gözle birbirine neredeyse değecek kadar yakın (0.5 derece) parıldayan büyüleyici bir ikili çift oluştururlar.',
+    visibility: 'tüm-dünya',
+    emoji: '🪐'
+  },
+  {
+    id: '2028-ms-2',
+    title: 'Çalgı (Lyrid) Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-04-22',
+    time: '01:00',
+    description: 'Thatcher kuyruklu yıldızının antik tozlarının oluşturduğu bahar meteorları.',
+    details: 'Saatte ortalama 18 parlak meteor üretir. Ay ışığı engeli olmadığı saatlerde Vega yıldızı yönüne bakılarak izlenebilir.',
+    visibility: 'kuzey-yarıküre',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-ms-3',
+    title: 'Eta Aquariid Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-05-06',
+    time: '03:30',
+    description: 'Meşhur Halley kuyruklu yıldızının arkasında bıraktığı enkaz kuşağı.',
+    details: 'Saatte 50’ye varan hızlı ve iz bırakan meteorlar üretir. Şafak öncesi saatlerde güneydoğu ufkunda gözlenir.',
+    visibility: 'tüm-dünya',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-cj-2',
+    title: 'Mars – Satürn Kavuşumu',
+    type: 'gezegen-kavusumu',
+    date: '2028-06-08',
+    time: '04:00',
+    description: 'Kızıl Mars ile altın sarısı Satürn’ün sabah göğünde yan yana gelişi.',
+    details: 'Doğu ufkunda çıplak gözle veya küçük bir dürbünle renk kontrastını çok net görebileceğiniz estetik bir kavuşumdur.',
+    visibility: 'tüm-dünya',
+    emoji: '🪐'
+  },
+  {
+    id: '2028-ss-1',
+    title: 'Yaz Gündönümü (Solstis)',
+    type: 'solstis',
+    date: '2028-06-20',
+    time: '20:46',
+    description: 'Yılın en uzun gündüzü ve en kısa gecesi.',
+    details: 'Güneş Yengeç Dönencesi’ne dik açı yapar; kuzey yarımkürede yaz mevsiminin resmi başlangıcıdır.',
+    visibility: 'tüm-dünya',
+    emoji: '☀️'
+  },
+  {
+    id: '2028-le-2',
+    title: 'Kısmi Ay Tutulması',
+    type: 'ay-tutulmasi',
+    date: '2028-07-06',
+    description: 'Pasifik Okyanusu, Avustralya ve Amerika’dan izlenecek kısmi tutulma.',
+    details: 'Ay Dünya’nın gölgesinden kısmen geçerek güney ufuklarında hafif kızıl tonlar bırakır.',
+    visibility: 'güney-yarıküre',
+    emoji: '🌑'
+  },
+  {
+    id: '2028-se-2',
+    title: 'Tam Güneş Tutulması',
+    type: 'gunes-tutulmasi',
+    date: '2028-07-22',
+    description: 'Sidney ve Avustralya merkez hattından geçecek tarihi tam güneş tutulması.',
+    details: 'Avustralya ve Yeni Zelanda üzerinde gündüz aniden geceye dönecek; Güneş tacı (korona) 5 dakikadan uzun süre çıplak gözle izlenebilecek.',
+    visibility: 'güney-yarıküre',
+    emoji: '👑'
+  },
+  {
+    id: '2028-ms-4',
+    title: 'Perseid Meteor Yağmuru Zirvesi',
+    type: 'meteor-yagmuru',
+    date: '2028-08-12',
+    time: '23:30',
+    description: 'Yılın en popüler ve göz kamaştırıcı meteor şöleni; saatte 100 meteor.',
+    details: 'Swift-Tuttle kuyruklu yıldızının parçacıkları atmosfere saniyede 59 km hızla girer. Şehir ışıklarından uzakta çıplak gözle tüm gece izlenebilir.',
+    visibility: 'kuzey-yarıküre',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-eq-2',
+    title: 'Sonbahar Ekinoksu',
+    type: 'equinoks',
+    date: '2028-09-22',
+    time: '13:08',
+    description: 'İkinci gece ve gündüz eşitliği; sonbaharın resmi başlangıcı.',
+    details: 'Güneş göksel ekvatoru güneye doğru keser; geceler gündüzlerden daha uzun olmaya başlar.',
+    visibility: 'tüm-dünya',
+    emoji: '🍂'
+  },
+  {
+    id: '2028-ms-5',
+    title: 'Orionid Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-10-21',
+    time: '02:00',
+    description: 'Halley kuyruklu yıldızının bıraktığı sonbahar meteor akıntısı.',
+    details: 'Avcı (Orion) takımyıldızının başucuna yükseldiği gece yarısından sonra saatte yaklaşık 20-25 çok hızlı meteor görülebilir.',
+    visibility: 'tüm-dünya',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-ms-6',
+    title: 'Leonid Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-11-17',
+    time: '03:00',
+    description: 'Tempel-Tuttle kuyruklu yıldızı kaynaklı parlak ateş topları.',
+    details: 'Hızı saatte 71 km/s’ye varan en hızlı meteorlardır; yeşilimsi kalıcı duman izleri bırakabilir.',
+    visibility: 'kuzey-yarıküre',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-ms-7',
+    title: 'Geminid (İkizler) Meteor Yağmuru',
+    type: 'meteor-yagmuru',
+    date: '2028-12-14',
+    time: '22:00',
+    description: 'Yılın en zengin ve güvenilir meteor yağmuru; saatte 120-150 meteor.',
+    details: '3200 Phaethon asteroidi kaynaklıdır. Yavaş ve parlak beyaz/sarı izler bırakır; kış gökyüzünün en görkemli tablosudur.',
+    visibility: 'tüm-dünya',
+    emoji: '🌠'
+  },
+  {
+    id: '2028-ss-2',
+    title: 'Kış Gündönümü (Solstis)',
+    type: 'solstis',
+    date: '2028-12-21',
+    time: '09:20',
+    description: 'Kuzey yarımkürede yılın en uzun gecesi ve en kısa gündüzü.',
+    details: 'Astronomik kış mevsiminin başlangıcıdır; bu tarihten itibaren günler yeniden uzamaya başlar.',
+    visibility: 'tüm-dünya',
+    emoji: '❄️'
+  },
+  {
+    id: '2028-le-3',
+    title: 'Tam Ay Tutulması (Yılbaşı Tutulması)',
+    type: 'ay-tutulmasi',
+    date: '2028-12-31',
+    time: '18:52',
+    description: 'Tarihi yılbaşı gecesinde tam kanlı ay tutulması; Türkiye’den izlenebilir.',
+    details: 'Ay tamamen Dünya’nın gölgesine girerek derin bakır-kızıl rengine bürünecek. Türkiye’den akşam saatlerinde ufuktan doğarken tam tutulma halinde büyüleyici şekilde izlenebilir.',
+    visibility: 'türkiye',
+    emoji: '🩸'
   }
 ];
