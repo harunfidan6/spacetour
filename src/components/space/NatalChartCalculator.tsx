@@ -14,14 +14,12 @@ import {
   ZODIAC_SIGNS,
   ASTROLOGICAL_HOUSES,
   AstrologicalHouse,
-  getSunSign,
-  calculateAscendant,
-  calculateMoonSign,
   calculatePlanetaryPlacements,
   calculateLifePathNumber,
   daysInMonth,
-  localSolarHour
 } from '@/data/zodiac';
+import { longitude, signIndex } from '@/lib/astrology/dailySky';
+import { ascendantLongitude, birthInstant, turkeyUtcOffset } from '@/lib/astrology/natal';
 import {
   ZodiacGlyph,
   PlanetGlyph,
@@ -88,8 +86,9 @@ export function NatalChartCalculator() {
 
   // Local apparent solar hour: clock time corrected by the city's offset from its zone meridian
   const location = POPULAR_LOCATIONS.find((l) => l.city === city) ?? POPULAR_LOCATIONS[0];
-  const zoneOffset = CITY_UTC_OFFSET[city] ?? 3;
-  const solarHourNorm = localSolarHour(hour, minute, location.longitude, zoneOffset);
+  // Turkish cities follow Türkiye's historical rules (UTC+2 with summer time before Sep 2016)
+  const zoneOffset = CITY_UTC_OFFSET[city] ?? turkeyUtcOffset(year, month, day, hour);
+  const instant = birthInstant(year, month, day, hour, minute, zoneOffset);
 
   // Active view tab: 'trinity' | 'planets' | 'houses' | 'poster'
   const [activeTab, setActiveTab] = useState<'trinity' | 'planets' | 'houses' | 'poster'>('trinity');
@@ -99,15 +98,15 @@ export function NatalChartCalculator() {
 
   // Compute Core Signs & Planetary Placements
   const { sunSign, risingSign, risingSignIndex, moonSign, planetaryPlacements } = (() => {
-    const sun = getSunSign(month, day);
-    const sunIdx = ZODIAC_SIGNS.findIndex((s) => s.id === sun.id);
-    const rising = calculateAscendant(sunIdx, solarHourNorm);
-    const risingIdx = ZODIAC_SIGNS.findIndex((s) => s.id === rising.id);
+    // Real positions at the birth moment: the Sun's true longitude settles cusp birthdays,
+    // the Ascendant comes from local sidereal time and the birthplace latitude
+    const sunIdx = signIndex(longitude('sun', instant));
+    const risingIdx = signIndex(ascendantLongitude(instant, location.latitude, location.longitude));
     return {
-      sunSign: sun,
-      risingSign: rising,
+      sunSign: ZODIAC_SIGNS[sunIdx],
+      risingSign: ZODIAC_SIGNS[risingIdx],
       risingSignIndex: risingIdx,
-      moonSign: calculateMoonSign(sunIdx, day, month, year, hour, minute),
+      moonSign: ZODIAC_SIGNS[signIndex(longitude('moon', instant))],
       planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year, month, hour, minute, zoneOffset),
     };
   })();

@@ -10,9 +10,9 @@
  */
 
 import { longitude, SkyBody } from '@/lib/astrology/dailySky';
-import { ZODIAC_SIGNS, localSolarHour, type ZodiacSign } from '@/data/zodiac';
+import { ZODIAC_SIGNS, localSolarHour } from '@/data/zodiac';
 import { POPULAR_LOCATIONS } from '@/utils/astronomy';
-import { turkeyUtcOffset } from '@/lib/astrology/natal';
+import { ascendantLongitude, turkeyUtcOffset } from '@/lib/astrology/natal';
 
 export interface BirthProfile {
   name: string;
@@ -178,8 +178,8 @@ export function calculateChartPlacements(profile: BirthProfile): ChartPlacements
   const jupiterLon = longitude('jupiter', utcDate);
   const saturnLon = longitude('saturn', utcDate);
 
-  // Continuous Ascendant degree: At solar 06:00 ASC = Sun. 15° per solar hour.
-  const ascLon = norm(sunLon + (solarHour - 6) * 15);
+  // Ascendant: the ecliptic degree rising on the eastern horizon (local sidereal time + latitude)
+  const ascLon = ascendantLongitude(utcDate, loc.latitude, loc.longitude);
 
   const sun = makePlacement('sun', sunLon);
   const moon = makePlacement('moon', moonLon);
