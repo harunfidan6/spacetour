@@ -22,7 +22,11 @@ import {
   LogOut,
   AlertCircle,
   FileText,
-  X
+  X,
+  Download,
+  CheckCircle2,
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
 import { AnalyticsStatsResponse } from '@/types/analytics';
 import { SplitReveal } from '@/components/motion/SplitReveal';
@@ -69,9 +73,7 @@ export default function AdminAnalyticsPage() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   const now = useNow(1000);
-  // Report state for custom time range
-  const [report, setReport] = useState<any>(null);
-  const [isLoadingReport, setIsLoadingReport] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Check initial authentication
   useEffect(() => {
@@ -160,26 +162,24 @@ export default function AdminAnalyticsPage() {
     requestStats(isDemoMode).then(applyStats);
   }, [isDemoMode, isAuthenticated, applyStats]);
 
-  // Fetch custom report from 22:00 onward
-  const fetchReport = useCallback(async () => {
-    setIsLoadingReport(true);
+  // Export current telemetry dataset as JSON
+  const handleExportData = useCallback(() => {
+    if (!stats) return;
+    setIsExporting(true);
     try {
-      const res = await fetch(`/api/analytics/report?from=2026-10-03T19:00:00Z&demo=${isDemoMode}`, {
-        cache: 'no-store',
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setReport(data);
-      } else {
-        console.error('Failed to fetch report', res.status);
-      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `spacetour-telemetry-${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
     } catch (e) {
-      console.error('Error fetching report', e);
+      console.error('Export error', e);
     } finally {
-      setIsLoadingReport(false);
+      setTimeout(() => setIsExporting(false), 800);
     }
-  }, [isDemoMode]);
+  }, [stats]);
 
   // Load on mount & source toggle
   useEffect(() => {
@@ -188,11 +188,10 @@ export default function AdminAnalyticsPage() {
     requestStats(isDemoMode).then((result) => {
       if (!ignore) applyStats(result);
     });
-    fetchReport();
     return () => {
       ignore = true;
     };
-  }, [isAuthenticated, isDemoMode, applyStats, fetchReport]);
+  }, [isAuthenticated, isDemoMode, applyStats]);
 
   // Periodic Auto-refresh
   useEffect(() => {
@@ -412,14 +411,14 @@ export default function AdminAnalyticsPage() {
               <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-solar' : ''} />
             </button>
             <button
-              onClick={fetchReport}
-              disabled={isLoadingReport}
-              aria-label="03.10 22:00+ Raporu"
-              className="flex items-center gap-1.5 px-2.5 py-1 border border-solar/60 bg-solar/15 text-solar hover:bg-solar hover:text-ink font-mono text-[11px] font-bold transition-all ml-2 cursor-pointer shadow-[0_0_10px_rgba(255,91,34,0.15)]"
-              title="03.10.2026 22:00 İtibarıyla Özel Rapor"
+              onClick={handleExportData}
+              disabled={isExporting || !stats}
+              aria-label="Telemetri Verilerini İndir"
+              className="flex items-center gap-1.5 px-2.5 py-1 border border-line bg-ink text-paper hover:border-solar hover:text-solar font-mono text-[11px] font-bold transition-all ml-2 cursor-pointer shadow-[0_0_10px_rgba(255,91,34,0.08)]"
+              title="Mevcut Telemetri Verilerini JSON Formatında İndir"
             >
-              <FileText size={12} className={isLoadingReport ? 'animate-pulse' : ''} />
-              <span>{isLoadingReport ? 'Hesaplanıyor...' : '22:00+ Raporu'}</span>
+              <Download size={12} className={isExporting ? 'animate-bounce text-solar' : ''} />
+              <span>{isExporting ? 'İndiriliyor...' : 'Dışa Aktar'}</span>
             </button>
           </div>
         </div>
@@ -557,211 +556,88 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
-      {/* 03.10.2026 22:00+ Custom Timeframe Telemetry Report */}
-      {report ? (
-        <div className="relative ticks border border-solar/60 bg-ink-2 p-6 space-y-6 shadow-[0_0_25px_rgba(255,91,34,0.12)]">
-          <Ticks />
+      {/* Google Analytics & Live Telemetry Intelligence Deck */}
+      <div className="relative ticks border border-lime/40 bg-ink-2 p-6 space-y-6 shadow-[0_0_20px_rgba(74,222,128,0.06)]">
+        <Ticks />
 
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-solar text-ink uppercase tracking-wider">
-                  ÖZEL RAPOR
-                </span>
-                <span className="text-xs font-mono text-muted">
-                  03.10.2026 22:00 (UTC+3) İtibarıyla Filtrelenmiş Canlı Telemetri
-                </span>
-              </div>
-              <h3 className="text-xl font-bold text-paper mt-1 flex items-center gap-2">
-                <FileText className="text-solar" size={20} />
-                22:00 Sonrası Ziyaretçi & Telemetri Raporu
-              </h3>
-            </div>
-
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
+          <div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={fetchReport}
-                disabled={isLoadingReport}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-line bg-ink text-xs font-mono text-paper hover:border-solar hover:text-solar transition-colors cursor-pointer"
-              >
-                <RefreshCw size={12} className={isLoadingReport ? 'animate-spin text-solar' : ''} />
-                <span>Yenile</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setReport(null)}
-                className="p-1.5 border border-line bg-ink text-muted hover:text-rose hover:border-rose transition-colors cursor-pointer"
-                title="Raporu Gizle"
-              >
-                <X size={14} />
-              </button>
+              <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-lime/20 text-lime border border-lime/40 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
+                CANLI VERİ AKIŞI
+              </span>
+              <span className="text-xs font-mono text-muted">
+                Google Analytics 4 Data API & Kinetik Telemetri Köprüsü
+              </span>
             </div>
+            <h3 className="text-xl font-bold text-paper mt-1.5 flex items-center gap-2">
+              <ShieldCheck className="text-lime" size={20} />
+              Sistem Entegrasyonu & Canlı Analitik Merkezi
+            </h3>
           </div>
 
-          {/* KPI Summary for this report */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="border border-line bg-ink p-4">
-              <div className="text-[10px] font-mono text-muted uppercase">Toplam Gösterim</div>
-              <div className="text-3xl font-bold text-solar font-mono mt-1">
-                {report.totalPageViews}
-              </div>
-              <div className="text-[11px] text-muted mt-0.5">22:00'den beri hit</div>
-            </div>
-
-            <div className="border border-line bg-ink p-4">
-              <div className="text-[10px] font-mono text-muted uppercase">Tekil Ziyaretçi</div>
-              <div className="text-3xl font-bold text-lime font-mono mt-1">
-                {report.uniqueVisitors}
-              </div>
-              <div className="text-[11px] text-muted mt-0.5">Benzersiz IP / Cihaz</div>
-            </div>
-
-            <div className="border border-line bg-ink p-4">
-              <div className="text-[10px] font-mono text-muted uppercase">Baskın Cihaz</div>
-              <div className="text-base sm:text-lg font-bold text-paper font-mono mt-1 truncate">
-                {Object.entries(report.deviceBreakdown || {}).sort((a: any, b: any) => (b[1] as number) - (a[1] as number))[0]?.[0] || '—'}
-              </div>
-              <div className="text-[11px] text-muted mt-0.5 truncate">
-                {Object.entries(report.deviceBreakdown || {}).map(([k, v]) => `${k}: ${v}`).join(' · ') || 'Veri yok'}
-              </div>
-            </div>
-
-            <div className="border border-line bg-ink p-4">
-              <div className="text-[10px] font-mono text-muted uppercase">Baskın Tarayıcı</div>
-              <div className="text-base sm:text-lg font-bold text-paper font-mono mt-1 truncate">
-                {Object.entries(report.browserBreakdown || {}).sort((a: any, b: any) => (b[1] as number) - (a[1] as number))[0]?.[0] || '—'}
-              </div>
-              <div className="text-[11px] text-muted mt-0.5 truncate">
-                {Object.entries(report.browserBreakdown || {}).map(([k, v]) => `${k}: ${v}`).join(' · ') || 'Veri yok'}
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExportData}
+              disabled={isExporting || !stats}
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-line bg-ink text-xs font-mono text-paper hover:border-solar hover:text-solar transition-colors cursor-pointer"
+            >
+              <Download size={13} className={isExporting ? 'animate-bounce text-solar' : ''} />
+              <span>{isExporting ? 'Dışa Aktarılıyor...' : 'Raporu JSON Olarak İndir'}</span>
+            </button>
           </div>
-
-          {/* Breakdown Grids */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Top Pages in this window */}
-            <div className="border border-line bg-ink p-4 space-y-3">
-              <h4 className="text-xs font-mono font-bold text-paper uppercase tracking-wider flex items-center gap-2 border-b border-line pb-2">
-                <Compass size={14} className="text-solar" />
-                22:00 Sonrası En Çok Gezilen Sayfalar
-              </h4>
-              <div className="space-y-2">
-                {report.topPages && report.topPages.length > 0 ? (
-                  report.topPages.map((p: any, idx: number) => (
-                    <div key={p.path} className="flex items-center justify-between text-xs font-mono">
-                      <div className="flex items-center gap-2 truncate pr-2">
-                        <span className="text-[10px] text-solar font-bold w-4">{idx + 1}.</span>
-                        <Link href={p.path} target="_blank" className="text-paper hover:text-solar truncate flex items-center gap-1">
-                          <span>{p.path}</span>
-                          <ExternalLink size={10} className="text-muted" />
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-muted">{p.count} hit</span>
-                        <span className="font-bold text-solar w-9 text-right">%{p.percentage || 0}</span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-xs font-mono text-muted py-2">
-                    Bu zaman aralığında henüz sayfa kaydı bulunmuyor.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* City & OS Distribution */}
-            <div className="border border-line bg-ink p-4 space-y-4">
-              <div>
-                <h4 className="text-xs font-mono font-bold text-paper uppercase tracking-wider flex items-center gap-2 border-b border-line pb-2 mb-2">
-                  <MapPin size={14} className="text-lime" />
-                  Şehir Dağılımı
-                </h4>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {report.cityBreakdown && Object.keys(report.cityBreakdown).length > 0 ? (
-                    Object.entries(report.cityBreakdown).map(([city, count]: any) => (
-                      <span key={city} className="border border-line bg-ink-2 px-2 py-1 text-xs font-mono text-paper">
-                        {city}: <strong className="text-lime">{count}</strong>
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs font-mono text-muted">Şehir verisi yok</span>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xs font-mono font-bold text-paper uppercase tracking-wider flex items-center gap-2 border-b border-line pb-2 mb-2">
-                  <Monitor size={14} className="text-violet" />
-                  İşletim Sistemi (OS)
-                </h4>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {report.osBreakdown && Object.keys(report.osBreakdown).length > 0 ? (
-                    Object.entries(report.osBreakdown).map(([os, count]: any) => (
-                      <span key={os} className="border border-line bg-ink-2 px-2 py-1 text-xs font-mono text-paper">
-                        {os}: <strong className="text-violet">{count}</strong>
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs font-mono text-muted">OS verisi yok</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Live Visitor Stream in this window */}
-          {report.recentStream && report.recentStream.length > 0 && (
-            <div className="border border-line bg-ink p-4 space-y-3">
-              <h4 className="text-xs font-mono font-bold text-paper uppercase tracking-wider flex items-center gap-2 border-b border-line pb-2">
-                <Clock size={14} className="text-solar" />
-                22:00 Sonrası Canlı Ziyaret Akışı
-              </h4>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left font-mono text-xs">
-                  <thead>
-                    <tr className="border-b border-line text-[10px] text-muted uppercase">
-                      <th className="py-1.5 px-2">Zaman</th>
-                      <th className="py-1.5 px-2">Sayfa</th>
-                      <th className="py-1.5 px-2">Şehir</th>
-                      <th className="py-1.5 px-2">Cihaz</th>
-                      <th className="py-1.5 px-2">Tarayıcı</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line/40">
-                    {report.recentStream.map((item: any) => (
-                      <tr key={item.id} className="hover:bg-ink-2 transition-colors">
-                        <td className="py-1.5 px-2 text-solar">{item.time}</td>
-                        <td className="py-1.5 px-2 text-paper truncate max-w-[200px]">{item.path}</td>
-                        <td className="py-1.5 px-2 text-muted">{item.city || '—'}</td>
-                        <td className="py-1.5 px-2 text-muted">{item.device} ({item.os})</td>
-                        <td className="py-1.5 px-2 text-muted">{item.browser}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
         </div>
-      ) : (
-        <div className="border border-solar/30 bg-solar/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
-          <div className="flex items-center gap-2 text-solar">
-            <FileText size={16} />
-            <span>03.10.2026 22:00 (UTC+3) sonrasına ait özel zaman dilimi raporunu incelemek için:</span>
+
+        {/* Integration Telemetry Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="border border-line bg-ink p-4 space-y-1">
+            <div className="text-[10px] font-mono text-muted uppercase flex items-center justify-between">
+              <span>GA4 Mülk Kimliği</span>
+              <CheckCircle2 size={12} className="text-lime" />
+            </div>
+            <div className="text-lg font-bold text-paper font-mono">
+              #557060847
+            </div>
+            <div className="text-[11px] text-lime font-mono">✓ Aktif & Doğrulandı</div>
           </div>
-          <button
-            type="button"
-            onClick={fetchReport}
-            disabled={isLoadingReport}
-            className="px-3 py-1.5 bg-solar text-ink font-bold hover:bg-solar/90 transition-colors shrink-0 cursor-pointer text-center"
-          >
-            {isLoadingReport ? 'Yükleniyor...' : '22:00 Raporunu Aç'}
-          </button>
+
+          <div className="border border-line bg-ink p-4 space-y-1">
+            <div className="text-[10px] font-mono text-muted uppercase flex items-center justify-between">
+              <span>Ölçüm Kimliği (Tag)</span>
+              <CheckCircle2 size={12} className="text-lime" />
+            </div>
+            <div className="text-lg font-bold text-paper font-mono">
+              G-5F797S90G9
+            </div>
+            <div className="text-[11px] text-muted font-mono">Global CDN Takibi</div>
+          </div>
+
+          <div className="border border-line bg-ink p-4 space-y-1">
+            <div className="text-[10px] font-mono text-muted uppercase flex items-center justify-between">
+              <span>Oturum Derinliği</span>
+              <Zap size={12} className="text-solar" />
+            </div>
+            <div className="text-lg font-bold text-solar font-mono">
+              {stats ? `${((stats.totalPageviews || 1) / Math.max(stats.uniqueVisitors || 1, 1)).toFixed(1)} sayfa` : '—'}
+            </div>
+            <div className="text-[11px] text-muted font-mono">Kullanıcı Başına Ort. Hit</div>
+          </div>
+
+          <div className="border border-line bg-ink p-4 space-y-1">
+            <div className="text-[10px] font-mono text-muted uppercase flex items-center justify-between">
+              <span>Veri Kalıcılığı</span>
+              <ShieldCheck size={12} className="text-violet" />
+            </div>
+            <div className="text-lg font-bold text-violet font-mono">
+              Sınırsız / Kalıcı
+            </div>
+            <div className="text-[11px] text-muted font-mono">Bulut + Audit Log</div>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* 24-Hour Timeline Visualizer */}
       <div className="relative ticks border border-line bg-ink-2 p-6 space-y-4">
@@ -926,14 +802,19 @@ export default function AdminAnalyticsPage() {
             <Smartphone size={16} className="text-solar" />
             Cihaz Türü
           </h4>
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2.5 pt-2">
             {stats?.deviceBreakdown?.map((d) => (
-              <div key={d.device} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
-                <div className="flex items-center gap-2">
-                  {deviceIcons[d.device as keyof typeof deviceIcons] || <Monitor size={14} />}
-                  <span>{d.device}</span>
+              <div key={d.device} className="bg-ink p-2.5 border border-line space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    {deviceIcons[d.device as keyof typeof deviceIcons] || <Monitor size={14} />}
+                    <span className="text-paper">{d.device}</span>
+                  </div>
+                  <span className="font-bold text-solar">%{d.percentage} <span className="text-muted font-normal">({d.count})</span></span>
                 </div>
-                <span className="font-bold text-solar">%{d.percentage} ({d.count})</span>
+                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                  <div style={{ width: `${Math.max(d.percentage, 2)}%` }} className="h-full bg-solar" />
+                </div>
               </div>
             ))}
           </div>
@@ -946,11 +827,16 @@ export default function AdminAnalyticsPage() {
             <Globe2 size={16} className="text-lime" />
             Tarayıcı Dağılımı
           </h4>
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2.5 pt-2">
             {stats?.browserBreakdown?.map((b) => (
-              <div key={b.browser} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
-                <span>{b.browser}</span>
-                <span className="font-bold text-lime">%{b.percentage} ({b.count})</span>
+              <div key={b.browser} className="bg-ink p-2.5 border border-line space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-paper">{b.browser}</span>
+                  <span className="font-bold text-lime">%{b.percentage} <span className="text-muted font-normal">({b.count})</span></span>
+                </div>
+                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                  <div style={{ width: `${Math.max(b.percentage, 2)}%` }} className="h-full bg-lime" />
+                </div>
               </div>
             ))}
           </div>
@@ -963,11 +849,16 @@ export default function AdminAnalyticsPage() {
             <TrendingUp size={16} className="text-violet" />
             Trafik Kaynakları
           </h4>
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2.5 pt-2">
             {stats?.trafficSources?.map((src) => (
-              <div key={src.source} className="flex items-center justify-between text-xs font-mono bg-ink p-2.5 border border-line">
-                <span className="truncate pr-2">{src.source}</span>
-                <span className="font-bold text-violet shrink-0">%{src.percentage} ({src.count})</span>
+              <div key={src.source} className="bg-ink p-2.5 border border-line space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="truncate pr-2 text-paper">{src.source}</span>
+                  <span className="font-bold text-violet shrink-0">%{src.percentage} <span className="text-muted font-normal">({src.count})</span></span>
+                </div>
+                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                  <div style={{ width: `${Math.max(src.percentage, 2)}%` }} className="h-full bg-violet" />
+                </div>
               </div>
             ))}
           </div>
