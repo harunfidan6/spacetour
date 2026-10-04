@@ -5,6 +5,8 @@ import { CameraOff, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 
 interface ArCameraOverlayProps {
   isActive: boolean;
+  /** True once the phone's orientation sensor drives the sky */
+  tracking?: boolean;
   onClose: () => void;
   opacity: number; // 0.1 to 1.0 (opacity of the 3D star layer over the camera)
   setOpacity: (val: number) => void;
@@ -12,6 +14,7 @@ interface ArCameraOverlayProps {
 
 export function ArCameraOverlay({
   isActive,
+  tracking = false,
   onClose,
   opacity,
   setOpacity
@@ -85,7 +88,8 @@ export function ArCameraOverlay({
   if (!isActive) return null;
 
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    // No z-index on the root: the video sits under the 3D canvas (z-10), the controls above it
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {/* 1. Live Background Video Stream */}
       <video
         ref={videoRef}
@@ -96,10 +100,10 @@ export function ArCameraOverlay({
       />
 
       {/* 2. Soft Dark Vignette for Star Contrast */}
-      <div className="absolute inset-0 bg-ink/35 z-1" />
+      <div className="absolute inset-0 z-[1] bg-ink/35" />
 
       {/* 3. AR Status & Controls Header */}
-      <div className="absolute top-20 left-4 right-4 z-30 pointer-events-auto flex items-center justify-between gap-3">
+      <div className="pointer-events-auto absolute left-4 right-4 top-16 z-30 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 rounded-full border border-lime/40 bg-ink/70 px-4 py-1.5 backdrop-blur-xl shadow-2xl">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime opacity-75" />
@@ -108,6 +112,11 @@ export function ArCameraOverlay({
           <span className="text-[11px] font-mono font-bold tracking-widest text-lime uppercase">
             CANLI AR GÖKYÜZÜ KAMERASI
           </span>
+        </div>
+        <div className="order-last w-full rounded-full border border-paper/15 bg-ink/70 px-4 py-1.5 text-center text-[11px] text-paper/80 backdrop-blur-xl sm:order-none sm:w-auto">
+          {tracking
+            ? 'Telefonu gökyüzüne doğrult: yıldızlar baktığın yönü izliyor'
+            : 'Yön sensörü bulunamadı: gökyüzünü sürükleyerek kamerayla hizala'}
         </div>
 
         {/* Opacity Slider & Camera Switcher */}

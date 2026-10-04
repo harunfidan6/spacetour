@@ -20,6 +20,7 @@ import {
   PLANETARY_HOUR_DETAILS,
   type FixedStar,
 } from '@/data/fixedStars';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import {
   planetaryHours,
   type PlanetaryHourSlot,
@@ -27,6 +28,7 @@ import {
 
 export function StarOracleWidget() {
   const [selectedStar, setSelectedStar] = useState<FixedStar>(FIXED_STARS_CATALOG[0]);
+  const railRef = useRevealOnChange(selectedStar);
   const now = useNow(60_000);
 
   // Calculate the 24 unequal planetary hours (12 day + 12 night) for Istanbul
@@ -264,7 +266,7 @@ export function StarOracleWidget() {
         </div>
 
         {/* Star Selector Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+        <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
           {FIXED_STARS_CATALOG.map((star) => {
             const isSelected = selectedStar.id === star.id;
             return (

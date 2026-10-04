@@ -15,6 +15,7 @@ import {
 
 import { useNow } from '@/lib/useNow';
 import { SIGN_IN, SIGN_NAMES } from '@/lib/astrology/dailySky';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { ShieldAlert } from 'lucide-react';
 
 // Placeholder instant for the prerendered frame; replaced by the real clock right after mount
@@ -22,6 +23,7 @@ const FIRST_FRAME = new Date('2026-01-01T09:00:00Z');
 
 export function LunarPhaseTracker() {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>('full-moon');
+  const railRef = useRevealOnChange(selectedPhaseId);
   const [activeTab, setActiveTab] = useState<'cycle' | 'rituals' | 'void'>('cycle');
 
   // Real-time lunar calculations
@@ -155,7 +157,7 @@ export function LunarPhaseTracker() {
           <span className="font-mono text-gold text-[10px]">BİR EVRE SEÇİP DETAYLARI İNCELEYİN</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line">
+        <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line" style={{ '--rail-w': '30%' } as React.CSSProperties}>
           {LUNAR_PHASES.map((p) => {
             const isSelected = selectedPhase.id === p.id;
             const isLive = currentCalc.phase.id === p.id;

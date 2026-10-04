@@ -23,10 +23,12 @@ import {
 } from '@/components/ui/CosmicGlyphs';
 import { ZODIAC_SIGNS, type ZodiacElement } from '@/data/zodiac';
 import { useNow } from '@/lib/useNow';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 
 export function DailyHoroscopeDeck() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
+  const railRef = useRevealOnChange(selectedSignId);
   const [activeCategory, setActiveCategory] = useState<'genel' | 'ask' | 'kariyer' | 'tilsim'>('genel');
 
   const selectedSign = ZODIAC_SIGNS.find((s) => s.id === selectedSignId) || ZODIAC_SIGNS[0];
@@ -69,7 +71,7 @@ export function DailyHoroscopeDeck() {
       </div>
 
       {/* 12 Zodiac Sign Selector Carousel / Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+      <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2" style={{ '--rail-w': '27%' } as React.CSSProperties}>
         {ZODIAC_SIGNS.map((sign) => {
           const isSelected = sign.id === selectedSign.id;
           return (

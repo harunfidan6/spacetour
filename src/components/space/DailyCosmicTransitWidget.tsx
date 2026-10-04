@@ -14,6 +14,7 @@ import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { useNow } from '@/lib/useNow';
 import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 import { getMoonPhase, isRetrograde, type MoonPhaseKey } from '@/lib/astrophysics/skyDomeEphemeris';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import {
   VectorMoonPhase,
   ZodiacGlyph,
@@ -46,6 +47,7 @@ const MOON_PHASE_THEMES: Record<MoonPhaseKey, string> = {
 
 export function DailyCosmicTransitWidget() {
   const [selectedSignId, setSelectedSignId] = useState<string>('koc');
+  const railRef = useRevealOnChange(selectedSignId);
 
   const selectedSign = ZODIAC_SIGNS.find((s) => s.id === selectedSignId) || ZODIAC_SIGNS[0];
 
@@ -162,7 +164,7 @@ export function DailyCosmicTransitWidget() {
         </div>
 
         {/* Horizontal Zodiac Selector Buttons with Bespoke Glyphs */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-px border border-line bg-line">
+        <div ref={railRef} className="choice-rail grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-px border border-line bg-line" style={{ '--rail-w': '27%' } as React.CSSProperties}>
           {ZODIAC_SIGNS.map((s) => {
             const isSelected = s.id === selectedSignId;
             return (

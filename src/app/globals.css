@@ -623,3 +623,29 @@ p, li { text-wrap: pretty; }
 .js .doc-img { transition: opacity 0.7s var(--ease-out); }
 .js .doc-img:not([data-loaded]) { opacity: 0; }
 html[data-film] .doc-img { opacity: 1 !important; transition: none; }
+
+/* Choice rails: tile pickers become one swipeable row on phones, so the detail sits right
+   below them. The fading right edge shows there is more to swipe. */
+@media (max-width: 639.98px) {
+  .choice-rail {
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    background: transparent !important;
+    border: 0 !important;
+    padding-bottom: 4px;
+    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, #000 82%, transparent);
+  }
+  .choice-rail::-webkit-scrollbar { display: none; }
+  .choice-rail > * {
+    flex: 0 0 var(--rail-w, 44%);
+    scroll-snap-align: start;
+    outline: 1px solid var(--line);
+    outline-offset: -1px;
+  }
+  .choice-rail > *:last-child { margin-right: 18%; }
+}

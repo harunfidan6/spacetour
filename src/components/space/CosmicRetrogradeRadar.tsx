@@ -8,6 +8,7 @@ import {
   PlanetGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { useNow } from '@/lib/useNow';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 const FIRST_FRAME = new Date('2026-10-01T09:00:00Z');
@@ -30,6 +31,7 @@ export function CosmicRetrogradeRadar() {
       calendar[0]
     );
   }, [calendar, pickedId, now]);
+  const railRef = useRevealOnChange(selectedRetro.id);
   const years = `${calendar[0]?.startDate.slice(0, 4)} – ${calendar[calendar.length - 1]?.endDate.slice(0, 4)}`;
 
   return (
@@ -60,7 +62,7 @@ export function CosmicRetrogradeRadar() {
       </div>
 
       {/* Retrograde List Grid Selector */}
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:fill-row-3">
+      <div ref={railRef} className="choice-rail grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-3 lg:fill-row-3" style={{ '--rail-w': '78%' } as React.CSSProperties}>
         {calendar.map((retro) => {
           const isSelected = selectedRetro.id === retro.id;
           return (

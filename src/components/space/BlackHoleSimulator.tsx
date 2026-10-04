@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useMemo } from 'react';
 import { useInView } from '@/lib/useInView';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Clock, Sliders, ShieldAlert } from 'lucide-react';
@@ -22,6 +22,25 @@ function BlackHole3DMesh({
   const photonRingRef = useRef<THREE.Mesh>(null);
 
   const diskTexture = useMemo(() => createAccretionDiskTexture(), []);
+  // Soft round sprite: without it, points render as squares that balloon near the camera
+  const dotTexture = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d')!;
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.4, 'rgba(255,255,255,0.5)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }, []);
+  // Separate texture instance so the lensed halo can rotate independently of the disk
+  const lensTexture = useMemo(() => {
+    const t = createAccretionDiskTexture();
+    t.center.set(0.5, 0.5);
+    return t;
+  }, []);
 
   // Relativistic relativistic jet particles
   const [jetPositions] = useMemo(() => {
@@ -39,12 +58,34 @@ function BlackHole3DMesh({
     return [pos];
   }, []);
 
+  const lensRef = useRef<THREE.Mesh>(null);
+  const { camera } = useThree();
+
   useFrame((_, delta) => {
+    const dt = Math.min(delta, 0.05);
     if (isAccretionRotating && diskRef.current) {
-      diskRef.current.rotation.z += delta * 0.4;
+      diskRef.current.rotation.z += dt * 0.4;
     }
-    if (photonRingRef.current) {
-      photonRingRef.current.rotation.z -= delta * 0.2;
+    // The photon ring and the lensed image of the far side of the disk always face the
+    // observer: they are images formed by bent light, not objects lying in a plane.
+    for (const m of [photonRingRef.current, lensRef.current]) {
+      if (m) m.quaternion.copy(camera.quaternion);
+    }
+    if (lensRef.current && isAccretionRotating) {
+      // spin the lensed texture with the disk so the two read as one flow
+      const map = (lensRef.current.material as THREE.MeshBasicMaterial).map;
+      if (map) map.rotation += dt * 0.4;
+    }
+    if (jetsRef.current) {
+      // particles stream outward along the poles and recycle
+      const pos = jetsRef.current.geometry.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) {
+        let y = pos.getY(i);
+        y += Math.sign(y) * dt * 2.2;
+        if (Math.abs(y) > 10) y = Math.sign(y) * 2;
+        pos.setY(i, y);
+      }
+      pos.needsUpdate = true;
     }
   });
 
@@ -58,12 +99,13 @@ function BlackHole3DMesh({
 
       {/* 2. Photon Sphere / Einstein Lensing Shadow Ring */}
       <mesh ref={photonRingRef}>
-        <ringGeometry args={[1.85, 2.15, 64]} />
+        <ringGeometry args={[1.84, 2.0, 128]} />
         <meshBasicMaterial
-          color="#ffeedd"
+          color="#ffd9a8"
           side={THREE.DoubleSide}
           transparent
-          opacity={0.85}
+          opacity={0.7}
+          depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
@@ -76,18 +118,21 @@ function BlackHole3DMesh({
           side={THREE.DoubleSide}
           transparent
           opacity={0.92}
+          depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Vertical Lensed Warp Ring (Gravitational Lensing Arc) */}
-      <mesh rotation={[0, 0, 0]}>
-        <ringGeometry args={[2.5, 6.8, 96]} />
+      {/* Lensed image of the disk's far side (gravitational lensing halo), always facing the observer */}
+      <mesh ref={lensRef} renderOrder={2}>
+        <ringGeometry args={[2.2, 4.2, 128]} />
         <meshBasicMaterial
-          map={diskTexture}
+          map={lensTexture}
           side={THREE.DoubleSide}
           transparent
-          opacity={0.35}
+          opacity={0.3}
+          depthWrite={false}
+          depthTest={false}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
@@ -98,17 +143,21 @@ function BlackHole3DMesh({
           <bufferAttribute attach="attributes-position" args={[jetPositions, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          size={0.12}
+          size={0.09}
+          map={dotTexture}
+          alphaTest={0.01}
           color="#80d4ff"
           transparent
-          opacity={0.7}
+          opacity={0.75}
+          depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
       </points>
 
       {/* 5. Observer Ship Orbit Indicator */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[distanceRs * 0.16, distanceRs * 0.16 + 0.05, 64]} />
+        {/* The black sphere is one Schwarzschild radius (1.8 units); beyond 8 r_s the ring is clamped to stay in view */}
+        <ringGeometry args={[1.8 * Math.min(distanceRs, 8), 1.8 * Math.min(distanceRs, 8) + 0.06, 128]} />
         <meshBasicMaterial
           color={distanceRs < 2.5 ? '#ef4444' : distanceRs < 6 ? '#f59e0b' : '#38bdf8'}
           side={THREE.DoubleSide}
@@ -197,8 +246,11 @@ export function BlackHoleSimulator() {
               enableZoom={true}
               enablePan={false}
               autoRotate={false}
-              minDistance={4}
+              minDistance={5}
               maxDistance={15}
+              // keep the camera out of the polar jets
+              minPolarAngle={0.45}
+              maxPolarAngle={Math.PI - 0.45}
             />
           </Canvas>
 
@@ -220,7 +272,7 @@ export function BlackHoleSimulator() {
           </div>
 
           <div className="absolute inset-x-4 bottom-4 flex items-center justify-between bg-ink/80 px-4 py-2 border border-line backdrop-blur pointer-events-none">
-            <span className="label text-muted">Mavi Halka: Gözlemci Konumu</span>
+            <span className="label text-muted">Renkli halka: gözlemci yörüngesi</span>
             <span className="label text-paper">360° Sürükle · Yakınlaştır</span>
           </div>
         </div>

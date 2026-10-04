@@ -315,7 +315,7 @@ export function HohmannTransferSimulator() {
       </div>
 
       {/* Destination Selector Tabs */}
-      <div className="grid grid-cols-2 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-5 lg:fill-row-5 gap-px border border-line bg-line">
+      <div className="choice-rail grid grid-cols-2 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-5 lg:fill-row-5 gap-px border border-line bg-line">
         {DESTINATIONS.map((d, idx) => {
           const isSelected = d.id === selectedDest.id;
           return (

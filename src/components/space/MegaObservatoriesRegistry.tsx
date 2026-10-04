@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Ticks } from '@/components/motion/primitives';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
 interface Observatory {
@@ -108,6 +109,7 @@ const OBSERVATORIES: Observatory[] = [
 
 export function MegaObservatoriesRegistry() {
   const [selectedObs, setSelectedObs] = useState<Observatory>(OBSERVATORIES[0]);
+  const railRef = useRevealOnChange(selectedObs);
   const obs = selectedObs;
 
   return (
@@ -134,7 +136,7 @@ export function MegaObservatoriesRegistry() {
       </div>
 
       {/* Observatories Selector Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
+      <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
         {OBSERVATORIES.map((obs) => {
           const isSelected = obs.id === selectedObs.id;
           return (

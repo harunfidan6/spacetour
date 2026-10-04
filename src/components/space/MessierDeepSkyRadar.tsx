@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Telescope } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
 interface MessierObject {
@@ -116,6 +117,7 @@ const MESSIER_TARGETS: MessierObject[] = [
 
 export function MessierDeepSkyRadar() {
   const [selectedTarget, setSelectedTarget] = useState<MessierObject>(MESSIER_TARGETS[0]);
+  const railRef = useRevealOnChange(selectedTarget);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -141,7 +143,7 @@ export function MessierDeepSkyRadar() {
       </div>
 
       {/* 6 Target Selector Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
+      <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
         {MESSIER_TARGETS.map((m) => {
           const isSelected = m.id === selectedTarget.id;
           return (

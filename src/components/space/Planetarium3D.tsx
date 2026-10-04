@@ -3,7 +3,7 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { useInView } from '@/lib/useInView';
 import { matchesQuery } from '@/lib/text';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -651,6 +651,59 @@ function CameraConstellationDirector({
   return null;
 }
 
+type OrientationSample = { alpha: number; beta: number; gamma: number };
+
+/**
+ * AR mode: points the sky camera where the phone points. The scene uses the same world frame as
+ * the device-orientation spec (Y up, north = −Z, east = +X), so the standard
+ * DeviceOrientationControls math applies directly. Calls `onTracking` once real sensor data arrives.
+ */
+function DeviceSkyControl({ active, onTracking }: { active: boolean; onTracking: (tracking: boolean) => void }) {
+  const { camera } = useThree();
+  const sample = useRef<OrientationSample | null>(null);
+  const target = useRef(new THREE.Quaternion());
+  const tmp = useRef({ euler: new THREE.Euler(), q0: new THREE.Quaternion(), q1: new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)), z: new THREE.Vector3(0, 0, 1) });
+
+  useEffect(() => {
+    if (!active) return;
+    sample.current = null;
+    onTracking(false);
+    let reported = false;
+    const handle = (e: DeviceOrientationEvent & { webkitCompassHeading?: number }) => {
+      if (e.beta == null || e.gamma == null) return;
+      // iOS reports a compass heading; Android's absolute event reports alpha against north
+      const alpha = typeof e.webkitCompassHeading === 'number' ? (360 - e.webkitCompassHeading) % 360 : e.alpha;
+      if (alpha == null) return;
+      sample.current = { alpha, beta: e.beta, gamma: e.gamma };
+      if (!reported) {
+        reported = true;
+        onTracking(true);
+      }
+    };
+    const absolute = 'ondeviceorientationabsolute' in window;
+    const type = absolute ? 'deviceorientationabsolute' : 'deviceorientation';
+    window.addEventListener(type, handle as EventListener);
+    return () => {
+      window.removeEventListener(type, handle as EventListener);
+      onTracking(false);
+    };
+  }, [active, onTracking]);
+
+  useFrame(() => {
+    const s = sample.current;
+    if (!active || !s) return;
+    const { euler, q0, q1, z } = tmp.current;
+    const d = THREE.MathUtils.DEG2RAD;
+    const screenAngle = (typeof screen !== 'undefined' && screen.orientation ? screen.orientation.angle : 0) * d;
+    euler.set(s.beta * d, s.alpha * d, -s.gamma * d, 'YXZ');
+    target.current.setFromEuler(euler).multiply(q1).multiply(q0.setFromAxisAngle(z, -screenAngle));
+    // Gentle smoothing hides sensor jitter without lagging behind the hand
+    camera.quaternion.slerp(target.current, 0.3);
+  });
+
+  return null;
+}
+
 /** Film mode: lets the promo recorder turn the sky through the real look-around controls. */
 function FilmSkyControl() {
   const controls = useThree((state) => state.controls) as OrbitControlsImpl | null;
@@ -954,6 +1007,26 @@ export function Planetarium3D() {
   const [showPlanets, setShowPlanets] = useState(true);
   const [nightVision, setNightVision] = useState(false);
   const [isArActive, setIsArActive] = useState(false);
+  const [arTracking, setArTracking] = useState(false);
+
+  // AR needs motion-sensor permission on iOS, which can only be asked from a tap
+  const toggleAr = async () => {
+    if (isArActive) {
+      setIsArActive(false);
+      return;
+    }
+    const DOE = (typeof window !== 'undefined' ? window.DeviceOrientationEvent : undefined) as
+      | (typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> })
+      | undefined;
+    if (DOE?.requestPermission) {
+      try {
+        await DOE.requestPermission();
+      } catch {
+        /* denied: the sky can still be aligned by dragging */
+      }
+    }
+    setIsArActive(true);
+  };
   const [arOpacity, setArOpacity] = useState(0.85);
 
   const [selectedStar, setSelectedStar] = useState<StarData | null>(null);
@@ -1040,6 +1113,7 @@ export function Planetarium3D() {
       {/* 1. Optional Live AR Camera Overlay */}
       <ArCameraOverlay
         isActive={isArActive}
+        tracking={arTracking}
         onClose={() => setIsArActive(false)}
         opacity={arOpacity}
         setOpacity={setArOpacity}
@@ -1058,6 +1132,7 @@ export function Planetarium3D() {
         {/* Look-around Orbit Controls */}
         <OrbitControls
           makeDefault
+          enabled={!arTracking}
           enableZoom={true}
           enablePan={false}
           rotateSpeed={-0.45}
@@ -1067,6 +1142,7 @@ export function Planetarium3D() {
         />
 
         <FilmSkyControl />
+        <DeviceSkyControl active={isArActive} onTracking={setArTracking} />
 
         {/* Real-Time Milky Way (Samanyolu) Dust Belt */}
         <MilkyWayDustBelt
@@ -1738,7 +1814,7 @@ export function Planetarium3D() {
           {/* AR Camera Toggle */}
           <button
             type="button"
-            onClick={() => setIsArActive(!isArActive)}
+            onClick={toggleAr}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
               isArActive
                 ? 'bg-lime text-ink font-bold'

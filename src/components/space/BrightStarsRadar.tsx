@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { Ticks } from '@/components/motion/primitives';
 
 interface BrightStar {
@@ -135,6 +136,7 @@ const BRIGHTEST_STARS: BrightStar[] = [
 
 export function BrightStarsRadar() {
   const [selectedStar, setSelectedStar] = useState<BrightStar>(BRIGHTEST_STARS[0]);
+  const railRef = useRevealOnChange(selectedStar);
 
   return (
     <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
@@ -160,7 +162,7 @@ export function BrightStarsRadar() {
       </div>
 
       {/* 8-Star Selection Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line">
+      <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line">
         {BRIGHTEST_STARS.map((s, idx) => {
           const isSelected = s.id === selectedStar.id;
           return (
