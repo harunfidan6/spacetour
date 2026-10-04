@@ -71,6 +71,7 @@ export function SectionHub({
   sectionId,
   meta,
   intro,
+  outro,
   partTitle,
   partSerif,
   partDescription,
@@ -78,6 +79,8 @@ export function SectionHub({
   sectionId: SectionId;
   meta?: { k: string; v: ReactNode }[];
   intro?: ReactNode;
+  /** Rendered after the parts, e.g. a foundations section */
+  outro?: ReactNode;
   partTitle?: string;
   partSerif?: string;
   partDescription?: string;
@@ -123,6 +126,7 @@ export function SectionHub({
             <EpisodeGrid section={section} entries={[...modules, ...collections]} />
           </section>
         )}
+        {outro}
       </div>
     </div>
   );

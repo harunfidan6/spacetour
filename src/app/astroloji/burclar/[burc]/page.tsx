@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowUpRight, Telescope } from 'lucide-react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { NextChapter } from '@/components/doc/NextChapter';
+import { ZodiacDossier } from '@/components/doc/ZodiacDossier';
 import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { DOC_IMAGES, type DocImageKey } from '@/data/docImages';
@@ -84,6 +85,8 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
         </aside>
 
         <div className="space-y-14 lg:col-span-8">
+          <ZodiacDossier sign={s} index={index} image={signImage(s.id)} />
+
           <section className="border-l-2 border-gold pl-6">
             <h2 className="doc-kicker text-gold">
               Tarot · {s.tarotCard.name} ({s.tarotCard.number})
