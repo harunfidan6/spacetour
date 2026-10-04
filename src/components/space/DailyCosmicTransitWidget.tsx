@@ -259,6 +259,25 @@ export function DailyCosmicTransitWidget() {
             </div>
           </div>
 
+          {reading && (
+            <div className="mt-6 grid gap-px border border-line bg-line md:grid-cols-3">
+              <div className="bg-ink p-4">
+                <span className="doc-caption text-gold">Ay {reading.moonIn}</span>
+                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.moonMood}</p>
+                <p className="mt-1 text-xs leading-relaxed text-paper/60">{reading.moonFocus}</p>
+              </div>
+              <div className="bg-ink p-4">
+                <span className="doc-caption text-gold">Sağlık & enerji</span>
+                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.wellbeing}</p>
+              </div>
+              <div className="bg-ink p-4">
+                <span className="doc-caption text-gold">Sosyal hayat</span>
+                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.social}</p>
+              </div>
+            </div>
+          )}
+          {reading?.moonChange && <p className="mt-3 text-xs text-paper/60">{reading.moonChange}</p>}
+
           {/* Cosmic Tip Footer */}
           <div className="mt-6 pt-4 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
             <div className="flex items-center gap-2 text-paper/75">

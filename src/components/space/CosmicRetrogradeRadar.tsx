@@ -9,6 +9,18 @@ import {
 } from '@/components/ui/CosmicGlyphs';
 import { useNow } from '@/lib/useNow';
 import { useRevealOnChange } from '@/lib/useRevealOnChange';
+import { SignHouseInsight } from '@/components/astrology/SignHouseInsight';
+import { SIGN_NAMES } from '@/lib/astrology/dailySky';
+
+// What each retrograde stirs up (accusative, for "… hayatının … alanında gündeme getirir")
+const RETRO_THEME: Record<string, string> = {
+  merkur: 'yanlış anlaşılmaları, gecikmeleri ve yarım kalan planları yeniden gözden geçirmeyi',
+  venus: 'eski ilişkileri, değerlerini ve para alışkanlıklarını sorgulamayı',
+  mars: 'motivasyonunu, öfkeni ve yarım kalan işleri yeniden ele almayı',
+  jupiter: 'inançlarını, hedeflerini ve büyüme planlarını içe dönerek tartmayı',
+  saturn: 'sorumluluklarını, sınırlarını ve uzun vadeli yapılarını sağlamlaştırmayı',
+  pluto: 'derin dönüşümleri, güç ilişkilerini ve bırakman gerekenleri',
+};
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 const FIRST_FRAME = new Date('2026-10-01T09:00:00Z');
@@ -195,6 +207,16 @@ export function CosmicRetrogradeRadar() {
             </ul>
           </div>
         </div>
+
+        {/* What it means for the visitor's sign */}
+        {SIGN_NAMES.indexOf(selectedRetro.signRange.split(' ')[0]) >= 0 && (
+          <SignHouseInsight
+            key={selectedRetro.id}
+            targetSign={SIGN_NAMES.indexOf(selectedRetro.signRange.split(' ')[0])}
+            subject={selectedRetro.planet.split(' (')[0]}
+            theme={RETRO_THEME[selectedRetro.planetGlyphKey] ?? 'yeniden değerlendirmeyi'}
+          />
+        )}
 
         {/* Cosmic Lesson Quote */}
         <div className="border-l-2 border-gold pl-5 py-2 bg-ink/60">

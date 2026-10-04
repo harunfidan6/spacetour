@@ -16,6 +16,7 @@ import {
 import { useNow } from '@/lib/useNow';
 import { SIGN_IN, SIGN_NAMES } from '@/lib/astrology/dailySky';
 import { useRevealOnChange } from '@/lib/useRevealOnChange';
+import { SignHouseInsight } from '@/components/astrology/SignHouseInsight';
 import { ShieldAlert } from 'lucide-react';
 
 // Placeholder instant for the prerendered frame; replaced by the real clock right after mount
@@ -149,6 +150,16 @@ export function LunarPhaseTracker() {
           </div>
         </div>
       </div>
+
+      {/* What today's Moon sign means for the visitor's sign */}
+      {isMounted && SIGN_NAMES.indexOf(currentSign.sign) >= 0 && (
+        <SignHouseInsight
+          heading="Ay'ın bugün sana etkisi"
+          targetSign={SIGN_NAMES.indexOf(currentSign.sign)}
+          subject="Ay"
+          theme="duygusal ihtiyaçlarını, ruh hâlini ve günlük odağını"
+        />
+      )}
 
       {/* 8 Lunar Phases Navigation Selector */}
       <div className="space-y-4">

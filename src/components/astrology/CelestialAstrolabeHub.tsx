@@ -86,8 +86,36 @@ export function CelestialAstrolabeHub() {
             <div className="relative mx-auto flex w-full max-w-[420px] flex-col items-center justify-center lg:col-span-6 lg:max-w-none">
               {/* Outer decorative ring */}
               <div className="relative aspect-square w-full max-w-[380px] sm:max-w-[440px]">
-                {/* SVG Astrolabe Background Glow */}
-                <div aria-hidden className="absolute inset-0 rounded-full bg-gold/5 blur-3xl pointer-events-none" />
+                {/* SVG Astrolabe Background Glow matching selected sign element */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0 rounded-full blur-3xl pointer-events-none transition-colors duration-700"
+                  style={{
+                    backgroundColor:
+                      currentSign.element === 'Ateş'
+                        ? 'rgba(245, 158, 11, 0.16)'
+                        : currentSign.element === 'Su'
+                        ? 'rgba(56, 189, 248, 0.16)'
+                        : currentSign.element === 'Hava'
+                        ? 'rgba(0, 212, 255, 0.16)'
+                        : 'rgba(132, 204, 22, 0.16)',
+                  }}
+                />
+
+                {/* Fixed Outer Cardinal Astrolabe Frame */}
+                <div className="absolute -inset-3.5 rounded-full border border-gold/20 pointer-events-none">
+                  {/* Cardinal degree ticks */}
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-[9px] text-gold/70 bg-ink px-1 border border-gold/30">0°</span>
+                  <span className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 font-mono text-[9px] text-gold/70 bg-ink px-1 border border-gold/30">90°</span>
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 font-mono text-[9px] text-gold/70 bg-ink px-1 border border-gold/30">180°</span>
+                  <span className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 font-mono text-[9px] text-gold/70 bg-ink px-1 border border-gold/30">270°</span>
+                </div>
+
+                {/* Fixed Top Sighting Needle (Alidade Indicator) */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-30 flex flex-col items-center pointer-events-none">
+                  <div className="w-1.5 h-3 bg-gold clip-triangle shadow-[0_0_10px_rgba(245,197,66,0.8)]" />
+                  <div className="w-0.5 h-6 bg-gradient-to-b from-gold to-transparent" />
+                </div>
 
                 {/* Rotating Wheel Ring */}
                 <div
@@ -131,7 +159,7 @@ export function CelestialAstrolabeHub() {
                     );
                   })}
 
-                  {/* Central Astrolabe Hub */}
+                  {/* Central Astrolabe Hub & Brass Needle */}
                   <div className="absolute inset-[30%] grid place-items-center rounded-full border border-gold/40 bg-ink-3/95 p-4 text-center shadow-inner">
                     <div style={{ transform: `rotate(${selectedSignIndex * 30}deg)` }} className="flex flex-col items-center">
                       <AstrolabeGlyph size={32} className="text-gold/60 mb-1" />
