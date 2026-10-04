@@ -1,4 +1,6 @@
 import { SectionHub } from '@/components/doc/SectionHub';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
+import { FAQS_BY_SECTION } from '@/data/faqs';
 
 export default function HaritaPage() {
   return (
@@ -13,6 +15,16 @@ export default function HaritaPage() {
       partTitle="Gözlemcinin"
       partSerif="alet çantası"
       partDescription="Canlı planetaryumla başla; ardından parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi."
+      outro={
+        <FaqAccordion
+          items={FAQS_BY_SECTION.harita}
+          title="Planetaryum & Gök Haritası Rehberi"
+          serif="sıkça sorulan sorular"
+          kicker="Gözlem Geometrisi · SSS"
+          description="İnteraktif gökyüzü haritası, Bortle ışık kirliliği ölçeği ve en parlak yıldızlar hakkında rehber."
+          accentColor="var(--lime)"
+        />
+      }
     />
   );
 }

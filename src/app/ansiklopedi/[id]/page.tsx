@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { planets } from '@/data/planets';
 import { PlanetHologram3D } from '@/components/space/PlanetHologram3D';
 import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
@@ -25,6 +25,34 @@ const TYPE_LABEL: Record<string, string> = {
   yıldız: 'Yıldız',
   ay: 'Doğal uydu',
   'cüce-gezegen': 'Cüce gezegen',
+};
+
+const PLANET_TO_ZODIAC: Record<string, { id: string; name: string }[]> = {
+  mars: [
+    { id: 'koc', name: 'Koç Burcu' },
+    { id: 'akrep', name: 'Akrep Burcu (Klasik)' },
+  ],
+  venus: [
+    { id: 'boga', name: 'Boğa Burcu' },
+    { id: 'terazi', name: 'Terazi Burcu' },
+  ],
+  merkur: [
+    { id: 'ikizler', name: 'İkizler Burcu' },
+    { id: 'basak', name: 'Başak Burcu' },
+  ],
+  ay: [{ id: 'yengec', name: 'Yengeç Burcu' }],
+  gunes: [{ id: 'aslan', name: 'Aslan Burcu' }],
+  jupiter: [
+    { id: 'yay', name: 'Yay Burcu' },
+    { id: 'balik', name: 'Balık Burcu (Klasik)' },
+  ],
+  saturn: [
+    { id: 'oglak', name: 'Oğlak Burcu' },
+    { id: 'kova', name: 'Kova Burcu (Klasik)' },
+  ],
+  uranus: [{ id: 'kova', name: 'Kova Burcu' }],
+  neptun: [{ id: 'balik', name: 'Balık Burcu' }],
+  pluton: [{ id: 'akrep', name: 'Akrep Burcu' }],
 };
 
 export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>) {
@@ -241,6 +269,107 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
             </ul>
           </section>
         )}
+
+        {/* İlişkili Laboratuvar Deneyleri ve Zodyak Bağlantıları (Topic Cluster) */}
+        <section aria-label="İlişkili Kozmik Enstrümanlar" className="border-t border-line pt-8">
+          <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
+            <div>
+              <span className="doc-kicker text-violet text-xs">Kozmik Ağ · Topic Cluster</span>
+              <h3 className="doc-title text-2xl text-paper mt-1">{planet.name} ile İlgili Enstrümanlar</h3>
+            </div>
+            <span className="doc-caption text-muted">Kozmik Atlas</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {/* 1. Kütleçekim Deneyi */}
+            <Link
+              href="/ansiklopedi/laboratuvar/kutlecekim"
+              className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
+            >
+              <div>
+                <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
+                  <span>LABORATUVAR</span>
+                  <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </div>
+                <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                  {planet.name}’de Kaç Kilosunuz?
+                </h4>
+                <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                  Yerçekimi odasında ağırlığınızı {planet.name}’nin yüzey ivmesine göre test edin.
+                </p>
+              </div>
+              <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Simülatörü Başlat →</span>
+            </Link>
+
+            {/* 2. Kepler Yörünge Modeli */}
+            <Link
+              href="/ansiklopedi/laboratuvar/kepler-orrery"
+              className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
+            >
+              <div>
+                <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
+                  <span>3D ORRERY</span>
+                  <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </div>
+                <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                  Güneş Çevresindeki Yörüngesi
+                </h4>
+                <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                  Kepler yasalarıyla {planet.facts.yörüngeSüresi} periyodundaki 3D yörünge hareketini izleyin.
+                </p>
+              </div>
+              <span className="doc-caption text-violet mt-4 font-mono text-[11px]">3D Modeli Aç →</span>
+            </Link>
+
+            {/* 3. Zodyak Yönetici Burcu veya 3D Yolculuk */}
+            {PLANET_TO_ZODIAC[planet.id] && PLANET_TO_ZODIAC[planet.id].length > 0 ? (
+              <div className="flex flex-col justify-between border border-line bg-ink p-5">
+                <div>
+                  <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
+                    <span>ASTROLOJİ ETKİSİ</span>
+                    <span className="text-gold">✦</span>
+                  </div>
+                  <h4 className="doc-title text-lg text-paper">
+                    Yönettiği Zodyak Burçları
+                  </h4>
+                  <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                    {planet.name}, mitolojik ve astrolojik olarak şu arketiplerin yöneticisidir:
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {PLANET_TO_ZODIAC[planet.id].map((z) => (
+                      <Link
+                        key={z.id}
+                        href={`/astroloji/burclar/${z.id}`}
+                        className="rounded border border-gold/30 bg-gold/10 px-2 py-1 font-mono text-xs text-gold transition-colors hover:bg-gold hover:text-ink"
+                      >
+                        {z.name} →
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/yolculuk"
+                className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
+                    <span>3D SİMÜLASYON</span>
+                    <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
+                  <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                    Güneş Sistemi’nde Keşfet
+                  </h4>
+                  <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                    WebGL 3D uzay atlasında {planet.name}’e doğru gerçek zamanlı uçuş yapın.
+                  </p>
+                </div>
+                <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Uzay Uçuşunu Başlat →</span>
+              </Link>
+            )}
+          </div>
+        </section>
 
         <nav className="grid gap-px border border-line bg-line lg:grid-cols-2" aria-label="Kayıtlar arasında gezin">
           {[

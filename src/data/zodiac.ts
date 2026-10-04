@@ -1,3 +1,5 @@
+import { longitude, type SkyBody } from '@/lib/astrology/dailySky';
+
 export type ZodiacElement = 'Ateş' | 'Toprak' | 'Hava' | 'Su';
 export type ZodiacModality = 'Öncü' | 'Sabit' | 'Değişken';
 
@@ -638,7 +640,20 @@ export function localSolarHour(hour: number, minute: number, longitude: number, 
   return ((solar % 24) + 24) % 24;
 }
 
-export function calculateMoonSign(sunSignIndex: number, birthDay: number): ZodiacSign {
+export function calculateMoonSign(
+  sunSignIndex: number,
+  birthDay: number,
+  month?: number,
+  year?: number,
+  hour = 12,
+  minute = 0
+): ZodiacSign {
+  if (month !== undefined && year !== undefined) {
+    const d = new Date(Date.UTC(year, month - 1, birthDay, hour - 3, minute));
+    const lon = ((longitude('moon', d) % 360) + 360) % 360;
+    const mIdx = Math.floor(lon / 30) % 12;
+    return ZODIAC_SIGNS[mIdx];
+  }
   const moonOffset = Math.floor((birthDay * 1.5) % 12);
   const moonIndex = (sunSignIndex + moonOffset) % 12;
   return ZODIAC_SIGNS[moonIndex];
@@ -658,23 +673,54 @@ export function innerPlanetSignIndices(sunSignIndex: number, birthDay: number) {
 }
 
 /**
- * Calculates Full Planetary Placements across the 12 signs & 12 houses
+ * Calculates Full Planetary Placements across the 12 signs & 12 houses.
+ * When birth month is provided, computes exact positions from the NASA JPL / Meeus ephemeris.
  */
 export function calculatePlanetaryPlacements(
   sunSignIndex: number,
   ascendantIndex: number,
   birthDay: number,
-  birthYear: number
+  birthYear: number,
+  month?: number,
+  birthHour = 12,
+  birthMinute = 0,
+  utcOffset = 3
 ): PlanetaryPlacement[] {
   const mod12 = (val: number) => ((val % 12) + 12) % 12;
+  const getHouse = (signIdx: number) => mod12(signIdx - ascendantIndex) + 1;
+
+  if (month !== undefined) {
+    const d = new Date(Date.UTC(birthYear, month - 1, birthDay, birthHour - utcOffset, birthMinute));
+    const bodies: { key: SkyBody; name: string; symbol: string; meaning: string }[] = [
+      { key: 'sun', name: 'Güneş (Sol)', symbol: '☉', meaning: 'Öz kimlik, bilinçli irade, yaratıcı yaşam gücü ve benliğin kalbi.' },
+      { key: 'moon', name: 'Ay (Luna)', symbol: '☽', meaning: 'Duygusal güvenlik, annelik arketipleri, bilinçdışı hafıza ve ruh hali.' },
+      { key: 'mercury', name: 'Merkür (Hermes)', symbol: '☿', meaning: 'Düşünce biçimi, mantık akışı, öğrenme hızı ve iletişim dili.' },
+      { key: 'venus', name: 'Venüs (Afrodit)', symbol: '♀', meaning: 'Sevgi dili, estetik zevkler, romantizm, finansal çekim ve değerler.' },
+      { key: 'mars', name: 'Mars (Ares)', symbol: '♂', meaning: 'Eylem gücü, tutku, cesaret, mücadele azmi ve fiziksel dürtüler.' },
+      { key: 'jupiter', name: 'Jüpiter (Zeus)', symbol: '♃', meaning: 'Şans, bolluk, yüksek felsefe, genişleme ve manevi koruma alanı.' },
+      { key: 'saturn', name: 'Satürn (Kronos)', symbol: '♄', meaning: 'Karmik sorumluluklar, olgunlaşma sınavları, disiplin ve ustalaşma.' },
+    ];
+
+    return bodies.map((b) => {
+      const lon = ((longitude(b.key, d) % 360) + 360) % 360;
+      const sIdx = Math.floor(lon / 30) % 12;
+      return {
+        planet: b.name,
+        planetSymbol: b.symbol,
+        sign: ZODIAC_SIGNS[sIdx].name,
+        signSymbol: ZODIAC_SIGNS[sIdx].symbol,
+        degree: Math.floor(lon % 30),
+        house: getHouse(sIdx),
+        meaning: b.meaning,
+      };
+    });
+  }
 
   const { mercury: mercurySignIdx, venus: venusSignIdx, mars: marsSignIdx } = innerPlanetSignIndices(sunSignIndex, birthDay);
   // Jupiter stays ~1 year in a sign
   const jupiterSignIdx = mod12((birthYear - 1900) % 12);
   // Saturn stays ~2.5 years in a sign
   const saturnSignIdx = mod12(Math.floor((birthYear - 1900) / 2.5));
-
-  const getHouse = (signIdx: number) => mod12(signIdx - ascendantIndex) + 1;
 
   return [
     {

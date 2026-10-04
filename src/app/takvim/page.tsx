@@ -20,6 +20,8 @@ import { events, EventType, eventTypeLabels, eventTypeTones } from '@/data/event
 import { CosmicEventSimulator } from '@/components/space/CosmicEventSimulator';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
+import { FAQS_BY_SECTION } from '@/data/faqs';
 import { DOC_IMAGES } from '@/data/docImages';
 import { gsap, useGsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { Reveal } from '@/components/motion/primitives';
@@ -475,6 +477,16 @@ export default function CalendarPage() {
             </div>
           </div>
         </section>
+
+        {/* Calendar & Ephemeris FAQ Guide */}
+        <FaqAccordion
+          items={FAQS_BY_SECTION.takvim}
+          title="Gök Olayları & Gözlem Rehberi"
+          serif="sıkça sorulan sorular"
+          kicker="Astronomi Takvimi · SSS"
+          description="Meteor yağmurlarını en iyi izleme saatleri, tutulma güvenliği ve gezegen kavuşumları hakkında rehber."
+          accentColor="var(--lime)"
+        />
       </div>
     </div>
   );

@@ -446,6 +446,22 @@ export function getBreadcrumbJsonLd(crumbs: { name: string; url: string }[]) {
   };
 }
 
+/** JSON-LD FAQPage schema script for Google search accordions */
+export function getFaqPageJsonLd(faqs: { question: string; answer: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+}
+
 /** JSON-LD Article / ItemPage schema script for Zodiac sign dossiers */
 export function getZodiacSignJsonLd(signId: string) {
   const sign = ZODIAC_SIGNS.find((s) => s.id === signId);
@@ -479,3 +495,5 @@ export function getZodiacSignJsonLd(signId: string) {
     },
   };
 }
+
+

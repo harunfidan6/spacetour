@@ -142,9 +142,16 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
             <dl className="grid w-full grid-cols-2 gap-3.5 border-t border-gold/20 pt-5 font-mono text-xs">
               <div>
                 <dt className="doc-caption text-muted text-[10px] uppercase">YÖNETİCİ GEZEGEN</dt>
-                <dd className="mt-1 font-bold text-paper flex items-center gap-1.5">
-                  <PlanetGlyph planet={s.rulingPlanet} size={14} className="text-gold" />
-                  <span>{s.rulingPlanet}</span>
+                <dd className="mt-1 font-bold text-paper">
+                  <Link
+                    href={`/ansiklopedi/${s.rulingPlanetId}`}
+                    className="flex items-center gap-1.5 hover:text-gold transition-colors group"
+                    title={`${s.rulingPlanet} Ansiklopedi Dosyası`}
+                  >
+                    <PlanetGlyph planet={s.rulingPlanet} size={14} className="text-gold" />
+                    <span className="underline decoration-gold/40 underline-offset-2 group-hover:decoration-gold">{s.rulingPlanet}</span>
+                    <ArrowUpRight size={10} className="text-gold/60 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
                 </dd>
               </div>
 

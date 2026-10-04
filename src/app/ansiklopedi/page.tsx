@@ -7,6 +7,8 @@ import { EpisodeGrid } from '@/components/doc/SectionHub';
 import { planets } from '@/data/planets';
 import { constellations } from '@/data/constellations';
 import { getSection } from '@/data/sections';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
+import { FAQS_BY_SECTION } from '@/data/faqs';
 
 export default function AnsiklopediPage() {
   const section = getSection('ansiklopedi');
@@ -65,6 +67,16 @@ export default function AnsiklopediPage() {
           <PartHeading part={3} title="Gökyüzünün" serif="haritası" description={skies.blurb} aside={`${constellations.length} takımyıldızı`} />
           <EpisodeCard href={skies.href} index="03" title={skies.title} blurb={skies.blurb} kind={skies.kind} image={skies.image} accent={section.accent} size="lg" sizes="100vw" />
         </section>
+
+        {/* Encyclopedia & Celestial Mechanics FAQ Guide */}
+        <FaqAccordion
+          items={FAQS_BY_SECTION.ansiklopedi}
+          title="Gezegenler & Evren Rehberi"
+          serif="sıkça sorulan sorular"
+          kicker="Astrofizik Ansiklopedisi · SSS"
+          description="Güneş Sistemi gezegenleri, cüce gezegenler ve temel astrofizik kavramları rehberi."
+          accentColor="var(--violet)"
+        />
       </div>
     </div>
   );

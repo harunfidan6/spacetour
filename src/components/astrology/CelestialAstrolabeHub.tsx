@@ -22,6 +22,8 @@ import { PartHeading } from '@/components/doc/PartHeading';
 import { EpisodeCard } from '@/components/doc/EpisodeCard';
 import { NextChapter } from '@/components/doc/NextChapter';
 import { AstrologyBasics } from '@/components/doc/AstrologyBasics';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
+import { FAQS_BY_SECTION } from '@/data/faqs';
 import { CelestialHorizonBar } from './CelestialHorizonBar';
 import { ZODIAC_SIGNS, type ZodiacElement } from '@/data/zodiac';
 import { ELEMENT_INFO } from '@/data/zodiacProfiles';
@@ -425,7 +427,17 @@ export function CelestialAstrolabeHub() {
         </div>
       </section>
 
-      {/* 7. Next Chapter Slate to Section 05: Gözlemevi */}
+      {/* 7. Astrology & Celestial Horizon FAQs */}
+      <FaqAccordion
+        items={FAQS_BY_SECTION.astroloji}
+        title="Astroloji & Zodyak Rehberi"
+        serif="sıkça sorulan sorular"
+        kicker="Ezoterik Ansiklopedi · SSS"
+        description="Doğum haritası yorumlama, yükselen burç hesaplama, Keldani gezegen saatleri ve Ay döngüleri hakkında merak edilenler."
+        accentColor="var(--gold)"
+      />
+
+      {/* 8. Next Chapter Slate to Section 05: Gözlemevi */}
       <NextChapter
         next={{
           href: '/gozlemevi',

@@ -107,8 +107,8 @@ export function NatalChartCalculator() {
       sunSign: sun,
       risingSign: rising,
       risingSignIndex: risingIdx,
-      moonSign: calculateMoonSign(sunIdx, day),
-      planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year),
+      moonSign: calculateMoonSign(sunIdx, day, month, year, hour, minute),
+      planetaryPlacements: calculatePlanetaryPlacements(sunIdx, risingIdx, day, year, month, hour, minute, zoneOffset),
     };
   })();
 

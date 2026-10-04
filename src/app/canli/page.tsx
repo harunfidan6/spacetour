@@ -1,4 +1,6 @@
 import { SectionHub } from '@/components/doc/SectionHub';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
+import { FAQS_BY_SECTION } from '@/data/faqs';
 
 export default function CanliPage() {
   return (
@@ -13,6 +15,16 @@ export default function CanliPage() {
       partTitle="Şu an"
       partSerif="gökyüzünde"
       partDescription="Bu gecenin gökyüzü, istasyonun anlık konumu, Güneş’in nabzı ve insanlığın en uzak elçileri."
+      outro={
+        <FaqAccordion
+          items={FAQS_BY_SECTION.canli}
+          title="Canlı Gökyüzü & ISS Rehberi"
+          serif="sıkça sorulan sorular"
+          kicker="Telemetri & Gözlem · SSS"
+          description="ISS geçiş saatleri, çıplak gözle gözlem ipuçları ve jeomanyetik fırtınalar hakkında merak edilenler."
+          accentColor="var(--lime)"
+        />
+      }
     />
   );
 }
