@@ -35,18 +35,65 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://spacetour.com.tr"),
   title: {
-    default: "SpaceTour TR — Kinetik Uzay Atlası",
+    default: "SpaceTour TR — Kinetik Uzay Atlası & 3D Planetaryum",
     template: "%s — SpaceTour TR",
   },
   applicationName: "SpaceTour TR",
+  description:
+    "spacetour.com.tr — Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve çok dalgaboylu gözlemevi.",
+  keywords: [
+    "spacetour",
+    "spacetour tr",
+    "uzay atlası",
+    "güneş sistemi",
+    "3d planetaryum",
+    "iss canlı konum",
+    "gök olayları takvimi",
+    "astronomi",
+    "gezegenler",
+    "astroloji",
+    "burçlar",
+    "doğum haritası",
+    "yıldız haritası",
+    "uzay simülasyonu",
+    "türkiye uzay",
+    "gökbilim"
+  ],
+  authors: [{ name: "SpaceTour TR", url: "https://spacetour.com.tr" }],
+  creator: "SpaceTour TR",
+  publisher: "SpaceTour TR",
+  alternates: {
+    canonical: "https://spacetour.com.tr",
+  },
   openGraph: {
+    title: "SpaceTour TR — Kinetik Uzay Atlası",
+    description: "3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi ve canlı uzay gözlemevi.",
+    url: "https://spacetour.com.tr",
     siteName: "SpaceTour TR",
     locale: "tr_TR",
     type: "website",
   },
-  description:
-    "spacetour.com.tr — Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve çok dalgaboylu gözlemevi.",
+  twitter: {
+    card: "summary_large_image",
+    title: "SpaceTour TR — Kinetik Uzay Atlası",
+    description: "3D Güneş Sistemi yolculuğu, 360° planetaryum ve canlı uzay takibi.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -81,6 +128,37 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{
             __html:
               "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5F797S90G9',{send_page_view:true});",
+          }}
+        />
+        {/* Schema.org JSON-LD Structured Data for Google Rich Snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://spacetour.com.tr/#website",
+                  "url": "https://spacetour.com.tr",
+                  "name": "SpaceTour TR",
+                  "description": "Hareket eden bir kinetik uzay atlası: 3D Güneş Sistemi, planetaryum ve canlı gökyüzü takibi.",
+                  "inLanguage": "tr-TR",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://spacetour.com.tr/ansiklopedi?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "Organization",
+                  "@id": "https://spacetour.com.tr/#organization",
+                  "name": "SpaceTour TR",
+                  "url": "https://spacetour.com.tr",
+                  "logo": "https://spacetour.com.tr/icon.svg"
+                }
+              ]
+            }),
           }}
         />
       </head>
