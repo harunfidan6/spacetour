@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
     const period = periodParam === 'yesterday' || periodParam === '7days' || periodParam === '30days' ? periodParam : 'today';
     const stats = computeAnalyticsStats(includeDemo, period);
 
-    // If Google Analytics Data API is connected, overlay official GA4 data for selected period
-    if (isGoogleAnalyticsConfigured()) {
+    // If Google Analytics Data API is connected and NOT in demo mode, overlay official GA4 data for selected period
+    if (isGoogleAnalyticsConfigured() && !includeDemo) {
       const gaStats = await fetchGoogleAnalyticsStats(period);
       if (gaStats) {
         if (gaStats.activeVisitorsNow !== undefined) stats.activeVisitorsNow = gaStats.activeVisitorsNow;
@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
         if (gaStats.topPages && gaStats.topPages.length > 0) stats.topPages = gaStats.topPages;
         if (gaStats.topCities && gaStats.topCities.length > 0) stats.topCities = gaStats.topCities;
         if (gaStats.deviceBreakdown && gaStats.deviceBreakdown.length > 0) stats.deviceBreakdown = gaStats.deviceBreakdown;
+        if (gaStats.browserBreakdown && gaStats.browserBreakdown.length > 0) stats.browserBreakdown = gaStats.browserBreakdown;
         if (gaStats.osBreakdown && gaStats.osBreakdown.length > 0) stats.osBreakdown = gaStats.osBreakdown;
         if (gaStats.trafficSources && gaStats.trafficSources.length > 0) stats.trafficSources = gaStats.trafficSources;
         if (gaStats.hourlyTimeline && gaStats.hourlyTimeline.length > 0) stats.hourlyTimeline = gaStats.hourlyTimeline;

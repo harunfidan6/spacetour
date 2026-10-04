@@ -267,14 +267,15 @@ function getBaselineRecords(existing: PageViewRecord[]): PageViewRecord[] {
   const sampleDevices: ('Mobil' | 'Masaüstü' | 'Tablet')[] = ['Mobil', 'Mobil', 'Masaüstü', 'Masaüstü', 'Tablet'];
 
   const now = Date.now();
-  for (let i = 0; i < 48; i++) {
-    const ageMs = Math.random() * (24 * 60 * 60 * 1000); // within last 24h
+  // 1. Generate records for today (0 - 24 hours ago)
+  for (let i = 0; i < 40; i++) {
+    const ageMs = Math.random() * (20 * 60 * 60 * 1000);
     const p = samplePages[Math.floor(Math.random() * samplePages.length)];
     const dev = sampleDevices[Math.floor(Math.random() * sampleDevices.length)];
     const os: PageViewRecord['os'] = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
 
     seed.push({
-      id: `seed-${i}`,
+      id: `seed-today-${i}`,
       timestamp: now - ageMs,
       path: p.path,
       title: p.title,
@@ -287,6 +288,81 @@ function getBaselineRecords(existing: PageViewRecord[]): PageViewRecord[] {
       os,
       screen: dev === 'Mobil' ? '390x844' : '1920x1080',
       sessionId: `sess-${i % 25}`,
+      duration: Math.floor(Math.random() * 240 + 30)
+    });
+  }
+
+  // 2. Generate records for yesterday (24 - 48 hours ago)
+  for (let i = 0; i < 35; i++) {
+    const ageMs = (25 + Math.random() * 20) * 60 * 60 * 1000;
+    const p = samplePages[Math.floor(Math.random() * samplePages.length)];
+    const dev = sampleDevices[Math.floor(Math.random() * sampleDevices.length)];
+    const os: PageViewRecord['os'] = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
+
+    seed.push({
+      id: `seed-yest-${i}`,
+      timestamp: now - ageMs,
+      path: p.path,
+      title: p.title,
+      referrer: Math.random() > 0.5 ? 'direct' : 'https://www.google.com',
+      ipHash: `usr-y-${i % 18}`,
+      country: 'Türkiye',
+      city: sampleCities[Math.floor(Math.random() * sampleCities.length)],
+      device: dev,
+      browser: sampleBrowsers[Math.floor(Math.random() * sampleBrowsers.length)],
+      os,
+      screen: dev === 'Mobil' ? '390x844' : '1920x1080',
+      sessionId: `sess-y-${i % 20}`,
+      duration: Math.floor(Math.random() * 240 + 30)
+    });
+  }
+
+  // 3. Generate records for past 7 days (2 - 7 days ago)
+  for (let i = 0; i < 40; i++) {
+    const ageMs = (2 + Math.random() * 4.5) * 24 * 60 * 60 * 1000;
+    const p = samplePages[Math.floor(Math.random() * samplePages.length)];
+    const dev = sampleDevices[Math.floor(Math.random() * sampleDevices.length)];
+    const os: PageViewRecord['os'] = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
+
+    seed.push({
+      id: `seed-7d-${i}`,
+      timestamp: now - ageMs,
+      path: p.path,
+      title: p.title,
+      referrer: Math.random() > 0.5 ? 'direct' : 'https://www.google.com',
+      ipHash: `usr-7d-${i % 25}`,
+      country: 'Türkiye',
+      city: sampleCities[Math.floor(Math.random() * sampleCities.length)],
+      device: dev,
+      browser: sampleBrowsers[Math.floor(Math.random() * sampleBrowsers.length)],
+      os,
+      screen: dev === 'Mobil' ? '390x844' : '1920x1080',
+      sessionId: `sess-7d-${i % 25}`,
+      duration: Math.floor(Math.random() * 240 + 30)
+    });
+  }
+
+  // 4. Generate records for past 30 days (7 - 28 days ago)
+  for (let i = 0; i < 40; i++) {
+    const ageMs = (7 + Math.random() * 20) * 24 * 60 * 60 * 1000;
+    const p = samplePages[Math.floor(Math.random() * samplePages.length)];
+    const dev = sampleDevices[Math.floor(Math.random() * sampleDevices.length)];
+    const os: PageViewRecord['os'] = dev === 'Mobil' ? (Math.random() > 0.4 ? 'iOS' : 'Android') : 'Windows';
+
+    seed.push({
+      id: `seed-30d-${i}`,
+      timestamp: now - ageMs,
+      path: p.path,
+      title: p.title,
+      referrer: Math.random() > 0.5 ? 'direct' : 'https://www.google.com',
+      ipHash: `usr-30d-${i % 30}`,
+      country: 'Türkiye',
+      city: sampleCities[Math.floor(Math.random() * sampleCities.length)],
+      device: dev,
+      browser: sampleBrowsers[Math.floor(Math.random() * sampleBrowsers.length)],
+      os,
+      screen: dev === 'Mobil' ? '390x844' : '1920x1080',
+      sessionId: `sess-30d-${i % 30}`,
       duration: Math.floor(Math.random() * 240 + 30)
     });
   }

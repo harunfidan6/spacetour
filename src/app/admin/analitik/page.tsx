@@ -515,6 +515,28 @@ export default function AdminAnalyticsPage() {
         </div>
       </div>
 
+      {/* Zero Data Notification Banner for Selected Period */}
+      {stats && stats.totalPageviews === 0 && (
+        <div className="p-4 border border-solar/40 bg-solar/10 text-xs font-mono text-solar flex items-start gap-3">
+          <AlertCircle size={18} className="shrink-0 text-solar mt-0.5" />
+          <div className="space-y-1">
+            <div className="font-bold uppercase tracking-wider text-paper">
+              {selectedPeriod === 'yesterday'
+                ? 'DÜN İÇİN HENÜZ GEÇMİŞ VERİ BULUNMUYOR'
+                : 'SEÇİLİ DÖNEM İÇİN KAYITLI VERİ BULUNMUYOR'}
+            </div>
+            <p className="text-paper/80 leading-relaxed">
+              {selectedPeriod === 'yesterday'
+                ? 'Google Analytics 4 mülkü (#557060847) ve telemetri köprüsü siteye bugün bağlandığı için Google sunucularında dünün verisi sıfırdır. Bugünden itibaren dünün ve geçmiş günlerin verileri düzenli olarak burada birikmeye devam edecektir.'
+                : 'Seçili zaman aralığında henüz kaydedilmiş sayfa gösterimi veya ziyaretçi verisi yoktur.'}
+            </p>
+            <div className="text-[11px] text-muted pt-1">
+              💡 <em>"Bugün (Son 24 Saat)" sekmesine geçerek güncel gerçek verileri görebilir veya yukarıdan "Örnek Simülasyon" moduna tıklayarak dün ve geçmiş dönemlerin grafik yapısını test edebilirsiniz.</em>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 4 Big Real-Time KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Active Visitors Now */}
@@ -790,37 +812,47 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3">
-            {stats?.topPages?.map((page, idx) => (
-              <div key={page.path} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <div className="flex items-center gap-2 truncate pr-2">
-                    <span className="h-5 w-5 bg-ink border border-line flex items-center justify-center font-bold text-[10px] text-solar">
-                      {idx + 1}
-                    </span>
-                    <Link
-                      href={page.path}
-                      target="_blank"
-                      className="text-paper hover:text-solar transition-colors truncate flex items-center gap-1"
-                    >
-                      <span>{page.path}</span>
-                      <ExternalLink size={10} className="text-muted" />
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-muted">{page.views} hit</span>
-                    <span className="font-bold text-solar w-9 text-right">%{page.percentage}</span>
-                  </div>
-                </div>
-
-                {/* Progress track */}
-                <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
-                  <div
-                    style={{ width: `${page.percentage}%` }}
-                    className="h-full bg-solar"
-                  />
-                </div>
+            {(!stats?.topPages || stats.topPages.length === 0) ? (
+              <div className="py-8 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-2 border border-dashed border-line/60 bg-ink/40">
+                <Compass className="text-muted/40" size={24} />
+                <span>Bu dönem için henüz sayfa ziyareti kaydedilmedi.</span>
+                {selectedPeriod === 'yesterday' && (
+                  <span className="text-[10px] text-muted/60">Google Analytics bugün kurulduğu için dün verisi boştur.</span>
+                )}
               </div>
-            ))}
+            ) : (
+              stats.topPages.map((page, idx) => (
+                <div key={page.path} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <div className="flex items-center gap-2 truncate pr-2">
+                      <span className="h-5 w-5 bg-ink border border-line flex items-center justify-center font-bold text-[10px] text-solar">
+                        {idx + 1}
+                      </span>
+                      <Link
+                        href={page.path}
+                        target="_blank"
+                        className="text-paper hover:text-solar transition-colors truncate flex items-center gap-1"
+                      >
+                        <span>{page.path}</span>
+                        <ExternalLink size={10} className="text-muted" />
+                      </Link>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-muted">{page.views} hit</span>
+                      <span className="font-bold text-solar w-9 text-right">%{page.percentage}</span>
+                    </div>
+                  </div>
+
+                  {/* Progress track */}
+                  <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
+                    <div
+                      style={{ width: `${page.percentage}%` }}
+                      className="h-full bg-solar"
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -844,28 +876,35 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3">
-            {stats?.topCities?.map((loc) => (
-              <div key={loc.city} className="space-y-1">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-paper font-medium flex items-center gap-1.5">
-                    <MapPin size={13} className="text-solar shrink-0" />
-                    <span>{loc.city}</span>
-                    <span className="text-[10px] text-muted">({loc.country})</span>
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted">{loc.count} kişi</span>
-                    <span className="font-bold text-rose w-8 text-right">%{loc.percentage}</span>
+            {(!stats?.topCities || stats.topCities.length === 0) ? (
+              <div className="py-8 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-2 border border-dashed border-line/60 bg-ink/40">
+                <MapPin className="text-muted/40" size={24} />
+                <span>Bu dönem için henüz konum verisi kaydedilmedi.</span>
+              </div>
+            ) : (
+              stats.topCities.map((loc) => (
+                <div key={loc.city} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-paper font-medium flex items-center gap-1.5">
+                      <MapPin size={13} className="text-solar shrink-0" />
+                      <span>{loc.city}</span>
+                      <span className="text-[10px] text-muted">({loc.country})</span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted">{loc.count} kişi</span>
+                      <span className="font-bold text-rose w-8 text-right">%{loc.percentage}</span>
+                    </div>
+                  </div>
+
+                  <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
+                    <div
+                      style={{ width: `${loc.percentage}%` }}
+                      className="h-full bg-rose"
+                    />
                   </div>
                 </div>
-
-                <div className="h-1.5 w-full bg-ink border border-line overflow-hidden">
-                  <div
-                    style={{ width: `${loc.percentage}%` }}
-                    className="h-full bg-rose"
-                  />
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -880,20 +919,27 @@ export default function AdminAnalyticsPage() {
             Cihaz Türü
           </h4>
           <div className="space-y-2.5 pt-2">
-            {stats?.deviceBreakdown?.map((d) => (
-              <div key={d.device} className="bg-ink p-2.5 border border-line space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <div className="flex items-center gap-2">
-                    {deviceIcons[d.device as keyof typeof deviceIcons] || <Monitor size={14} />}
-                    <span className="text-paper">{d.device}</span>
-                  </div>
-                  <span className="font-bold text-solar">%{d.percentage} <span className="text-muted font-normal">({d.count})</span></span>
-                </div>
-                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
-                  <div style={{ width: `${Math.max(d.percentage, 2)}%` }} className="h-full bg-solar" />
-                </div>
+            {(!stats?.deviceBreakdown || stats.deviceBreakdown.length === 0) ? (
+              <div className="py-6 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-1.5 border border-dashed border-line/60 bg-ink/40">
+                <Smartphone className="text-muted/40" size={18} />
+                <span>Cihaz verisi bulunmuyor.</span>
               </div>
-            ))}
+            ) : (
+              stats.deviceBreakdown.map((d) => (
+                <div key={d.device} className="bg-ink p-2.5 border border-line space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <div className="flex items-center gap-2">
+                      {deviceIcons[d.device as keyof typeof deviceIcons] || <Monitor size={14} />}
+                      <span className="text-paper">{d.device}</span>
+                    </div>
+                    <span className="font-bold text-solar">%{d.percentage} <span className="text-muted font-normal">({d.count})</span></span>
+                  </div>
+                  <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                    <div style={{ width: `${Math.max(d.percentage, 2)}%` }} className="h-full bg-solar" />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -905,17 +951,24 @@ export default function AdminAnalyticsPage() {
             Tarayıcı Dağılımı
           </h4>
           <div className="space-y-2.5 pt-2">
-            {stats?.browserBreakdown?.map((b) => (
-              <div key={b.browser} className="bg-ink p-2.5 border border-line space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-paper">{b.browser}</span>
-                  <span className="font-bold text-lime">%{b.percentage} <span className="text-muted font-normal">({b.count})</span></span>
-                </div>
-                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
-                  <div style={{ width: `${Math.max(b.percentage, 2)}%` }} className="h-full bg-lime" />
-                </div>
+            {(!stats?.browserBreakdown || stats.browserBreakdown.length === 0) ? (
+              <div className="py-6 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-1.5 border border-dashed border-line/60 bg-ink/40">
+                <Globe2 className="text-muted/40" size={18} />
+                <span>Tarayıcı verisi bulunmuyor.</span>
               </div>
-            ))}
+            ) : (
+              stats.browserBreakdown.map((b) => (
+                <div key={b.browser} className="bg-ink p-2.5 border border-line space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-paper">{b.browser}</span>
+                    <span className="font-bold text-lime">%{b.percentage} <span className="text-muted font-normal">({b.count})</span></span>
+                  </div>
+                  <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                    <div style={{ width: `${Math.max(b.percentage, 2)}%` }} className="h-full bg-lime" />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -927,17 +980,24 @@ export default function AdminAnalyticsPage() {
             Trafik Kaynakları
           </h4>
           <div className="space-y-2.5 pt-2">
-            {stats?.trafficSources?.map((src) => (
-              <div key={src.source} className="bg-ink p-2.5 border border-line space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="truncate pr-2 text-paper">{src.source}</span>
-                  <span className="font-bold text-violet shrink-0">%{src.percentage} <span className="text-muted font-normal">({src.count})</span></span>
-                </div>
-                <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
-                  <div style={{ width: `${Math.max(src.percentage, 2)}%` }} className="h-full bg-violet" />
-                </div>
+            {(!stats?.trafficSources || stats.trafficSources.length === 0) ? (
+              <div className="py-6 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-1.5 border border-dashed border-line/60 bg-ink/40">
+                <TrendingUp className="text-muted/40" size={18} />
+                <span>Trafik kaynağı verisi bulunmuyor.</span>
               </div>
-            ))}
+            ) : (
+              stats.trafficSources.map((src) => (
+                <div key={src.source} className="bg-ink p-2.5 border border-line space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="truncate pr-2 text-paper">{src.source}</span>
+                    <span className="font-bold text-violet shrink-0">%{src.percentage} <span className="text-muted font-normal">({src.count})</span></span>
+                  </div>
+                  <div className="h-1 w-full bg-ink-2 overflow-hidden border border-line/40">
+                    <div style={{ width: `${Math.max(src.percentage, 2)}%` }} className="h-full bg-violet" />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -958,34 +1018,41 @@ export default function AdminAnalyticsPage() {
         </div>
 
         <div className="space-y-2 max-h-80 overflow-y-auto font-mono text-xs pr-2">
-          {stats?.recentStream?.map((item) => {
-            const timeAgo = Math.max(Math.floor(((now?.getTime() ?? item.timestamp) - item.timestamp) / 1000), 1);
-            let timeStr = `${timeAgo} sn önce`;
-            if (timeAgo > 60) timeStr = `${Math.floor(timeAgo / 60)} dk önce`;
+          {(!stats?.recentStream || stats.recentStream.length === 0) ? (
+            <div className="py-8 text-center text-xs font-mono text-muted flex flex-col items-center justify-center gap-2 border border-dashed border-line/60 bg-ink/40">
+              <Clock className="text-muted/40" size={20} />
+              <span>Bu dönem için geçmiş akış kaydı bulunmuyor. Yeni ziyaretçiler siteye girdikçe anlık kaydedilir.</span>
+            </div>
+          ) : (
+            stats.recentStream.map((item) => {
+              const timeAgo = Math.max(Math.floor(((now?.getTime() ?? item.timestamp) - item.timestamp) / 1000), 1);
+              let timeStr = `${timeAgo} sn önce`;
+              if (timeAgo > 60) timeStr = `${Math.floor(timeAgo / 60)} dk önce`;
 
-            return (
-              <div
-                key={item.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-ink border border-line hover:border-solar/40 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-muted w-16 shrink-0">{timeStr}</span>
-                  <span className="px-2 py-0.5 border border-line text-[10px] text-paper">
-                    {item.city}, {item.country}
-                  </span>
-                  <span className="text-solar font-bold truncate max-w-xs">{item.path}</span>
-                </div>
+              return (
+                <div
+                  key={item.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-ink border border-line hover:border-solar/40 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] text-muted w-16 shrink-0">{timeStr}</span>
+                    <span className="px-2 py-0.5 border border-line text-[10px] text-paper">
+                      {item.city}, {item.country}
+                    </span>
+                    <span className="text-solar font-bold truncate max-w-xs">{item.path}</span>
+                  </div>
 
-                <div className="flex items-center gap-3 text-[10px] text-muted shrink-0">
-                  <span>{item.device} ({item.os})</span>
-                  <span>•</span>
-                  <span>{item.browser}</span>
-                  <span>•</span>
-                  <span className="text-muted">{item.screen}</span>
+                  <div className="flex items-center gap-3 text-[10px] text-muted shrink-0">
+                    <span>{item.device} ({item.os})</span>
+                    <span>•</span>
+                    <span>{item.browser}</span>
+                    <span>•</span>
+                    <span className="text-muted">{item.screen}</span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>

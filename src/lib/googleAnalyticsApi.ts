@@ -186,7 +186,26 @@ export async function fetchGoogleAnalyticsStats(
       };
     });
 
-    // 6. Traffic Sources
+    // 6. Browser Breakdown
+    const [browserResponse] = await client.runReport({
+      property,
+      dateRanges: [dateRange],
+      dimensions: [{ name: 'browser' }],
+      metrics: [{ name: 'activeUsers' }],
+      limit: 6,
+    }).catch(() => [{ rows: [] }]);
+
+    const browserBreakdown = (browserResponse?.rows || []).map((row) => {
+      const browser = row.dimensionValues?.[0]?.value || 'Diğer';
+      const count = Number(row.metricValues?.[0]?.value || 0);
+      return {
+        browser,
+        count,
+        percentage: Math.round((count / (uniqueVisitors || 1)) * 100),
+      };
+    });
+
+    // 7. Traffic Sources
     const [sourceResponse] = await client.runReport({
       property,
       dateRanges: [dateRange],
@@ -205,7 +224,7 @@ export async function fetchGoogleAnalyticsStats(
       };
     });
 
-    // 7. Timeline Breakdown (Hourly for today/yesterday, Daily for 7days/30days)
+    // 8. Timeline Breakdown (Hourly for today/yesterday, Daily for 7days/30days)
     const isHourly = period === 'today' || period === 'yesterday';
     const timelineDimension = isHourly ? 'hour' : 'date';
 
@@ -265,6 +284,7 @@ export async function fetchGoogleAnalyticsStats(
       topPages,
       topCities,
       deviceBreakdown,
+      browserBreakdown,
       osBreakdown,
       trafficSources,
       hourlyTimeline,
