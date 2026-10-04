@@ -9,6 +9,7 @@ import { SplitReveal } from '@/components/motion/SplitReveal';
 import { FitText } from '@/components/motion/FitText';
 import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
 import { Marquee } from '@/components/motion/Marquee';
+import { buildPlanetMetadata, getBreadcrumbJsonLd, BASE_URL } from '@/lib/seo';
 
 export function generateStaticParams() {
   return planets.map((p) => ({ id: p.id }));
@@ -16,9 +17,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps<'/ansiklopedi/[id]'>) {
   const { id } = await props.params;
-  const planet = planets.find((p) => p.id === id);
-  if (!planet) return { title: 'Kayıt bulunamadı' };
-  return { title: `${planet.name} · Ansiklopedi`, description: planet.description };
+  return buildPlanetMetadata(id);
 }
 
 const TYPE_LABEL: Record<string, string> = {
@@ -37,6 +36,27 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
   const prev = planets[(index - 1 + planets.length) % planets.length];
   const next = planets[(index + 1) % planets.length];
 
+  const breadcrumbJson = getBreadcrumbJsonLd([
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Ansiklopedi', url: '/ansiklopedi' },
+    { name: 'Gök Cisimleri', url: '/ansiklopedi/gok-cisimleri' },
+    { name: planet.name, url: `/ansiklopedi/${planet.id}` },
+  ]);
+
+  const thingJson = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemPage',
+    name: `${planet.name} — Bilimsel Dosyası`,
+    url: `${BASE_URL}/ansiklopedi/${planet.id}`,
+    description: planet.description,
+    mainEntity: {
+      '@type': 'Thing',
+      name: planet.name,
+      additionalType: 'https://en.wikipedia.org/wiki/Astronomical_body',
+      description: planet.detay,
+    },
+  };
+
   const facts = [
     { k: 'Çap', v: planet.facts.çap },
     { k: 'Kütle', v: planet.facts.kütle },
@@ -53,6 +73,14 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
 
   return (
     <div className="relative overflow-x-clip" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(thingJson) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
       <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
         <div className="flex items-center gap-4 border-b border-line pb-4">

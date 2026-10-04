@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ModuleScreen } from '@/components/doc/ModuleScreen';
 import { findModule, getSection } from '@/data/sections';
+import {
+  buildModuleMetadata,
+  getWebApplicationJsonLd,
+  getBreadcrumbJsonLd,
+} from '@/lib/seo';
 
 export const dynamicParams = false;
 
@@ -11,13 +16,34 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps<'/canli/[modul]'>): Promise<Metadata> {
   const { modul } = await props.params;
-  const found = findModule('canli', modul);
-  if (!found) return {};
-  return { title: `${found.module.short} · ${found.section.title}`, description: found.module.blurb };
+  return buildModuleMetadata('canli', modul);
 }
 
 export default async function ModulePage(props: PageProps<'/canli/[modul]'>) {
   const { modul } = await props.params;
-  if (!findModule('canli', modul)) notFound();
-  return <ModuleScreen sectionId="canli" slug={modul} />;
+  const found = findModule('canli', modul);
+  if (!found) notFound();
+
+  const webAppJson = getWebApplicationJsonLd('canli', modul);
+  const breadcrumbJson = getBreadcrumbJsonLd([
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Canlı Gökyüzü', url: '/canli' },
+    { name: found.module.short, url: `/canli/${modul}` },
+  ]);
+
+  return (
+    <>
+      {webAppJson && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJson) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
+      <ModuleScreen sectionId="canli" slug={modul} />
+    </>
+  );
 }

@@ -156,6 +156,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "name": "SpaceTour TR",
                   "url": "https://spacetour.com.tr",
                   "logo": "https://spacetour.com.tr/icon.svg"
+                },
+                {
+                  "@type": "ItemList",
+                  "@id": "https://spacetour.com.tr/#navigation",
+                  "name": "Ana Dizin Menüsü",
+                  "itemListElement": [
+                    { "@type": "SiteNavigationElement", "position": 1, "name": "Gök Haritası & Planetaryum", "url": "https://spacetour.com.tr/harita" },
+                    { "@type": "SiteNavigationElement", "position": 2, "name": "Gök Olayları Takvimi", "url": "https://spacetour.com.tr/takvim" },
+                    { "@type": "SiteNavigationElement", "position": 3, "name": "Gezegen Ansiklopedisi", "url": "https://spacetour.com.tr/ansiklopedi" },
+                    { "@type": "SiteNavigationElement", "position": 4, "name": "Astroloji & Zodyak Atlası", "url": "https://spacetour.com.tr/astroloji" },
+                    { "@type": "SiteNavigationElement", "position": 5, "name": "Çok Dalgaboylu Gözlemevi", "url": "https://spacetour.com.tr/gozlemevi" },
+                    { "@type": "SiteNavigationElement", "position": 6, "name": "Canlı Gökyüzü & ISS", "url": "https://spacetour.com.tr/canli" },
+                    { "@type": "SiteNavigationElement", "position": 7, "name": "3D Güneş Sistemi Yolculuğu", "url": "https://spacetour.com.tr/yolculuk" }
+                  ]
                 }
               ]
             }),

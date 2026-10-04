@@ -1,12 +1,70 @@
 import type { Metadata } from 'next';
+import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  // An object title keeps the root "%s — SpaceTour TR" template working for sub-pages
-  title: { absolute: 'Gök Haritası — SpaceTour TR', template: '%s — SpaceTour TR' },
+  title: {
+    absolute: 'Gök Haritası · 360° Planetaryum & Yıldız Atlası — SpaceTour TR',
+    template: '%s — Gök Haritası | SpaceTour TR',
+  },
   description:
-    'Konumuna göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği (Bortle) analizi ve Messier derin uzay atlası.',
+    'Konumunuza göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, Türkiye ışık kirliliği (Bortle) analizi ve Messier derin uzay atlası.',
+  keywords: [
+    'gök haritası',
+    '3d planetaryum türkçe',
+    'yıldız haritası online',
+    'en parlak yıldızlar',
+    'ışık kirliliği haritası türkiye',
+    'bortle ölçeği',
+    'messier kataloğu',
+    'gökyüzü koordinatları',
+    'astronomi haritası',
+  ],
+  alternates: {
+    canonical: `${BASE_URL}/harita`,
+  },
+  openGraph: {
+    title: 'Gök Haritası · 360° Planetaryum & Yıldız Atlası — SpaceTour TR',
+    description:
+      '360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği analizi ve derin uzay atlası.',
+    url: `${BASE_URL}/harita`,
+    siteName: SITE_NAME,
+    locale: 'tr_TR',
+    type: 'website',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Gök Haritası ve 360 Planetaryum — SpaceTour TR',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gök Haritası · 360° Planetaryum — SpaceTour TR',
+    description:
+      '360° interaktif planetaryum, parlak yıldızlar ve ışık kirliliği haritası.',
+    images: [DEFAULT_OG_IMAGE],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function HaritaLayout({ children }: LayoutProps<'/harita'>) {
-  return children;
+  const breadcrumbJson = getBreadcrumbJsonLd([
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Gök Haritası', url: '/harita' },
+  ]);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
+      {children}
+    </>
+  );
 }

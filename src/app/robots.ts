@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
+import { BASE_URL } from '@/lib/seo';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://spacetour.com.tr';
-
   return {
     rules: [
       {
@@ -11,8 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/admin/',
           '/api/',
-          '/_next/',
-          '/studio/',
         ],
       },
       {
@@ -24,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

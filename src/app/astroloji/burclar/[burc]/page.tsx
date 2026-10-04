@@ -10,6 +10,11 @@ import { ZodiacGlyph, PlanetGlyph } from '@/components/ui/CosmicGlyphs';
 import { CelestialHorizonBar } from '@/components/astrology/CelestialHorizonBar';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { DOC_IMAGES, type DocImageKey } from '@/data/docImages';
+import {
+  buildSignMetadata,
+  getZodiacSignJsonLd,
+  getBreadcrumbJsonLd,
+} from '@/lib/seo';
 
 export const dynamicParams = false;
 
@@ -19,9 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps<'/astroloji/burclar/[burc]'>): Promise<Metadata> {
   const { burc } = await props.params;
-  const s = ZODIAC_SIGNS.find((x) => x.id === burc);
-  if (!s) return {};
-  return { title: `${s.name} burcu (${s.latinName}) · Astroloji Dosyası`, description: s.overview };
+  return buildSignMetadata(burc);
 }
 
 const signImage = (id: string) => DOC_IMAGES[`sign-${id}` as DocImageKey];
@@ -35,8 +38,26 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
   const prev = ZODIAC_SIGNS[(index + 11) % 12];
   const matches = ZODIAC_SIGNS.filter((x) => s.loveCompatibility.includes(x.id));
 
+  const signJsonLd = getZodiacSignJsonLd(s.id);
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: 'Ana Sayfa', url: '/' },
+    { name: 'Astroloji', url: '/astroloji' },
+    { name: '12 Burç Arşivi', url: '/astroloji/burclar' },
+    { name: `${s.name} Burcu`, url: `/astroloji/burclar/${s.id}` },
+  ]);
+
   return (
     <div style={{ '--page-accent': 'var(--gold)' } as CSSProperties} className="relative">
+      {signJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(signJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* 1. Bespoke Sacred Archetype Hero */}
       <ChapterHero
         variant="band"
