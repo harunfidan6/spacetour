@@ -7,7 +7,6 @@ import {
   RetrogradeGlyph,
   PlanetGlyph
 } from '@/components/ui/CosmicGlyphs';
-import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 import { CheckCircle2, XCircle } from 'lucide-react';
 

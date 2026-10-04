@@ -80,7 +80,7 @@ export function CelestialRegistry() {
 
       {filtered.length > 0 ? (
         <div ref={list} className="border-t border-white/10">
-          <div className="hidden grid-cols-[3.5rem_1fr_10rem_10rem_3rem] items-center gap-4 border-b border-white/10 py-3 text-muted sm:grid">
+          <div className="hidden grid-cols-[3.5rem_1fr_10rem_10rem_3rem] items-center gap-4 border-b border-white/10 py-3 text-muted md:grid">
             <span className="doc-kicker text-[10px]">No</span>
             <span className="doc-kicker text-[10px]">Gök Cismi & Hologram</span>
             <span className="doc-kicker text-[10px]">Kategori</span>
@@ -93,20 +93,20 @@ export function CelestialRegistry() {
               <div key={p.id} data-row>
                 <Link
                   href={`/ansiklopedi/${p.id}`}
-                  className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 border-b border-white/10 py-5 transition-colors hover:bg-white/[0.02] sm:grid-cols-[3.5rem_1fr_10rem_10rem_3rem]"
+                  className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 border-b border-white/10 py-5 transition-colors hover:bg-white/[0.02] md:grid-cols-[3.5rem_1fr_10rem_10rem_3rem]"
                 >
                   <span className="doc-caption">{String(index).padStart(2, '0')}</span>
-                  <span className="flex items-center gap-4">
+                  <span className="flex min-w-0 items-center gap-4">
                     <PlanetOrb id={p.id} className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:scale-110 sm:h-14 sm:w-14" spin={1.5} />
                     <span>
                       <span className="doc-title block text-2xl text-paper transition-colors group-hover:text-violet sm:text-4xl">{p.name}</span>
-                      <span className="mt-1 block text-xs text-muted sm:hidden">
+                      <span className="mt-1 block text-xs text-muted md:hidden">
                         {CELESTIAL_TYPE_LABEL[p.type] ?? p.type} · Çap: {p.facts.çap}
                       </span>
                     </span>
                   </span>
-                  <span className="doc-caption hidden sm:block">{CELESTIAL_TYPE_LABEL[p.type] ?? p.type}</span>
-                  <span className="doc-caption hidden sm:block">Çap · {p.facts.çap}</span>
+                  <span className="doc-caption hidden md:block">{CELESTIAL_TYPE_LABEL[p.type] ?? p.type}</span>
+                  <span className="doc-caption hidden md:block">Çap · {p.facts.çap}</span>
                   <span className="grid h-10 w-10 place-items-center justify-self-end rounded-full border border-white/15 text-paper/70 transition-colors group-hover:border-violet group-hover:bg-violet group-hover:text-ink">
                     <ArrowUpRight size={16} />
                   </span>

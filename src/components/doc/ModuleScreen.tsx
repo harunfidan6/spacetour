@@ -81,7 +81,7 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
                   <span aria-hidden className="doc-rule flex-1" />
                   <span className="doc-caption">{guide.howToTitle ?? 'Nasıl Okunur?'}</span>
                 </div>
-                <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 sm:max-lg:fill-row-2 lg:fill-row-3">
+                <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 sm:fill-row-3">
                   {guide.howTo.map((step) => (
                     <article key={step.step} className="flex min-w-0 flex-col bg-ink p-6 sm:p-7">
                       <span className="doc-title text-3xl text-paper/40 mb-4">{step.step}</span>
