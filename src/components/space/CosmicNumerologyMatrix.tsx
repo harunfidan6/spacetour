@@ -120,7 +120,7 @@ export function CosmicNumerologyMatrix() {
           <NumericInput
             value={year}
             min={1920}
-            max={2026}
+            max={new Date().getFullYear()}
             onValueChange={(v: number) => {
               setYear(v);
               setDay((d) => Math.min(d, daysInMonth(month, v)));
@@ -167,11 +167,11 @@ export function CosmicNumerologyMatrix() {
           },
           {
             id: 'personalYear',
-            label: '2026 Kişisel Yıl',
+            label: `${report.personalYearNumber.year} Kişisel Yıl`,
             num: report.personalYearNumber.number,
             title: 'Yıllık Döngü',
             icon: Key,
-            badge: '2026'
+            badge: String(report.personalYearNumber.year)
           }
         ].map((pillar) => {
           const isSelected = activePillar === pillar.id;
@@ -269,7 +269,7 @@ export function CosmicNumerologyMatrix() {
               <span className="doc-title text-3xl text-gold">{report.personalYearNumber.number}</span>
             </div>
             <div>
-              <div className="doc-kicker text-gold">2026 YILI KİŞİSEL DÖNGÜSÜ</div>
+              <div className="doc-kicker text-gold">{report.personalYearNumber.year} YILI KİŞİSEL DÖNGÜSÜ</div>
               <h4 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
                 {report.personalYearNumber.theme}
               </h4>

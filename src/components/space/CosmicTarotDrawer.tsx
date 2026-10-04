@@ -63,7 +63,12 @@ const SPREAD_CONFIGS: Record<SpreadType, { name: string; count: number; desc: st
 /** Shuffle the major arcana and lay out one spread (random, so only ever run on the client). */
 function dealSpread(type: SpreadType): DrawnCard[] {
   const config = SPREAD_CONFIGS[type];
-  const shuffled = [...MAJOR_ARCANA_DECK].sort(() => Math.random() - 0.5);
+  // Fisher–Yates: every order equally likely (sort with a random comparator is biased)
+  const shuffled = [...MAJOR_ARCANA_DECK];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   return config.slots.slice(0, config.count).map((slot, i) => ({
     card: shuffled[i],
     isReversed: Math.random() > 0.65, // 35% chance of reversed

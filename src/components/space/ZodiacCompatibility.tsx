@@ -1,28 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { ZODIAC_SIGNS, type ZodiacSign } from '@/data/zodiac';
+import { ZODIAC_SIGNS } from '@/data/zodiac';
+import { signCompatibility } from '@/lib/astrology/compatibility';
 import { Ticks } from '@/components/motion/primitives';
 import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 
-function compatibilityScore(a: ZodiacSign, b: ZodiacSign) {
-  if (a.loveCompatibility.includes(b.id)) return 94;
-  if (a.element === b.element) return 88;
-  const pair = new Set([a.element, b.element]);
-  if (pair.has('Ateş') && pair.has('Hava')) return 91;
-  if (pair.has('Toprak') && pair.has('Su')) return 93;
-  return 74;
-}
-
 const RING = 2 * Math.PI * 88;
 
-/** Two signs in, one attraction score out: element synergy and the classic compatibility tables. */
+/** Two signs in, one score out, with the reasons: the aspect between the signs, element and modality. */
 export function ZodiacCompatibility() {
   const [signA, setSignA] = useState('koc');
   const [signB, setSignB] = useState('aslan');
   const a = ZODIAC_SIGNS.find((s) => s.id === signA) ?? ZODIAC_SIGNS[0];
   const b = ZODIAC_SIGNS.find((s) => s.id === signB) ?? ZODIAC_SIGNS[4];
-  const score = compatibilityScore(a, b);
+  const result = signCompatibility(a, b);
+  const score = result.score;
 
   return (
     <div className="ticks relative grid items-center gap-8 border border-line bg-ink-2 p-6 sm:p-10 lg:grid-cols-12">
@@ -40,18 +33,18 @@ export function ZodiacCompatibility() {
             <select
               value={side.value}
               onChange={(e) => side.set(e.target.value)}
-              className="display display-tight w-full cursor-pointer appearance-none border-b-2 border-line bg-transparent py-2 pl-3 pr-8 text-center text-2xl sm:text-3xl text-paper transition-colors focus:border-gold focus:outline-none"
+              className="display display-tight w-full cursor-pointer appearance-none truncate border-b-2 border-line bg-transparent py-2 pl-8 pr-8 text-center text-2xl sm:text-3xl text-paper transition-colors focus:border-gold focus:outline-none"
             >
               {ZODIAC_SIGNS.map((s) => (
                 <option key={s.id} value={s.id} className="bg-ink font-sans text-base normal-case">
-                  {s.name} ({s.latinName})
+                  {s.name}
                 </option>
               ))}
             </select>
             <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gold/70">▼</span>
           </div>
           <span className="label mt-3 text-muted">
-            {side.sign.element} · {side.sign.modality}
+            {side.sign.latinName} · {side.sign.element} · {side.sign.modality}
           </span>
         </label>
       ))}
@@ -72,9 +65,28 @@ export function ZodiacCompatibility() {
         <div className="text-center" aria-live="polite">
           <div className="label text-muted">Uyum skoru</div>
           <div className="display display-tight mt-2 text-6xl text-paper">%{score}</div>
-          <div className="label mt-2 text-gold">{score >= 90 ? 'Kozmik çekim' : score >= 80 ? 'Güçlü ahenk' : 'Öğretici gerilim'}</div>
+          <div className="label mt-2 text-gold">{result.verdict}</div>
         </div>
       </div>
+
+      {/* Why this score */}
+      <div className="grid gap-px border border-line bg-line lg:order-4 lg:col-span-12 md:grid-cols-3" aria-live="polite">
+        {[
+          { k: 'Burçlar arası açı', title: result.relation, text: result.relationText },
+          { k: 'Element', title: `${a.element} · ${b.element}`, text: result.elementText },
+          { k: 'Nitelik', title: `${a.modality} · ${b.modality}`, text: result.modalityText },
+        ].map((r) => (
+          <div key={r.k} className="bg-ink p-5">
+            <div className="doc-caption">{r.k}</div>
+            <div className="doc-title mt-2 text-lg text-paper">{r.title}</div>
+            <p className="mt-2 text-sm leading-relaxed text-paper/75">{r.text}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs leading-relaxed text-paper/50 lg:order-5 lg:col-span-12">
+        {result.traditional ? 'Geleneksel uyum tablolarında da bu ikili öne çıkan eşleşmeler arasında. ' : ''}
+        Skor yalnızca Güneş burçlarına dayanır; daha ayrıntılı bir karşılaştırma için iki doğum haritasını sinastri aracında karşılaştırın.
+      </p>
     </div>
   );
 }

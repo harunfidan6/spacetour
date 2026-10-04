@@ -271,9 +271,10 @@ export function generateNumerologyReport(
   const personalityRaw = calculateTextPythagorean(fullName, 'consonants');
   const personality = NUMEROLOGY_PROFILES[personalityRaw] || NUMEROLOGY_PROFILES[4];
 
-  // 5. Personal Year for Current Calendar Year (2026)
-  const currentCalYear = 2026;
-  const pYearRaw = reduceNumerology(rDay + rMonth + reduceNumerology(currentCalYear));
+  // 5. Personal Year for the current calendar year (1–9; 11 and 22 kept, 33 reads as 6)
+  const currentCalYear = new Date().getFullYear();
+  const pYearSum = reduceNumerology(rDay + rMonth + reduceNumerology(currentCalYear));
+  const pYearRaw = pYearSum === 33 ? 6 : pYearSum;
 
   const personalYearThemes: Record<number, { theme: string; advice: string }> = {
     1: { theme: 'Tohum Ekme & Yeni Başlangıçlar Yılı', advice: '9 yıllık yeni bir döngü başlıyor! Korkusuzca yeni projelere ve adımlara odaklanın.' },
