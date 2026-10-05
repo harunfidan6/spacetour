@@ -113,6 +113,9 @@ const ADVICE: Record<number, string> = {
 
 export interface CompatibilityResult {
   score: number;
+  /** Açının taban puanı ve iki burç arasındaki uzaklık (0–6 burç); skor = taban + (geleneksel eşleşmeyse 3) */
+  base: number;
+  separation: number;
   verdict: string;
   relation: string;
   relationText: string;
@@ -147,7 +150,7 @@ export function signCompatibility(a: ZodiacSign, b: ZodiacSign): CompatibilityRe
   const verdict = score >= 88 ? 'Kozmik çekim' : score >= 78 ? 'Güçlü ahenk' : score >= 65 ? 'Dengeli ilişki' : 'Öğretici gerilim';
   const areas = AREAS[key(a.element, b.element, ['Ateş', 'Toprak', 'Hava', 'Su'])];
   return {
-    score, verdict, relation: rel.name, relationText: rel.text, elementText, modalityText, traditional,
+    score, base: rel.base, separation: sep, verdict, relation: rel.name, relationText: rel.text, elementText, modalityText, traditional,
     love: areas.love, friendship: areas.friendship, work: areas.work, strengths: areas.strengths, watch: areas.watch, advice: ADVICE[sep],
   };
 }

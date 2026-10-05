@@ -10,6 +10,7 @@ import { FitText } from '@/components/motion/FitText';
 import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
 import { Marquee } from '@/components/motion/Marquee';
 import { buildPlanetMetadata, getBreadcrumbJsonLd, BASE_URL } from '@/lib/seo';
+import { nameCase } from '@/lib/text';
 
 export function generateStaticParams() {
   return planets.map((p) => ({ id: p.id }));
@@ -292,10 +293,10 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                   <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
                 <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
-                  {planet.name}’de Kaç Kilosunuz?
+                  {nameCase(planet.name, 'bulunma', '’')} Kaç Kilosunuz?
                 </h4>
                 <p className="mt-1 text-xs text-paper/70 leading-relaxed">
-                  Yerçekimi odasında ağırlığınızı {planet.name}’nin yüzey ivmesine göre test edin.
+                  Yerçekimi odasında ağırlığınızı {nameCase(planet.name, 'ilgi', '’')} yüzey ivmesine göre test edin.
                 </p>
               </div>
               <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Simülatörü Başlat →</span>
@@ -362,7 +363,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                     Güneş Sistemi’nde Keşfet
                   </h4>
                   <p className="mt-1 text-xs text-paper/70 leading-relaxed">
-                    WebGL 3D uzay atlasında {planet.name}’e doğru gerçek zamanlı uçuş yapın.
+                    WebGL 3D uzay atlasında {nameCase(planet.name, 'yonelme', '’')} doğru gerçek zamanlı uçuş yapın.
                   </p>
                 </div>
                 <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Uzay Uçuşunu Başlat →</span>

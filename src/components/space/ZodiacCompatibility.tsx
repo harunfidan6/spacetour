@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Heart, Flame, Brain } from 'lucide-react';
+import { ArrowRight, Sparkles, Heart } from 'lucide-react';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { signCompatibility } from '@/lib/astrology/compatibility';
 import { Ticks } from '@/components/motion/primitives';
@@ -37,9 +37,6 @@ export function ZodiacCompatibility() {
     (a.element === 'Toprak' && b.element === 'Su') ||
     (a.element === 'Su' && b.element === 'Toprak');
 
-  const emotionalScore = Math.min(98, Math.max(40, isSameElement ? score + 4 : isComplementary ? score - 2 : score - 8));
-  const passionScore = Math.min(98, Math.max(40, (a.element === 'Ateş' || b.element === 'Ateş') ? score + 6 : score - 3));
-  const mindScore = Math.min(98, Math.max(40, (a.element === 'Hava' || b.element === 'Hava') ? score + 5 : score));
 
   return (
     <div className="ticks relative border border-line bg-ink-2 p-6 sm:p-10 space-y-10">
@@ -157,46 +154,36 @@ export function ZodiacCompatibility() {
             </svg>
 
             <div className="text-center z-10" aria-live="polite">
-              <div className="label text-muted text-[10px] tracking-widest uppercase">UYUM REZONANSI</div>
-              <div className="display display-tight mt-1 text-5xl sm:text-6xl font-black text-paper font-mono">
+              <div className="label text-muted text-[10px] tracking-widest uppercase">UYUM</div>
+              <div className="display display-tight mt-1 text-5xl font-black text-paper font-mono">
                 %{score}
               </div>
-              <div className="inline-block mt-2 px-3 py-1 font-mono text-xs uppercase tracking-wider font-bold bg-gold/15 text-gold border border-gold/30">
-                {result.verdict}
-              </div>
+              <span className="sr-only">{result.verdict}</span>
             </div>
           </div>
+          <div aria-hidden className="mt-3 inline-block px-3 py-1 font-mono text-xs uppercase tracking-wider font-bold bg-gold/15 text-gold border border-gold/30">
+            {result.verdict}
+          </div>
 
-          {/* Sub-Dimensions Bar Gauges */}
-          <div className="w-full max-w-xs mt-6 space-y-2.5 font-mono text-xs bg-ink p-3.5 border border-line">
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] text-muted">
-                <span className="flex items-center gap-1"><Heart size={11} className="text-rose-signal" /> Duygusal Rezonans</span>
-                <span className="font-bold text-paper">%{emotionalScore}</span>
+          {/* Puanın hesabı: açının taban puanı + geleneksel eşleşme */}
+          <div className="w-full max-w-xs mt-5 bg-ink p-3.5 border border-line font-mono text-[11px] text-muted">
+            <div className="doc-caption text-[10px] text-muted mb-2">PUAN NASIL HESAPLANDI</div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-paper/85">{result.relation}</div>
+                <div className="text-[10px] text-muted">
+                  {result.separation === 0 ? 'Aynı burç · 0°' : `${result.separation} burç arası · ${result.separation * 30}°`}
+                </div>
               </div>
-              <div className="h-1 w-full bg-ink-2 overflow-hidden">
-                <div className="h-full bg-rose-signal transition-all duration-700" style={{ width: `${emotionalScore}%` }} />
-              </div>
+              <span className="shrink-0 font-bold text-paper">{result.base}</span>
             </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] text-muted">
-                <span className="flex items-center gap-1"><Flame size={11} className="text-gold" /> Tutku & Çekim</span>
-                <span className="font-bold text-paper">%{passionScore}</span>
-              </div>
-              <div className="h-1 w-full bg-ink-2 overflow-hidden">
-                <div className="h-full bg-gold transition-all duration-700" style={{ width: `${passionScore}%` }} />
-              </div>
+            <div className="mt-2 flex items-center justify-between gap-3">
+              <span className="min-w-0">Gelenekte öne çıkan eşleşme</span>
+              <span className={`shrink-0 font-bold ${result.traditional ? 'text-gold' : 'text-muted'}`}>{result.traditional ? '+3' : '—'}</span>
             </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] text-muted">
-                <span className="flex items-center gap-1"><Brain size={11} className="text-primary" /> Zihinsel Diyalog</span>
-                <span className="font-bold text-paper">%{mindScore}</span>
-              </div>
-              <div className="h-1 w-full bg-ink-2 overflow-hidden">
-                <div className="h-full bg-primary transition-all duration-700" style={{ width: `${mindScore}%` }} />
-              </div>
+            <div className="mt-2 flex items-center justify-between gap-3 border-t border-line pt-2">
+              <span className="text-paper/85">Toplam</span>
+              <span className="shrink-0 font-bold text-gold">%{score}</span>
             </div>
           </div>
         </div>

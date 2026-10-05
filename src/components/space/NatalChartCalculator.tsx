@@ -221,7 +221,7 @@ export function NatalChartCalculator() {
             Doğum Haritası, Gezegenler <span className="serif-i text-gold">& Açı Şebekesi</span>
           </h2>
           <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            Doğum anınızdaki gezegen açılarını, Placidus ev cusplarını ve 360° zodyak çarkını İsviçre hassasiyetindeki vektör çizimlerle inceleyin.
+            Doğum anınızdaki gezegen açılarını, Yükselen burçtan başlayan on iki evi (tam burç ev sistemi) ve 360° zodyak çarkını inceleyin.
           </p>
         </div>
 

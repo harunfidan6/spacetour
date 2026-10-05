@@ -6,6 +6,7 @@
 
 import { getMoonPhase, isRetrograde, type GeocentricPlanet } from '@/lib/astrophysics/skyDomeEphemeris';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
+import { nameCase } from '@/lib/text';
 import { ZODIAC_PROFILES } from '@/data/zodiacProfiles';
 import {
   ASC_IN_SIGN, BIRTH_MOON_PHASE, ELEMENT_DOMINANT, ELEMENT_MISSING, HOUSE_AREA, JUPITER_BY_ELEMENT, MARS_IN_SIGN,
@@ -109,9 +110,9 @@ export function natalReading(instant: Date, latitude: number, longitudeDeg: numb
   const inSign = sun.lon % 30;
   const cusp =
     inSign < 1.5
-      ? `Güneş burcuna yeni girmişken doğdun: önceki burç ${ZODIAC_SIGNS[(sun.sign + 11) % 12].name}’in tonunu da taşırsın.`
+      ? `Güneş burcuna yeni girmişken doğdun: önceki burç ${nameCase(ZODIAC_SIGNS[(sun.sign + 11) % 12].name, 'ilgi', '’')} tonunu da taşırsın.`
       : inSign > 28.5
-        ? `Güneş burcundan çıkmak üzereyken doğdun: sonraki burç ${ZODIAC_SIGNS[(sun.sign + 1) % 12].name}’in tonunu da taşırsın.`
+        ? `Güneş burcundan çıkmak üzereyken doğdun: sonraki burç ${nameCase(ZODIAC_SIGNS[(sun.sign + 1) % 12].name, 'ilgi', '’')} tonunu da taşırsın.`
         : null;
   const profile = ZODIAC_PROFILES[ZODIAC_SIGNS[sun.sign].id];
 

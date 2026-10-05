@@ -283,22 +283,29 @@ export function CosmicNumerologyMatrix() {
               {report.personalYearNumber.advice}
             </p>
           </div>
-
-          <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
-            {[
-              { k: `Doğum günü sayısı · ${report.birthdayNumber}`, t: NUMBER_KEYS[report.birthdayNumber]?.talent },
-              { k: `Olgunluk sayısı · ${report.maturityNumber}`, t: NUMBER_KEYS[report.maturityNumber]?.maturity },
-              { k: `Kişisel ay · ${report.personalMonth.number}`, t: NUMBER_KEYS[report.personalMonth.number]?.cycle },
-              { k: `Bugün (${report.personalDay.date}) · ${report.personalDay.number}`, t: NUMBER_KEYS[report.personalDay.number]?.cycle },
-            ].map((x) => (
-              <div key={x.k} className="bg-ink p-5">
-                <span className="doc-kicker text-gold">{x.k}</span>
-                <p className="mt-2 text-sm leading-relaxed text-paper/85">{x.t}</p>
-              </div>
-            ))}
-          </div>
         </div>
       )}
+
+      {/* Ek sayılar: hangi sütun seçili olursa olsun görünür */}
+      <div className="space-y-3">
+        <span className="doc-kicker text-gold">Ek sayılar</span>
+        <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { k: 'Doğum günü sayısı', n: report.birthdayNumber, t: NUMBER_KEYS[report.birthdayNumber]?.talent },
+            { k: 'Olgunluk sayısı', n: report.maturityNumber, t: NUMBER_KEYS[report.maturityNumber]?.maturity },
+            { k: 'Kişisel ay', n: report.personalMonth.number, t: NUMBER_KEYS[report.personalMonth.number]?.cycle },
+            { k: `Bugün (${report.personalDay.date})`, n: report.personalDay.number, t: NUMBER_KEYS[report.personalDay.number]?.cycle },
+          ].map((x) => (
+            <div key={x.k} className="bg-ink p-5">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="doc-kicker text-paper/70">{x.k}</span>
+                <span className="doc-title text-2xl text-gold">{x.n}</span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-paper/85">{x.t}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Pythagorean Letters Reference Table */}
       <div className="border-t border-line pt-6">

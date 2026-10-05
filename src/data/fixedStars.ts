@@ -17,7 +17,6 @@ export interface FixedStar {
     actionAdvice: string;
   };
   favorableActivities: string[];
-  resonanceScore: number;
 }
 
 export const FIXED_STARS_CATALOG: FixedStar[] = [
@@ -38,8 +37,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Bugün Aldebaran gözlerini üzerinize dikiyor. Her adımınızda mutlak dürüstlüğü ve ilkelerinizi savunun; ödülünüz kalıcı bir zafer olacaktır.',
       actionAdvice: 'Önemli sözleşmeler, açık sözlü yüzleşmeler ve yeni ticari anlaşmalar için güçlü bir kozmik destek var.'
     },
-    favorableActivities: ['Dürüst Müzakereler', 'Liderlik Kararları', 'Cesaret Gerektiren Başlangıçlar'],
-    resonanceScore: 96
+    favorableActivities: ['Dürüst Müzakereler', 'Liderlik Kararları', 'Cesaret Gerektiren Başlangıçlar']
   },
   {
     id: 'regulus',
@@ -58,8 +56,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Regulus size kraliyet pelerinini uzatıyor; ancak gerçek asalet intikam almamakta ve büyüklük göstermekte saklıdır. Cömert olun.',
       actionAdvice: 'Topluluk önünde konuşmalar yapmak, itibarınızı yükseltmek ve büyük projeleri ilan etmek için mükemmel zaman.'
     },
-    favorableActivities: ['Kariyer Sunumları', 'Toplumsal Görünürlük', 'Bağışlama ve Büyüklük'],
-    resonanceScore: 98
+    favorableActivities: ['Kariyer Sunumları', 'Toplumsal Görünürlük', 'Bağışlama ve Büyüklük']
   },
   {
     id: 'antares',
@@ -78,8 +75,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Antares kırmızı gözleriyle ruhunuzdaki ateşi körüklüyor. Bu ateşi yakıp yıkmak için değil, sizi sınırlayan engelleri eritmek için kullanın.',
       actionAdvice: 'Kökten değişim gerektiren meseleleri çözmek, derin araştırmalar yapmak ve cesur yüzleşmeler gerçekleştirmek için ideal.'
     },
-    favorableActivities: ['Kriz Yönetimi', 'Stratejik Planlama', 'Eski Kalıpları Yıkma'],
-    resonanceScore: 94
+    favorableActivities: ['Kriz Yönetimi', 'Stratejik Planlama', 'Eski Kalıpları Yıkma']
   },
   {
     id: 'fomalhaut',
@@ -98,8 +94,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Fomalhaut ruhunuza ilahi ilham nehirleri akıtıyor. Kalbinizin en saf rüyasını hayata geçirmek için ilham perilerine güvenin.',
       actionAdvice: 'Sanatsal üretimler, meditasyon, şiir, müzik ve ruhsal şifa çalışmaları için en parlak yıldız frekansı.'
     },
-    favorableActivities: ['Sanat & Tasarım', 'Ruhsal İnziva', 'Vizyon Geliştirme'],
-    resonanceScore: 95
+    favorableActivities: ['Sanat & Tasarım', 'Ruhsal İnziva', 'Vizyon Geliştirme']
   },
   {
     id: 'sirius',
@@ -117,8 +112,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Sirius gökyüzünün en parlak mücevheridir. Bugün başlattığınız işler sadece sizi değil, geleceğinizi ve çevrenizi de aydınlatacak kadar derin etkiye sahip.',
       actionAdvice: 'Uzun vadeli vizyoner kararlar almak, ruhsal yeminler etmek ve hayatın dönüm noktalarını başlatmak için mükemmel gün.'
     },
-    favorableActivities: ['Hayat Kararları', 'Ruhsal Uyanış', 'Kutsal Başlangıçlar'],
-    resonanceScore: 99
+    favorableActivities: ['Hayat Kararları', 'Ruhsal Uyanış', 'Kutsal Başlangıçlar']
   },
   {
     id: 'vega',
@@ -136,8 +130,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Vega göklerin liri gibi ruhunuzda tınılar uyandırıyor. Çekiciliğinizi sevgi yaymak ve insanları birleştirmek için kullanın.',
       actionAdvice: 'Sosyal etkinlikler, sahne performansları, aşk itirafları ve estetik yenilikler için ideal kozmik zaman.'
     },
-    favorableActivities: ['Sahne & Hitabet', 'Romantik Buluşmalar', 'Estetik Dönüşüm'],
-    resonanceScore: 93
+    favorableActivities: ['Sahne & Hitabet', 'Romantik Buluşmalar', 'Estetik Dönüşüm']
   },
   {
     id: 'spica',
@@ -155,8 +148,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Spica size hiçbir çaba göstermeden gelen bir ilahi hediye fısıldıyor. Şükranla kabul edin ve bereketinizi başkalarıyla paylaşın.',
       actionAdvice: 'Yeni eğitimlere başlamak, finansal tohumlar ekmek ve yaratıcı projeleri büyütmek için kusursuz gün.'
     },
-    favorableActivities: ['Finansal Yatırım', 'Bilimsel Çalışma', 'Bereket Niyetleri'],
-    resonanceScore: 97
+    favorableActivities: ['Finansal Yatırım', 'Bilimsel Çalışma', 'Bereket Niyetleri']
   },
   {
     id: 'arcturus',
@@ -174,8 +166,7 @@ export const FIXED_STARS_CATALOG: FixedStar[] = [
       oracleMessage: 'Arcturus gök kubbeyi koruyan fenerdir. Adaletten şaşmadan kendi yolunuzu çizin; arkanızdan kitleler gelecektir.',
       actionAdvice: 'Hukuki süreçleri yönetmek, yeni keşiflere adım atmak ve toplum yararına kararlar almak için güçlü.'
     },
-    favorableActivities: ['Hukuk & Adalet', 'Liderlik Yolculuğu', 'Yenilikçi Metotlar'],
-    resonanceScore: 92
+    favorableActivities: ['Hukuk & Adalet', 'Liderlik Yolculuğu', 'Yenilikçi Metotlar']
   }
 ];
 

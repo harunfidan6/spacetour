@@ -15,7 +15,7 @@ export const MODULE_KEYWORDS: Record<string, string[]> = {
     'ücretsiz natal harita çıkar',
     'yükselen burç hesaplama',
     'astronomi efemerisi',
-    'placidus ev sistemi',
+    'tam burç ev sistemi',
     'astroloji doğum haritası türkiye',
     'gezegen konumları doğum anı',
   ],

@@ -10,6 +10,7 @@
  */
 
 import { longitude, SkyBody } from '@/lib/astrology/dailySky';
+import { nameCase } from '@/lib/text';
 import { ZODIAC_SIGNS, localSolarHour } from '@/data/zodiac';
 import { POPULAR_LOCATIONS } from '@/utils/astronomy';
 import { ascendantLongitude, turkeyUtcOffset } from '@/lib/astrology/natal';
@@ -341,6 +342,9 @@ export function calculateCrossAspects(p1: ChartPlacements, p2: ChartPlacements):
 /**
  * Astrological interpretations and score weights for inter-planetary aspects.
  */
+const gen = (n: string) => nameCase(n, 'ilgi');
+const dat = (n: string) => nameCase(n, 'yonelme');
+
 function getAspectInterpretation(
   p1: PlanetPlacement,
   p2: PlanetPlacement,
@@ -366,8 +370,8 @@ function getAspectInterpretation(
         nature: 'harmonious',
         category: 'soul',
         title: 'Güneş Kavuşum Ay: Kutsal Ruh Bağı',
-        summary: 'Astrolojide en güçlü ruh eşi göstergelerinden biri. Birbirinizi doğal bir ev hissiyle tamamlarsınız.',
-        detail: `${sunPerson}'in bilinçli iradesi ile ${moonPerson}'in içsel duygusal gereksinimleri mükemmel bir telepatik uyum içinde akıyor. Yan yana olduğunuzda dünya gürültüsü diner.`,
+        summary: 'Sinastride en çok önemsenen bağlardan biri: birbirinizi doğal bir ev hissiyle tamamlarsınız.',
+        detail: `${gen(sunPerson)} bilinçli iradesi ile ${gen(moonPerson)} duygusal ihtiyaçları aynı noktada buluşuyor. Biri yön verirken öteki ona sıcak bir yuva hissi katar; yan yana olmak ikinize de doğal gelir.`,
         scoreDelta: 16,
       };
     }
@@ -377,7 +381,7 @@ function getAspectInterpretation(
         category: 'soul',
         title: `Güneş ${type === 'trine' ? 'Üçgen' : 'Sekstil'} Ay: Zahmetsiz Duygusal Ahenk`,
         summary: 'İçsel güven, şefkat ve birbirinin sınırlarını kendiliğinden anlama yetisi.',
-        detail: `${sunPerson} parladığında ${moonPerson} kendini güvende hisseder; ${moonPerson}'in sezgileri ise ${sunPerson}'e yaşam enerjisi ve sıcak bir yuva alanı sunar.`,
+        detail: `${sunPerson} parladığında ${moonPerson} kendini güvende hisseder; ${gen(moonPerson)} sezgileri ise ${dat(sunPerson)} sıcak bir yuva ve dinlenme alanı sunar.`,
         scoreDelta: 12,
       };
     }
@@ -396,7 +400,7 @@ function getAspectInterpretation(
       category: 'soul',
       title: 'Güneş Kare Ay: Duygusal İrade Sınavı',
       summary: 'Karakter ile hisler arasında dinamik sürtüşme; bilinçli çaba ve olgunluk gerektirir.',
-      detail: `${sunPerson}'in hedefleri zaman zaman ${moonPerson}'in hassas duygusal ritmiyle çatışabilir. Açık iletişimle bu gerilim muazzam bir kişisel olgunlaşma motoruna dönüşür.`,
+      detail: `${gen(sunPerson)} hedefleri zaman zaman ${gen(moonPerson)} duygusal ritmiyle çatışabilir. Açık konuştuğunuzda bu gerilim ikinizi de olgunlaştıran bir öğretmene dönüşür.`,
       scoreDelta: -5,
     };
   }
@@ -410,8 +414,8 @@ function getAspectInterpretation(
         nature: 'harmonious',
         category: 'passion',
         title: 'Venüs Kavuşum Mars: Yoğun Manyetik Çekim',
-        summary: 'Klasik aşk ve erotik çekim faseti. İlk andan itibaren hissedilen elektriksel kıvılcım.',
-        detail: `${venusPerson}'in zarafeti ile ${marsPerson}'in arzusu kilit ve anahtar gibi birleşir. Tutku ve romantizm ilişkinin motor gücüdür.`,
+        summary: 'Klasik çekim açısı: ilk andan itibaren hissedilen güçlü bir kıvılcım.',
+        detail: `${gen(venusPerson)} zarafeti ile ${gen(marsPerson)} arzusu kilit ve anahtar gibi birleşir. Tutku ve romantizm ilişkinin itici gücüdür.`,
         scoreDelta: 15,
       };
     }
@@ -419,7 +423,7 @@ function getAspectInterpretation(
       return {
         nature: 'harmonious',
         category: 'passion',
-        title: `Venüs ${type === 'trine' ? 'Üçgen' : 'Sekstil'} Mars: Kusursuz Romantik Kimya`,
+        title: `Venüs ${type === 'trine' ? 'Üçgen' : 'Sekstil'} Mars: Kolay Akan Romantik Kimya`,
         summary: 'Zahmetsiz flört enerjisi, doğal tensel uyum ve paylaşılan romantizm sevinci.',
         detail: 'Birbirinizin arzu dilini doğal bir ritimle konuşursunuz. Sevgi ve tutku birbirini tüketmez, aksine sürekli besler.',
         scoreDelta: 12,
@@ -453,7 +457,7 @@ function getAspectInterpretation(
         category: 'soul',
         title: 'Ay - Ay Ahengi: Duygusal Telepati & Ortak Frekans',
         summary: 'Aynı duygusal dili konuşursunuz. Kelimeler olmadan birbirinizin halini anlama gücü.',
-        detail: 'Ruh halleriniz, dinlenme ihtiyaçlarınız ve stres karşısındaki tepkileriniz benzer frekansta titreşir. Bu bağ sarsılmaz bir sığınak yaratır.',
+        detail: 'Ruh halleriniz, dinlenme ihtiyaçlarınız ve stres karşısındaki tepkileriniz birbirine benzer. Bu bağ ikinize de güvenli bir sığınak olur.',
         scoreDelta: 14,
       };
     }
@@ -509,7 +513,7 @@ function getAspectInterpretation(
         category: 'passion',
         title: 'Güneş - Venüs Ahengi: Romantik Hayranlık & Zarif Cazibe',
         summary: 'Biri parladığında diğeri onu sevgi ve hayranlıkla besler; kendinizi çok değerli hissedersiniz.',
-        detail: `${sunPerson}'in varlığı ${venusPerson}'e ilham ve estetik coşku verir. Birlikteyken hem romantik hem de sosyal ortamlarda göz kamaştıran bir uyum sergilersiniz.`,
+        detail: `${gen(sunPerson)} varlığı ${dat(venusPerson)} ilham ve estetik bir coşku verir. Birlikteyken hem romantik hem de sosyal ortamlarda uyumlu bir çift olarak görünürsünüz.`,
         scoreDelta: 12,
       };
     }
@@ -518,7 +522,7 @@ function getAspectInterpretation(
       category: 'passion',
       title: 'Güneş - Venüs Sürtüşmesi: İlgi Beklentisi & Sevgi Dili Farkı',
       summary: 'Gurur ve ilgi arzusu zaman zaman çatışabilir; takdir duygusunu sıkça ifade edin.',
-      detail: `${sunPerson}'in bireysel hedefleri ile ${venusPerson}'in ilgi ve romantizm arayışı farklı zamanlarda yükselebilir. Sevginizi küçük jestlerle teyit etmek bağı güçlendirir.`,
+      detail: `${gen(sunPerson)} bireysel hedefleri ile ${gen(venusPerson)} ilgi ve romantizm arayışı farklı zamanlarda öne çıkabilir. Sevginizi küçük jestlerle göstermek bağı güçlendirir.`,
       scoreDelta: -3,
     };
   }
@@ -684,7 +688,7 @@ function getAspectInterpretation(
         nature: 'harmonious',
         category: 'soul',
         title: 'Ay - Jüpiter Huzuru: Duygusal Cömertlik & İçsel Bereket',
-        summary: 'Birbirinizin yanında sonsuz bir huzur ve koruyucu bir meleksi atmosfer hissedersiniz.',
+        summary: 'Birbirinizin yanında huzurlu ve korunmuş hissedersiniz.',
         detail: 'Duygusal yaraları saran, affedici ve cömert bir sevgi akışı vardır. Evinizde neşe ve misafirperverlik eksik olmaz.',
         scoreDelta: 11,
       };
@@ -707,7 +711,7 @@ function getAspectInterpretation(
         category: 'growth',
         title: 'Venüs - Jüpiter Bereketi: Romantik Neşe, Cömertlik & Lüks',
         summary: 'Birbirinizin hayatına şans, kahkaha, seyahat hevesi ve bolluk katarsınız.',
-        detail: 'Birlikteyken kendinizi dünyanın en şanslı insanı gibi hissedersiniz. Birbirinize hediyeler vermek ve hayatı kutlamak doğal bir alışkanlıktır.',
+        detail: 'Birlikteyken kendinizi şanslı hissedersiniz. Birbirinize küçük hediyeler vermek ve hayatı kutlamak doğal bir alışkanlığa dönüşür.',
         scoreDelta: 12,
       };
     }
@@ -772,7 +776,7 @@ function getAspectInterpretation(
         nature: 'harmonious',
         category: 'karma',
         title: 'Venüs - Satürn Mührü: Ebedi Sadakat & Sarsılmaz Saygı',
-        summary: 'Klasik evlilik ve ömürlük ortaklık göstergesi. Zaman geçtikçe kök salan derin bir sevgi.',
+        summary: 'Gelenekte uzun soluklu bağlılıkla ilişkilendirilen açı: zaman geçtikçe kök salan bir sevgi.',
         detail: 'Birbirinizin kıymetini bilir ve ilişkinizi dış etkenlerden korursunuz. Sadakat bu bağın en kutsal değeridir.',
         scoreDelta: 12,
       };
@@ -789,7 +793,7 @@ function getAspectInterpretation(
 
   // 18. Ascendant Links (First Impression, Aura & Physical Magnetism)
   if (pPair.includes('ascendant')) {
-    if (type === 'conjunction' || type === 'trine') {
+    if (type === 'conjunction' || type === 'trine' || type === 'sextile') {
       return {
         nature: 'harmonious',
         category: 'passion',
@@ -810,11 +814,12 @@ function getAspectInterpretation(
   }
 
   // Fallback generic aspect
+  const typeName = type === 'conjunction' ? 'Kavuşum' : type === 'trine' ? 'Üçgen' : type === 'sextile' ? 'Sekstil' : type === 'square' ? 'Kare' : 'Karşıt';
   return {
     nature: type === 'trine' || type === 'sextile' ? 'harmonious' : type === 'conjunction' ? 'neutral' : 'challenging',
     category: 'growth',
-    title: `${p1.name} ${type === 'conjunction' ? 'Kavuşum' : type === 'trine' ? 'Üçgen' : type === 'sextile' ? 'Sekstil' : type === 'square' ? 'Kare' : 'Karşıt'} ${p2.name}`,
-    summary: `${p1.name} ile ${p2.name} enerjileri arasında ${type} açısı devrede.`,
+    title: `${p1.name} ${typeName} ${p2.name}`,
+    summary: `${p1.name} ile ${p2.name} arasında ${typeName.toLocaleLowerCase('tr-TR')} açısı var.`,
     detail: `Bu etkileşim iki haritanın belirli fasetlerini bir araya getirerek öğrenme ve ortak paydada buluşma alanı açar.`,
     scoreDelta: type === 'trine' ? 7 : type === 'sextile' ? 5 : type === 'conjunction' ? 6 : -3,
   };
@@ -942,7 +947,7 @@ export function analyzeSynastry(p1: ChartPlacements, p2: ChartPlacements): Synas
 
   const advice =
     overallScore >= 85
-      ? `${p1.profile.name} ve ${p2.profile.name}, bu harika kozmik uyumu korumak için birbirinize şükran duymayı ve küçük jestleri asla aksatmayın.`
+      ? `${p1.profile.name} ve ${p2.profile.name}: bu güçlü uyumu korumak için birbirinize teşekkür etmeyi ve küçük jestleri aksatmayın.`
       : overallScore >= 70
       ? `İletişimde dürüst ve şeffaf kalmak, farklılıklarınızı bir zenginlik olarak görmek bu ilişkiyi zamanla sarsılmaz bir kaleye dönüştürür.`
       : `Zorlayıcı açılar ilişkinin tutkalı olabilir; kriz anlarında aceleci tepkiler vermek yerine sakinleşip ortak bir dilde buluşmayı seçin.`;
