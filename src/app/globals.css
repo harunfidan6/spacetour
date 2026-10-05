@@ -622,7 +622,7 @@ p, li { text-wrap: pretty; }
 
 /* Photographs fade in once decoded (only with JS, so no-JS visitors still see them) */
 .js .doc-img { transition: opacity 0.7s var(--ease-out); }
-.js .doc-img:not([data-loaded]) { opacity: 0; }
+.js .doc-img:not([data-loaded]):not([data-priority]) { opacity: 0; }
 html[data-film] .doc-img { opacity: 1 !important; transition: none; }
 
 /* Choice rails: tile pickers become one swipeable row on phones, so the detail sits right
