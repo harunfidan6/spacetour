@@ -1,13 +1,14 @@
 /**
  * High-Density Astronomical Starfield Generator (Hipparcos / Yale Bright Star approximation)
- * Generates ~2,800 background stars across the celestial vault (RA 0-360°, Dec -90° to +90°)
- * with realistic magnitude distribution, galactic plane concentration, and B-V stellar spectral colors.
+ * Generates ~2,200 background stars across the celestial vault (RA 0-360°, Dec -90° to +90°)
+ * with Fibonacci organic spherical distribution (zero Marsaglia lattice artifacts),
+ * realistic magnitude distribution, and B-V stellar spectral colors.
  */
 
 export interface BackgroundStar {
   ra: number;   // 0 to 360 deg
   dec: number;  // -90 to +90 deg
-  magnitude: number; // 2.5 to 6.5
+  magnitude: number; // 3.2 to 6.5
   color: [number, number, number]; // RGB 0..1
   size: number; // screen point size
   twinklePhase: number;
@@ -23,53 +24,57 @@ const SPECTRAL_COLORS: [number, number, number][] = [
   [1.0,  0.55, 0.35],  // M (Ruby Red-Orange)
 ];
 
+// Mulberry32 32-bit PRNG
+function createPrng(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    let t = (s += 0x6D2B79F5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 let cachedStarfield: BackgroundStar[] | null = null;
 
-export function getBackgroundStarfield(count: number = 2800): BackgroundStar[] {
+export function getBackgroundStarfield(count: number = 2200): BackgroundStar[] {
   if (cachedStarfield) return cachedStarfield;
 
   const stars: BackgroundStar[] = [];
-  let seed = 918273;
-  const rand = () => {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
-  };
+  const rand = createPrng(19840214);
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~2.39996 rad / 137.5°
 
   for (let i = 0; i < count; i++) {
-    // Uniform sphere distribution for RA and Dec
-    const u = rand();
-    const v = rand();
-    const ra = u * 360;
-    // Dec in [-90, +90] with spherical cosine weighting
-    const sinDec = 2.0 * v - 1.0;
-    const dec = Math.asin(Math.max(-1.0, Math.min(1.0, sinDec))) * (180 / Math.PI);
+    // 1. Fibonacci spherical distribution with organic Poisson-disk jitter
+    const z = 1.0 - (2.0 * i + 1.0) / count + (rand() - 0.5) * (1.6 / count);
+    const clampedZ = Math.max(-0.9999, Math.min(0.9999, z));
+    const dec = Math.asin(clampedZ) * (180 / Math.PI);
 
-    // Realistic Pogson logarithmic magnitude distribution:
-    // Most stars are faint (mag 4.5 - 6.2), very few are bright (mag 2.5 - 3.5)
-    const magU = Math.pow(rand(), 0.38); // Skews towards fainter magnitudes
-    const magnitude = 2.4 + magU * 4.1; // Range: 2.4 to 6.5
+    // RA angle using golden angle plus gentle angular jitter
+    const angle = i * goldenAngle + (rand() - 0.5) * 0.18;
+    let ra = ((angle * 180) / Math.PI) % 360;
+    if (ra < 0) ra += 360;
 
-    // Size based on magnitude:
-    // Mag 2.5 -> size ~2.6px
-    // Mag 4.0 -> size ~1.8px
-    // Mag 5.5 -> size ~1.2px
-    // Mag 6.5 -> size ~0.9px
-    const size = Math.max(0.85, 2.8 - (magnitude - 2.4) * 0.46);
+    // 2. Realistic Pogson logarithmic magnitude distribution
+    const magU = Math.pow(rand(), 0.35);
+    const magnitude = 3.2 + magU * 3.3; // Range: 3.2 to 6.5
 
-    // Pick spectral class with weighted distribution
+    // Delicate background pinpoints: 1.8px to 3.4px
+    const size = Math.max(1.8, 3.4 - (magnitude - 3.2) * 0.48);
+
+    // 3. Spectral class weighted selection
     const specRand = rand();
     let specIndex = 2; // Default A-type white
-    if (specRand < 0.15) specIndex = 0;
-    else if (specRand < 0.35) specIndex = 1;
-    else if (specRand < 0.55) specIndex = 2;
-    else if (specRand < 0.70) specIndex = 3;
-    else if (specRand < 0.82) specIndex = 4;
-    else if (specRand < 0.92) specIndex = 5;
+    if (specRand < 0.18) specIndex = 0;
+    else if (specRand < 0.38) specIndex = 1;
+    else if (specRand < 0.58) specIndex = 2;
+    else if (specRand < 0.72) specIndex = 3;
+    else if (specRand < 0.84) specIndex = 4;
+    else if (specRand < 0.94) specIndex = 5;
     else specIndex = 6;
 
     const baseColor = SPECTRAL_COLORS[specIndex];
-    // Brightness factor from magnitude (Pogson scale)
-    const brightness = Math.max(0.2, Math.min(1.0, Math.pow(10.0, -0.22 * (magnitude - 2.5))));
+    const brightness = Math.max(0.35, Math.min(0.90, Math.pow(10.0, -0.14 * (magnitude - 3.2))));
 
     stars.push({
       ra,

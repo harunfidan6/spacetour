@@ -27,9 +27,7 @@ import {
 } from '@/utils/astronomy';
 import {
   computeSkyDomeSolarSystem,
-  CelestialBodyDomeState,
-  galacticToEquatorial,
-  generateMilkyWayParticles
+  CelestialBodyDomeState
 } from '@/lib/astrophysics/skyDomeEphemeris';
 import { getBackgroundStarfield } from '@/lib/astrophysics/starfieldCatalog';
 import {
@@ -103,31 +101,6 @@ function getStarTexture(): THREE.Texture {
   return cachedStarTexture;
 }
 
-let cachedMwTexture: THREE.Texture | null = null;
-function getMilkyWayTexture(): THREE.Texture {
-  if (cachedMwTexture) return cachedMwTexture;
-  if (typeof document === 'undefined') return new THREE.Texture();
-  const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return new THREE.Texture();
-
-  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
-  gradient.addColorStop(0.2, 'rgba(220, 235, 255, 0.22)');
-  gradient.addColorStop(0.5, 'rgba(170, 200, 255, 0.08)');
-  gradient.addColorStop(0.8, 'rgba(130, 160, 240, 0.02)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 64, 64);
-
-  cachedMwTexture = new THREE.CanvasTexture(canvas);
-  cachedMwTexture.needsUpdate = true;
-  return cachedMwTexture;
-}
-
 // -------------------------------------------------------------
 // 1. REAL-TIME STARS WITH PRECISION GPU SHADER & BACKGROUND STARFIELD
 // -------------------------------------------------------------
@@ -151,20 +124,20 @@ function RealTimeStars({
   const pointsRef = useRef<THREE.Points>(null);
   const shaderMatRef = useRef<THREE.ShaderMaterial>(null);
 
-  // Background Hipparcos Starfield (~2800 stars across the sky vault)
-  const bgStarfield = useMemo(() => getBackgroundStarfield(2800), []);
+  const bgShaderMatRef = useRef<THREE.ShaderMaterial>(null);
 
-  const totalStarCount = stars.length + bgStarfield.length;
+  // Background Hipparcos Starfield (~2200 stars with Fibonacci isotropic distribution)
+  const bgStarfield = useMemo(() => getBackgroundStarfield(2200), []);
 
-  // Compute 3D positions, colors, sizes and twinkle phases
-  const { positions, colors, sizes, twinkles, starPositionsMap } = useMemo(() => {
-    const pos = new Float32Array(totalStarCount * 3);
-    const col = new Float32Array(totalStarCount * 3);
-    const sz = new Float32Array(totalStarCount);
-    const tw = new Float32Array(totalStarCount);
+  // 1. MAJOR STARS BUFFER (91 navigational gems)
+  const { majorPositions, majorColors, majorSizes, majorTwinkles, starPositionsMap } = useMemo(() => {
+    const count = stars.length;
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const sz = new Float32Array(count);
+    const tw = new Float32Array(count);
     const map = new Map<string, [number, number, number]>();
 
-    // 1. Major Named Navigational Stars (91 stars)
     stars.forEach((star, idx) => {
       let x = 0, y = 0, z = 0;
       let extinction = 1.0;
@@ -172,7 +145,13 @@ function RealTimeStars({
       if (useLocalHorizon) {
         const { alt, az, isVisible } = raDecToAltAz(star.ra, star.dec, location.latitude, lst);
         [x, y, z] = altAzToCartesian(alt, az, SPHERE_RADIUS);
-        extinction = isVisible ? Math.min(1.0, Math.max(0.12, Math.sin((alt * Math.PI) / 180) * 1.5)) : 0.02;
+        if (!isVisible || alt < -0.5) {
+          extinction = 0.0;
+        } else if (alt < 15) {
+          extinction = 0.45 + 0.55 * (Math.max(0, alt) / 15);
+        } else {
+          extinction = 1.0;
+        }
       } else {
         const raRad = (star.ra * Math.PI) / 180;
         const decRad = (star.dec * Math.PI) / 180;
@@ -197,25 +176,42 @@ function RealTimeStars({
         col[idx * 3 + 2] = c.b * extinction;
       }
 
-      // Pogson magnitude scaling for major stars: Sirius ~8.5, Vega ~6.8, Polaris ~4.6
-      const pointSize = Math.max(2.8, Math.min(8.8, 7.2 - star.magnitude * 1.15));
+      // Pogson magnitude scaling for major stars:
+      // Sirius (-1.46): ~32px, Vega (0.0): ~26px, Polaris (1.98): ~18px, Mag 3.5: ~13px
+      const pointSize = Math.max(9.0, Math.min(32.0, 26.0 - star.magnitude * 3.6));
       sz[idx] = pointSize;
       tw[idx] = (idx * 1.37) % (Math.PI * 2);
     });
 
-    // 2. High-Density Background Stars (~2800 stars)
-    const offset = stars.length;
-    bgStarfield.forEach((bg, i) => {
-      const idx = offset + i;
+    return {
+      majorPositions: pos,
+      majorColors: col,
+      majorSizes: sz,
+      majorTwinkles: tw,
+      starPositionsMap: map
+    };
+  }, [location, lst, useLocalHorizon, nightVision]);
+
+  // 2. BACKGROUND STARFIELD BUFFER (~2200 stars)
+  const { bgPositions, bgColors, bgSizes, bgTwinkles } = useMemo(() => {
+    const count = bgStarfield.length;
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const sz = new Float32Array(count);
+    const tw = new Float32Array(count);
+
+    bgStarfield.forEach((bg, idx) => {
       let x = 0, y = 0, z = 0;
       let extinction = 1.0;
 
       if (useLocalHorizon) {
         const { alt, az, isVisible } = raDecToAltAz(bg.ra, bg.dec, location.latitude, lst);
-        if (!isVisible) {
+        if (!isVisible || alt < -0.5) {
           extinction = 0.0;
+        } else if (alt < 15) {
+          extinction = 0.35 + 0.65 * (Math.max(0, alt) / 15);
         } else {
-          extinction = Math.min(1.0, Math.max(0.15, Math.sin((alt * Math.PI) / 180) * 1.6));
+          extinction = 1.0;
         }
         [x, y, z] = altAzToCartesian(alt, az, SPHERE_RADIUS * 0.995);
       } else {
@@ -240,25 +236,26 @@ function RealTimeStars({
         col[idx * 3 + 2] = bg.color[2] * extinction;
       }
 
-      sz[idx] = Math.max(1.6, bg.size * 1.4);
+      sz[idx] = bg.size;
       tw[idx] = bg.twinklePhase;
     });
 
     return {
-      positions: pos,
-      colors: col,
-      sizes: sz,
-      twinkles: tw,
-      starPositionsMap: map
+      bgPositions: pos,
+      bgColors: col,
+      bgSizes: sz,
+      bgTwinkles: tw
     };
   }, [bgStarfield, location, lst, useLocalHorizon, nightVision]);
 
-  // GPU Shader for Photorealistic Diamonds with Gaussian Cores and Diffraction Spikes
-  const starShaderMaterial = useMemo(() => {
+  // GPU Shader for Major Diamond Stars (White-hot HDR cores + Diffraction cross spikes)
+  const majorShaderMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
+      vertexColors: true,
       uniforms: {
         uTime: { value: 0 },
         uOpacity: { value: 1.0 },
+        uPixelRatio: { value: 1.0 },
       },
       vertexShader: `
         attribute float aSize;
@@ -267,15 +264,15 @@ function RealTimeStars({
         varying float vTwinkle;
         varying float vSize;
         uniform float uTime;
+        uniform float uPixelRatio;
 
         void main() {
           vColor = color;
           vSize = aSize;
-          // Subtle atmospheric scintillation
-          float tw = 0.85 + 0.15 * sin(uTime * 3.2 + aTwinkle);
+          float tw = 0.90 + 0.10 * sin(uTime * 3.4 + aTwinkle);
           vTwinkle = tw;
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = aSize * tw * 2.8;
+          gl_PointSize = aSize * tw * uPixelRatio;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -291,22 +288,25 @@ function RealTimeStars({
           if (dist > 0.5) discard;
 
           // 1. Brilliant solid Gaussian stellar core
-          float core = exp(-dist * dist * 24.0);
+          float core = smoothstep(0.35, 0.0, dist);
+
           // 2. Soft luminous Airy disk halo
-          float halo = exp(-dist * 5.0) * 0.45;
+          float halo = smoothstep(0.5, 0.02, dist);
+
           // 3. Delicate 4-point cross diffraction spike for bright stars
           float spike = 0.0;
-          if (vSize > 3.8) {
-            float spikeWeight = smoothstep(3.8, 8.5, vSize);
-            float sX = exp(-abs(coord.x) * 36.0) * exp(-abs(coord.y) * 4.0);
-            float sY = exp(-abs(coord.y) * 36.0) * exp(-abs(coord.x) * 4.0);
-            spike = max(sX, sY) * 0.55 * spikeWeight;
+          if (vSize > 13.0) {
+            float spikeWeight = smoothstep(13.0, 26.0, vSize);
+            float sX = exp(-abs(coord.x) * 32.0) * smoothstep(0.5, 0.0, abs(coord.y));
+            float sY = exp(-abs(coord.y) * 32.0) * smoothstep(0.5, 0.0, abs(coord.x));
+            spike = (sX + sY) * 0.70 * spikeWeight;
           }
 
-          float totalAlpha = clamp((core * 1.3 + halo + spike) * uOpacity, 0.0, 1.0);
-          vec3 starCore = mix(vColor, vec3(1.0, 1.0, 1.0), core * 0.7);
-          vec3 finalColor = starCore * (core * 2.2 + halo * 1.2 + spike * 1.0);
-          gl_FragColor = vec4(finalColor, totalAlpha);
+          float alpha = clamp((halo * 0.85 + core * 0.45 + spike) * uOpacity, 0.0, 1.0);
+          vec3 starCore = mix(vColor, vec3(1.0, 1.0, 1.0), core * 0.95);
+          vec3 finalColor = starCore * (1.2 + core * 1.8) + vec3(spike * 0.85);
+
+          gl_FragColor = vec4(finalColor, alpha);
         }
       `,
       transparent: true,
@@ -315,23 +315,87 @@ function RealTimeStars({
     });
   }, []);
 
-  useFrame(({ clock }) => {
+  // GPU Shader for Background Pinpoint Starfield (Crisp, velvety starry sky)
+  const bgShaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexColors: true,
+      uniforms: {
+        uTime: { value: 0 },
+        uOpacity: { value: 1.0 },
+        uPixelRatio: { value: 1.0 },
+      },
+      vertexShader: `
+        attribute float aSize;
+        attribute float aTwinkle;
+        varying vec3 vColor;
+        uniform float uTime;
+        uniform float uPixelRatio;
+
+        void main() {
+          vColor = color;
+          float tw = 0.88 + 0.12 * sin(uTime * 3.8 + aTwinkle);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * tw * uPixelRatio;
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        uniform float uOpacity;
+
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          float core = smoothstep(0.48, 0.0, dist);
+          float alpha = core * 0.85 * uOpacity;
+          vec3 finalColor = mix(vColor, vec3(1.0, 1.0, 1.0), core * 0.7);
+          gl_FragColor = vec4(finalColor, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
+
+  useFrame(({ clock, gl }) => {
+    const elapsed = clock.getElapsedTime();
+    const pr = Math.min(2.0, gl.getPixelRatio());
+
     if (shaderMatRef.current) {
-      shaderMatRef.current.uniforms.uTime.value = clock.getElapsedTime();
+      shaderMatRef.current.uniforms.uTime.value = elapsed;
       shaderMatRef.current.uniforms.uOpacity.value = opacity;
+      shaderMatRef.current.uniforms.uPixelRatio.value = pr;
+    }
+    if (bgShaderMatRef.current) {
+      bgShaderMatRef.current.uniforms.uTime.value = elapsed;
+      bgShaderMatRef.current.uniforms.uOpacity.value = opacity;
+      bgShaderMatRef.current.uniforms.uPixelRatio.value = pr;
     }
   });
 
   return (
     <>
+      {/* Layer A: Velvet Background Starfield (~2200 stars) */}
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[bgPositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[bgColors, 3]} />
+          <bufferAttribute attach="attributes-aSize" args={[bgSizes, 1]} />
+          <bufferAttribute attach="attributes-aTwinkle" args={[bgTwinkles, 1]} />
+        </bufferGeometry>
+        <primitive object={bgShaderMaterial} ref={bgShaderMatRef} attach="material" />
+      </points>
+
+      {/* Layer B: Prominent Major Navigational Gems (91 stars) */}
       <points ref={pointsRef}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-          <bufferAttribute attach="attributes-color" args={[colors, 3]} />
-          <bufferAttribute attach="attributes-aSize" args={[sizes, 1]} />
-          <bufferAttribute attach="attributes-aTwinkle" args={[twinkles, 1]} />
+          <bufferAttribute attach="attributes-position" args={[majorPositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[majorColors, 3]} />
+          <bufferAttribute attach="attributes-aSize" args={[majorSizes, 1]} />
+          <bufferAttribute attach="attributes-aTwinkle" args={[majorTwinkles, 1]} />
         </bufferGeometry>
-        <primitive object={starShaderMaterial} ref={shaderMatRef} attach="material" />
+        <primitive object={majorShaderMaterial} ref={shaderMatRef} attach="material" />
       </points>
 
       {/* Invisible Clickable Hit Targets & Sleek Selection Reticle for Major Stars */}
@@ -385,9 +449,9 @@ function RealTimeStars({
 }
 
 // -------------------------------------------------------------
-// 2. PROCEDURAL MILKY WAY (SAMANYOLU) DUST BELT
+// 2. ASTRONOMICAL MILKY WAY (SAMANYOLU) PANORAMIC DOME (ESO 360°)
 // -------------------------------------------------------------
-function MilkyWayDustBelt({
+function MilkyWayPanoramaDome({
   visible,
   location,
   lst,
@@ -402,74 +466,82 @@ function MilkyWayDustBelt({
   nightVision: boolean;
   opacity: number;
 }) {
-  const mwData = useMemo(() => generateMilkyWayParticles(3400), []);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const texture = useMemo(() => {
+    return loadNasaTexture('/images/space/eso-milky-way-23ddfc.jpg');
+  }, []);
 
-  const { positions, colors } = useMemo(() => {
-    const pos = new Float32Array(mwData.galacticCoords.length * 3);
-    const col = new Float32Array(mwData.galacticCoords.length * 3);
+  // Compute the exact celestial alignment matrix
+  const domeMatrix = useMemo(() => {
+    const DEG2RAD = Math.PI / 180;
 
-    mwData.galacticCoords.forEach((p, idx) => {
-      // 1. Transform Galactic (l, b) to Equatorial (RA, Dec)
-      const eq = galacticToEquatorial(p.l, p.b);
-      let x = 0, y = 0, z = 0;
-      let extinction = 1.0;
+    // 1. Basis vectors for Galactic to Equatorial IAU transformation
+    // NGP (North Galactic Pole): RA = 192.85948°, Dec = 27.12825°
+    const raG = 192.85948 * DEG2RAD;
+    const decG = 27.12825 * DEG2RAD;
+    const vNGP = new THREE.Vector3(
+      Math.cos(decG) * Math.cos(raG),
+      Math.sin(decG),
+      Math.cos(decG) * Math.sin(raG)
+    );
 
-      if (useLocalHorizon) {
-        const altAz = raDecToAltAz(eq.ra, eq.dec, location.latitude, lst);
-        [x, y, z] = altAzToCartesian(altAz.alt, altAz.az, SPHERE_RADIUS * 0.985);
-        extinction = altAz.isVisible ? Math.min(1.0, Math.sin((altAz.alt * Math.PI) / 180) * 1.6) : 0.02;
-      } else {
-        const raRad = (eq.ra * Math.PI) / 180;
-        const decRad = (eq.dec * Math.PI) / 180;
-        x = SPHERE_RADIUS * 0.985 * Math.cos(decRad) * Math.cos(raRad);
-        y = SPHERE_RADIUS * 0.985 * Math.sin(decRad);
-        z = SPHERE_RADIUS * 0.985 * Math.cos(decRad) * Math.sin(raRad);
-      }
+    // GC (Galactic Center): RA = 266.4051°, Dec = -28.9362°
+    const raGC = 266.4051 * DEG2RAD;
+    const decGC = -28.9362 * DEG2RAD;
+    const vGC = new THREE.Vector3(
+      Math.cos(decGC) * Math.cos(raGC),
+      Math.sin(decGC),
+      Math.cos(decGC) * Math.sin(raGC)
+    );
 
-      pos[idx * 3] = x;
-      pos[idx * 3 + 1] = y;
-      pos[idx * 3 + 2] = z;
+    // Cross product to form orthonormal basis: col 0 = vGC, col 1 = vNGP, col 2 = vGC x vNGP
+    const vZ = new THREE.Vector3().crossVectors(vGC, vNGP).normalize();
+    const mGal2Eq = new THREE.Matrix4().makeBasis(vGC, vNGP, vZ);
 
-      // Color tint: core is warmer amber-gold, outer arms are icy silver-blue
-      const baseR = p.isCore ? 0.95 : 0.72;
-      const baseG = p.isCore ? 0.82 : 0.80;
-      const baseB = p.isCore ? 0.65 : 0.98;
+    if (!useLocalHorizon) {
+      return mGal2Eq;
+    }
 
-      if (nightVision) {
-        col[idx * 3] = 0.8 * p.brightness * extinction;
-        col[idx * 3 + 1] = 0.05 * p.brightness * extinction;
-        col[idx * 3 + 2] = 0.05 * p.brightness * extinction;
-      } else {
-        col[idx * 3] = baseR * p.brightness * extinction;
-        col[idx * 3 + 1] = baseG * p.brightness * extinction;
-        col[idx * 3 + 2] = baseB * p.brightness * extinction;
-      }
-    });
+    // 2. Equatorial to Alt-Az (Horizontal) frame transformation
+    const latRad = location.latitude * DEG2RAD;
+    const lstRad = lst * DEG2RAD;
+    const sinLat = Math.sin(latRad);
+    const cosLat = Math.cos(latRad);
+    const sinLst = Math.sin(lstRad);
+    const cosLst = Math.cos(lstRad);
 
-    return { positions: pos, colors: col };
-  }, [mwData, location, lst, useLocalHorizon, nightVision]);
+    const mEq2AltAz = new THREE.Matrix4().set(
+      -sinLst, 0, cosLst, 0,
+      cosLat * cosLst, sinLat, cosLat * sinLst, 0,
+      sinLat * cosLst, -cosLat, sinLat * sinLst, 0,
+      0, 0, 0, 1
+    );
 
-  const mwTexture = useMemo(() => getMilkyWayTexture(), []);
+    return new THREE.Matrix4().multiplyMatrices(mEq2AltAz, mGal2Eq);
+  }, [location.latitude, lst, useLocalHorizon]);
+
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.matrix.copy(domeMatrix);
+      meshRef.current.matrixAutoUpdate = false;
+    }
+  });
 
   if (!visible) return null;
 
   return (
-    <points>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        map={mwTexture}
-        size={1.5}
-        vertexColors
+    <mesh ref={meshRef} matrixAutoUpdate={false}>
+      <sphereGeometry args={[SPHERE_RADIUS * 0.985, 64, 32]} />
+      <meshBasicMaterial
+        map={texture}
+        side={THREE.BackSide}
         transparent
-        opacity={opacity * 0.22}
-        depthWrite={false}
+        opacity={nightVision ? 0.22 : 0.45 * opacity}
+        color={nightVision ? '#ff4444' : '#ffffff'}
         blending={THREE.AdditiveBlending}
-        sizeAttenuation={true}
+        depthWrite={false}
       />
-    </points>
+    </mesh>
   );
 }
 
@@ -1470,8 +1542,8 @@ export function Planetarium3D() {
           onUpdateTelemetry={handleUpdateTelemetry}
         />
 
-        {/* Real-Time Milky Way (Samanyolu) Dust Belt */}
-        <MilkyWayDustBelt
+        {/* Real-Time Milky Way (Samanyolu) Panoramic Dome */}
+        <MilkyWayPanoramaDome
           visible={showMilkyWay}
           location={selectedLocation}
           lst={currentLst}
