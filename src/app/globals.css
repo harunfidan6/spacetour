@@ -651,33 +651,3 @@ html[data-film] .doc-img { opacity: 1 !important; transition: none; }
   .choice-rail > *:last-child { margin-right: 18%; }
 }
 
-/* --------------------------------------------------------------------------
-   Gece Gözlemcisi Modu (Red Light Astronomy Mode)
-   Monochrome deep red spectrum to protect scotopic night-vision adaptation.
-   -------------------------------------------------------------------------- */
-html.observatory-night-mode {
-  --ink: #080002 !important;
-  --ink-2: #120005 !important;
-  --ink-3: #1a0008 !important;
-  --paper: #ff7584 !important;
-  --muted: #b82d3e !important;
-  --line: rgba(255, 34, 51, 0.24) !important;
-  --line-strong: rgba(255, 34, 51, 0.42) !important;
-  --solar: #ff2238 !important;
-  --violet: #ff3348 !important;
-  --lime: #ff4458 !important;
-  --gold: #ff2a40 !important;
-  --rose: #ff1f35 !important;
-  --background: #080002 !important;
-  --foreground: #ff7584 !important;
-  --card-bg: #120005 !important;
-  --card-border: rgba(255, 34, 51, 0.28) !important;
-  --primary: #ff2238 !important;
-  --star-gold: #ff2a40 !important;
-  --page-accent: #ff2a40 !important;
-}
-
-html.observatory-night-mode img,
-html.observatory-night-mode video {
-  filter: grayscale(1) sepia(1) hue-rotate(315deg) saturate(3.5) brightness(0.85);
-}

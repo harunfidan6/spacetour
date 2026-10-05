@@ -9,7 +9,6 @@ import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { PageTransitionProvider } from "@/components/motion/PageTransition";
 import { Preloader } from "@/components/motion/Preloader";
 import { StarfieldBackdrop } from "@/components/motion/StarfieldBackdrop";
-import { CosmicTerminal } from "@/components/ui/CosmicTerminal";
 import { FilmMode } from "@/components/film/FilmMode";
 
 const archivo = Archivo({
@@ -173,7 +172,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main className="relative z-10 min-h-screen">{children}</main>
             <Footer />
             <Preloader />
-            <CosmicTerminal />
             <FilmMode />
             <div aria-hidden className="grain" />
             {/* Google Analytics 4: sayfa yüklendikten sonra; ilk boyamayı ve etkileşimi geciktirmesin */}

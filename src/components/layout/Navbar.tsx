@@ -7,8 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { LiveClock } from '@/components/motion/primitives';
 import { SITE_ROUTES } from '@/lib/routes';
-import { Terminal, Eye } from 'lucide-react';
-import { CosmicAudioEngine } from '@/components/space/CosmicAudioEngine';
 
 function isActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -67,48 +65,6 @@ export default function Navbar() {
     setMenuOpen(false);
   }
 
-  // Gece Gözlemcisi Modu (Red light astronomy spectrum)
-  const [nightMode, setNightMode] = useState(false);
-
-  const toggleNightMode = () => {
-    setNightMode((prev) => {
-      const next = !prev;
-      try {
-        if (next) {
-          document.documentElement.classList.add('observatory-night-mode');
-          localStorage.setItem('astro-night-mode', 'true');
-        } else {
-          document.documentElement.classList.remove('observatory-night-mode');
-          localStorage.setItem('astro-night-mode', 'false');
-        }
-      } catch {
-        // no-op
-      }
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    try {
-      const isNight = localStorage.getItem('astro-night-mode') === 'true';
-      if (isNight) {
-        document.documentElement.classList.add('observatory-night-mode');
-        requestAnimationFrame(() => setNightMode(true));
-      }
-    } catch {
-      // Local storage unavailable
-    }
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.key === 'N' || e.key === 'n')) {
-        toggleNightMode();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-
-
   return (
     <>
       <nav
@@ -142,32 +98,6 @@ export default function Navbar() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 lg:ml-6">
-            <CosmicAudioEngine />
-            <button
-              type="button"
-              onClick={toggleNightMode}
-              className={`flex h-9 items-center gap-1.5 rounded-full border px-2.5 font-mono text-[11px] transition-colors cursor-pointer ${
-                nightMode
-                  ? 'border-[#ff2238] bg-[#ff2238]/20 text-[#ff4458] shadow-[0_0_12px_rgba(255,34,56,0.3)]'
-                  : 'border-line bg-ink/60 text-paper/70 hover:border-[#ff2238]/60 hover:text-[#ff4458]'
-              }`}
-              title="Gece Gözlemcisi Modu (Kırmızı Işık Filtresi · Shift+N)"
-              aria-label="Gece Gözlemcisi Modunu Aç/Kapat"
-              aria-pressed={nightMode}
-            >
-              <Eye size={12} className={nightMode ? 'text-[#ff2238]' : ''} />
-              <span className="hidden sm:inline text-[10px]">Gece</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('open-cosmic-terminal'))}
-              className="hidden h-9 items-center gap-1.5 rounded-full border border-line bg-ink/60 px-3 font-mono text-[11px] text-paper/80 transition-colors hover:border-gold hover:text-gold sm:flex cursor-pointer"
-              title="Kozmik kumanda terminali (⌘K / Ctrl+K)"
-              aria-label="Kozmik kumanda terminalini aç"
-            >
-              <Terminal size={12} className="text-gold" />
-              <span>⌘K</span>
-            </button>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
