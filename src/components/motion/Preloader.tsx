@@ -1,16 +1,22 @@
 'use client';
 
 import { useLayoutEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { gsap, SplitText, markIntroDone, prefersReducedMotion } from './gsap';
 
 const SESSION_KEY = 'spacetour:intro';
 
 /**
  * Title-sequence preloader. Plays the full sequence once per session;
- * afterwards it only fades the SSR cover away.
+ * afterwards it only fades the SSR cover away. Only shown when the visit starts
+ * on the home page: visitors landing on a sub-page (mostly from search) see the
+ * content immediately, which keeps LCP low.
  */
 export function Preloader() {
   const [active, setActive] = useState(true);
+  const pathname = usePathname();
+  // Ziyaretin başladığı sayfa; sonradan ana sayfaya geçmek animasyonu yeniden açmaz
+  const [startedHome] = useState(pathname === '/');
   const root = useRef<HTMLDivElement>(null);
   const count = useRef<HTMLSpanElement>(null);
   const word = useRef<HTMLDivElement>(null);
@@ -20,6 +26,10 @@ export function Preloader() {
   const panels = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
+    if (!startedHome) {
+      markIntroDone();
+      return;
+    }
     const el = root.current;
     if (!el) return;
     let seen = false;
@@ -77,9 +87,9 @@ export function Preloader() {
     }, el);
 
     return () => ctx.revert();
-  }, []);
+  }, [startedHome]);
 
-  if (!active) return null;
+  if (!active || !startedHome) return null;
 
   return (
     <div
