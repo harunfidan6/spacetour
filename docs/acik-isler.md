@@ -19,6 +19,4 @@ Astroloji videosu (`video/spacetour-astroloji-yatay.mp4`) yeni ses zinciriyle ü
 
 ## Yayın
 
-- Vercel'in canlı dalı `main` idi; push'lar `master`'a gittiği için domain güncellenmiyordu.
-- 4 Ekim'de `master` elle üretime deploy edildi.
-- Kalıcı çözüm: Vercel → astro → Settings → Git → Production Branch = `master`.
+Çözüldü (5 Ekim 2026): Vercel → Settings → Environments → Production → Branch Tracking = `master`. `master`'a her push doğrudan spacetour.com.tr'ye yayınlanır.
