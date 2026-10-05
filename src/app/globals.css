@@ -300,6 +300,7 @@ body {
 }
 
 @keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes fade-in { from { opacity: 0; } }
 .spin-slow { animation: spin-slow 24s linear infinite; }
 .spin-slower { animation: spin-slow 60s linear infinite; }
 .spin-rev { animation: spin-slow 40s linear infinite reverse; }

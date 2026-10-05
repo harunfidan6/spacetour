@@ -2,27 +2,27 @@ import * as THREE from 'three';
 
 // NASA & ESA Photorealistic Public Domain Planetary Textures (2K / 1K High-Def)
 // Sources: NASA Visible Earth, USGS Astrogeology, Solar System Scope (CC-BY 4.0), Three.js Official Repository
+// Sitede barındırılır (public/textures/planets, çoğu WebP): dış CDN'e ve sabitlenmemiş @master/@dev dallarına bağlı değil
 export const NASA_TEXTURES = {
-  sun: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/sunmap.jpg',
-  earthMap: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg',
-  earthNight: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_lights_2048.png',
-  earthClouds: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_clouds_1024.png',
-  earthSpecular: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_specular_2048.jpg',
-  earthNormal: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_normal_2048.jpg',
-  moon: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg',
-  mars: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/marsmap1k.jpg',
-  jupiter: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/jupitermap.jpg',
-  saturn: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnmap.jpg',
-  mercury: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/mercurymap.jpg',
-  venus: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusmap.jpg',
-  venusAtmosphere: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/venusatmosphere.jpg',
-  uranus: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusmap.jpg',
-  uranusRing: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/uranusringcolour.jpg',
-  neptune: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/neptunemap.jpg',
-  pluto: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg',
-  saturnRing: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnringcolor.jpg',
-  saturnRingPattern: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/saturnringpattern.gif',
-  milkyWay: 'https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/images/galaxy_starfield.png',
+  sun: '/textures/planets/sun.webp',
+  earthMap: '/textures/planets/earthMap.webp',
+  earthNight: '/textures/planets/earthNight.webp',
+  earthClouds: '/textures/planets/earthClouds.png',
+  earthSpecular: '/textures/planets/earthSpecular.webp',
+  earthNormal: '/textures/planets/earthNormal.webp',
+  moon: '/textures/planets/moon.webp',
+  mars: '/textures/planets/mars.webp',
+  jupiter: '/textures/planets/jupiter.webp',
+  saturn: '/textures/planets/saturn.webp',
+  mercury: '/textures/planets/mercury.webp',
+  venus: '/textures/planets/venus.webp',
+  uranus: '/textures/planets/uranus.webp',
+  uranusRing: '/textures/planets/uranusRing.webp',
+  neptune: '/textures/planets/neptune.webp',
+  pluto: '/textures/planets/pluto.webp',
+  saturnRing: '/textures/planets/saturnRing.webp',
+  saturnRingPattern: '/textures/planets/saturnRingPattern.webp',
+  milkyWay: '/textures/planets/milkyWay.png',
 };
 
 // Texture Loader cache to prevent duplicate fetches

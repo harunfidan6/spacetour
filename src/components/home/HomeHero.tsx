@@ -7,14 +7,20 @@ import { gsap, useGsap, prefersReducedMotion, whenIntroDone } from '@/components
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { moonPhase, upcomingEvents, daysUntil } from '@/lib/sky';
 import { useNow } from '@/lib/useNow';
-import { HeroSolarSystem3D, HERO_BODIES, heroScene, resetHeroScene } from './HeroSolarSystem3D';
+import dynamic from 'next/dynamic';
+import { HERO_BODIES, heroScene, resetHeroScene } from './heroScene';
+import { useIdleReady } from '@/lib/useIdleReady';
 import { MoonOrb } from '@/components/space/PlanetOrb';
 import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
+
+// three.js sahnesi ilk boyamayı geciktirmesin: sayfa boşa çıkınca ayrı parça olarak yüklenir
+const HeroSolarSystem3D = dynamic(() => import('./HeroSolarSystem3D').then((m) => m.HeroSolarSystem3D), { ssr: false });
 
 export function HomeHero() {
   const root = useRef<HTMLElement>(null);
   const labels = useRef<(HTMLElement | null)[]>([]);
   const [inView, setInView] = useState(true);
+  const scene3d = useIdleReady();
   const now = useNow(60_000);
   const moon = now ? moonPhase(now) : null;
   const next = now ? upcomingEvents(now, 1)[0] : undefined;
@@ -92,7 +98,11 @@ export function HomeHero() {
     <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-ink" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
       {/* Live 3D solar system as the opening shot */}
       <div className="pointer-events-none absolute inset-0">
-        <HeroSolarSystem3D project={placeLabel} active={inView} />
+        {scene3d && (
+          <div className="absolute inset-0 animate-[fade-in_1.2s_ease-out_both]">
+            <HeroSolarSystem3D project={placeLabel} active={inView} />
+          </div>
+        )}
         {HERO_BODIES.map((b, i) => (
           <span
             key={b.id}

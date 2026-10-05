@@ -82,7 +82,6 @@ function HologramMesh({
       baseTex = loadNasaTexture(NASA_TEXTURES.mercury) || createMercuryTexture();
     } else if (id === 'venus') {
       baseTex = loadNasaTexture(NASA_TEXTURES.venus) || createVenusTexture();
-      cloudTex = loadNasaTexture(NASA_TEXTURES.venusAtmosphere);
     } else if (id === 'dunya') {
       const pEarth = createEarthTexture();
       baseTex = loadNasaTexture(NASA_TEXTURES.earthMap) || pEarth.map;
