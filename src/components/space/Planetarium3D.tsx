@@ -62,7 +62,11 @@ import {
   ChevronDown,
   Moon,
   Sparkles,
-  Orbit
+  Orbit,
+  Maximize,
+  Minimize,
+  Smartphone,
+  LocateFixed
 } from 'lucide-react';
 
 const SPHERE_RADIUS = 90;
@@ -863,7 +867,12 @@ function DeviceSkyControl({ active, onTracking }: { active: boolean; onTracking:
   const { camera } = useThree();
   const sample = useRef<OrientationSample | null>(null);
   const target = useRef(new THREE.Quaternion());
-  const tmp = useRef({ euler: new THREE.Euler(), q0: new THREE.Quaternion(), q1: new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)), z: new THREE.Vector3(0, 0, 1) });
+  const tmp = useRef({
+    euler: new THREE.Euler(),
+    q0: new THREE.Quaternion(),
+    q1: new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)),
+    z: new THREE.Vector3(0, 0, 1)
+  });
 
   useEffect(() => {
     if (!active) return;
@@ -872,20 +881,28 @@ function DeviceSkyControl({ active, onTracking }: { active: boolean; onTracking:
     let reported = false;
     const handle = (e: DeviceOrientationEvent & { webkitCompassHeading?: number }) => {
       if (e.beta == null || e.gamma == null) return;
-      // iOS reports a compass heading; Android's absolute event reports alpha against north
-      const alpha = typeof e.webkitCompassHeading === 'number' ? (360 - e.webkitCompassHeading) % 360 : e.alpha;
-      if (alpha == null) return;
+      // iOS reports webkitCompassHeading (0 = North); Android reports alpha
+      let alpha = e.alpha ?? 0;
+      if (typeof e.webkitCompassHeading === 'number') {
+        alpha = (360 - e.webkitCompassHeading) % 360;
+      }
       sample.current = { alpha, beta: e.beta, gamma: e.gamma };
       if (!reported) {
         reported = true;
         onTracking(true);
       }
     };
-    const absolute = 'ondeviceorientationabsolute' in window;
-    const type = absolute ? 'deviceorientationabsolute' : 'deviceorientation';
-    window.addEventListener(type, handle as EventListener);
+
+    window.addEventListener('deviceorientation', handle as EventListener);
+    const hasAbsolute = 'ondeviceorientationabsolute' in window;
+    if (hasAbsolute) {
+      window.addEventListener('deviceorientationabsolute', handle as EventListener);
+    }
     return () => {
-      window.removeEventListener(type, handle as EventListener);
+      window.removeEventListener('deviceorientation', handle as EventListener);
+      if (hasAbsolute) {
+        window.removeEventListener('deviceorientationabsolute', handle as EventListener);
+      }
       onTracking(false);
     };
   }, [active, onTracking]);
@@ -899,7 +916,7 @@ function DeviceSkyControl({ active, onTracking }: { active: boolean; onTracking:
     euler.set(s.beta * d, s.alpha * d, -s.gamma * d, 'YXZ');
     target.current.setFromEuler(euler).multiply(q1).multiply(q0.setFromAxisAngle(z, -screenAngle));
     // Gentle smoothing hides sensor jitter without lagging behind the hand
-    camera.quaternion.slerp(target.current, 0.3);
+    camera.quaternion.slerp(target.current, 0.35);
   });
 
   return null;
@@ -1377,6 +1394,10 @@ export function Planetarium3D() {
   const [isArActive, setIsArActive] = useState(false);
   const [arTracking, setArTracking] = useState(false);
 
+  const [isGyroActive, setIsGyroActive] = useState(false);
+  const [gyroTracking, setGyroTracking] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   // AR needs motion-sensor permission on iOS, which can only be asked from a tap
   const toggleAr = async () => {
     if (isArActive) {
@@ -1439,10 +1460,103 @@ export function Planetarium3D() {
     return getLocalSiderealTime(currentTime, selectedLocation.longitude);
   }, [currentTime, selectedLocation]);
 
-  // GPS Auto-detection
-  const handleAutoGps = () => {
-    if (!navigator.geolocation) {
-      setGpsError('Cihazınızda GPS konumu desteklenmiyor.');
+  // Gyro sensor mode toggle (standalone without AR camera)
+  const toggleGyro = useCallback(async () => {
+    if (isGyroActive) {
+      setIsGyroActive(false);
+      setGyroTracking(false);
+      return;
+    }
+    const DOE = (typeof window !== 'undefined' ? window.DeviceOrientationEvent : undefined) as
+      | (typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> })
+      | undefined;
+    if (DOE?.requestPermission) {
+      try {
+        const res = await DOE.requestPermission();
+        if (res !== 'granted') {
+          console.warn('Gyro permission not granted:', res);
+          return;
+        }
+      } catch (err) {
+        console.warn('Gyro permission error:', err);
+      }
+    }
+    setIsGyroActive(true);
+  }, [isGyroActive]);
+
+  // Fullscreen support & listeners
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const doc = document as Document & {
+        webkitFullscreenElement?: Element;
+      };
+      setIsFullscreen(!!(doc.fullscreenElement || doc.webkitFullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!stageRef.current) return;
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    const isNativeFullscreen = !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+
+    if (!isFullscreen && !isNativeFullscreen) {
+      const el = stageRef.current as HTMLElement & {
+        webkitRequestFullscreen?: () => Promise<void>;
+      };
+      if (el.requestFullscreen) {
+        el.requestFullscreen()
+          .then(() => setIsFullscreen(true))
+          .catch((err) => {
+            console.warn('Native fullscreen fallback to CSS:', err);
+            setIsFullscreen(true);
+          });
+      } else if (el.webkitRequestFullscreen) {
+        try {
+          el.webkitRequestFullscreen();
+          setIsFullscreen(true);
+        } catch {
+          setIsFullscreen(true);
+        }
+      } else {
+        setIsFullscreen(true);
+      }
+    } else {
+      if (isNativeFullscreen) {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {});
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        }
+      }
+      setIsFullscreen(false);
+    }
+  }, [isFullscreen]);
+
+  // Keyboard shortcut 'F' for full screen
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleFullscreen]);
+
+  // GPS Auto-detection on mount and on-demand
+  const handleAutoGps = useCallback((showErrorOnFail = false) => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      if (showErrorOnFail) setGpsError('Cihazınızda GPS konumu desteklenmiyor.');
       return;
     }
     setGpsError(null);
@@ -1450,7 +1564,7 @@ export function Planetarium3D() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setSelectedLocation({
-          city: 'Mevcut GPS Konumunuz',
+          city: 'Anlık Konum (GPS)',
           latitude: parseFloat(pos.coords.latitude.toFixed(4)),
           longitude: parseFloat(pos.coords.longitude.toFixed(4)),
           isCustomGps: true
@@ -1459,17 +1573,24 @@ export function Planetarium3D() {
         setIsLocDropdownOpen(false);
       },
       (err) => {
-        console.warn('GPS Error:', err);
-        setGpsError(
-          err.code === err.PERMISSION_DENIED
-            ? 'Konum izni verilmedi. Şehir listesinden seçim yapabilirsiniz.'
-            : 'Konum alınamadı. Şehir listesinden seçim yapabilirsiniz.'
-        );
+        console.log('GPS lookup info:', err.message);
+        if (showErrorOnFail) {
+          setGpsError(
+            err.code === err.PERMISSION_DENIED
+              ? 'Konum izni verilmedi. Şehir listesinden seçim yapabilirsiniz.'
+              : 'Konum alınamadı. Şehir listesinden seçim yapabilirsiniz.'
+          );
+        }
         setIsGpsLoading(false);
       },
-      { timeout: 10000, enableHighAccuracy: true }
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 60000 }
     );
-  };
+  }, []);
+
+  // Anlık konum ile otomatik başlat
+  useEffect(() => {
+    handleAutoGps(false);
+  }, [handleAutoGps]);
 
   // Search filter
   const searchResults = useMemo(() => {
@@ -1496,7 +1617,7 @@ export function Planetarium3D() {
   }, [currentTime, selectedLocation]);
 
   return (
-    <div ref={stageRef} className={`relative h-full w-full overflow-hidden select-none ${nightVision ? 'bg-[#090000]' : 'bg-[#020206]'}`}>
+    <div ref={stageRef} className={`relative h-full w-full overflow-hidden select-none ${nightVision ? 'bg-[#090000]' : 'bg-[#020206]'} ${isFullscreen ? 'fixed inset-0 z-[9999] h-screen w-screen' : ''}`}>
       {/* 1. Optional Live AR Camera Overlay */}
       <ArCameraOverlay
         isActive={isArActive}
@@ -1525,7 +1646,7 @@ export function Planetarium3D() {
         {/* Look-around Orbit Controls */}
         <OrbitControls
           makeDefault
-          enabled={!arTracking}
+          enabled={!((isArActive && arTracking) || (isGyroActive && gyroTracking))}
           enableZoom={true}
           enablePan={false}
           rotateSpeed={-0.45}
@@ -1535,7 +1656,13 @@ export function Planetarium3D() {
         />
 
         <FilmSkyControl />
-        <DeviceSkyControl active={isArActive} onTracking={setArTracking} />
+        <DeviceSkyControl
+          active={isArActive || isGyroActive}
+          onTracking={(tracking) => {
+            if (isArActive) setArTracking(tracking);
+            if (isGyroActive) setGyroTracking(tracking);
+          }}
+        />
         <ArTelemetryTracker
           active={isArActive}
           solarBodies={solarBodies}
@@ -1642,10 +1769,15 @@ export function Planetarium3D() {
             onClick={() => setIsLocDropdownOpen(!isLocDropdownOpen)}
             className="flex items-center gap-2.5 border border-line bg-ink/90 px-3.5 py-1.5 text-xs font-mono backdrop-blur-xl shadow-xl hover:border-paper/40 transition-colors text-left cursor-pointer rounded-full"
           >
-            <MapPin size={13} className="text-lime animate-pulse" />
+            <MapPin size={13} className={selectedLocation.isCustomGps ? 'text-lime animate-pulse' : 'text-paper/60'} />
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-paper">{selectedLocation.city}</span>
               <span className="text-[10px] text-muted hidden sm:inline">({(currentLst / 15).toFixed(1)}h LST)</span>
+              {selectedLocation.isCustomGps && (
+                <span className="bg-lime/20 text-lime text-[9px] px-1.5 py-0.5 rounded-full border border-lime/40 font-bold">
+                  GPS
+                </span>
+              )}
               <ChevronDown size={11} className="text-muted" />
             </div>
           </button>
@@ -1655,12 +1787,12 @@ export function Planetarium3D() {
             <div className="absolute top-full left-0 mt-2 w-64 border border-line bg-ink/95 p-2 shadow-2xl backdrop-blur-2xl z-50 space-y-1 font-mono text-xs">
               <button
                 type="button"
-                onClick={handleAutoGps}
+                onClick={() => handleAutoGps(true)}
                 disabled={isGpsLoading}
-                className="w-full flex items-center gap-2 border border-line bg-ink-2 text-lime p-2 hover:bg-ink-3 transition-colors label text-left cursor-pointer"
+                className="w-full flex items-center gap-2 border border-lime/40 bg-lime/10 text-lime p-2 hover:bg-lime/20 transition-colors label text-left cursor-pointer rounded"
               >
-                <RefreshCw size={12} className={isGpsLoading ? 'animate-spin' : ''} />
-                <span>{isGpsLoading ? 'GPS Alınıyor...' : 'Otomatik GPS Konumu Al'}</span>
+                <LocateFixed size={12} className={isGpsLoading ? 'animate-spin' : ''} />
+                <span>{isGpsLoading ? 'GPS Alınıyor...' : 'Anlık GPS Konumu Al'}</span>
               </button>
               {gpsError && (
                 <p role="alert" className="border border-rose/40 bg-rose/10 px-2 py-1.5 text-[10px] leading-snug text-rose">
@@ -1754,8 +1886,38 @@ export function Planetarium3D() {
           )}
         </div>
 
-        {/* Selection Status & Inspector Toggle */}
+        {/* Selection Status & Inspector Toggle & Quick Actions */}
         <div className="pointer-events-auto flex items-center gap-2">
+          {/* Quick Gyro Mode Button */}
+          <button
+            type="button"
+            onClick={toggleGyro}
+            className={`hidden sm:flex items-center gap-1.5 border px-3 py-1.5 rounded-full text-xs font-mono backdrop-blur-xl transition-all cursor-pointer shadow-lg ${
+              isGyroActive
+                ? 'border-lime bg-lime text-ink font-bold shadow-[0_0_12px_rgba(163,230,53,0.4)]'
+                : 'border-line bg-ink/90 text-paper/80 hover:text-paper hover:border-paper/40'
+            }`}
+            title={isGyroActive ? 'Jiroskop Sensörü Aktif' : 'Jiroskop Modu (Cihaz Hareketi ile Bak)'}
+          >
+            <Smartphone size={12} className={isGyroActive ? 'animate-bounce text-ink' : 'text-lime'} />
+            <span>{isGyroActive ? 'Jiroskop Açık' : 'Jiroskop'}</span>
+          </button>
+
+          {/* Quick Fullscreen Button */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className={`flex items-center gap-1.5 border px-3 py-1.5 rounded-full text-xs font-mono backdrop-blur-xl transition-all cursor-pointer shadow-lg ${
+              isFullscreen
+                ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_12px_rgba(255,215,0,0.4)]'
+                : 'border-line bg-ink/90 text-paper/80 hover:text-paper hover:border-paper/40'
+            }`}
+            title={isFullscreen ? 'Tam Ekrandan Çık (Esc veya F)' : 'Tam Ekran Modunu Başlat (F)'}
+          >
+            {isFullscreen ? <Minimize size={12} className="text-ink" /> : <Maximize size={12} className="text-gold" />}
+            <span>{isFullscreen ? 'Küçült' : 'Tam Ekran'}</span>
+          </button>
+
           {(selectedStar || selectedBody || selectedDso || activeConstellation) ? (
             <div className="flex items-center gap-1 bg-ink/90 border border-line rounded-full p-0.5 backdrop-blur-xl">
               <button
@@ -1791,7 +1953,7 @@ export function Planetarium3D() {
               </button>
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-2 border border-line bg-ink/80 px-3 py-1 rounded-full text-[11px] text-muted font-mono backdrop-blur-xl">
+            <div className="hidden lg:flex items-center gap-2 border border-line bg-ink/80 px-3 py-1 rounded-full text-[11px] text-muted font-mono backdrop-blur-xl">
               <span className="live-dot" />
               <span>360° Planetaryum</span>
               <span className="text-line">|</span>
@@ -1803,6 +1965,26 @@ export function Planetarium3D() {
           )}
         </div>
       </div>
+
+      {/* 3.1 Floating Gyroscope Status Banner */}
+      {isGyroActive && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 border border-lime/40 bg-ink/95 backdrop-blur-2xl px-3.5 py-1.5 rounded-full text-xs font-mono text-lime shadow-2xl animate-in fade-in slide-in-from-top-2 pointer-events-auto">
+          <Smartphone size={13} className="animate-pulse" />
+          <span>
+            {gyroTracking
+              ? '⚡ Jiroskop Aktif: Cihazınızı göğe doğrultarak gezin'
+              : 'Sensör bekleniyor (Cihazınızı hareket ettirin)'}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsGyroActive(false)}
+            className="ml-1 text-muted hover:text-paper text-[11px] px-1 cursor-pointer"
+            title="Jiroskopu Kapat"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* 4. UNIFIED RIGHT INSPECTOR DRAWER */}
       {isInspectorOpen && (selectedStar || selectedBody || selectedDso || activeConstellation) && (
@@ -2213,6 +2395,22 @@ export function Planetarium3D() {
             <span className="text-[10px] hidden md:inline">{timeFlowRate === 0 ? 'Durduruldu' : timeFlowRate > 1 ? '60x' : 'Canlı'}</span>
           </button>
 
+          {/* Gyroscope Sensor Toggle */}
+          <button
+            type="button"
+            aria-pressed={isGyroActive}
+            onClick={toggleGyro}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+              isGyroActive
+                ? 'bg-lime text-ink font-bold shadow-[0_0_12px_rgba(163,230,53,0.4)]'
+                : 'text-muted hover:text-paper hover:bg-ink-2'
+            }`}
+            title={isGyroActive ? 'Jiroskop Aktif (Cihaz Hareketi Devrede)' : 'Jiroskop Modu (Cihaz Hareketi ile Bak)'}
+          >
+            <Smartphone size={13} className={isGyroActive ? 'rotate-12 text-ink' : ''} />
+            <span className="text-[10px] hidden sm:inline">Jiroskop</span>
+          </button>
+
           {/* AR Camera Toggle */}
           <button
             type="button"
@@ -2226,6 +2424,24 @@ export function Planetarium3D() {
           >
             <Camera size={13} />
             <span className="text-[10px] hidden md:inline">AR</span>
+          </button>
+
+          <span className="h-4 w-px bg-line" />
+
+          {/* Fullscreen Toggle */}
+          <button
+            type="button"
+            aria-pressed={isFullscreen}
+            onClick={toggleFullscreen}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+              isFullscreen
+                ? 'bg-gold text-ink font-bold shadow-[0_0_12px_rgba(255,215,0,0.4)]'
+                : 'text-muted hover:text-paper hover:bg-ink-2'
+            }`}
+            title={isFullscreen ? 'Tam Ekrandan Çık (Esc veya F)' : 'Tam Ekran Modunu Başlat (F)'}
+          >
+            {isFullscreen ? <Minimize size={13} /> : <Maximize size={13} />}
+            <span className="text-[10px] hidden sm:inline">{isFullscreen ? 'Küçült' : 'Tam Ekran'}</span>
           </button>
         </div>
       </div>
