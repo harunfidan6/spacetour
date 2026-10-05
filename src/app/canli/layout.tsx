@@ -4,7 +4,7 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 export const metadata: Metadata = {
   title: {
     absolute: 'Canlı Gökyüzü & ISS Takibi — SpaceTour TR',
-    template: '%s — Canlı | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
     'Uluslararası Uzay İstasyonu (ISS) anlık canlı konumu, NOAA uzay hava durumu ve güneş fırtınaları, bu gece görülebilen gezegenler ve Voyager sondaları takibi.',

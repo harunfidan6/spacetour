@@ -5,7 +5,7 @@ import { planets } from '@/data/planets';
 
 export const BASE_URL = 'https://spacetour.com.tr';
 export const SITE_NAME = 'SpaceTour TR';
-export const DEFAULT_OG_IMAGE = `${BASE_URL}/og-preview.png`;
+export const DEFAULT_OG_IMAGE = `${BASE_URL}/opengraph-image`;
 
 /** High-intent Turkish SEO keyword dictionaries tailored per module and subject */
 export const MODULE_KEYWORDS: Record<string, string[]> = {
@@ -190,6 +190,51 @@ export const SIGN_SEO_DESCRIPTIONS: Record<string, string> = {
   balik: 'Balık burcu (19 Şubat – 20 Mart) özellikleri, değişken su elementi, yöneticisi Neptün ve Jüpiter, aşk uyumu, tarot Ay kartı ve mistik arketip dosyası.',
 };
 
+/** Kısa tanıtım metni arama sonucu için yetersiz kalan modüllerin açıklamaları (120–155 karakter) */
+const MODULE_DESCRIPTIONS: Record<string, string> = {
+  'ansiklopedi/olcek': 'Güneş Sistemi’ndeki gezegenleri ve Güneş’i yan yana koyup çaplarının gerçek oranını karşılaştır; Dünya’nın Jüpiter yanında ne kadar küçük kaldığını gör.',
+  'ansiklopedi/zaman-makinesi': 'Büyük Patlama’dan bugüne evrenin kilometre taşları: ilk yıldızlar, galaksiler, Güneş Sistemi’nin ve Dünya’daki yaşamın doğuşu tek bir zaman çizelgesinde.',
+  'ansiklopedi/otegezegenler': 'Yaşanabilir kuşaktaki en ilginç ötegezegenleri büyüklük, yörünge süresi ve sıcaklıklarıyla karşılaştır; Dünya’ya en çok benzeyen dünyaları keşfet.',
+  'ansiklopedi/asteroit-carpmasi': 'Asteroidin çapını, hızını ve yoğunluğunu ayarla; çarpışmanın açığa çıkaracağı enerjiyi ve oluşacak kraterin boyutunu hesapla. Ücretsiz çarpışma simülatörü.',
+  'ansiklopedi/kara-delik': 'Bir kara deliğin olay ufkuna yaklaştıkça zamanın nasıl yavaşladığını ve ışığın nasıl büküldüğünü simülasyonla gör: genel görelilikte zaman genleşmesi.',
+  'ansiklopedi/kozmik-arka-plan': 'Planck uydusunun kozmik mikrodalga arka plan haritası: evrenin ilk ışığındaki sıcaklık dalgalanmaları ve bunların evrenin geometrisi hakkında söyledikleri.',
+  'astroloji/tarot': '22 majör arkana kartıyla ücretsiz tarot açılımı: üç açılım düzeninden birini seç, kartları çek ve her pozisyon için ayrıntılı Türkçe yorumunu oku.',
+  'astroloji/gunluk-burc': '12 burç için bugünün yorumu: Ay’ın o günkü konumuna göre aşk, kariyer, sağlık ve enerji. Burcunu seç, günlük burç yorumunu ücretsiz oku.',
+  'astroloji/yildiz-fali': 'Bugünün gezegen saatleri ve Ay’ın yaklaştığı baş yıldız: doğum tarihine göre senin yıldızını ve sana uğurlu saatleri gör. Keldani sırasıyla yıldız falı.',
+  'astroloji/numeroloji': 'Adın ve doğum tarihinle numeroloji hesapla: yaşam yolu, kader, ruh arzusu ve kişilik sayıların, kişisel yılın ve ayrıntılı Türkçe yorumları.',
+  'gozlemevi/radyo': 'Pulsarların düzenli atımlarını ve Satürn’ün auroral radyo ıslıklarını sese çeviren radyo spektrografı: gökyüzünün radyo dalgalarında nasıl duyulduğunu keşfet.',
+  'gozlemevi/gozlemevleri': 'Webb ve Hubble’dan ELT’ye, DAG Erzurum’dan ALMA’ya dünyanın en büyük teleskopları: konumları, ayna çapları, gözledikleri dalga boyları ve keşifleri.',
+  'gozlemevi/spektroskopi': 'Yıldız ışığını tayfına ayır: O’dan M’ye spektral sınıflar, Fraunhofer soğurma çizgileri, Balmer serisi ve Doppler kayması etkileşimli spektroskopi aracında.',
+  'gozlemevi/transit': 'Bir ötegezegen yıldızının önünden geçerken ışıktaki düşüşü ölç: transit ışık eğrisinden gezegenin büyüklüğünü ve yörüngesini nasıl bulduğumuzu dene.',
+  'gozlemevi/akademi': '10 soruluk astrofizik sınavıyla uzay bilgini test et: Güneş Sistemi, yıldızlar ve kozmoloji sorularını yanıtla, sonunda kişisel sertifikanı oluştur.',
+  'canli/arsiv-goruntusu': 'NASA ve James Webb arşivinden seçilmiş bir uzay görüntüsü ve hikâyesi: neyi gösterdiği, hangi teleskopla ne zaman çekildiği Türkçe anlatımla.',
+};
+
+/** Kendi canonical adresi, paylaşım bilgileri ve görseliyle bir sayfa metadatası */
+export function buildPageMetadata({ path, title, description, image = DEFAULT_OG_IMAGE }: {
+  path: string;
+  title: string;
+  description: string;
+  image?: string;
+}): Metadata {
+  const url = `${BASE_URL}${path}`;
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: SITE_NAME,
+      locale: 'tr_TR',
+      type: 'website',
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [image] },
+  };
+}
+
 /** Generate rich canonical Metadata object for any module / subpage */
 export function buildModuleMetadata(sectionId: SectionId, slug: string): Metadata {
   const found = findModule(sectionId, slug);
@@ -213,7 +258,7 @@ export function buildModuleMetadata(sectionId: SectionId, slug: string): Metadat
   ];
 
   const fullTitle = `${mod.short} — ${section.title} | SpaceTour TR`;
-  const cleanDescription = mod.blurb;
+  const cleanDescription = MODULE_DESCRIPTIONS[key] ?? mod.blurb;
   const ogImageUrl = mod.image?.src
     ? mod.image.src.startsWith('http')
       ? mod.image.src
@@ -275,7 +320,7 @@ export function buildSignMetadata(signId: string): Metadata {
 
   const path = `/astroloji/burclar/${sign.id}`;
   const canonicalUrl = `${BASE_URL}${path}`;
-  const fullTitle = `${sign.name} Burcu (${sign.latinName}) Özellikleri & Dosyası — Astroloji | SpaceTour TR`;
+  const fullTitle = `${sign.name} Burcu Özellikleri ve Karakteri | SpaceTour TR`;
   const description = SIGN_SEO_DESCRIPTIONS[sign.id] || sign.overview;
   const keywords = [
     `${sign.name.toLowerCase()} burcu`,
@@ -306,7 +351,7 @@ export function buildSignMetadata(signId: string): Metadata {
       type: 'article',
       images: [
         {
-          url: `${BASE_URL}/og-preview.png`,
+          url: `${canonicalUrl}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: `${sign.name} Burcu — SpaceTour TR`,
@@ -317,7 +362,7 @@ export function buildSignMetadata(signId: string): Metadata {
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: [`${BASE_URL}/og-preview.png`],
+      images: [`${canonicalUrl}/opengraph-image`],
     },
     robots: {
       index: true,
@@ -345,7 +390,7 @@ export function buildPlanetMetadata(id: string): Metadata {
 
   const path = `/ansiklopedi/${body.id}`;
   const canonicalUrl = `${BASE_URL}${path}`;
-  const fullTitle = `${body.name} (${body.type.toUpperCase()}) Bilimsel Özellikleri & 3D Modeli — Ansiklopedi | SpaceTour TR`;
+  const fullTitle = `${body.name}: Özellikleri, Yapısı ve 3D Modeli | SpaceTour TR`;
   const description = `${body.name}: Çapı ${body.facts.çap}, kütlesi ${body.facts.kütle}, yüzey sıcaklığı ${body.facts.sıcaklık}. 3D interaktif model ve detaylı bilimsel veriler.`;
   const keywords = [
     `${body.name.toLowerCase()} gezegeni`,
@@ -373,7 +418,7 @@ export function buildPlanetMetadata(id: string): Metadata {
       type: 'article',
       images: [
         {
-          url: `${BASE_URL}/og-preview.png`,
+          url: `${canonicalUrl}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: `${body.name} — SpaceTour TR`,
@@ -384,7 +429,7 @@ export function buildPlanetMetadata(id: string): Metadata {
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: [`${BASE_URL}/og-preview.png`],
+      images: [`${canonicalUrl}/opengraph-image`],
     },
     robots: {
       index: true,

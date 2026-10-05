@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
 import type { CSSProperties } from 'react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
@@ -7,10 +8,11 @@ import { Reveal } from '@/components/motion/primitives';
 import { DOC_IMAGES } from '@/data/docImages';
 import { constellations } from '@/data/constellations';
 
-export const metadata: Metadata = {
-  title: 'Takımyıldızları · Ansiklopedi',
-  description: 'Kuzey yarımküreden çıplak gözle görülebilen takımyıldızları, en iyi gözlem ayları ve mitolojik hikâyeleriyle.',
-};
+export const metadata: Metadata = buildPageMetadata({
+  path: '/ansiklopedi/takimyildizlar',
+  title: 'Takımyıldızları: Gözlem Ayları ve Mitolojisi | SpaceTour TR',
+  description: 'Kuzey yarımküreden çıplak gözle görülebilen takımyıldızları: en iyi gözlem ayları, parlak yıldızları ve mitolojik hikâyeleri.',
+});
 
 export default function TakimyildizlarPage() {
   return (

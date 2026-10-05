@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
 import type { CSSProperties } from 'react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
@@ -6,10 +7,11 @@ import { EpisodeGrid } from '@/components/doc/SectionHub';
 import { DOC_IMAGES } from '@/data/docImages';
 import { getSection } from '@/data/sections';
 
-export const metadata: Metadata = {
-  title: 'Laboratuvar · Ansiklopedi',
-  description: 'Kepler yörüngelerinden kütleçekim dalgalarına on fizik laboratuvarı.',
-};
+export const metadata: Metadata = buildPageMetadata({
+  path: '/ansiklopedi/laboratuvar',
+  title: 'Astronomi Laboratuvarı: 10 Fizik Simülasyonu | SpaceTour TR',
+  description: 'Kepler yörüngelerinden kütleçekim dalgalarına, kara deliklerden asteroit çarpışmalarına on etkileşimli fizik laboratuvarıyla evreni deneyerek öğren.',
+});
 
 export default function LaboratuvarPage() {
   const section = getSection('ansiklopedi');

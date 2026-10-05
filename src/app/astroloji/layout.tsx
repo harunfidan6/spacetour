@@ -4,7 +4,7 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 export const metadata: Metadata = {
   title: {
     absolute: 'Astroloji · Zodyak Atlası & Göksel Çark — SpaceTour TR',
-    template: '%s — Astroloji | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
     '360° interaktif Zodyak usturlabı, canlı göksel ufuk saati, doğum haritası hesaplama, Keldani gezegen saatleri, tarot, sinastri ve 12 burç arşivi.',

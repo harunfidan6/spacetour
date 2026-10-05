@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   applicationName: "SpaceTour TR",
   description:
-    "spacetour.com.tr — Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve çok dalgaboylu gözlemevi.",
+    "Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve canlı gözlemevi.",
   keywords: [
     "spacetour",
     "spacetour tr",
@@ -143,19 +143,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "url": "https://spacetour.com.tr",
                   "name": "SpaceTour TR",
                   "description": "Hareket eden bir kinetik uzay atlası: 3D Güneş Sistemi, planetaryum ve canlı gökyüzü takibi.",
-                  "inLanguage": "tr-TR",
-                  "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "https://spacetour.com.tr/ansiklopedi?q={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                  }
+                  "inLanguage": "tr-TR"
                 },
                 {
                   "@type": "Organization",
                   "@id": "https://spacetour.com.tr/#organization",
                   "name": "SpaceTour TR",
                   "url": "https://spacetour.com.tr",
-                  "logo": "https://spacetour.com.tr/icon.svg"
+                  "logo": "https://spacetour.com.tr/logo-512.png"
                 },
                 {
                   "@type": "ItemList",

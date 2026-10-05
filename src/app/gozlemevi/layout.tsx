@@ -4,10 +4,10 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 export const metadata: Metadata = {
   title: {
     absolute: 'Çok Dalgaboylu Uzay Gözlemevi & Teleskoplar — SpaceTour TR',
-    template: '%s — Gözlemevi | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
-    'Evreni James Webb’in kızılötesi, Hubble’ın optik, Chandra’nın X-ışını ve dev radyo çanaklarının gözünden izleyin: 7 etkileşimli spektroskopi ve gözlem enstrümanı.',
+    'Evreni Webb’in kızılötesi, Hubble’ın optik, Chandra’nın X-ışını ve dev radyo çanaklarının gözünden izle: 7 etkileşimli spektroskopi ve gözlem aracı.',
   keywords: [
     'uzay gözlemevi',
     'james webb uzay teleskobu',

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/seo';
 import type { CSSProperties } from 'react';
 import { ChapterHero } from '@/components/doc/ChapterHero';
 import { PartHeading } from '@/components/doc/PartHeading';
@@ -6,10 +7,11 @@ import { CelestialRegistry } from '@/components/space/CelestialRegistry';
 import { DOC_IMAGES } from '@/data/docImages';
 import { planets } from '@/data/planets';
 
-export const metadata: Metadata = {
-  title: 'Gök cisimleri · Ansiklopedi',
-  description: 'Güneş’ten Plüton’a kimlik kartları: 3D hologram, fiziksel veriler ve bilimsel rapor.',
-};
+export const metadata: Metadata = buildPageMetadata({
+  path: '/ansiklopedi/gok-cisimleri',
+  title: 'Gök Cisimleri: Güneş’ten Plüton’a | SpaceTour TR',
+  description: 'Güneş’ten Plüton’a Güneş Sistemi’nin gök cisimleri: 3D modeller, kütle, çap, sıcaklık gibi fiziksel veriler ve her biri için bilimsel kimlik kartı.',
+});
 
 export default function GokCisimleriPage() {
   return (

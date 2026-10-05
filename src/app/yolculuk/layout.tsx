@@ -3,8 +3,8 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Güneş Sistemi’nde 3D Yolculuk & J2000 Simülasyonu — SpaceTour TR',
-    template: '%s — Yolculuk | SpaceTour TR',
+    absolute: 'Güneş Sistemi 3D Yolculuk Simülasyonu | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
     'Güneş Sistemi’nde durak durak 3D WebGL yolculuğu. Didaktik gezegen dizilimi ile gerçek J2000 yörünge efemeris konumları arasında geçiş yapın.',

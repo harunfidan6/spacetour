@@ -122,7 +122,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           <span className="label ml-auto hidden text-violet sm:inline">{TYPE_LABEL[planet.type] ?? planet.type}</span>
         </div>
 
-        <FitText className="display mt-8 leading-[0.8] text-paper" fallback="18vw" max={420}>
+        <FitText heading className="display mt-8 leading-[0.8] text-paper" fallback="18vw" max={420}>
           <SplitReveal as="span" trigger="intro" effect="tilt" stagger={0.05} duration={1.3}>
             {planet.name}
           </SplitReveal>

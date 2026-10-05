@@ -3,8 +3,8 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Gezegen Ansiklopedisi & Astronomi Laboratuvarı — SpaceTour TR',
-    template: '%s — Ansiklopedi | SpaceTour TR',
+    absolute: 'Gezegen Ansiklopedisi & Uzay Laboratuvarı — SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
     'Güneş Sistemi gezegenlerinin kimlik kartları, 3D etkileşimli modeller, takımyıldızlar ve astrofizik laboratuvarı simülatörleri.',

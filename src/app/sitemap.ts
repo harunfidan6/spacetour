@@ -4,6 +4,9 @@ import { planets } from '@/data/planets';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { BASE_URL } from '@/lib/seo';
 
+// Günlük içerikli sayfaların değişiklik tarihi her gün yenilensin
+export const revalidate = 86400;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();
 
@@ -35,31 +38,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${BASE_URL}/harita`,
-      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${BASE_URL}/ansiklopedi`,
-      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${BASE_URL}/gozlemevi`,
-      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${BASE_URL}/yolculuk`,
-      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/ansiklopedi/laboratuvar`,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
       url: `${BASE_URL}/yolculuk/atmosfer`,
-      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.85,
     },
@@ -69,8 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const collectionRoutes: MetadataRoute.Sitemap = SECTIONS.flatMap((section) =>
     (section.collections ?? []).map((col) => ({
       url: `${BASE_URL}${col.href}`,
-      lastModified: currentDate,
-      changeFrequency: (col.href.includes('burclar') ? 'daily' : 'weekly') as MetadataRoute.Sitemap[number]['changeFrequency'],
+      changeFrequency: 'weekly' as MetadataRoute.Sitemap[number]['changeFrequency'],
       priority: 0.88,
     }))
   );
@@ -91,7 +93,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       return {
         url: `${BASE_URL}${path}`,
-        lastModified: currentDate,
+        ...(isDailyTool ? { lastModified: currentDate } : {}),
         changeFrequency: (isDailyTool ? 'daily' : 'weekly') as MetadataRoute.Sitemap[number]['changeFrequency'],
         priority: isDailyTool ? 0.92 : 0.85,
       };
@@ -101,7 +103,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 4. All 11 Celestial Bodies (/ansiklopedi/[id])
   const planetRoutes: MetadataRoute.Sitemap = planets.map((body) => ({
     url: `${BASE_URL}/ansiklopedi/${body.id}`,
-    lastModified: currentDate,
     changeFrequency: 'monthly',
     priority: 0.85,
   }));
@@ -109,8 +110,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 5. All 12 Zodiac Archetypes (/astroloji/burclar/[burc])
   const zodiacRoutes: MetadataRoute.Sitemap = ZODIAC_SIGNS.map((sign) => ({
     url: `${BASE_URL}/astroloji/burclar/${sign.id}`,
-    lastModified: currentDate,
-    changeFrequency: 'daily',
+    changeFrequency: 'monthly',
     priority: 0.9,
   }));
 

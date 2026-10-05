@@ -3,11 +3,11 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Gök Haritası · 360° Planetaryum & Yıldız Atlası — SpaceTour TR',
-    template: '%s — Gök Haritası | SpaceTour TR',
+    absolute: '360° Planetaryum ve Gök Haritası | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
-    'Konumunuza göre anlık hesaplanan 360° interaktif planetaryum, en parlak kerteriz yıldızları, Türkiye ışık kirliliği (Bortle) analizi ve Messier derin uzay atlası.',
+    'Konumuna göre anlık hesaplanan 360° planetaryum, en parlak yıldızlar, Türkiye ışık kirliliği (Bortle) haritası ve Messier derin uzay atlası.',
   keywords: [
     'gök haritası',
     '3d planetaryum türkçe',

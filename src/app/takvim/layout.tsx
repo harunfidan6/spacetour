@@ -4,7 +4,7 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 export const metadata: Metadata = {
   title: {
     absolute: 'Gök Olayları Takvimi 2026 & Efemeris — SpaceTour TR',
-    template: '%s — Takvim | SpaceTour TR',
+    template: '%s | SpaceTour TR',
   },
   description:
     'Güneş ve Ay tutulmaları, meteor yağmurları (Perseid, Geminid), gezegen kavuşumları, süper aylar ve ekinokslar. Anlık efemeris ve geri sayım simülatörü.',
