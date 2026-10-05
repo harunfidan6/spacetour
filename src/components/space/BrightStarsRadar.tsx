@@ -176,7 +176,7 @@ export function BrightStarsRadar() {
               }`}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className={`label ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <span className={`label ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                   0{idx + 1}
                 </span>
                 <span

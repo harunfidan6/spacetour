@@ -392,12 +392,12 @@ export function ExoplanetTransitLab() {
                   <span className={`label text-[10px] ${isSelected ? 'text-ink/80' : 'text-rose-signal'}`}>
                     {preset.distanceLy} ly
                   </span>
-                  <span className={`label text-[10px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                  <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                     {preset.orbitalPeriodDays} gün
                   </span>
                 </div>
                 <div className="font-mono text-xs font-bold truncate">{preset.name}</div>
-                <div className={`text-[10px] truncate ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <div className={`text-[10px] truncate ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                   {preset.starType}
                 </div>
               </button>

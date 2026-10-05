@@ -132,7 +132,7 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
               <span className="doc-caption text-gold uppercase tracking-widest text-[10px]">
                 ARKETİPSEL KİMLİK
               </span>
-              <h3 className="doc-title mt-1 text-3xl text-paper">{s.traits.archetype}</h3>
+              <p className="doc-title mt-1 text-3xl text-paper">{s.traits.archetype}</p>
               <p className="doc-serif mt-2 text-xl text-gold italic leading-snug">
                 “{s.traits.motto}”
               </p>

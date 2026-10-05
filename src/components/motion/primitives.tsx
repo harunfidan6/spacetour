@@ -136,9 +136,12 @@ export function Scramble({
   }, [text, chars, duration]);
 
   return (
-    <span ref={ref} className={className} aria-label={text}>
-      {initial}
-    </span>
+    <>
+      <span ref={ref} className={className} aria-hidden>
+        {initial}
+      </span>
+      <span className="sr-only">{text}</span>
+    </>
   );
 }
 

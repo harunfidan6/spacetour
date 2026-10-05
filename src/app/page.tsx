@@ -31,7 +31,7 @@ export default function Home() {
             <li key={s.id}>
               <Link href={s.href} className="group flex h-full flex-col justify-between gap-6 bg-ink p-5 transition-colors hover:bg-ink-2">
                 <div>
-                  <span className="doc-title text-4xl text-paper/30 transition-colors group-hover:text-paper">{s.chapter}</span>
+                  <span className="doc-title text-4xl text-paper/50 transition-colors group-hover:text-paper">{s.chapter}</span>
                   <span className="doc-title mt-4 block text-xl text-paper">{s.title}</span>
                   <span className="doc-caption mt-1 block text-gold/80">{s.kicker}</span>
                 </div>

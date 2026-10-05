@@ -349,7 +349,7 @@ export function StellarSpectroscopyLab() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`label ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <span className={`label ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                   Tip {cls.classLetter}
                 </span>
                 <span
@@ -563,7 +563,7 @@ export function StellarSpectroscopyLab() {
                             ? 'text-rose-signal'
                             : intensity > 0.2
                             ? 'text-paper'
-                            : 'text-muted/40'
+                            : 'text-muted'
                         }`}
                       >
                         {intensity > 0.6 ? 'Çok Güçlü' : intensity > 0.2 ? 'Orta' : 'Yok/Eser'}

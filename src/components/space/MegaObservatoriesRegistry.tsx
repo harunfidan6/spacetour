@@ -153,7 +153,7 @@ export function MegaObservatoriesRegistry() {
                 <span className={`label ${isSelected ? 'text-ink/80 font-bold' : 'text-rose-signal'}`}>
                   {obs.id.toUpperCase()}
                 </span>
-                <span className={`label text-[10px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                   {obs.apertureDiameterM > 100 ? 'Dizi' : `${obs.apertureDiameterM}m`}
                 </span>
               </div>

@@ -117,7 +117,7 @@ export default function Navbar() {
         } ${scrolled ? 'border-b border-line bg-ink/80 backdrop-blur-xl' : 'border-b border-transparent bg-transparent'}`}
       >
         <div className="flex h-16 items-center gap-6 px-[var(--gutter)]">
-          <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="SpaceTour TR ana sayfa">
+          <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="Spacetour.tr ana sayfa">
             <LogoMark className="h-8 w-8" />
             <span className="display text-[17px] leading-none tracking-[-0.02em]">
               Spacetour<span className="text-gold">.tr</span>

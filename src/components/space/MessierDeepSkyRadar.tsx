@@ -160,7 +160,7 @@ export function MessierDeepSkyRadar() {
                 <span className={`label ${isSelected ? 'text-ink/80 font-bold' : 'text-lime'}`}>
                   {m.messier}
                 </span>
-                <span className={`label text-[10px] ${isSelected ? 'text-ink/70' : 'text-muted'}`}>
+                <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
                   {m.ngc}
                 </span>
               </div>

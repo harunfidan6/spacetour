@@ -20,16 +20,23 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 - [ ] Bing Webmaster Tools ve Yandex Webmaster; IndexNow.
 - [ ] Search Console ↔ Google Analytics bağlantısı.
 
-## P2 — Hız (mobil: ana sayfa 44/100, LCP 8,3 sn, TBT 1,5 sn, 3,5 MB; günlük burç 61/100, LCP 7,3 sn)
+## P2 — Hız (önce mobil: ana sayfa 41/100, LCP 8,4 sn, TBT 1,5 sn)
 
-- [ ] 3D sahneleri görünür olunca / boşta yükle; ilk ekranda hafif görsel. Hedef LCP < 2,5 sn.
-- [ ] Kullanılmayan JS (sayfa başı 200–400 KB): three.js ve GSAP sahnelerini parçalara böl.
-- [ ] İlk ekran görseline öncelik, yazı tiplerini önden yükle ve alt kümele.
-- [ ] Astroloji sayfalarında ~180 KB HTML: metnin bir kısmını sunucu bileşenine taşı.
+- [x] 3D sahneler (three.js) ilk boyamadan sonra, sayfa boşa çıkınca yüklenir (`useIdleReady`).
+- [x] Gezegen dokuları sitede, çoğu WebP: 4,4 MB → 2,5 MB; kırık Venüs atmosfer dokusu kaldırıldı.
+- [x] Google Analytics sayfa yüklendikten sonra.
+- [x] Açılış animasyonu yalnızca ziyaret ana sayfada başlarsa.
+- [x] Sayfa başı kapak görselleri belirme efektini beklemeden çizilir.
+- Sonuç (canlı, mobil): ana sayfa 64/100, LCP 4,1 sn, TBT 570 ms; günlük burç 73/100, TBT 140 ms.
+- [ ] Kalan: kapak görsellerinin mobil boyutu, GSAP animasyonlarının ilk yükü, astroloji sayfalarında ~180 KB HTML.
 
-## P3 — Erişilebilirlik (Lighthouse 84–89)
+## P3 — Erişilebilirlik ✅ (6 Ekim)
 
-- [ ] Renk kontrastı, izin verilmeyen aria özellikleri, ad/etiket uyuşmazlığı, başlık sırası, dokunma hedefi, tanım listesi.
+- [x] SplitText başlıkları: parçalar ekran okuyucudan gizli, tam metin görünmez kopya (yasak aria-label kalktı).
+- [x] Kontrast: bölüm numaraları, seçili düğme etiketleri, takvim ve SSS numaraları.
+- [x] Altbilgi `<dl>` yapısı, konum yolu dokunma alanı, logo bağlantısının adı.
+- [x] Başlık sırası: araç bölümlerine görünmez H2, rehber ve gezegen kartı başlıkları H3.
+- Sonuç: denetlenen 10 sayfanın hepsi Lighthouse erişilebilirlik 100.
 
 ## P4 — İçerik (en büyük kazanç)
 

@@ -84,7 +84,7 @@ export function FaqAccordion({
                   <span className="flex items-start gap-3 sm:gap-4 pr-2">
                     <span
                       className="font-mono text-xs sm:text-sm font-bold shrink-0 mt-0.5"
-                      style={{ color: isOpen ? accentColor : 'rgba(255, 255, 255, 0.4)' }}
+                      style={{ color: isOpen ? accentColor : 'rgba(255, 255, 255, 0.62)' }}
                     >
                       {String(idx + 1).padStart(2, '0')}.
                     </span>

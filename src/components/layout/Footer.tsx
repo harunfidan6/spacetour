@@ -88,10 +88,10 @@ export function Footer() {
           </div>
           <div className="col-span-2 sm:col-span-1">
             <div className="label mb-4 text-muted">Durum</div>
+            <p className="mb-3 flex items-center gap-2 text-sm text-paper/80">
+              <span className="live-dot" /> Tüm sistemler çalışıyor
+            </p>
             <dl className="space-y-3 text-sm">
-              <div className="flex items-center gap-2 text-paper/80">
-                <span className="live-dot" /> Tüm sistemler çalışıyor
-              </div>
               <div>
                 <dt className="label text-[10px] text-muted">İstanbul</dt>
                 <dd className="font-mono text-paper">

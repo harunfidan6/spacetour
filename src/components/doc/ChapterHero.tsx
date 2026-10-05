@@ -93,7 +93,7 @@ export function ChapterHero({
               <span key={c.label} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight size={12} aria-hidden className="text-paper/30" />}
                 {c.href ? (
-                  <Link href={c.href} className="doc-kicker -my-2 inline-block py-2 text-[10px] transition-colors hover:text-paper">
+                  <Link href={c.href} className="doc-kicker inline-flex min-h-6 items-center px-1 text-[10px] transition-colors hover:text-paper">
                     {c.label}
                   </Link>
                 ) : (

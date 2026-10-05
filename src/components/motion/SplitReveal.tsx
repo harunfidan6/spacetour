@@ -50,8 +50,10 @@ export function SplitReveal({
 
     let started = false;
     let current: gsap.core.Animation | null = null;
+    const label = el.textContent?.replace(/\s+/g, ' ').trim() ?? '';
 
     SplitText.create(el, {
+      aria: 'hidden',
       type: by === 'lines' ? 'lines' : by === 'words' ? 'words,lines' : 'chars,words,lines',
       mask: by === 'chars' ? 'lines' : by,
       linesClass: 'split-line',
@@ -59,6 +61,11 @@ export function SplitReveal({
       autoSplit: true,
       onSplit(self) {
         el.setAttribute('data-split-ready', '');
+        // Parçalar aria-hidden; tam metni ekran okuyucular bu kopyadan okur (her bölmede yeniden eklenir)
+        const sr = document.createElement('span');
+        sr.className = 'sr-only';
+        sr.textContent = label;
+        el.appendChild(sr);
         const targets = by === 'chars' ? self.chars : by === 'words' ? self.words : self.lines;
         const each = stagger ?? (by === 'chars' ? 0.028 : by === 'words' ? 0.06 : 0.1);
         const vars: gsap.TweenVars =

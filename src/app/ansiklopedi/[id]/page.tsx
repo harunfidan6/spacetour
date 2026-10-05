@@ -234,7 +234,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           <section aria-label="Uzay Görevleri">
             <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
               <span className="label text-violet">(M)</span>
-              <span className="label text-paper">Ziyaret Eden Uzay Görevleri</span>
+              <h2 className="label text-paper">Ziyaret Eden Uzay Görevleri</h2>
             </div>
             <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4 sm:max-lg:fill-row-2 lg:fill-row-4">
               {planet.missions.map((m) => (
@@ -244,7 +244,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                       <span>{m.agency}</span>
                       <span>{m.year}</span>
                     </div>
-                    <h4 className="doc-title text-xl text-paper mb-2">{m.name}</h4>
+                    <h3 className="doc-title text-xl text-paper mb-2">{m.name}</h3>
                   </div>
                   <p className="text-xs leading-relaxed text-paper/70 mt-3">{m.role}</p>
                 </div>
@@ -258,7 +258,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           <section aria-label="Biliyor Muydunuz" className="rounded-xl border border-white/[0.08] bg-black/40 p-6 sm:p-8 backdrop-blur-md">
             <div className="flex items-center gap-3 mb-6">
               <span className="h-2 w-2 rounded-full bg-violet" />
-              <h3 className="doc-title text-xl text-paper">Biliyor Muydunuz?</h3>
+              <h2 className="doc-title text-xl text-paper">Biliyor Muydunuz?</h2>
             </div>
             <ul className="space-y-4">
               {planet.biliyorMuydun.map((item, idx) => (
@@ -276,7 +276,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
             <div>
               <span className="doc-kicker text-violet text-xs">Kozmik Ağ · Topic Cluster</span>
-              <h3 className="doc-title text-2xl text-paper mt-1">{planet.name} ile İlgili Enstrümanlar</h3>
+              <h2 className="doc-title text-2xl text-paper mt-1">{planet.name} ile İlgili Enstrümanlar</h2>
             </div>
             <span className="doc-caption text-muted">Kozmik Atlas</span>
           </div>
@@ -292,9 +292,9 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                   <span>LABORATUVAR</span>
                   <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
-                <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                   {nameCase(planet.name, 'bulunma', '’')} Kaç Kilosunuz?
-                </h4>
+                </h3>
                 <p className="mt-1 text-xs text-paper/70 leading-relaxed">
                   Yerçekimi odasında ağırlığınızı {nameCase(planet.name, 'ilgi', '’')} yüzey ivmesine göre test edin.
                 </p>
@@ -312,9 +312,9 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                   <span>3D ORRERY</span>
                   <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
-                <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                   Güneş Çevresindeki Yörüngesi
-                </h4>
+                </h3>
                 <p className="mt-1 text-xs text-paper/70 leading-relaxed">
                   Kepler yasalarıyla {planet.facts.yörüngeSüresi} periyodundaki 3D yörünge hareketini izleyin.
                 </p>
@@ -330,9 +330,9 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                     <span>ASTROLOJİ ETKİSİ</span>
                     <span className="text-gold">✦</span>
                   </div>
-                  <h4 className="doc-title text-lg text-paper">
+                  <h3 className="doc-title text-lg text-paper">
                     Yönettiği Zodyak Burçları
-                  </h4>
+                  </h3>
                   <p className="mt-1 text-xs text-paper/70 leading-relaxed">
                     {planet.name}, mitolojik ve astrolojik olarak şu arketiplerin yöneticisidir:
                   </p>
@@ -359,9 +359,9 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                     <span>3D SİMÜLASYON</span>
                     <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
-                  <h4 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
+                  <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                     Güneş Sistemi’nde Keşfet
-                  </h4>
+                  </h3>
                   <p className="mt-1 text-xs text-paper/70 leading-relaxed">
                     WebGL 3D uzay atlasında {nameCase(planet.name, 'yonelme', '’')} doğru gerçek zamanlı uçuş yapın.
                   </p>

@@ -102,6 +102,7 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
 
       {/* 4. Active Astrology Instrument Stage */}
       <section aria-label={mod.title} className="module px-[var(--gutter)] py-12 sm:py-16">
+        <h2 className="sr-only">{mod.title}</h2>
         <div className="mx-auto max-w-6xl">
           <ModuleRenderer id={`astroloji/${mod.slug}`} />
         </div>
@@ -149,8 +150,8 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
                 <div className="grid gap-px border border-gold/20 bg-gold/10 sm:grid-cols-3">
                   {guide.howTo.map((step) => (
                     <article key={step.step} className="flex flex-col bg-ink p-6 sm:p-7">
-                      <span className="doc-title text-3xl text-gold/40 mb-3">{step.step}</span>
-                      <h4 className="doc-title text-xl text-paper mb-2">{step.title}</h4>
+                      <span className="doc-title text-3xl text-gold/70 mb-3">{step.step}</span>
+                      <h3 className="doc-title text-xl text-paper mb-2">{step.title}</h3>
                       <p className="text-sm leading-relaxed text-paper/75">{step.desc}</p>
                     </article>
                   ))}

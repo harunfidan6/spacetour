@@ -269,7 +269,7 @@ export default function CalendarPage() {
                         data-cell
                         onClick={() => setSelectedDate(dayEvents.length ? day : null)}
                         className={`group relative flex min-h-[64px] flex-col items-start p-1.5 text-left transition-colors sm:min-h-[104px] sm:p-2.5 ${
-                          selected ? 'bg-solar/20 text-paper ring-1 ring-solar' : inMonth ? 'bg-ink-2 text-paper hover:bg-ink-3' : 'bg-ink/80 text-muted/40'
+                          selected ? 'bg-solar/20 text-paper ring-1 ring-solar' : inMonth ? 'bg-ink-2 text-paper hover:bg-ink-3' : 'bg-ink/80 text-muted'
                         } ${dayEvents.length ? 'cursor-pointer' : 'cursor-default'}`}
                         aria-label={`${format(day, 'd MMMM', { locale: tr })}${dayEvents.length ? `, ${dayEvents.length} olay` : ''}`}
                       >

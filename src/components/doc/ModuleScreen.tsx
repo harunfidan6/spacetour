@@ -44,6 +44,7 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
       />
 
       <section aria-label={mod.title} className="module px-[var(--gutter)] py-14 sm:py-20">
+        <h2 className="sr-only">{mod.title}</h2>
         {mod.immersive ? (
           <div className="relative h-[86svh] w-full overflow-hidden border border-white/[0.12] bg-[#020206]">
             <ModuleRenderer id={`${sectionId}/${mod.slug}`} />
@@ -85,7 +86,7 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
                   {guide.howTo.map((step) => (
                     <article key={step.step} className="flex min-w-0 flex-col bg-ink p-6 sm:p-7">
                       <span className="doc-title text-3xl text-paper/40 mb-4">{step.step}</span>
-                      <h4 className="doc-title break-words text-xl text-paper mb-2">{step.title}</h4>
+                      <h3 className="doc-title break-words text-xl text-paper mb-2">{step.title}</h3>
                       <p className="text-sm leading-relaxed text-paper/70 break-words">{step.desc}</p>
                     </article>
                   ))}
@@ -118,7 +119,7 @@ export function ModuleScreen({ sectionId, slug }: { sectionId: SectionId; slug: 
               <div className="mt-16 sm:mt-20 rounded-xl border border-white/[0.08] bg-black/40 p-6 sm:p-8 backdrop-blur-md">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="h-2 w-2 rounded-full" style={{ background: 'var(--page-accent)' }} />
-                  <h4 className="doc-title text-xl text-paper">{guide.takeawaysTitle ?? 'Biliyor Muydunuz?'}</h4>
+                  <h3 className="doc-title text-xl text-paper">{guide.takeawaysTitle ?? 'Biliyor Muydunuz?'}</h3>
                 </div>
                 <ul className="space-y-4">
                   {guide.takeaways.map((tip, i) => (
