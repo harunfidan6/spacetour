@@ -17,7 +17,8 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 ## P1 — Arama motorlarına kayıt
 
 - [x] Google Search Console (DNS ile), sitemap gönderildi.
-- [ ] Bing Webmaster Tools ve Yandex Webmaster; IndexNow.
+- [x] IndexNow: anahtar dosyası + `node tools/indexnow.mjs` (tümü, yollar veya `--gunluk`).
+- [ ] Bing Webmaster Tools ve Yandex Webmaster (hesap kullanıcıda).
 - [ ] Search Console ↔ Google Analytics bağlantısı.
 
 ## P2 — Hız (önce mobil: ana sayfa 41/100, LCP 8,4 sn, TBT 1,5 sn)
