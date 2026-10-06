@@ -63,7 +63,7 @@ export default function Navbar() {
       >
         <div className="flex h-16 items-center gap-6 px-[var(--gutter)]">
           <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="Spacetour.tr ana sayfa">
-            <LogoMark className="h-9 w-9" />
+            <LogoMark className="h-[38px] w-[73px] shrink-0" />
             <span className="display text-[17px] leading-none tracking-[-0.02em]">
               Spacetour<span className="text-gold">.tr</span>
             </span>

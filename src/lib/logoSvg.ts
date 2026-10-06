@@ -9,6 +9,12 @@ export const LOGO_TILT = -18;
 /** Ayın yörünge düzlemi (derece) */
 export const LOGO_MOON_TILT = -38;
 
+/** Gezegenin bulut kuşakları: [halka düzlemine göre kayma, kalınlık, renk, opaklık] (400'lük görünümde) */
+export const LOGO_BANDS = [
+  [-62, 7, '#fff1c1', 0.45], [-44, 12, '#b45309', 0.35], [-24, 6, '#fde68a', 0.4], [-8, 16, '#9a3412', 0.38],
+  [14, 7, '#fcd34d', 0.32], [30, 12, '#7c2d12', 0.4], [50, 6, '#fde68a', 0.25], [66, 10, '#431407', 0.45],
+] as const;
+
 const sparkle = (x: number, y: number, r: number, fill: string, op = 1) =>
   `<path opacity="${op}" d="M${x} ${y - r} Q${x + r * 0.13} ${y - r * 0.13} ${x + r} ${y} Q${x + r * 0.13} ${y + r * 0.13} ${x} ${y + r} Q${x - r * 0.13} ${y + r * 0.13} ${x - r} ${y} Q${x - r * 0.13} ${y - r * 0.13} ${x} ${y - r}Z" fill="${fill}"/>`;
 
@@ -39,10 +45,7 @@ export function logoFullSvg({ background = false, id = 'L' }: { background?: boo
     if (Math.hypot(x - 200, y - 200) < 100) continue;
     stars += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${size.toFixed(2)}" fill="#f4f3ee" opacity="${op.toFixed(2)}"/>`;
   }
-  const bands = ([
-    [-62, 7, '#fff1c1', 0.45], [-44, 12, '#b45309', 0.35], [-24, 6, '#fde68a', 0.4], [-8, 16, '#9a3412', 0.38],
-    [14, 7, '#fcd34d', 0.32], [30, 12, '#7c2d12', 0.4], [50, 6, '#fde68a', 0.25], [66, 10, '#431407', 0.45],
-  ] as const).map(([dy, w, c, o]) => `<ellipse cx="200" cy="${200 + dy}" rx="150" ry="${18 + Math.abs(dy) * 0.1}" fill="none" stroke="${c}" stroke-width="${w}" opacity="${o}"/>`).join('');
+  const bands = LOGO_BANDS.map(([dy, w, c, o]) => `<ellipse cx="200" cy="${200 + dy}" rx="150" ry="${18 + Math.abs(dy) * 0.1}" fill="none" stroke="${c}" stroke-width="${w}" opacity="${o}"/>`).join('');
   const ring = (clip: 'back' | 'front') => `<g clip-path="url(#${id}${clip})" transform="rotate(${LOGO_TILT} 200 200)">
 <ellipse cx="200" cy="200" rx="126" ry="27" fill="none" stroke="url(#${id}ring)" stroke-width="4" opacity=".35"/>
 <ellipse cx="200" cy="200" rx="146" ry="32" fill="none" stroke="url(#${id}ring)" stroke-width="16"/>

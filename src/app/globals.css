@@ -309,9 +309,27 @@ body {
 .spin-slower { animation: spin-slow 60s linear infinite; }
 .spin-rev { animation: spin-slow 40s linear infinite reverse; }
 
-/* Menü logosu: hareket azaltılınca dönen ay yerine sabit ay */
+/* Menü logosu (LogoMark): gezegen dönüşü, halka parıltısı, ışıma, yıldız; hareket azaltılınca sabit */
+.logo-spot-move { animation: logo-spot-move 16s infinite; }
+.logo-spot-fade { animation: logo-spot-fade 16s linear infinite; }
+@keyframes logo-spot-move {
+  0% { transform: translateX(-112px); animation-timing-function: cubic-bezier(.37, 0, .63, 1); }
+  55%, 100% { transform: translateX(112px); }
+}
+@keyframes logo-spot-fade {
+  0%, 55%, 100% { opacity: 0; }
+  10%, 45% { opacity: 1; }
+}
+.logo-glint { stroke-dasharray: 7 93; animation: logo-glint 7s linear infinite; }
+@keyframes logo-glint { to { stroke-dashoffset: -100; } }
+.logo-halo { animation: logo-halo 4.5s ease-in-out infinite alternate; }
+@keyframes logo-halo { from { opacity: .55; } to { opacity: 1; } }
+.logo-twinkle { transform-box: fill-box; transform-origin: center; animation: logo-twinkle 3.6s ease-in-out infinite; }
+@keyframes logo-twinkle { 0%, 100% { transform: scale(.45) rotate(0deg); opacity: .45; } 50% { transform: scale(1) rotate(45deg); opacity: 1; } }
 .logo-moon-static { display: none; }
 @media (prefers-reduced-motion: reduce) {
+  .logo-spot-move, .logo-spot-fade, .logo-glint, .logo-halo, .logo-twinkle { animation: none; }
+  .logo-spot-fade, .logo-glint { opacity: 0; }
   .logo-moon-anim { display: none; }
   .logo-moon-static { display: inline; }
 }
