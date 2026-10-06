@@ -41,7 +41,7 @@ export function CelestialRegistry() {
   useGsap(
     () => {
       if (prefersReducedMotion() || !list.current) return;
-      gsap.from(list.current.querySelectorAll('[data-row]'), { yPercent: 60, autoAlpha: 0, duration: 0.7, stagger: 0.04, ease: 'mg.out' });
+      gsap.fromTo(list.current.querySelectorAll('[data-row]'), { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.7, stagger: 0.04, ease: 'mg.out', clearProps: 'opacity,visibility,transform' });
     },
     [activeTab]
   );

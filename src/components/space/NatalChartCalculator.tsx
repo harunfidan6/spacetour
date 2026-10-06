@@ -206,6 +206,192 @@ export function NatalChartCalculator() {
     return list;
   })();
 
+  // Haritanın tam çarkı (gezegenler, evler, eksenler, açılar): harita sekmesi ve poster ortak kullanır
+  const wheelSvg = (
+              <svg viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`} className="w-full h-full">
+                {/* 1. Concentric Degree & Guide Circles */}
+                <circle cx={CENTER} cy={CENTER} r={R_OUTER} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
+                <circle cx={CENTER} cy={CENTER} r={R_ZODIAC} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                <circle cx={CENTER} cy={CENTER} r={R_HOUSES} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+                <circle cx={CENTER} cy={CENTER} r={R_INNER} fill="#07070c" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+
+                {/* 2. 360° Fine Degree Ticks (Every 5° and 10°) */}
+                {Array.from({ length: 72 }).map((_, i) => {
+                  const deg = i * 5;
+                  const rad = (deg * Math.PI) / 180;
+                  const isMajor = deg % 30 === 0;
+                  const isTen = deg % 10 === 0;
+                  const tickLen = isMajor ? 8 : isTen ? 5 : 3;
+                  const x1 = CENTER + R_OUTER * Math.cos(rad);
+                  const y1 = CENTER + R_OUTER * Math.sin(rad);
+                  const x2 = CENTER + (R_OUTER - tickLen) * Math.cos(rad);
+                  const y2 = CENTER + (R_OUTER - tickLen) * Math.sin(rad);
+
+                  return (
+                    <line
+                      key={i}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke={isMajor ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)'}
+                      strokeWidth={isMajor ? 1.5 : 0.8}
+                    />
+                  );
+                })}
+
+                {/* 3. 12 Zodiac Sign Ring Sectors */}
+                {ZODIAC_SIGNS.map((s, idx) => {
+                  const ascSignIdx = risingSignIndex >= 0 ? risingSignIndex : 0;
+                  const ascDeg = ascSignIdx * 30;
+                  const signStartAngle = (idx * 30 - ascDeg + 180 + 360) % 360;
+                  const signMidAngle = (signStartAngle + 15) % 360;
+
+                  const radStart = (signStartAngle * Math.PI) / 180;
+                  const radMid = (signMidAngle * Math.PI) / 180;
+
+                  // Divider line from R_HOUSES to R_OUTER
+                  const x1 = CENTER + R_HOUSES * Math.cos(radStart);
+                  const y1 = CENTER + R_HOUSES * Math.sin(radStart);
+                  const x2 = CENTER + R_OUTER * Math.cos(radStart);
+                  const y2 = CENTER + R_OUTER * Math.sin(radStart);
+
+                  // Center position for sign icon
+                  const rGlyph = (R_OUTER + R_ZODIAC) / 2;
+                  const gx = CENTER + rGlyph * Math.cos(radMid);
+                  const gy = CENTER + rGlyph * Math.sin(radMid);
+
+                  const isSun = s.id === sunSign.id;
+                  const isRising = s.id === risingSign.id;
+                  const isMoon = s.id === moonSign.id;
+
+                  const signColor = isSun
+                    ? '#fbbf24'
+                    : isRising
+                    ? '#d4ff3d'
+                    : isMoon
+                    ? '#c084fc'
+                    : 'rgba(255,255,255,0.45)';
+
+                  return (
+                    <g key={s.id}>
+                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                      {/* Sign Glyph in sector */}
+                      <g transform={`translate(${gx - 9}, ${gy - 9})`}>
+                        <ZodiacGlyph sign={s.id} size={18} className="transition-transform hover:scale-125" style={{ color: signColor }} />
+                      </g>
+                    </g>
+                  );
+                })}
+
+                {/* 4. 12 House Dividing Spokes and Roman Numerals */}
+                {Array.from({ length: 12 }).map((_, hIdx) => {
+                  const hAngle = hIdx * 30;
+                  const rad = (hAngle * Math.PI) / 180;
+                  const x1 = CENTER + R_INNER * Math.cos(rad);
+                  const y1 = CENTER + R_INNER * Math.sin(rad);
+                  const x2 = CENTER + R_HOUSES * Math.cos(rad);
+                  const y2 = CENTER + R_HOUSES * Math.sin(rad);
+
+                  // House label position
+                  const labelRad = ((hAngle + 15) * Math.PI) / 180;
+                  const rLabel = (R_HOUSES + R_INNER) / 2;
+                  const lx = CENTER + rLabel * Math.cos(labelRad);
+                  const ly = CENTER + rLabel * Math.sin(labelRad);
+
+                  return (
+                    <g key={hIdx}>
+                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
+                      <text
+                        x={lx}
+                        y={ly}
+                        fill="rgba(255,255,255,0.3)"
+                        fontSize="9"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {hIdx + 1}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* 5. Major Chart Axes: ASC (Left), DSC (Right), MC (Top), IC (Bottom) */}
+                <line x1={CENTER - R_OUTER - 6} y1={CENTER} x2={CENTER - R_INNER} y2={CENTER} stroke="#d4ff3d" strokeWidth="2.5" />
+                <line x1={CENTER + R_INNER} y1={CENTER} x2={CENTER + R_OUTER + 6} y2={CENTER} stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="4 2" />
+                <line x1={CENTER} y1={CENTER - R_OUTER - 6} x2={CENTER} y2={CENTER - R_INNER} stroke="#fbbf24" strokeWidth="2.5" />
+                <line x1={CENTER} y1={CENTER + R_INNER} x2={CENTER} y2={CENTER + R_OUTER + 6} stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="4 2" />
+
+                {/* Axis Labels */}
+                <text x={CENTER - R_OUTER - 14} y={CENTER + 3} fill="#d4ff3d" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="end">ASC</text>
+                <text x={CENTER + R_OUTER + 14} y={CENTER + 3} fill="rgba(255,255,255,0.5)" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="start">DSC</text>
+                <text x={CENTER} y={CENTER - R_OUTER - 10} fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="middle">MC</text>
+                <text x={CENTER} y={CENTER + R_OUTER + 18} fill="rgba(255,255,255,0.5)" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="middle">IC</text>
+
+                {/* 6. Aspect Chord Network in Central Void */}
+                {aspects.map((asp, idx) => {
+                  const isHovered = hoveredAspect === asp || hoveredPlanet === asp.p1 || hoveredPlanet === asp.p2;
+
+                  return (
+                    <line
+                      key={idx}
+                      x1={asp.x1}
+                      y1={asp.y1}
+                      x2={asp.x2}
+                      y2={asp.y2}
+                      stroke={asp.color}
+                      strokeWidth={isHovered ? 2.5 : 1.2}
+                      strokeOpacity={isHovered ? 0.95 : 0.45}
+                      strokeDasharray={asp.type === 'square' || asp.type === 'opposition' ? '4 2' : undefined}
+                      className="cursor-pointer transition-all"
+                      onMouseEnter={() => setHoveredAspect(asp)}
+                      onMouseLeave={() => setHoveredAspect(null)}
+                    />
+                  );
+                })}
+
+                {/* 7. Planet Pins on Chart */}
+                {planetPositions.map((p) => {
+                  const isHovered = hoveredPlanet === p.planet;
+
+                  return (
+                    <g
+                      key={p.planet}
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredPlanet(p.planet)}
+                      onMouseLeave={() => setHoveredPlanet(null)}
+                    >
+                      {/* Connection ray from house radius to planet pin */}
+                      <line x1={p.chordX} y1={p.chordY} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" />
+                      {/* Disc backing */}
+                      <circle
+                        cx={p.x}
+                        cy={p.y}
+                        r={isHovered ? 14 : 11}
+                        fill="#0e0e17"
+                        stroke={isHovered ? '#fbbf24' : 'rgba(255,255,255,0.4)'}
+                        strokeWidth={isHovered ? 2 : 1}
+                        className="transition-all"
+                      />
+                      {/* Planet Glyph */}
+                      <g transform={`translate(${p.x - 7}, ${p.y - 7})`}>
+                        <PlanetGlyph
+                          planet={p.planet}
+                          size={14}
+                          className={isHovered ? 'text-gold' : 'text-paper'}
+                        />
+                      </g>
+                    </g>
+                  );
+                })}
+
+                {/* 8. Center Hub Core Overlay */}
+                <circle cx={CENTER} cy={CENTER} r={42} fill="#06060c" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+              </svg>
+  );
+
   return (
     <div id="dogum-haritasi" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
       <Ticks />
@@ -506,188 +692,7 @@ export function NatalChartCalculator() {
           <div className="border border-line bg-ink-2 p-6 lg:p-8 flex flex-col xl:flex-row items-center gap-8">
             {/* The SVG 360° Natal Wheel */}
             <div className="relative w-80 h-80 sm:w-96 sm:h-96 md:w-[420px] md:h-[420px] flex-shrink-0 select-none">
-              <svg viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`} className="w-full h-full">
-                {/* 1. Concentric Degree & Guide Circles */}
-                <circle cx={CENTER} cy={CENTER} r={R_OUTER} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
-                <circle cx={CENTER} cy={CENTER} r={R_ZODIAC} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-                <circle cx={CENTER} cy={CENTER} r={R_HOUSES} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-                <circle cx={CENTER} cy={CENTER} r={R_INNER} fill="#07070c" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
-
-                {/* 2. 360° Fine Degree Ticks (Every 5° and 10°) */}
-                {Array.from({ length: 72 }).map((_, i) => {
-                  const deg = i * 5;
-                  const rad = (deg * Math.PI) / 180;
-                  const isMajor = deg % 30 === 0;
-                  const isTen = deg % 10 === 0;
-                  const tickLen = isMajor ? 8 : isTen ? 5 : 3;
-                  const x1 = CENTER + R_OUTER * Math.cos(rad);
-                  const y1 = CENTER + R_OUTER * Math.sin(rad);
-                  const x2 = CENTER + (R_OUTER - tickLen) * Math.cos(rad);
-                  const y2 = CENTER + (R_OUTER - tickLen) * Math.sin(rad);
-
-                  return (
-                    <line
-                      key={i}
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke={isMajor ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)'}
-                      strokeWidth={isMajor ? 1.5 : 0.8}
-                    />
-                  );
-                })}
-
-                {/* 3. 12 Zodiac Sign Ring Sectors */}
-                {ZODIAC_SIGNS.map((s, idx) => {
-                  const ascSignIdx = risingSignIndex >= 0 ? risingSignIndex : 0;
-                  const ascDeg = ascSignIdx * 30;
-                  const signStartAngle = (idx * 30 - ascDeg + 180 + 360) % 360;
-                  const signMidAngle = (signStartAngle + 15) % 360;
-
-                  const radStart = (signStartAngle * Math.PI) / 180;
-                  const radMid = (signMidAngle * Math.PI) / 180;
-
-                  // Divider line from R_HOUSES to R_OUTER
-                  const x1 = CENTER + R_HOUSES * Math.cos(radStart);
-                  const y1 = CENTER + R_HOUSES * Math.sin(radStart);
-                  const x2 = CENTER + R_OUTER * Math.cos(radStart);
-                  const y2 = CENTER + R_OUTER * Math.sin(radStart);
-
-                  // Center position for sign icon
-                  const rGlyph = (R_OUTER + R_ZODIAC) / 2;
-                  const gx = CENTER + rGlyph * Math.cos(radMid);
-                  const gy = CENTER + rGlyph * Math.sin(radMid);
-
-                  const isSun = s.id === sunSign.id;
-                  const isRising = s.id === risingSign.id;
-                  const isMoon = s.id === moonSign.id;
-
-                  const signColor = isSun
-                    ? '#fbbf24'
-                    : isRising
-                    ? '#d4ff3d'
-                    : isMoon
-                    ? '#c084fc'
-                    : 'rgba(255,255,255,0.45)';
-
-                  return (
-                    <g key={s.id}>
-                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-                      {/* Sign Glyph in sector */}
-                      <g transform={`translate(${gx - 9}, ${gy - 9})`}>
-                        <ZodiacGlyph sign={s.id} size={18} className="transition-transform hover:scale-125" style={{ color: signColor }} />
-                      </g>
-                    </g>
-                  );
-                })}
-
-                {/* 4. 12 House Dividing Spokes and Roman Numerals */}
-                {Array.from({ length: 12 }).map((_, hIdx) => {
-                  const hAngle = hIdx * 30;
-                  const rad = (hAngle * Math.PI) / 180;
-                  const x1 = CENTER + R_INNER * Math.cos(rad);
-                  const y1 = CENTER + R_INNER * Math.sin(rad);
-                  const x2 = CENTER + R_HOUSES * Math.cos(rad);
-                  const y2 = CENTER + R_HOUSES * Math.sin(rad);
-
-                  // House label position
-                  const labelRad = ((hAngle + 15) * Math.PI) / 180;
-                  const rLabel = (R_HOUSES + R_INNER) / 2;
-                  const lx = CENTER + rLabel * Math.cos(labelRad);
-                  const ly = CENTER + rLabel * Math.sin(labelRad);
-
-                  return (
-                    <g key={hIdx}>
-                      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
-                      <text
-                        x={lx}
-                        y={ly}
-                        fill="rgba(255,255,255,0.3)"
-                        fontSize="9"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                      >
-                        {hIdx + 1}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* 5. Major Chart Axes: ASC (Left), DSC (Right), MC (Top), IC (Bottom) */}
-                <line x1={CENTER - R_OUTER - 6} y1={CENTER} x2={CENTER - R_INNER} y2={CENTER} stroke="#d4ff3d" strokeWidth="2.5" />
-                <line x1={CENTER + R_INNER} y1={CENTER} x2={CENTER + R_OUTER + 6} y2={CENTER} stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="4 2" />
-                <line x1={CENTER} y1={CENTER - R_OUTER - 6} x2={CENTER} y2={CENTER - R_INNER} stroke="#fbbf24" strokeWidth="2.5" />
-                <line x1={CENTER} y1={CENTER + R_INNER} x2={CENTER} y2={CENTER + R_OUTER + 6} stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeDasharray="4 2" />
-
-                {/* Axis Labels */}
-                <text x={CENTER - R_OUTER - 14} y={CENTER + 3} fill="#d4ff3d" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="end">ASC</text>
-                <text x={CENTER + R_OUTER + 14} y={CENTER + 3} fill="rgba(255,255,255,0.5)" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="start">DSC</text>
-                <text x={CENTER} y={CENTER - R_OUTER - 10} fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="middle">MC</text>
-                <text x={CENTER} y={CENTER + R_OUTER + 18} fill="rgba(255,255,255,0.5)" fontSize="10" fontFamily="monospace" fontWeight="900" textAnchor="middle">IC</text>
-
-                {/* 6. Aspect Chord Network in Central Void */}
-                {aspects.map((asp, idx) => {
-                  const isHovered = hoveredAspect === asp || hoveredPlanet === asp.p1 || hoveredPlanet === asp.p2;
-
-                  return (
-                    <line
-                      key={idx}
-                      x1={asp.x1}
-                      y1={asp.y1}
-                      x2={asp.x2}
-                      y2={asp.y2}
-                      stroke={asp.color}
-                      strokeWidth={isHovered ? 2.5 : 1.2}
-                      strokeOpacity={isHovered ? 0.95 : 0.45}
-                      strokeDasharray={asp.type === 'square' || asp.type === 'opposition' ? '4 2' : undefined}
-                      className="cursor-pointer transition-all"
-                      onMouseEnter={() => setHoveredAspect(asp)}
-                      onMouseLeave={() => setHoveredAspect(null)}
-                    />
-                  );
-                })}
-
-                {/* 7. Planet Pins on Chart */}
-                {planetPositions.map((p) => {
-                  const isHovered = hoveredPlanet === p.planet;
-
-                  return (
-                    <g
-                      key={p.planet}
-                      className="cursor-pointer"
-                      onMouseEnter={() => setHoveredPlanet(p.planet)}
-                      onMouseLeave={() => setHoveredPlanet(null)}
-                    >
-                      {/* Connection ray from house radius to planet pin */}
-                      <line x1={p.chordX} y1={p.chordY} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" />
-                      {/* Disc backing */}
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={isHovered ? 14 : 11}
-                        fill="#0e0e17"
-                        stroke={isHovered ? '#fbbf24' : 'rgba(255,255,255,0.4)'}
-                        strokeWidth={isHovered ? 2 : 1}
-                        className="transition-all"
-                      />
-                      {/* Planet Glyph */}
-                      <g transform={`translate(${p.x - 7}, ${p.y - 7})`}>
-                        <PlanetGlyph
-                          planet={p.planet}
-                          size={14}
-                          className={isHovered ? 'text-gold' : 'text-paper'}
-                        />
-                      </g>
-                    </g>
-                  );
-                })}
-
-                {/* 8. Center Hub Core Overlay */}
-                <circle cx={CENTER} cy={CENTER} r={42} fill="#06060c" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-              </svg>
+              {wheelSvg}
 
               {/* Center Info Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
@@ -918,7 +923,7 @@ export function NatalChartCalculator() {
       {/* 4. TAB: POSTER / ARŞİV BELGESİ */}
       {activeTab === 'poster' && (
         <div className="space-y-6">
-          <div className="border border-gold/40 bg-ink-2 p-6 sm:p-10 relative overflow-hidden text-paper space-y-8">
+          <div data-print-poster className="border border-gold/40 bg-ink-2 p-6 sm:p-10 relative overflow-hidden text-paper space-y-8">
             <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
               <ZodiacGlyph sign={sunSign.id} size={280} className="text-gold" />
             </div>
@@ -941,43 +946,15 @@ export function NatalChartCalculator() {
             </div>
 
             {/* Poster Core Grid */}
-            <div className="grid gap-8 lg:grid-cols-12 items-center">
+            <div data-print-grid className="grid gap-8 lg:grid-cols-12 items-center">
               {/* Scaled Wheel */}
               <div className="lg:col-span-6 flex justify-center">
                 <div className="relative w-full max-w-[340px] aspect-square border border-line rounded-full p-2 bg-ink/60 shadow-[0_0_30px_rgba(255,215,0,0.06)]">
-                  {/* Wheel SVG */}
-                  <svg viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`} className="w-full h-full">
-                    <circle cx={CENTER} cy={CENTER} r={R_OUTER} fill="none" stroke="var(--gold)" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
-                    <circle cx={CENTER} cy={CENTER} r={R_ZODIAC} fill="none" stroke="var(--line)" strokeWidth="0.8" />
-                    <circle cx={CENTER} cy={CENTER} r={R_HOUSES} fill="none" stroke="var(--gold)" strokeWidth="0.5" opacity="0.4" />
-                    <circle cx={CENTER} cy={CENTER} r={R_INNER} fill="var(--ink)" stroke="var(--line)" strokeWidth="1" />
-
-                    {/* 12 Zodiac Segments */}
-                    {ZODIAC_SIGNS.map((s, idx) => {
-                      const rot = idx * 30 - 90;
-                      const rad = (rot * Math.PI) / 180;
-                      const x = CENTER + (R_ZODIAC + 15) * Math.cos(rad + (15 * Math.PI) / 180);
-                      const y = CENTER + (R_ZODIAC + 15) * Math.sin(rad + (15 * Math.PI) / 180);
-                      return (
-                        <g key={s.id}>
-                          <line
-                            x1={CENTER + R_HOUSES * Math.cos(rad)}
-                            y1={CENTER + R_HOUSES * Math.sin(rad)}
-                            x2={CENTER + R_OUTER * Math.cos(rad)}
-                            y2={CENTER + R_OUTER * Math.sin(rad)}
-                            stroke="var(--line)"
-                            strokeWidth="0.8"
-                          />
-                          <g transform={`translate(${x - 9}, ${y - 9})`}>
-                            <ZodiacGlyph sign={s.id} size={18} className="text-gold opacity-90" />
-                          </g>
-                        </g>
-                      );
-                    })}
-
-                    <circle cx={CENTER} cy={CENTER} r={2} fill="var(--gold)" />
-                    <circle cx={CENTER} cy={CENTER} r={18} fill="none" stroke="var(--gold)" strokeWidth="0.6" strokeDasharray="2 2" />
-                  </svg>
+                  {wheelSvg}
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span className="label text-[9px] text-muted">{sunSign.name} ☉</span>
+                    <span className="font-mono text-[11px] font-black text-gold">{risingSign.name} ↑</span>
+                  </div>
                 </div>
               </div>
 
@@ -1033,13 +1010,14 @@ export function NatalChartCalculator() {
             {/* Poster Actions Footer */}
             <div className="border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4">
               <div className="label text-muted text-xs">
-                SPACETOUR.TR · İSVİÇRE GRAVÜR STANDARDI · {day}.{month}.{year} {String(hour).padStart(2, '0')}:{String(minute).padStart(2, '0')}
+                SPACETOUR.COM.TR · DOĞUM HARİTASI · {day}.{month}.{year} {String(hour).padStart(2, '0')}:{String(minute).padStart(2, '0')}
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => window.print()}
+                  data-print-hide
                   className="label px-5 py-2.5 border border-gold bg-gold text-ink font-bold hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-2"
                 >
                   <span>Posteri Yazdır / PDF Olarak Kaydet</span>

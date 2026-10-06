@@ -137,14 +137,12 @@ export default function CalendarPage() {
   useGsap(
     () => {
       if (prefersReducedMotion() || !grid.current) return;
-      gsap.from(grid.current.querySelectorAll('[data-cell]'), {
-        x: 24 * direction,
-        autoAlpha: 0,
-        duration: 0.7,
-        stagger: { each: 0.012, from: direction > 0 ? 'start' : 'end' },
-        ease: 'mg.out',
-      });
-      gsap.from('[data-month-title]', { yPercent: 100 * direction, autoAlpha: 0, duration: 0.7, ease: 'mg.out' });
+      gsap.fromTo(
+        grid.current.querySelectorAll('[data-cell]'),
+        { x: 24 * direction, autoAlpha: 0 },
+        { x: 0, autoAlpha: 1, duration: 0.7, stagger: { each: 0.012, from: direction > 0 ? 'start' : 'end' }, ease: 'mg.out', clearProps: 'opacity,visibility,transform' }
+      );
+      gsap.fromTo('[data-month-title]', { yPercent: 100 * direction, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.7, ease: 'mg.out', clearProps: 'opacity,visibility,transform' });
     },
     [monthKey]
   );

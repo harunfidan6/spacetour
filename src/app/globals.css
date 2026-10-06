@@ -651,3 +651,17 @@ html[data-film] .doc-img { opacity: 1 !important; transition: none; }
   .choice-rail > *:last-child { margin-right: 18%; }
 }
 
+
+/* Doğum haritası posteri: yazdırırken yalnızca poster, koyu renkleriyle */
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  body:has([data-print-poster]) *:not(:has([data-print-poster])):not([data-print-poster]):not([data-print-poster] *) { display: none !important; }
+  body:has([data-print-poster]) *:has([data-print-poster]) {
+    margin: 0 !important; padding: 0 !important; border: 0 !important; min-height: 0 !important; height: auto !important;
+    background: none !important; box-shadow: none !important; transform: none !important; overflow: visible !important;
+  }
+  [data-print-poster] { zoom: 0.92; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
+  [data-print-poster] [data-print-hide] { display: none !important; }
+  [data-print-poster] [data-print-grid] { grid-template-columns: 5fr 7fr !important; gap: 24px !important; }
+  html:has([data-print-poster]), body:has([data-print-poster]) { height: auto !important; min-height: 0 !important; background: #0a0a0f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

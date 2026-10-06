@@ -36,13 +36,12 @@ export function ZodiacAtlas() {
   useGsap(
     () => {
       if (prefersReducedMotion() || !grid.current) return;
-      gsap.from(grid.current.querySelectorAll('[data-sign]'), {
-        y: 35,
-        autoAlpha: 0,
-        duration: 0.7,
-        stagger: 0.04,
-        ease: 'power3.out',
-      });
+      // fromTo: bitiş değeri açık; yarıda yeniden başlasa bile kart yarı saydam kalmaz
+      gsap.fromTo(
+        grid.current.querySelectorAll('[data-sign]'),
+        { y: 35, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.04, ease: 'power3.out', clearProps: 'opacity,visibility,transform' }
+      );
     },
     [element]
   );
@@ -98,7 +97,7 @@ export function ZodiacAtlas() {
               key={s.id}
               href={`/astroloji/burclar/${s.id}`}
               data-sign
-              className="doc-episode group relative isolate flex min-h-[400px] flex-col justify-end overflow-hidden bg-ink-2 transition-all hover:bg-ink hover:shadow-[0_0_30px_rgba(245,197,66,0.15)]"
+              className="doc-episode group relative isolate flex min-h-[400px] flex-col justify-end overflow-hidden bg-ink-2 transition-[background-color,box-shadow] hover:bg-ink hover:shadow-[0_0_30px_rgba(245,197,66,0.15)]"
             >
               {image && (
                 <Image
