@@ -1,4 +1,8 @@
 import { ImageResponse } from 'next/og';
+import { logoDataUri, logoFullSvg, logoSmallSvg } from '@/lib/logoSvg';
+
+const LOGO_SMALL = logoDataUri(logoSmallSvg({ background: false, id: 'ogs' }));
+const LOGO_FULL = logoDataUri(logoFullSvg({ id: 'ogf' }));
 
 export const alt = 'SpaceTour TR — Kinetik Uzay Atlası & 3D Gök Küresi';
 export const size = {
@@ -48,27 +52,14 @@ export default async function Image() {
           }}
         />
 
+        {/* eslint-disable-next-line @next/next/no-img-element -- next/og yalnızca img kabul eder */}
+        <img src={LOGO_FULL} width={430} height={430} alt="" style={{ position: 'absolute', right: '36px', top: '84px' }} />
+
         {/* Top Header / Kicker */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                border: '1.5px solid #00d4ff',
-                background: 'rgba(0, 212, 255, 0.12)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-              }}
-            >
-              {/* Four-point star drawn as SVG: the ✦ glyph has no font in the OG renderer */}
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" fill="#00d4ff" />
-              </svg>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- next/og yalnızca img kabul eder */}
+            <img src={LOGO_SMALL} width={52} height={52} alt="" />
             <span
               style={{
                 fontSize: '20px',
@@ -98,7 +89,7 @@ export default async function Image() {
         </div>
 
         {/* Center Main Headline */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '960px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '640px' }}>
           <div
             style={{
               fontSize: '56px',

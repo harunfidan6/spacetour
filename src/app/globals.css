@@ -309,6 +309,13 @@ body {
 .spin-slower { animation: spin-slow 60s linear infinite; }
 .spin-rev { animation: spin-slow 40s linear infinite reverse; }
 
+/* Menü logosu: hareket azaltılınca dönen ay yerine sabit ay */
+.logo-moon-static { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .logo-moon-anim { display: none; }
+  .logo-moon-static { display: inline; }
+}
+
 @keyframes blink { 50% { opacity: 0; } }
 .blink { animation: blink 1s steps(1) infinite; }
 

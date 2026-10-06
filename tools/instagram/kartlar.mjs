@@ -7,11 +7,15 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
+import { createJiti } from 'jiti';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const OUT = path.join(DIR, 'cikti');
 const CHROME = process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const jiti = createJiti(import.meta.url, { alias: { '@': path.join(ROOT, 'src') } });
+const { logoSmallSvg } = await jiti.import(path.join(ROOT, 'src/lib/logoSvg.ts'));
+const LOGO = logoSmallSvg({ background: false, id: 'k' });
 const img = (file) => pathToFileURL(path.join(ROOT, 'public/images/space', file)).href;
 
 export const KARTLAR = [
@@ -108,7 +112,7 @@ async function main() {
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, defaultViewport: { width: 1080, height: 1350 }, args: ['--allow-file-access-from-files'] });
   const page = await browser.newPage();
   for (const k of KARTLAR.filter((x) => !only || x.id.includes(only))) {
-    await page.evaluateOnNewDocument((data) => { window.KART = data; }, k);
+    await page.evaluateOnNewDocument((data) => { window.KART = data; }, { ...k, logo: LOGO });
     await page.goto(pathToFileURL(path.join(DIR, 'kart.html')).href, { waitUntil: 'networkidle0' });
     await page.evaluate(() => document.fonts.ready);
     const file = path.join(OUT, `${k.id}.png`);

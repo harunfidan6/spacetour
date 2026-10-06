@@ -1,5 +1,8 @@
 import { ImageResponse } from 'next/og';
 import type { SectionId } from '@/data/sections';
+import { logoDataUri, logoSmallSvg } from '@/lib/logoSvg';
+
+const LOGO = logoDataUri(logoSmallSvg({ background: false, id: 'og' }));
 
 /** Bölüm renkleri (paylaşım görselleri CSS değişkenlerini okuyamaz) */
 export const SECTION_ACCENT: Record<SectionId, string> = {
@@ -60,21 +63,8 @@ export function renderOgImage({ kicker, title, subtitle, footer, accent = '#f5c5
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '10px',
-                border: `2px solid ${accent}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <svg width="22" height="22" viewBox="-10 -10 20 20">
-                <path d="M0-9L1.8-1.8 9 0 1.8 1.8 0 9-1.8 1.8-9 0-1.8-1.8Z" fill={accent} />
-              </svg>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- next/og yalnızca img kabul eder */}
+            <img src={LOGO} width={56} height={56} alt="" />
             <div style={{ fontSize: '20px', letterSpacing: '0.3em', color: accent }}>SPACETOUR.COM.TR</div>
           </div>
           {kicker ? (

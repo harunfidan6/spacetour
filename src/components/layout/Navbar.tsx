@@ -7,21 +7,10 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, prefersReducedMotion } from '@/components/motion/gsap';
 import { LiveClock } from '@/components/motion/primitives';
 import { SITE_ROUTES } from '@/lib/routes';
+import { LogoMark } from './LogoMark';
 
 function isActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname.startsWith(href);
-}
-
-export function LogoMark({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 40 40" className={className} aria-hidden>
-      <circle cx="20" cy="20" r="6" fill="var(--solar)" />
-      <circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.55" />
-      <g className="origin-center spin-slow" style={{ transformBox: 'view-box', animationDuration: '6s' }}>
-        <circle cx="35" cy="20" r="2.6" fill="var(--lime)" />
-      </g>
-    </svg>
-  );
 }
 
 export default function Navbar() {
@@ -74,7 +63,7 @@ export default function Navbar() {
       >
         <div className="flex h-16 items-center gap-6 px-[var(--gutter)]">
           <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="Spacetour.tr ana sayfa">
-            <LogoMark className="h-8 w-8" />
+            <LogoMark className="h-9 w-9" />
             <span className="display text-[17px] leading-none tracking-[-0.02em]">
               Spacetour<span className="text-gold">.tr</span>
             </span>
