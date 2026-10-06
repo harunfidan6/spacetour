@@ -104,6 +104,17 @@ export const KARTLAR = [
     credit: 'Andreas Cellarius, Harmonia Macrocosmica (1660)',
     url: 'spacetour.com.tr/astroloji/retrolar',
   },
+  {
+    id: '08-andromeda',
+    kicker: 'Ekim gecelerinde',
+    title: '2,5 milyon',
+    serif: 'yıllık ışık.',
+    size: 130,
+    lede: 'Andromeda Galaksisi, çıplak gözle görebileceğin en uzak cisim. Bu ay akşamları doğu-kuzeydoğuda, Kraliçe’nin “W”sinin hemen altında.',
+    image: img('andromeda-galaxy-560mm-fl-3885b3.jpg'),
+    credit: 'David (Deddy) Dayag · CC BY-SA 4.0',
+    url: 'spacetour.com.tr/ansiklopedi/gok-cisimleri',
+  },
 ];
 
 async function main() {
