@@ -61,11 +61,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.85,
     },
-    {
-      url: `${BASE_URL}/yolculuk/atmosfer`,
-      changeFrequency: 'monthly',
-      priority: 0.85,
-    },
   ];
 
   // 2. Collections across all sections (e.g. /astroloji/burclar, /ansiklopedi/gok-cisimleri)

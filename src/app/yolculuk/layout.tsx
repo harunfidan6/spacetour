@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'j2000 efemeris gezegenler',
     'gezegenler arası seyahat',
     'güneş sistemi simülatörü',
-    'dünya atmosfer katmanları 3d',
   ],
   alternates: {
     canonical: `${BASE_URL}/yolculuk`,

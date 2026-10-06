@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
         destination: 'https://spacetour.com.tr/:path*',
         permanent: true,
       },
+      // Kaldırılan dikey yükseliş simülatörü
+      { source: '/yolculuk/atmosfer', destination: '/yolculuk', permanent: true },
     ];
   },
   images: {
