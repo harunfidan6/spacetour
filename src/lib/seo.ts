@@ -508,38 +508,70 @@ export function getFaqPageJsonLd(faqs: { question: string; answer: string }[]) {
   };
 }
 
+/** Makale şemasında ortak yazar ve yayıncı (Google, yayıncı logosu olarak raster görsel ister) */
+export const ARTICLE_AUTHOR = { '@type': 'Organization', name: SITE_NAME, url: `${BASE_URL}/hakkinda` };
+export const ARTICLE_PUBLISHER = {
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: BASE_URL,
+  logo: { '@type': 'ImageObject', url: `${BASE_URL}/logo-512.png`, width: 512, height: 512 },
+};
+
+/** İçeriğin depoya ilk girdiği ve son düzenlendiği tarihler (git geçmişinden) */
+export const CONTENT_DATES = {
+  planets: { published: '2026-09-28', modified: '2026-10-04' },
+  signs: { published: '2026-10-03', modified: '2026-10-04' },
+  events: { published: '2026-10-06', modified: '2026-10-06' },
+} as const;
+
+/** JSON-LD Article: başlık, tarih, yazar, yayıncı ve kapak görseliyle */
+export function getArticleJsonLd(a: {
+  path: string;
+  headline: string;
+  description?: string;
+  image?: string;
+  datePublished: string;
+  dateModified?: string;
+  about?: Record<string, unknown> | string;
+}) {
+  const url = `${BASE_URL}${a.path}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: a.headline.slice(0, 110),
+    ...(a.description ? { description: a.description } : {}),
+    image: [a.image ?? DEFAULT_OG_IMAGE],
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    datePublished: a.datePublished,
+    dateModified: a.dateModified ?? a.datePublished,
+    inLanguage: 'tr-TR',
+    author: ARTICLE_AUTHOR,
+    publisher: ARTICLE_PUBLISHER,
+    ...(a.about ? { about: a.about } : {}),
+  };
+}
+
 /** JSON-LD Article / ItemPage schema script for Zodiac sign dossiers */
 export function getZodiacSignJsonLd(signId: string) {
   const sign = ZODIAC_SIGNS.find((s) => s.id === signId);
   if (!sign) return null;
 
-  const url = `${BASE_URL}/astroloji/burclar/${sign.id}`;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+  const path = `/astroloji/burclar/${sign.id}`;
+  return getArticleJsonLd({
+    path,
     headline: `${sign.name} Burcu (${sign.latinName}) Özellikleri ve Arketipi`,
-    url,
     description: SIGN_SEO_DESCRIPTIONS[sign.id] || sign.overview,
-    inLanguage: 'tr-TR',
-    author: {
-      '@type': 'Organization',
-      name: SITE_NAME,
-      url: BASE_URL,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: SITE_NAME,
-      url: BASE_URL,
-      logo: `${BASE_URL}/icon.svg`,
-    },
+    image: `${BASE_URL}${path}/opengraph-image`,
+    datePublished: CONTENT_DATES.signs.published,
+    dateModified: CONTENT_DATES.signs.modified,
     about: {
       '@type': 'Thing',
       name: `${sign.name} Burcu`,
       alternateName: sign.latinName,
       description: `Zodyak döngüsü: ${sign.dates}. Element: ${sign.element}. Nitelik: ${sign.modality}. Yönetici gezegen: ${sign.rulingPlanet}.`,
     },
-  };
+  });
 }
 
 

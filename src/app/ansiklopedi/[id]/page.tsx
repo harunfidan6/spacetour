@@ -9,7 +9,7 @@ import { SplitReveal } from '@/components/motion/SplitReveal';
 import { FitText } from '@/components/motion/FitText';
 import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
 import { Marquee } from '@/components/motion/Marquee';
-import { buildPlanetMetadata, getBreadcrumbJsonLd, BASE_URL } from '@/lib/seo';
+import { buildPlanetMetadata, getBreadcrumbJsonLd, getArticleJsonLd, CONTENT_DATES, BASE_URL } from '@/lib/seo';
 import { nameCase } from '@/lib/text';
 
 export function generateStaticParams() {
@@ -72,19 +72,15 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
     { name: planet.name, url: `/ansiklopedi/${planet.id}` },
   ]);
 
-  const thingJson = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemPage',
-    name: `${planet.name} — Bilimsel Dosyası`,
-    url: `${BASE_URL}/ansiklopedi/${planet.id}`,
+  const thingJson = getArticleJsonLd({
+    path: `/ansiklopedi/${planet.id}`,
+    headline: `${planet.name} — Bilimsel Dosyası`,
     description: planet.description,
-    mainEntity: {
-      '@type': 'Thing',
-      name: planet.name,
-      additionalType: 'https://en.wikipedia.org/wiki/Astronomical_body',
-      description: planet.detay,
-    },
-  };
+    image: `${BASE_URL}/ansiklopedi/${planet.id}/opengraph-image`,
+    datePublished: CONTENT_DATES.planets.published,
+    dateModified: CONTENT_DATES.planets.modified,
+    about: { '@type': 'Thing', name: planet.name, additionalType: 'https://en.wikipedia.org/wiki/Astronomical_body' },
+  });
 
   const facts = [
     { k: 'Çap', v: planet.facts.çap },

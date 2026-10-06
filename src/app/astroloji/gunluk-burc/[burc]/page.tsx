@@ -8,7 +8,7 @@ import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { DOC_IMAGES, type DocImageKey } from '@/data/docImages';
 import { dailyReading } from '@/lib/astrology/dailyHoroscope';
-import { BASE_URL, SITE_NAME, getBreadcrumbJsonLd } from '@/lib/seo';
+import { BASE_URL, SITE_NAME, getArticleJsonLd, getBreadcrumbJsonLd } from '@/lib/seo';
 import { nameCase } from '@/lib/text';
 
 // Her burcun bugünkü yorumu sunucuda üretilir; sayfa yarım saatte bir yenilenir (gece yarısından sonra yeni gün)
@@ -72,17 +72,12 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
     { k: 'Sosyal hayat', title: 'Çevrenle bağın', text: r.social },
   ];
 
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+  const articleJsonLd = getArticleJsonLd({
+    path: `/astroloji/gunluk-burc/${s.id}`,
     headline: `${s.name} burcu günlük yorum · ${day}`,
+    image: `${BASE_URL}/astroloji/burclar/${s.id}/opengraph-image`,
     datePublished: isoDay(now),
-    dateModified: isoDay(now),
-    inLanguage: 'tr-TR',
-    mainEntityOfPage: `${BASE_URL}/astroloji/gunluk-burc/${s.id}`,
-    author: { '@type': 'Organization', name: SITE_NAME, url: BASE_URL },
-    publisher: { '@type': 'Organization', name: SITE_NAME, logo: { '@type': 'ImageObject', url: `${BASE_URL}/logo-512.png` } },
-  };
+  });
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: 'Ana Sayfa', url: '/' },
     { name: 'Astroloji', url: '/astroloji' },

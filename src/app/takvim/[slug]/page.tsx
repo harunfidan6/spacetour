@@ -7,7 +7,7 @@ import { ChapterHero } from '@/components/doc/ChapterHero';
 import { DOC_IMAGES } from '@/data/docImages';
 import { events, eventTypeLabels, type AstronomicalEvent, type EventType } from '@/data/events';
 import { eventSlug, eventBySlug, EVENT_YEARS } from '@/lib/eventSlug';
-import { buildPageMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { buildPageMetadata, getArticleJsonLd, getBreadcrumbJsonLd, CONTENT_DATES } from '@/lib/seo';
 
 // "Kaç gün kaldı" bilgisi güncel kalsın
 export const revalidate = 86400;
@@ -163,14 +163,14 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
   const year = e.date.slice(0, 4);
   const sameType = events.filter((x) => x.type === e.type && x.id !== e.id).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6);
 
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+  const articleJsonLd = getArticleJsonLd({
+    path: `/takvim/${slug}`,
     headline: `${e.title} · ${fmtDate(e.date)}`,
+    description: e.description,
+    datePublished: CONTENT_DATES.events.published,
+    dateModified: CONTENT_DATES.events.modified,
     about: eventTypeLabels[e.type],
-    inLanguage: 'tr-TR',
-    author: { '@type': 'Organization', name: 'SpaceTour TR', url: 'https://spacetour.com.tr' },
-  };
+  });
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: 'Ana Sayfa', url: '/' },
     { name: 'Gök olayları takvimi', url: '/takvim' },

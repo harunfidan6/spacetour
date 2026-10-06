@@ -57,7 +57,7 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 
 ## P6 — Yapılandırılmış veri
 
-- [ ] Gezegen makalelerine tarih, yazar, yayıncı logosu.
+- [x] Makale şeması (gezegen, burç, günlük burç, gök olayı): gerçek yayın/güncelleme tarihi, yazar, raster yayıncı logosu, kapak görseli — `getArticleJsonLd`.
 - [ ] Yeni sayfalara uygun şema; Zengin Sonuçlar Testi.
 - [ ] Tanıtım videoları YouTube'da, ana sayfada video olarak.
 
