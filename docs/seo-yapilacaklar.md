@@ -50,8 +50,8 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 
 ## P5 — Güven sinyalleri
 
-- [ ] Hakkında, İletişim, Gizlilik/KVKK, Çerez politikası.
-- [ ] Yöntem ve kaynaklar sayfası (hesaplama yöntemi, görsel kaynakları).
+- [x] Hakkında, İletişim, Gizlilik/KVKK, Çerez politikası (6 Ekim); altbilgide bağlantılar.
+- [x] Yöntem ve kaynaklar sayfası (6 Ekim).
 
 ## P6 — Yapılandırılmış veri
 

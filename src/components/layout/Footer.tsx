@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { INFO_PAGES } from '@/components/doc/InfoPage';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { FitText } from '@/components/motion/FitText';
@@ -117,7 +118,11 @@ export function Footer() {
 
       <div className="flex flex-col gap-3 border-t border-line px-[var(--gutter)] py-5 sm:flex-row sm:items-center sm:justify-between">
         <span className="label text-muted">© 2026 SpaceTour TR · spacetour.com.tr</span>
-        <span className="label text-muted">NASA / ESA / USGS açık veri lisanslı</span>
+        <nav aria-label="Kurumsal" className="flex flex-wrap gap-x-4 gap-y-2">
+          {INFO_PAGES.map((p) => (
+            <Link key={p.href} href={p.href} className="label text-muted transition-colors hover:text-paper">{p.label}</Link>
+          ))}
+        </nav>
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

@@ -131,6 +131,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 8. Ay bugün, gök olayları (yıl özetleri ve her olay), gezegen retro takvimleri
   const extraRoutes: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/astroloji/ay-bugun`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.9 },
+    ...['hakkinda', 'yontem', 'iletisim', 'gizlilik', 'cerezler'].map((p) => ({ url: `${BASE_URL}/${p}`, changeFrequency: 'yearly' as const, priority: 0.4 })),
     ...EVENT_YEARS.map((y) => ({ url: `${BASE_URL}/takvim/${y}`, changeFrequency: 'weekly' as const, priority: 0.85 })),
     ...events.map((e) => ({ url: `${BASE_URL}/takvim/${eventSlug(e)}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
     ...['merkur', 'venus', 'mars', 'jupiter', 'saturn'].flatMap((p) => ['2026', '2027'].map((y) => ({ url: `${BASE_URL}/astroloji/retrolar/${p}-${y}`, changeFrequency: 'monthly' as const, priority: 0.8 }))),

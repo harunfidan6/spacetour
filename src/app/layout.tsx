@@ -142,7 +142,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "@id": "https://spacetour.com.tr/#organization",
                   "name": "SpaceTour TR",
                   "url": "https://spacetour.com.tr",
-                  "logo": "https://spacetour.com.tr/logo-512.png"
+                  "logo": "https://spacetour.com.tr/logo-512.png",
+                  "email": "info@spacetour.com.tr"
                 },
                 {
                   "@type": "ItemList",
