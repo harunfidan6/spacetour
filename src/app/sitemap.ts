@@ -109,8 +109,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
+  // 6. 12 burcun günlük yorum sayfaları: her gün yeni içerik
+  const dailyRoutes: MetadataRoute.Sitemap = ZODIAC_SIGNS.map((sign) => ({
+    url: `${BASE_URL}/astroloji/gunluk-burc/${sign.id}`,
+    lastModified: currentDate,
+    changeFrequency: 'daily',
+    priority: 0.9,
+  }));
+
   // Deduplicate URLs in case of overlaps
-  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes];
+  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes, ...dailyRoutes];
   const seenUrls = new Set<string>();
   const uniqueRoutes: MetadataRoute.Sitemap = [];
 

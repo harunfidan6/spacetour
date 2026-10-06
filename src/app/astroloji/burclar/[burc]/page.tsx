@@ -278,6 +278,15 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
               <Heart size={16} className="text-gold" />
             </Link>
             <Link
+              href={`/astroloji/gunluk-burc/${s.id}`}
+              className="group flex flex-1 items-center justify-between border border-line bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-line"
+            >
+              <span className="flex items-center gap-2">
+                <Sparkles size={16} className="text-gold" /> {s.name} Burcu Bugün
+              </span>
+              <ArrowUpRight size={16} className="text-paper/60" />
+            </Link>
+            <Link
               href="/harita/planetaryum"
               className="group flex flex-1 items-center justify-between border border-line bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-line"
             >

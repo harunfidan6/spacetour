@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   Sparkles,
   Heart,
@@ -116,6 +117,9 @@ export function DailyHoroscopeDeck() {
               <p className="doc-caption text-xs text-paper/60 mt-1">
                 Yönetici Gezegen: <strong className="text-paper">{selectedSign.rulingPlanet}</strong> · Arketip: <strong className="text-paper">{selectedSign.traits.archetype}</strong>
               </p>
+              <Link href={`/astroloji/gunluk-burc/${selectedSign.id}`} className="mt-2 inline-block font-mono text-xs text-gold hover:underline">
+                {selectedSign.name} burcunun bugünkü tam yorumu →
+              </Link>
             </div>
           </div>
 
