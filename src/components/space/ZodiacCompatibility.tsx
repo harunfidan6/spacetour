@@ -161,6 +161,12 @@ export function ZodiacCompatibility() {
               <span className="sr-only">{result.verdict}</span>
             </div>
           </div>
+          <Link
+            href={`/astroloji/burc-uyumu/${ZODIAC_SIGNS.indexOf(a) <= ZODIAC_SIGNS.indexOf(b) ? `${a.id}-${b.id}` : `${b.id}-${a.id}`}`}
+            className="mt-2 font-mono text-[11px] text-gold hover:underline"
+          >
+            {a.id === b.id ? `İki ${a.name}` : `${a.name} ve ${b.name}`} uyumunun tam yorumu →
+          </Link>
           <div aria-hidden className="mt-3 inline-block px-3 py-1 font-mono text-xs uppercase tracking-wider font-bold bg-gold/15 text-gold border border-gold/30">
             {result.verdict}
           </div>

@@ -41,7 +41,7 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 ## P4 — İçerik (en büyük kazanç)
 
 - [x] Burç başına günlük yorum sayfaları (12): `/astroloji/gunluk-burc/koc`; sunucuda üretilir, 30 dakikada bir yenilenir, Article şeması, sitemap ve iç bağlantılar (6 Ekim).
-- [ ] Burç uyumu ikilileri (78): `/astroloji/burc-uyumu/koc-aslan`.
+- [x] Burç uyumu ikilileri (78): `/astroloji/burc-uyumu/koc-aslan`; FAQPage şeması, ters sıra 308 yönlenir, sitemap ve iç bağlantılar (6 Ekim).
 - [ ] Ay sayfaları: "ay bugün hangi burçta", aylık ay evreleri.
 - [ ] Retro takvimi: `/astroloji/retrolar/merkur-2026`.
 - [ ] Gök olaylarına ayrı sayfalar ve yıl özeti.

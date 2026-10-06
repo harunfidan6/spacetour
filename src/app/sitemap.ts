@@ -117,8 +117,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
+  // 7. 78 burç uyumu ikilisi (burç sırasıyla: koc-aslan)
+  const pairRoutes: MetadataRoute.Sitemap = ZODIAC_SIGNS.flatMap((a, i) =>
+    ZODIAC_SIGNS.slice(i).map((b) => ({
+      url: `${BASE_URL}/astroloji/burc-uyumu/${a.id}-${b.id}`,
+      changeFrequency: 'monthly' as MetadataRoute.Sitemap[number]['changeFrequency'],
+      priority: 0.75,
+    }))
+  );
+
   // Deduplicate URLs in case of overlaps
-  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes, ...dailyRoutes];
+  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes, ...dailyRoutes, ...pairRoutes];
   const seenUrls = new Set<string>();
   const uniqueRoutes: MetadataRoute.Sitemap = [];
 
