@@ -47,7 +47,8 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 - [x] Retro takvimi: 5 gezegen × 2026–2027 (`/astroloji/retrolar/merkur-2026`), gerçek istasyon tarihleri, gölge dönemleri, SSS.
 - [x] 69 gök olayına ayrı sayfa (`/takvim/tam-gunes-tutulmasi-12-agustos-2026`) ve yıl özetleri (`/takvim/2026`…), tür rehberleri ve iç bağlantılar.
 - [ ] ISS görünürlüğü (büyük şehirler).
-- [ ] Araç sayfalarına "nasıl hesaplanır" ve gerçek soru-cevaplar; gezegen sayfalarına soru-cevap.
+- [x] Gezegen sayfalarına veriden üretilen soru-cevap + FAQPage (uydu sayıları Wikipedia 2026 ile güncellendi: Jüpiter 115, Satürn 293, Uranüs 29).
+- [ ] Araç sayfalarına "nasıl hesaplanır" ve gerçek soru-cevaplar.
 
 ## P5 — Güven sinyalleri
 

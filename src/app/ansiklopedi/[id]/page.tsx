@@ -2,14 +2,14 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { planets } from '@/data/planets';
+import { planets, type CelestialBody } from '@/data/planets';
 import { PlanetHologram3D } from '@/components/space/PlanetHologram3D';
 import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { FitText } from '@/components/motion/FitText';
 import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
 import { Marquee } from '@/components/motion/Marquee';
-import { buildPlanetMetadata, getBreadcrumbJsonLd, getArticleJsonLd, CONTENT_DATES, BASE_URL } from '@/lib/seo';
+import { buildPlanetMetadata, getBreadcrumbJsonLd, getArticleJsonLd, getFaqPageJsonLd, CONTENT_DATES, BASE_URL } from '@/lib/seo';
 import { nameCase } from '@/lib/text';
 
 export function generateStaticParams() {
@@ -56,6 +56,63 @@ const PLANET_TO_ZODIAC: Record<string, { id: string; name: string }[]> = {
   pluton: [{ id: 'akrep', name: 'Akrep Burcu' }],
 };
 
+/** "-60°C (ortalama)", "5,500°C (yüzey)", "-173°C ila 427°C" gibi değerleri cümleye çevirir */
+function tempAnswer(name: string, raw: string) {
+  const m = raw.match(/^(.*?)\s*\((.*)\)$/);
+  const value = (m ? m[1] : raw).trim();
+  const qual = m?.[2].trim();
+  const nde = nameCase(name, 'bulunma', '’');
+  if (value.includes(' ila ')) return `${nde} sıcaklık ${value} arasında değişir.`;
+  if (qual === 'ortalama') return `${nde} ortalama sıcaklık ${value} civarındadır.`;
+  if (qual === 'yüzey') return `${nameCase(name, 'ilgi', '’')} yüzey sıcaklığı yaklaşık ${value}.`;
+  if (qual) return `${nde} sıcaklık ${qual} seviyesinde yaklaşık ${value}.`;
+  return `${nde} sıcaklık yaklaşık ${value}.`;
+}
+
+function moonAnswer(p: CelestialBody) {
+  const nin = nameCase(p.name, 'ilgi', '’');
+  const count = p.facts.uyduSayısı;
+  const notable = p.moonsInfo.notable;
+  if (count === 0) return `${nin} doğal uydusu yoktur.`;
+  if (count === 1) return `${nin} tek doğal uydusu var: ${notable[0] ?? 'Ay'}.`;
+  // Dev gezegenlerde sayı yeni keşiflerle artıyor; tarihini belirt
+  const asOf = count >= 10 ? ' (2026 itibarıyla yörüngesi doğrulanmış olanlar)' : '';
+  const list = notable.length ? ` ${notable.length >= count ? 'Uyduları' : 'En bilinenleri'}: ${notable.join(', ')}.` : '';
+  return `${nin} ${count} doğal uydusu var${asOf}.${list}`;
+}
+
+/** Aramada sık sorulan sorular; cevaplar yalnızca sayfadaki doğrulanmış veriden üretilir */
+function planetFaq(p: CelestialBody) {
+  const n = p.name;
+  const nin = nameCase(n, 'ilgi', '’');
+  const nde = nameCase(n, 'bulunma', '’');
+  const f = p.facts;
+  const faq: { question: string; answer: string }[] = [];
+  faq.push({ question: `${n} ne kadar büyük?`, answer: `${nin} çapı yaklaşık ${f.çap}, kütlesi ${f.kütle}.` });
+  if (p.type === 'yıldız') {
+    faq.push({ question: `${nin} sıcaklığı kaç derece?`, answer: `${tempAnswer(n, f.sıcaklık)} Çekirdeğinde ise sıcaklık yaklaşık 15 milyon °C’ye ulaşır.` });
+    faq.push({ question: `${n} kendi ekseni etrafında kaç günde döner?`, answer: `${n} katı bir cisim olmadığı için her enlemde farklı hızda döner; bir dönüşü yaklaşık ${f.günSüresi} sürer.` });
+  } else if (p.type === 'ay') {
+    faq.push({ question: `${n} Dünya’nın çevresini ne kadar sürede dolaşır?`, answer: `${nin} Dünya çevresindeki bir turu ${f.yörüngeSüresi} sürer. Kendi ekseni etrafındaki dönüşü de aynı süreyi aldığından Dünya’ya hep aynı yüzünü gösterir.` });
+    faq.push({ question: `${nde} sıcaklık kaç derece?`, answer: `Atmosferi olmadığı için gece ile gündüz arasındaki fark çok büyüktür. ${tempAnswer(n, f.sıcaklık)}` });
+  } else {
+    faq.push({
+      question: `${nin} kaç uydusu var?`,
+      answer: moonAnswer(p),
+    });
+    faq.push({ question: `${nde} bir gün ne kadar sürer?`, answer: `${nin} kendi ekseni etrafındaki bir dönüşü ${f.günSüresi} sürer.` });
+    faq.push({ question: `${nde} bir yıl ne kadar sürer?`, answer: `${nin} Güneş çevresindeki bir turu ${f.yörüngeSüresi} sürer; ${nde} bir yıl bu kadardır.` });
+    faq.push({ question: `${n} Güneş’e ne kadar uzak?`, answer: `${nin} Güneş’e ortalama uzaklığı ${f.güneşeUzaklık}’dir.` });
+    faq.push({ question: `${nde} sıcaklık kaç derece?`, answer: tempAnswer(n, f.sıcaklık) });
+    faq.push({
+      question: `${nin} halkası var mı?`,
+      answer: f.halkaSistemi ? `Evet, ${nin} bir halka sistemi var.` : `Hayır, ${nin} bilinen bir halka sistemi yok.`,
+    });
+  }
+  if (p.id !== 'dunya' && p.observationTurkey) faq.push({ question: `${n} Türkiye’den nasıl gözlemlenir?`, answer: p.observationTurkey });
+  return faq;
+}
+
 export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>) {
   const { id } = await props.params;
   const index = planets.findIndex((p) => p.id === id);
@@ -95,6 +152,7 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
     { k: 'Halka sistemi', v: planet.facts.halkaSistemi ? 'Var' : 'Yok' },
   ];
   const paragraphs = planet.detay.split('\n').filter(Boolean);
+  const faq = planetFaq(planet);
 
   return (
     <div className="relative overflow-x-clip" style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
@@ -105,6 +163,10 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqPageJsonLd(faq)) }}
       />
       <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
@@ -266,6 +328,22 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
             </ul>
           </section>
         )}
+
+        {/* Sık sorulanlar */}
+        <section aria-label={`${planet.name} hakkında sık sorulanlar`}>
+          <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
+            <span className="label text-violet">(S)</span>
+            <h2 className="label text-paper">{planet.name} hakkında sık sorulanlar</h2>
+          </div>
+          <dl className="grid gap-px border border-line bg-line sm:grid-cols-2">
+            {faq.map((q) => (
+              <div key={q.question} className="bg-ink p-6">
+                <dt className="doc-title text-lg leading-tight text-paper">{q.question}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-paper/75">{q.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         {/* İlişkili Laboratuvar Deneyleri ve Zodyak Bağlantıları (Topic Cluster) */}
         <section aria-label="İlişkili Kozmik Enstrümanlar" className="border-t border-line pt-8">
