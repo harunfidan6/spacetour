@@ -75,7 +75,6 @@ export const SECTIONS: DocSection[] = [
         blurb: 'Dünya’nın çevresindeki gök küresini döndür: ekvator, ekliptik, zodyak, takımyıldızlar ve gezegenlerin gerçek konumları.',
         kind: 'Etkileşimli 3D',
         image: img['harita-planetaryum'],
-        immersive: true,
       },
       {
         slug: 'parlak-yildizlar',

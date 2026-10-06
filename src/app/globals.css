@@ -191,7 +191,11 @@ body {
   margin-top: -0.16em;
   padding-bottom: 0.24em;
   margin-bottom: -0.24em;
+  /* the padding spills over neighbours (e.g. the footer links under the giant wordmark); only the text itself takes clicks */
+  pointer-events: none;
 }
+.split-line-mask > *,
+.split-word-mask > * { pointer-events: auto; }
 .split-word-mask { display: inline-block; }
 
 /* Returning visitors: the preloader is only a plain cover that fades out */
