@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { INFO_PAGES } from '@/components/doc/InfoPage';
+import { INFO_PAGES, INSTAGRAM_URL } from '@/components/doc/InfoPage';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { FitText } from '@/components/motion/FitText';
@@ -50,7 +50,7 @@ export function Footer() {
               <span className="text-sm">→</span>
             </Link>
             <p className="max-w-xs text-xs leading-relaxed text-paper/60">
-              Bulunduğun şehrin gökyüzünü canlı hesaplıyoruz. Kamerayı aç, gökyüzüne tut, takımyıldızları gör.
+              Bulunduğun şehrin gökyüzünü canlı hesaplıyoruz. Haritayı çevir, takımyıldızları ve gezegenleri bul.
             </p>
           </div>
         </div>
@@ -122,6 +122,9 @@ export function Footer() {
           {INFO_PAGES.map((p) => (
             <Link key={p.href} href={p.href} className="label text-muted transition-colors hover:text-paper">{p.label}</Link>
           ))}
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener me" className="label inline-flex items-center gap-1 text-muted transition-colors hover:text-paper">
+            Instagram <ArrowUpRight size={11} />
+          </a>
         </nav>
         <button
           type="button"

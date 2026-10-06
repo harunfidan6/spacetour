@@ -10,7 +10,7 @@ export default function HaritaPage() {
         { k: 'Görünür yıldız', v: '9.000+' },
         { k: 'Takımyıldızı', v: 88 },
         { k: 'Messier hedefi', v: 110 },
-        { k: 'Optik mod', v: 'Alt-Az & AR' },
+        { k: 'Görünüm', v: 'Ekvator & ekliptik' },
       ]}
       partTitle="Gözlemcinin"
       partSerif="alet çantası"

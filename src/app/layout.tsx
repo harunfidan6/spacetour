@@ -4,6 +4,7 @@ import { Archivo, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { INSTAGRAM_URL } from "@/components/doc/InfoPage";
 import { SpaceProvider } from "@/components/space/SpaceContext";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { PageTransitionProvider } from "@/components/motion/PageTransition";
@@ -143,7 +144,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "name": "SpaceTour TR",
                   "url": "https://spacetour.com.tr",
                   "logo": "https://spacetour.com.tr/logo-512.png",
-                  "email": "info@spacetour.com.tr"
+                  "email": "info@spacetour.com.tr",
+                  "sameAs": [INSTAGRAM_URL]
                 },
                 {
                   "@type": "ItemList",

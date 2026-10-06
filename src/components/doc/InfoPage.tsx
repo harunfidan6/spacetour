@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 
 export const CONTACT_EMAIL = 'info@spacetour.com.tr';
+export const INSTAGRAM_HANDLE = 'spacetourtr';
+export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 
 const PAGES = [
   { href: '/hakkinda', label: 'Hakkında' },

@@ -19,7 +19,7 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 - [x] Google Search Console (DNS ile), sitemap gönderildi.
 - [x] IndexNow: anahtar dosyası + `node tools/indexnow.mjs` (tümü, yollar veya `--gunluk`).
 - [ ] Bing Webmaster Tools ve Yandex Webmaster (hesap kullanıcıda).
-- [ ] Search Console ↔ Google Analytics bağlantısı.
+- [x] Search Console ↔ Google Analytics bağlantısı (6 Ekim, alan adı mülkü → SpaceTour akışı).
 
 ## P2 — Hız (önce mobil: ana sayfa 41/100, LCP 8,4 sn, TBT 1,5 sn)
 
@@ -69,7 +69,8 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 ## P8 — Sosyal ve dış bağlantılar
 
 - [ ] Günlük burç için otomatik paylaşım görseli, paylaş düğmeleri.
-- [ ] Sosyal hesaplar (kısa videolar), `sameAs`.
+- [x] Instagram @spacetourtr: Organization `sameAs`, altbilgi ve İletişim bağlantısı.
+- [ ] Instagram içerik takvimi ve kısa videolar.
 - [ ] Türk astronomi toplulukları, üniversite kulüpleri, basın bülteni.
 
 ## P9 — Ölçüm

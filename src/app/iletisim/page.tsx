@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { InfoPage, Block, CONTACT_EMAIL } from '@/components/doc/InfoPage';
+import { InfoPage, Block, CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/components/doc/InfoPage';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
@@ -17,6 +17,12 @@ export default function Page() {
           <a href={`mailto:${CONTACT_EMAIL}`} className="font-mono text-lg text-gold hover:underline">{CONTACT_EMAIL}</a>
         </p>
         <p>Genellikle birkaç iş günü içinde yanıt veririz.</p>
+      </Block>
+      <Block title="Instagram">
+        <p>
+          <a href={INSTAGRAM_URL} target="_blank" rel="noopener me" className="font-mono text-lg text-gold hover:underline">@{INSTAGRAM_HANDLE}</a>
+        </p>
+        <p>Gök olayı duyuruları, günlük burç kartları ve kısa videolar.</p>
       </Block>
       <Block title="Hata veya düzeltme bildirirken">
         <p>Sorunun bulunduğu sayfanın adresini, kullandığınız cihaz ve tarayıcıyı ve mümkünse bir ekran görüntüsünü eklemeniz işimizi çok kolaylaştırır. Bilimsel bir bilgide hata gördüğünüzde kaynağını da paylaşırsanız hemen inceleriz.</p>
