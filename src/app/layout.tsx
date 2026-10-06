@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import { CookieConsent } from "@/components/analytics/CookieConsent";
 import { Archivo, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
@@ -175,11 +175,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Preloader />
             <FilmMode />
             <div aria-hidden className="grain" />
-            {/* Google Analytics 4: sayfa yüklendikten sonra; ilk boyamayı ve etkileşimi geciktirmesin */}
-            <Script src="https://www.googletagmanager.com/gtag/js?id=G-5F797S90G9" strategy="lazyOnload" />
-            <Script id="ga4-init" strategy="lazyOnload">
-              {"window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5F797S90G9',{send_page_view:true});"}
-            </Script>
+            {/* Google Analytics yalnızca çerez onayından sonra yüklenir */}
+            <CookieConsent />
           </PageTransitionProvider>
         </SpaceProvider>
       </body>

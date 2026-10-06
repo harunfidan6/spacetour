@@ -51,6 +51,7 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 ## P5 — Güven sinyalleri
 
 - [x] Hakkında, İletişim, Gizlilik/KVKK, Çerez politikası (6 Ekim); altbilgide bağlantılar.
+- [x] Çerez onay bandı: GA yalnızca "Kabul et" sonrası yüklenir; tercih /cerezler sayfasından değiştirilebilir. Veri sorumlusu: Harun Fidan. info@ e-postası ImprovMX ile yönlendiriliyor (MX + SPF Vercel DNS).
 - [x] Yöntem ve kaynaklar sayfası (6 Ekim).
 
 ## P6 — Yapılandırılmış veri

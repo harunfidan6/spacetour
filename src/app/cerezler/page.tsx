@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { InfoPage, Block } from '@/components/doc/InfoPage';
+import { CookiePreferenceButton } from '@/components/analytics/CookieConsent';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
@@ -19,7 +20,8 @@ export default function Page() {
               <tr className="bg-ink-2 text-left text-muted"><th className="p-3 font-normal">Ad</th><th className="p-3 font-normal">Sağlayıcı</th><th className="p-3 font-normal">Amaç</th><th className="p-3 font-normal">Süre</th></tr>
             </thead>
             <tbody className="text-paper/85">
-              <tr className="border-t border-line"><td className="p-3">_ga, _ga_*</td><td className="p-3">Google Analytics</td><td className="p-3">Ziyaretçileri ayırt ederek anonim kullanım istatistiği üretir</td><td className="p-3">2 yıla kadar</td></tr>
+              <tr className="border-t border-line"><td className="p-3">_ga, _ga_*</td><td className="p-3">Google Analytics</td><td className="p-3">Ziyaretçileri ayırt ederek kullanım istatistiği üretir; yalnızca onay verirseniz yerleşir</td><td className="p-3">2 yıla kadar</td></tr>
+              <tr className="border-t border-line"><td className="p-3">spacetour:cerez</td><td className="p-3">SpaceTour TR (localStorage)</td><td className="p-3">Çerez tercihinizi hatırlar</td><td className="p-3">Siz silene dek</td></tr>
               <tr className="border-t border-line"><td className="p-3">astro_sid</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Aynı ziyaretteki sayfa görüntülemelerini ilişkilendirir</td><td className="p-3">Sekme kapanana dek</td></tr>
               <tr className="border-t border-line"><td className="p-3">spacetour:intro</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Açılış animasyonunun aynı ziyarette tekrar oynamasını önler</td><td className="p-3">Sekme kapanana dek</td></tr>
             </tbody>
@@ -28,6 +30,8 @@ export default function Page() {
         <p>Plausible Analytics ile Vercel Analytics ve Speed Insights çerez kullanmaz.</p>
       </Block>
       <Block title="Çerezleri nasıl yönetirsiniz?">
+        <p>Google Analytics çerezleri yalnızca sitenin altındaki çerez şeridinde “Kabul et” derseniz kullanılır. Tercihinizi istediğiniz an değiştirebilirsiniz; reddettiğinizde mevcut Analytics çerezleri silinir.</p>
+        <div><CookiePreferenceButton /></div>
         <p>Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz. Google Analytics’i bütün sitelerde devre dışı bırakmak için Google’ın tarayıcı eklentisini kullanabilirsiniz. Çerezleri engellemek sitenin temel işlevlerini etkilemez.</p>
       </Block>
       <Block title="Ayrıntılı bilgi">

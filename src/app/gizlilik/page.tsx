@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <InfoPage kicker="Yasal" title="Gizlilik ve KVKK aydınlatma metni" path="/gizlilik" updated="6 Ekim 2026" lede="Bu metin, spacetour.com.tr adresini ziyaret ettiğinizde hangi verilerin, hangi amaçla işlendiğini ve 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamındaki haklarınızı açıklar.">
       <Block title="Veri sorumlusu">
-        <p>Veri sorumlusu SpaceTour TR’dir (spacetour.com.tr). Başvurularınız için: <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold underline underline-offset-2 hover:text-paper">{CONTACT_EMAIL}</a>.</p>
+        <p>Veri sorumlusu, spacetour.com.tr sitesinin sahibi Harun Fidan’dır. Başvurularınız için: <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold underline underline-offset-2 hover:text-paper">{CONTACT_EMAIL}</a>.</p>
       </Block>
       <Block title="Hesaplayıcılara girdiğiniz bilgiler">
         <p>Doğum haritası, sinastri, numeroloji, yıldız falı ve benzeri araçlara yazdığınız ad, doğum tarihi, saat ve şehir bilgileri yalnızca tarayıcınızda işlenir. Bu bilgiler sunucularımıza gönderilmez ve saklanmaz.</p>
@@ -22,13 +22,13 @@ export default function Page() {
         <p>Sitenin nasıl kullanıldığını anlamak ve geliştirmek için her sayfa görüntülemesinde şu bilgileri kaydederiz: ziyaret edilen sayfa ve başlığı, geldiğiniz site, IP adresinizden türetilen ülke ve şehir, cihaz türü, tarayıcı, işletim sistemi ve ekran boyutu. IP adresinizin kendisini saklamayız; onun yerine kısa bir özet değeri (hash) tutarız. Aynı ziyaret içindeki sayfaları ilişkilendirmek için tarayıcı sekmenizde rastgele bir oturum kimliği oluşturulur ve sekme kapanınca silinir.</p>
         <p>Bunlara ek olarak şu üçüncü taraf analiz araçlarını kullanıyoruz:</p>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Google Analytics 4 (Google LLC): sayfa görüntüleme ve etkileşim istatistikleri; tarayıcınıza çerez yerleştirir. Ayrıntılar <Link href="/cerezler" className="text-gold underline underline-offset-2 hover:text-paper">çerez politikasında</Link>.</li>
+          <li>Google Analytics 4 (Google LLC): sayfa görüntüleme ve etkileşim istatistikleri; yalnızca çerez şeridinde onay verirseniz yüklenir ve tarayıcınıza çerez yerleştirir. Ayrıntılar <Link href="/cerezler" className="text-gold underline underline-offset-2 hover:text-paper">çerez politikasında</Link>.</li>
           <li>Plausible Analytics: çerez kullanmayan, kişisel veri saklamayan ziyaret sayacı.</li>
           <li>Vercel Analytics ve Speed Insights: çerezsiz ziyaret ve sayfa hızı ölçümü.</li>
         </ul>
       </Block>
       <Block title="İşleme amacı ve hukuki sebep">
-        <p>Veriler; sitenin güvenli ve doğru çalışması, hataların bulunması, içeriklerin ve sayfa hızının iyileştirilmesi amacıyla, KVKK m.5/2-f uyarınca meşru menfaatimiz kapsamında işlenir. Çerez kullanan analiz araçları için hukuki sebep açık rızanızdır.</p>
+        <p>Veriler; sitenin güvenli ve doğru çalışması, hataların bulunması, içeriklerin ve sayfa hızının iyileştirilmesi amacıyla, KVKK m.5/2-f uyarınca meşru menfaatimiz kapsamında işlenir. Çerez kullanan Google Analytics için hukuki sebep, çerez şeridinde verdiğiniz açık rızadır; rızanızı çerez politikası sayfasından dilediğiniz an geri alabilirsiniz.</p>
       </Block>
       <Block title="Aktarım">
         <p>Site Vercel Inc. altyapısında barındırılır; analiz hizmetlerini Google LLC, Plausible Insights ve Vercel Inc. sağlar. Bu hizmet sağlayıcıların sunucuları yurt dışında bulunabileceğinden veriler KVKK m.9 çerçevesinde yurt dışına aktarılabilir. Verilerinizi satmıyor, reklam amacıyla üçüncü kişilerle paylaşmıyoruz.</p>
