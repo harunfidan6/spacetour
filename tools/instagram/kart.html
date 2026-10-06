@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500;62..125,800&family=Instrument+Serif:ital@1&family=Geist+Mono:wght@400;600&family=Geist:wght@400;500&display=block" rel="stylesheet" />
+<style>
+  :root { --ink: #050508; --paper: #f4f3ee; --muted: #a8a69f; --gold: #f5c542; --accent: var(--gold); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; background: var(--ink); overflow: hidden; }
+  .card { position: relative; width: 1080px; height: 1350px; color: var(--paper); font-family: 'Geist', sans-serif; }
+  .bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,5,8,0.85) 0%, rgba(5,5,8,0.35) 14%, rgba(5,5,8,0.15) 28%, rgba(5,5,8,0.55) 52%, rgba(5,5,8,0.96) 78%, var(--ink) 100%); }
+  .top { position: absolute; top: 64px; left: 72px; right: 72px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 34px; letter-spacing: -0.01em; }
+  .brand i { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--paper); display: grid; place-items: center; }
+  .brand i::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); }
+  .brand b { font-weight: 500; color: var(--gold); }
+  .kicker { text-shadow: 0 1px 12px rgba(0,0,0,0.6); font-family: 'Geist Mono', monospace; font-size: 22px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); }
+  .body { position: absolute; left: 72px; right: 72px; bottom: 170px; }
+  h1 { font-family: 'Archivo', sans-serif; font-weight: 800; font-stretch: 112%; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.02em; font-size: var(--size, 150px); }
+  h1 em { display: block; font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.01em; color: var(--accent); font-size: 1.05em; line-height: 0.95; }
+  p.lede { margin-top: 40px; font-size: 36px; line-height: 1.38; color: rgba(244,243,238,0.88); max-width: 900px; }
+  ul.list { margin-top: 40px; list-style: none; border-top: 1px solid rgba(255,255,255,0.16); }
+  ul.list li { display: flex; gap: 32px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.16); font-size: 34px; }
+  ul.list li span { flex: 0 0 170px; font-family: 'Geist Mono', monospace; font-size: 26px; color: var(--accent); letter-spacing: 0.06em; }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; font-family: 'Geist Mono', monospace; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .foot .url { font-size: 24px; color: var(--paper); letter-spacing: 0.06em; text-transform: none; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg" id="bg"></div>
+  <div class="shade"></div>
+  <div class="top">
+    <div class="brand"><i></i><span>Spacetour<b>.tr</b></span></div>
+    <div class="kicker" id="kicker"></div>
+  </div>
+  <div class="body">
+    <h1 id="title"></h1>
+    <p class="lede" id="lede"></p>
+    <ul class="list" id="list"></ul>
+  </div>
+  <div class="foot">
+    <span id="credit" lang="en"></span>
+    <span class="url" id="url"></span>
+  </div>
+</div>
+<script>
+  // Kart verisi kartlar.mjs tarafından window.KART olarak verilir
+  function render(k) {
+    if (k.accent) document.documentElement.style.setProperty('--accent', k.accent);
+    if (k.size) document.documentElement.style.setProperty('--size', k.size + 'px');
+    document.getElementById('bg').style.backgroundImage = `url("${k.image}")`;
+    if (k.position) document.getElementById('bg').style.backgroundPosition = k.position;
+    // Kalabalık görsellerde yazının okunması için ek karartma
+    if (k.dim) document.getElementById('bg').style.filter = `brightness(${1 - k.dim})`;
+    document.getElementById('kicker').textContent = k.kicker;
+    const t = document.getElementById('title');
+    t.textContent = k.title;
+    if (k.serif) { const em = document.createElement('em'); em.textContent = k.serif; t.appendChild(em); }
+    const lede = document.getElementById('lede');
+    if (k.lede) lede.textContent = k.lede; else lede.remove();
+    const list = document.getElementById('list');
+    if (k.list) for (const [d, txt] of k.list) { const li = document.createElement('li'); li.innerHTML = `<span></span>`; li.firstChild.textContent = d; li.append(txt); list.appendChild(li); }
+    else list.remove();
+    document.getElementById('credit').textContent = k.credit ? `Görsel · ${k.credit}` : '';
+    document.getElementById('url').textContent = k.url;
+  }
+  if (window.KART) render(window.KART);
+</script>
+</body>
+</html>

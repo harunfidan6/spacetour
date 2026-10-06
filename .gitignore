@@ -47,3 +47,6 @@ next-env.d.ts
 # promo video renders (tools/film)
 /video/
 vercel_logs.json
+
+# Instagram kart çıktıları (tools/instagram/kartlar.mjs ile yeniden üretilir)
+/tools/instagram/cikti/

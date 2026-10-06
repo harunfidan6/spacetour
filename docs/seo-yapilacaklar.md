@@ -70,7 +70,8 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 
 - [ ] Günlük burç için otomatik paylaşım görseli, paylaş düğmeleri.
 - [x] Instagram @spacetourtr: Organization `sameAs`, altbilgi ve İletişim bağlantısı.
-- [ ] Instagram içerik takvimi ve kısa videolar.
+- [x] Instagram 1. hafta: 7 kart + açıklamalar (`tools/instagram/`).
+- [ ] Instagram: haftalık yeni kartlar, dikey Reels.
 - [ ] Türk astronomi toplulukları, üniversite kulüpleri, basın bülteni.
 
 ## P9 — Ölçüm
