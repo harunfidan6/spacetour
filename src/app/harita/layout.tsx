@@ -3,14 +3,14 @@ import { BASE_URL, SITE_NAME, DEFAULT_OG_IMAGE, getBreadcrumbJsonLd } from '@/li
 
 export const metadata: Metadata = {
   title: {
-    absolute: '360° Planetaryum ve Gök Haritası | SpaceTour TR',
+    absolute: '3D Gök Küresi ve Gök Haritası | SpaceTour TR',
     template: '%s | SpaceTour TR',
   },
   description:
-    'Konumuna göre anlık hesaplanan 360° planetaryum, en parlak yıldızlar, Türkiye ışık kirliliği (Bortle) haritası ve Messier derin uzay atlası.',
+    '3D gök küresi, en parlak yıldızlar, Türkiye ışık kirliliği (Bortle) haritası ve Messier derin uzay atlası.',
   keywords: [
     'gök haritası',
-    '3d planetaryum türkçe',
+    '3d gök küresi',
     'yıldız haritası online',
     'en parlak yıldızlar',
     'ışık kirliliği haritası türkiye',
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
     canonical: `${BASE_URL}/harita`,
   },
   openGraph: {
-    title: 'Gök Haritası · 360° Planetaryum & Yıldız Atlası — SpaceTour TR',
+    title: 'Gök Haritası · 3D Gök Küresi & Yıldız Atlası — SpaceTour TR',
     description:
-      '360° interaktif planetaryum, en parlak kerteriz yıldızları, ışık kirliliği analizi ve derin uzay atlası.',
+      '3D gök küresi, en parlak kerteriz yıldızları, ışık kirliliği analizi ve derin uzay atlası.',
     url: `${BASE_URL}/harita`,
     siteName: SITE_NAME,
     locale: 'tr_TR',
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
         url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: 'Gök Haritası ve 360 Planetaryum — SpaceTour TR',
+        alt: 'Gök Haritası ve 3D Gök Küresi — SpaceTour TR',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gök Haritası · 360° Planetaryum — SpaceTour TR',
+    title: 'Gök Haritası · 3D Gök Küresi — SpaceTour TR',
     description:
-      '360° interaktif planetaryum, parlak yıldızlar ve ışık kirliliği haritası.',
+      '3D gök küresi, parlak yıldızlar ve ışık kirliliği haritası.',
     images: [DEFAULT_OG_IMAGE],
   },
   robots: {

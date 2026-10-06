@@ -37,18 +37,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://spacetour.com.tr"),
   title: {
-    default: "SpaceTour TR — Kinetik Uzay Atlası & 3D Planetaryum",
+    default: "SpaceTour TR — Kinetik Uzay Atlası & 3D Gök Küresi",
     template: "%s — SpaceTour TR",
   },
   applicationName: "SpaceTour TR",
   description:
-    "Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve canlı gözlemevi.",
+    "Hareket eden bir uzay atlası: 3D Güneş Sistemi yolculuğu, 3D gök küresi, gök olayları takvimi, gezegen ansiklopedisi, astroloji ve canlı gözlemevi.",
   keywords: [
     "spacetour",
     "spacetour tr",
     "uzay atlası",
     "güneş sistemi",
-    "3d planetaryum",
+    "3d gök küresi",
     "iss canlı konum",
     "gök olayları takvimi",
     "astronomi",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "SpaceTour TR — Kinetik Uzay Atlası",
-    description: "3D Güneş Sistemi yolculuğu, 360° planetaryum, gök olayları takvimi, gezegen ansiklopedisi ve canlı uzay gözlemevi.",
+    description: "3D Güneş Sistemi yolculuğu, 3D gök küresi, gök olayları takvimi, gezegen ansiklopedisi ve canlı uzay gözlemevi.",
     url: "https://spacetour.com.tr",
     siteName: "SpaceTour TR",
     locale: "tr_TR",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SpaceTour TR — Kinetik Uzay Atlası",
-    description: "3D Güneş Sistemi yolculuğu, 360° planetaryum ve canlı uzay takibi.",
+    description: "3D Güneş Sistemi yolculuğu, 3D gök küresi ve canlı uzay takibi.",
   },
   robots: {
     index: true,
@@ -134,7 +134,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "@id": "https://spacetour.com.tr/#website",
                   "url": "https://spacetour.com.tr",
                   "name": "SpaceTour TR",
-                  "description": "Hareket eden bir kinetik uzay atlası: 3D Güneş Sistemi, planetaryum ve canlı gökyüzü takibi.",
+                  "description": "Hareket eden bir kinetik uzay atlası: 3D Güneş Sistemi, gök küresi ve canlı gökyüzü takibi.",
                   "inLanguage": "tr-TR"
                 },
                 {
@@ -149,7 +149,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   "@id": "https://spacetour.com.tr/#navigation",
                   "name": "Ana Dizin Menüsü",
                   "itemListElement": [
-                    { "@type": "SiteNavigationElement", "position": 1, "name": "Gök Haritası & Planetaryum", "url": "https://spacetour.com.tr/harita" },
+                    { "@type": "SiteNavigationElement", "position": 1, "name": "Gök Haritası & Gök Küresi", "url": "https://spacetour.com.tr/harita" },
                     { "@type": "SiteNavigationElement", "position": 2, "name": "Gök Olayları Takvimi", "url": "https://spacetour.com.tr/takvim" },
                     { "@type": "SiteNavigationElement", "position": 3, "name": "Gezegen Ansiklopedisi", "url": "https://spacetour.com.tr/ansiklopedi" },
                     { "@type": "SiteNavigationElement", "position": 4, "name": "Astroloji & Zodyak Atlası", "url": "https://spacetour.com.tr/astroloji" },

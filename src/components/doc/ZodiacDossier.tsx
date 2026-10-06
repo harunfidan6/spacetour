@@ -192,7 +192,7 @@ export function ZodiacDossier({ sign, index, image }: { sign: ZodiacSign; index:
           ))}
         </ul>
         <Link href="/harita/planetaryum" className="group mt-6 inline-flex items-center gap-2 text-sm text-paper/80 hover:text-gold">
-          <Telescope size={16} /> {sign.name} takımyıldızını canlı planetaryumda bul
+          <Telescope size={16} /> {sign.name} burcunu 3D gök küresinde gör
           <ArrowUpRight size={15} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
       </Part>

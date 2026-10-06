@@ -143,7 +143,7 @@ export function HomeHero() {
         <div data-hero-bottom className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div data-hero-fade className="lg:col-span-5">
             <p className="max-w-md text-base leading-relaxed text-paper/80 sm:text-lg">
-              Yedi bölümlük bir gökyüzü belgeseli: Güneş Sistemi&apos;ni 3D gezin, 360° planetaryumda gökyüzünü okuyun, tutulmaları takviminize işleyin. NASA ve ESA verileriyle.
+              Yedi bölümlük bir gökyüzü belgeseli: Güneş Sistemi&apos;ni 3D gezin, 3D gök küresinde gökyüzünü okuyun, tutulmaları takviminize işleyin. NASA ve ESA verileriyle.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
@@ -163,7 +163,7 @@ export function HomeHero() {
                 href="/harita/planetaryum"
                 className="group flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-medium text-paper backdrop-blur-xl transition-colors hover:border-gold/60 hover:text-gold"
               >
-                <span>360° planetaryum</span>
+                <span>3D gök küresi</span>
                 <ArrowUpRight size={15} />
               </Link>
             </div>

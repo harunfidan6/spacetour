@@ -15,7 +15,7 @@ function Loading({ tall = false }: { tall?: boolean }) {
 /** Every tool, keyed by `${sectionId}/${slug}`; each is code-split so a sub-page only ships its own module. */
 const MODULES: Record<string, ComponentType> = {
   // Gök haritası
-  'harita/planetaryum': dynamic(() => import('@/components/space/Planetarium3D').then((m) => m.Planetarium3D), { ssr: false, loading: () => <Loading tall /> }),
+  'harita/planetaryum': dynamic(() => import('@/components/space/CelestialSphere3D').then((m) => m.CelestialSphere3D), { ssr: false, loading: () => <Loading tall /> }),
   'harita/parlak-yildizlar': dynamic(() => import('@/components/space/BrightStarsRadar').then((m) => m.BrightStarsRadar), { loading: () => <Loading /> }),
   'harita/bortle': dynamic(() => import('@/components/space/BortleScaleSimulator').then((m) => m.BortleScaleSimulator), { loading: () => <Loading /> }),
   'harita/messier': dynamic(() => import('@/components/space/MessierDeepSkyRadar').then((m) => m.MessierDeepSkyRadar), { loading: () => <Loading /> }),

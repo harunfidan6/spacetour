@@ -5,7 +5,7 @@ import { OrbCanvas } from '@/components/space/PlanetOrb';
 import { SECTIONS } from '@/data/sections';
 
 const SECTION_SYNOPSES: Record<string, string> = {
-  harita: 'Anlık gök kubbenin altına adım atın; 360° canlı planetaryum ve yıldız kerterizleriyle geceyi keşfedin.',
+  harita: '3D gök küresini döndürün; ekliptik, zodyak, takımyıldızlar ve gezegenlerin gerçek konumlarıyla gökyüzünü keşfedin.',
   takvim: 'Göktaşlarından tam tutulmalara, evrenin en görkemli randevularını kaçırmamak için zamanı yakalayın.',
   ansiklopedi: 'Güneş’ten Plüton’a 3D modellerle dokunun, 10 interaktif fizik laboratuvarında kozmik yasaları sınayın.',
   astroloji: 'Doğum haritanızın geometrisini çıkarın, efemeris transitlerini ve 22 majör arkananın sembollerini okuyun.',

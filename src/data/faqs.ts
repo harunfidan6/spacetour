@@ -80,9 +80,9 @@ export const FAQS_BY_SECTION: Record<string, FaqItem[]> = {
 
   harita: [
     {
-      question: 'İnteraktif planetaryum gökyüzü haritası nasıl kullanılır?',
+      question: '3D gök küresi nasıl kullanılır?',
       answer:
-        'Bulunduğunuz yerel enlem/boylam ve gerçek zamanı kullanarak gök küresini stereografik projeksiyonla 2 boyutlu ekrana yansıtır. Yıldızların kadir (parlaklık) değerleri, takımyıldız çizgileri ve gök koordinatları (RA/Dec) gerçek astrofizik veritabanlarıyla anlık hesaplanır.',
+        'Küreyi sürükleyerek döndürün, tekerlek ya da iki parmakla yakınlaştırın. Camgöbeği çember gök ekvatoru, altın renkli eğik çember ekliptik ve zodyaktır. Güneş, Ay ve gezegenler seçili tarih ve saatteki gerçek ekliptik boylamlarında gösterilir; hız menüsüyle zamanı hızlandırabilir, bir gök cismine dokunarak burcunu ve konumunu görebilirsiniz. Kamera veya konum izni gerekmez.',
     },
     {
       question: 'Bortle Karanlık Gökyüzü Ölçeği nedir?',

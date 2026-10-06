@@ -117,10 +117,11 @@ export const MODULE_KEYWORDS: Record<string, string[]> = {
 
   // Gök Haritası & Planetaryum
   'harita/planetaryum': [
-    '3d planetaryum türkçe',
-    'interaktif gökyüzü haritası',
-    'çevrimiçi yıldız haritası',
-    'yıldızlar ve takımyıldızlar 360',
+    '3d gök küresi',
+    'ekliptik ve gök ekvatoru',
+    'zodyak kuşağı 3d',
+    'gezegenlerin konumu bugün',
+    'interaktif gökyüzü modeli',
   ],
   'harita/parlak-yildizlar': [
     'en parlak yıldızlar kataloğu',

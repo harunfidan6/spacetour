@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'SpaceTour TR — Kinetik Uzay Atlası & 3D Planetaryum';
+export const alt = 'SpaceTour TR — Kinetik Uzay Atlası & 3D Gök Küresi';
 export const size = {
   width: 1200,
   height: 630,
@@ -118,7 +118,7 @@ export default async function Image() {
               fontWeight: 400,
             }}
           >
-            3D Planetaryum · Canlı ISS Takibi · Güneş Sistemi Simülasyonu · 2026 Gök Olayları · 12 Arketip Astroloji Atlası
+            3D Gök Küresi · Canlı ISS Takibi · Güneş Sistemi Simülasyonu · 2026 Gök Olayları · 12 Arketip Astroloji Atlası
           </div>
         </div>
 

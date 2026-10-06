@@ -14,11 +14,11 @@ export default function HaritaPage() {
       ]}
       partTitle="Gözlemcinin"
       partSerif="alet çantası"
-      partDescription="Canlı planetaryumla başla; ardından parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi."
+      partDescription="3D gök küresiyle başla; ardından parlak yıldız kerterizleri, ışık kirliliği, Messier hedefleri ve kutup yıldızı rehberi."
       outro={
         <FaqAccordion
           items={FAQS_BY_SECTION.harita}
-          title="Planetaryum & Gök Haritası Rehberi"
+          title="Gök Küresi & Gök Haritası Rehberi"
           serif="sıkça sorulan sorular"
           kicker="Gözlem Geometrisi · SSS"
           description="İnteraktif gökyüzü haritası, Bortle ışık kirliliği ölçeği ve en parlak yıldızlar hakkında rehber."

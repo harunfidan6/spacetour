@@ -150,7 +150,7 @@ export function SkyTonightWidget() {
               href="/harita"
               className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-solar hover:underline"
             >
-              <span>3D Planetaryum’u Aç</span>
+              <span>3D Gök Küresini Aç</span>
               <ArrowRight size={13} />
             </Link>
           </div>

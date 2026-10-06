@@ -34,33 +34,33 @@ export const MODULE_GUIDES: Record<string, ModuleGuide> = {
   // GÖK HARİTASI
   // ==========================================
   'harita/planetaryum': {
-    kicker: 'Gözlem Geometrisi',
-    title: 'Gökkubbe Projeksiyonu',
+    kicker: 'Gök Geometrisi',
+    title: 'Gök Küresi',
     serif: 've koordinat sistemleri',
-    summary: 'Bulunduğunuz coğrafi enlem ve boylama göre gökyüzünün anlık ufuk düzlemini simüle eden etkileşimli planetaryum modeli.',
+    summary: 'Dünya’yı merkeze alan gök küresinde ekvator, ekliptik, zodyak ve gezegenlerin gerçek konumlarını üç boyutlu inceleyen model.',
     intro: [
-      'Gök kubbesi, yeryüzündeki bir gözlemci için sonsuz yarıçaplı hayali bir küre olarak kabul edilir. Yıldızların ve gezegenlerin bu küre üzerindeki konumları iki temel koordinat sistemiyle tanımlanır: Yerel ufuk sistemi (Azimut ve Yükseklik) ile göksel ekvator sistemi (Sağ Açıklık ve Dik Açıklık).',
-      'Bu planetaryum, cihazınızın coğrafi konumunu ve yerel yıldız zamanını (Local Sidereal Time) esas alarak tam o saniyede başucunuzdan geçen meridyeni hesaplar. Ekrandaki görünüm, ışık kirliliğinden arındırılmış ideal bir atmosfer altında görebileceğiniz gerçek gök cisimlerini yansıtır.',
-      'Sürükleyerek bakış açınızı değiştirebilir, pusula yönlerini izleyebilir ve artırılmış gerçeklik (AR) moduyla cihazınızı gökyüzüne doğrultarak gördüğünüz parıltıların kimliğini saniyeler içinde doğrulayabilirsiniz.'
+      'Gökbilimde gökyüzü, Dünya’yı merkeze alan sonsuz yarıçaplı hayali bir küre olarak düşünülür. Yıldızların bu küre üzerindeki konumu, coğrafi enlem ve boylama benzeyen iki açıyla verilir: sağ açıklık (RA) ve dik açıklık (Dec).',
+      'Gök ekvatoru, Dünya ekvatorunun gökyüzüne izdüşümüdür. Ekliptik ise Güneş’in bir yıl boyunca yıldızların önünde izlediği yoldur ve Dünya’nın eksen eğikliği yüzünden gök ekvatoruna 23,44° eğiktir. Bu iki çemberin kesiştiği noktalar ekinokslardır.',
+      'Zodyak burçları ekliptiği on iki eşit 30°’lik parçaya böler. Ay ve gezegenler de ekliptiğe yakın bir şerit içinde dolaşır; modeldeki konumları seçili tarih ve saat için hesaplanır. Zamanı hızlandırarak Güneş’in burçlar arasında ilerleyişini, Ay’ın bir ayda gökyüzünü dolaşmasını izleyebilirsiniz.',
     ],
-    howToTitle: 'Planetaryum Nasıl Okunur?',
+    howToTitle: 'Gök Küresi Nasıl Okunur?',
     howTo: [
-      { step: '01', title: 'Ufuk Çizgisini Belirleyin', desc: 'Ekranın alt sınırındaki çember zeminle temas eden ufuk hattını gösterir. Merkez nokta tam başucunuzu (Zenit) temsil eder.' },
-      { step: '02', title: 'Yıldız Büyüklüklerini Ayırt Edin', desc: 'Daha büyük ve parlak çizilen noktalar daha düşük kadirli (yüksek görünür parlaklığa sahip) ana kerteriz yıldızlarıdır.' },
-      { step: '03', title: 'Kutup Yönünü Bulun', desc: 'Kuzey ufkuna yöneldiğinizde hareketsiz kalan tek odak noktası Polaris (Kutup Yıldızı) olup gök kubbenin dönme eksenidir.' }
+      { step: '01', title: 'Çemberleri Tanıyın', desc: 'Camgöbeği çember gök ekvatoru, altın renkli eğik çember ekliptiktir. Altın çizgiler ekliptiği zodyak burçlarına ayırır.' },
+      { step: '02', title: 'Zamanı Oynatın', desc: 'Hız menüsünden “1 gün / sn” ya da “1 ay / sn” seçin; Güneş’in ekliptik üzerinde, Ay’ın ise çok daha hızlı ilerleyişini izleyin.' },
+      { step: '03', title: 'Ufkunuzu Açın', desc: '“İstanbul ufku” katmanı, o anda İstanbul’dan görülebilen yarım küreyi ayıran büyük daireyi gösterir; gökyüzünün gece boyunca nasıl döndüğünü buradan izleyebilirsiniz.' },
     ],
-    factsTitle: 'Gözlem Parametreleri',
+    factsTitle: 'Gök Küresinin Ölçüleri',
     facts: [
-      { label: 'Başucu (Zenit)', value: '90° İrtifa', desc: 'Tam tepede bulunan gök noktası' },
-      { label: 'Azimut Aralığı', value: '0° – 360°', desc: 'Kuzeyden başlayıp doğuya doğru ölçülen açı' },
-      { label: 'Görünür Yıldız Limiti', value: '~9.000 Adet', desc: 'Tüm kürede çıplak gözle seçilebilen toplam yıldız sayısı' },
-      { label: 'Yıldız Günü', value: '23s 56d 04s', desc: 'Dünya’nın yıldızlara göre bir tam dönüş süresi' }
+      { label: 'Ekliptik Eğikliği', value: '23,44°', desc: 'Ekliptik ile gök ekvatoru arasındaki açı' },
+      { label: 'Zodyak Burcu', value: '30°', desc: 'Ekliptiğin on iki eşit dilimi' },
+      { label: 'Ay’ın Turu', value: '~27,3 gün', desc: 'Ay’ın yıldızlara göre gökyüzünü bir kez dolaşması' },
+      { label: 'Yıldız Günü', value: '23s 56d 04s', desc: 'Dünya’nın yıldızlara göre bir tam dönüş süresi' },
     ],
     takeawaysTitle: 'Biliyor Muydunuz?',
     takeaways: [
-      'Gözlemlediğiniz yıldız ışıklarının büyük kısmı yüzlerce hatta binlerce yıl önce yola çıkmıştır; gökyüzüne bakmak kelimenin tam anlamıyla geçmişe bakmaktır.',
-      'Şehir ışıkları altında bir gecede ortalama yalnızca 20 ila 50 yıldız görülebilirken, ışıksız bir dağ zirvesinde 2.500’den fazla yıldız aynı anda seçilebilir.'
-    ]
+      'Güneş’in ekliptik üzerinde bir tam tur atması bir yıl sürer; her gün yaklaşık 1° ilerler.',
+      'Ekliptiğin eğik olması mevsimleri yaratır: Güneş gök ekvatorunun kuzeyindeyken kuzey yarımkürede yaz yaşanır.',
+    ],
   },
 
   'harita/parlak-yildizlar': {
