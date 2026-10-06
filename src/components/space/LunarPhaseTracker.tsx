@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import {
   LUNAR_PHASES,
   LunarPhaseInfo,
@@ -287,6 +288,10 @@ export function LunarPhaseTracker() {
           <div className="label text-gold text-[10px]">GÜNÜN KOZMİK OLUMLAMASI</div>
           <div className="serif-i text-lg text-paper mt-1">“{selectedPhase.affirmation}”</div>
         </div>
+      </div>
+      <div className="flex flex-wrap gap-2 border-t border-line pt-6 font-mono text-xs">
+        <Link href="/astroloji/ay-bugun" className="border border-line px-3 py-2 text-paper/80 hover:border-gold hover:text-gold">Ay bugün hangi burçta? →</Link>
+        <Link href="/takvim" className="border border-line px-3 py-2 text-paper/80 hover:border-gold hover:text-gold">Dolunay ve yeni Ay tarihleri →</Link>
       </div>
     </div>
   );

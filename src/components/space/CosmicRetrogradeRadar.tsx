@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import type { RetrogradeCycle } from '@/data/retrogrades';
 import { retrogradeCalendar } from '@/lib/astrology/retrogradeCalendar';
 import {
@@ -226,6 +227,13 @@ export function CosmicRetrogradeRadar() {
           </p>
         </div>
       </div>
+      <nav aria-label="Yıllık retro takvimleri" className="flex flex-wrap gap-2 border-t border-line pt-6 font-mono text-xs">
+        {[['merkur', 'Merkür'], ['venus', 'Venüs'], ['mars', 'Mars'], ['jupiter', 'Jüpiter'], ['saturn', 'Satürn']].flatMap(([slug, name]) =>
+          ['2026', '2027'].map((y) => (
+            <Link key={`${slug}-${y}`} href={`/astroloji/retrolar/${slug}-${y}`} className="border border-line px-3 py-2 text-paper/80 hover:border-gold hover:text-gold">{name} retrosu {y}</Link>
+          ))
+        )}
+      </nav>
     </div>
   );
 }

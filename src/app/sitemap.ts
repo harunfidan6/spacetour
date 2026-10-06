@@ -3,6 +3,8 @@ import { SECTIONS, moduleHref } from '@/data/sections';
 import { planets } from '@/data/planets';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { BASE_URL } from '@/lib/seo';
+import { events } from '@/data/events';
+import { eventSlug, EVENT_YEARS } from '@/lib/eventSlug';
 
 // Günlük içerikli sayfaların değişiklik tarihi her gün yenilensin
 export const revalidate = 86400;
@@ -126,8 +128,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
+  // 8. Ay bugün, gök olayları (yıl özetleri ve her olay), gezegen retro takvimleri
+  const extraRoutes: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/astroloji/ay-bugun`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.9 },
+    ...EVENT_YEARS.map((y) => ({ url: `${BASE_URL}/takvim/${y}`, changeFrequency: 'weekly' as const, priority: 0.85 })),
+    ...events.map((e) => ({ url: `${BASE_URL}/takvim/${eventSlug(e)}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
+    ...['merkur', 'venus', 'mars', 'jupiter', 'saturn'].flatMap((p) => ['2026', '2027'].map((y) => ({ url: `${BASE_URL}/astroloji/retrolar/${p}-${y}`, changeFrequency: 'monthly' as const, priority: 0.8 }))),
+  ];
+
   // Deduplicate URLs in case of overlaps
-  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes, ...dailyRoutes, ...pairRoutes];
+  const allRoutes = [...coreHubs, ...collectionRoutes, ...moduleRoutes, ...planetRoutes, ...zodiacRoutes, ...dailyRoutes, ...pairRoutes, ...extraRoutes];
   const seenUrls = new Set<string>();
   const uniqueRoutes: MetadataRoute.Sitemap = [];
 

@@ -28,6 +28,8 @@ import { Reveal } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 import { upcomingEvents } from '@/lib/sky';
 import { AstronomicalEventGlyph } from '@/components/ui/CosmicGlyphs';
+import Link from 'next/link';
+import { eventSlug, EVENT_YEARS } from '@/lib/eventSlug';
 
 const ALL_TYPES = Object.keys(eventTypeLabels) as EventType[];
 
@@ -322,6 +324,9 @@ export default function CalendarPage() {
                           <div className="mt-3 flex items-center gap-1.5 font-mono text-[11px] text-muted">
                             <MapPin size={12} className="text-solar" /> {VISIBILITY[e.visibility] ?? e.visibility}
                           </div>
+                          <Link href={`/takvim/${eventSlug(e)}`} className="mt-3 inline-block font-mono text-[11px] text-solar hover:underline">
+                            Olayın sayfası ve gözlem rehberi →
+                          </Link>
                         </article>
                       ))}
                     </div>
@@ -475,6 +480,15 @@ export default function CalendarPage() {
             </div>
           </div>
         </section>
+
+        <nav aria-label="Yıllara göre gök olayları" className="mx-auto max-w-[var(--container)] px-[var(--gutter)] pb-4">
+          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="text-muted">Yıl özetleri:</span>
+            {EVENT_YEARS.map((y) => (
+              <Link key={y} href={`/takvim/${y}`} className="border border-line px-3 py-2 text-paper/80 hover:border-solar hover:text-solar">{y} gök olayları</Link>
+            ))}
+          </div>
+        </nav>
 
         {/* Calendar & Ephemeris FAQ Guide */}
         <FaqAccordion

@@ -42,9 +42,9 @@ Son güncelleme: 6 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 
 - [x] Burç başına günlük yorum sayfaları (12): `/astroloji/gunluk-burc/koc`; sunucuda üretilir, 30 dakikada bir yenilenir, Article şeması, sitemap ve iç bağlantılar (6 Ekim).
 - [x] Burç uyumu ikilileri (78): `/astroloji/burc-uyumu/koc-aslan`; FAQPage şeması, ters sıra 308 yönlenir, sitemap ve iç bağlantılar (6 Ekim).
-- [ ] Ay sayfaları: "ay bugün hangi burçta", aylık ay evreleri.
-- [ ] Retro takvimi: `/astroloji/retrolar/merkur-2026`.
-- [ ] Gök olaylarına ayrı sayfalar ve yıl özeti.
+- [x] "Ay bugün hangi burçta" sayfası (`/astroloji/ay-bugun`, 15 dk'da bir yenilenir, 7 günlük Ay takvimi, SSS). Aylık ay evreleri sayfaları: kalan.
+- [x] Retro takvimi: 5 gezegen × 2026–2027 (`/astroloji/retrolar/merkur-2026`), gerçek istasyon tarihleri, gölge dönemleri, SSS.
+- [x] 69 gök olayına ayrı sayfa (`/takvim/tam-gunes-tutulmasi-12-agustos-2026`) ve yıl özetleri (`/takvim/2026`…), tür rehberleri ve iç bağlantılar.
 - [ ] ISS görünürlüğü (büyük şehirler).
 - [ ] Araç sayfalarına "nasıl hesaplanır" ve gerçek soru-cevaplar; gezegen sayfalarına soru-cevap.
 
