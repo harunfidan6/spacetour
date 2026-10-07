@@ -86,7 +86,8 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
   ]);
 
   return (
-    <div style={{ '--page-accent': 'var(--gold)' } as CSSProperties} className="relative">
+    // data-generated: yönetici panelindeki günlük içerik denetimi sayfanın üretildiği anı buradan okur
+    <div style={{ '--page-accent': 'var(--gold)' } as CSSProperties} className="relative" data-generated={now.toISOString()}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
