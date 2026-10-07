@@ -39,10 +39,10 @@ export function ShareButtons({ url, text, title, label = 'Paylaş' }: { url: str
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-      <span className="doc-kicker mr-1 inline-flex items-center gap-1.5 text-gold"><Share2 size={13} />{label}</span>
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      <span className="mr-1 inline-flex items-center gap-1.5 font-medium text-gold"><Share2 size={14} />{label}</span>
       {canNativeShare && (
-        <button type="button" onClick={nativeShare} className="inline-flex items-center gap-1.5 border border-gold bg-gold px-3 py-2 font-bold text-ink hover:opacity-90">
+        <button type="button" onClick={nativeShare} className="inline-flex items-center gap-1.5 border border-gold bg-gold px-3 py-2 font-semibold text-ink hover:opacity-90">
           <Send size={12} /> Paylaş…
         </button>
       )}

@@ -87,7 +87,6 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <ChapterHero
         variant="band"
-        chapter="06 · Canlı"
         section={`ISS geçişleri · ${city.name}`}
         headline={['ISS', `${city.from} ne zaman görünür?`]}
         lede={
@@ -113,20 +112,20 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
           <div className="space-y-10 lg:col-span-8">
             <div>
               <h2 className="doc-title text-2xl text-paper">Önümüzdeki {DAYS} günün görünür geçişleri</h2>
-              <p className="mt-2 text-sm text-paper/70">
+              <p className="mt-2 text-[15px] leading-relaxed text-paper/80">
                 Saatler İstanbul saatiyle. Yönler: K kuzey, D doğu, G güney, B batı. Yükseklik ufuktan derece cinsinden (90° tam tepe).
               </p>
               {passes.length > 0 ? (
                 <div className="mt-4 overflow-x-auto">
-                  <table className="w-full min-w-[38rem] border border-line font-mono text-xs">
+                  <table className="w-full min-w-[38rem] border border-line text-sm tabular-nums">
                     <thead>
-                      <tr className="bg-ink-2 text-left text-muted">
-                        <th className="p-3 font-normal">Tarih</th>
-                        <th className="p-3 font-normal">Belirir</th>
-                        <th className="p-3 font-normal">En yüksek</th>
-                        <th className="p-3 font-normal">Kaybolur</th>
-                        <th className="p-3 font-normal">Süre</th>
-                        <th className="p-3 font-normal">Parlaklık</th>
+                      <tr className="bg-ink-2 text-left text-paper/70">
+                        <th className="p-3 font-medium">Tarih</th>
+                        <th className="p-3 font-medium">Belirir</th>
+                        <th className="p-3 font-medium">En yüksek</th>
+                        <th className="p-3 font-medium">Kaybolur</th>
+                        <th className="p-3 font-medium">Süre</th>
+                        <th className="p-3 font-medium">Parlaklık</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -135,11 +134,11 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
                         return (
                           <tr key={p.start.toISOString()} className="border-t border-line">
                             <td className="p-3 text-paper/85 whitespace-nowrap">{fmtShortDay(p.start)}</td>
-                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.start)} <span className="text-muted">{compass(p.startAz)}</span></td>
-                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.max)} <span className="text-muted">{Math.round(p.maxEl)}°</span></td>
-                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.end)} <span className="text-muted">{compass(p.endAz)}</span></td>
-                            <td className="p-3 text-paper/75 whitespace-nowrap">{duration(p)}</td>
-                            <td className={`p-3 whitespace-nowrap ${b.tone === 'high' ? 'text-lime' : b.tone === 'mid' ? 'text-paper/85' : 'text-muted'}`}>{b.label}</td>
+                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.start)} <span className="text-paper/70">{compass(p.startAz)}</span></td>
+                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.max)} <span className="text-paper/70">{Math.round(p.maxEl)}°</span></td>
+                            <td className="p-3 text-paper whitespace-nowrap">{fmtTime(p.end)} <span className="text-paper/70">{compass(p.endAz)}</span></td>
+                            <td className="p-3 text-paper/80 whitespace-nowrap">{duration(p)}</td>
+                            <td className={`p-3 whitespace-nowrap ${b.tone === 'high' ? 'text-lime' : b.tone === 'mid' ? 'text-paper/85' : 'text-paper/70'}`}>{b.label}</td>
                           </tr>
                         );
                       })}
@@ -147,7 +146,7 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
                   </table>
                 </div>
               ) : (
-                <p className="mt-4 border border-line bg-ink-2 p-4 text-sm text-paper/80">
+                <p className="mt-4 border border-line bg-ink-2 p-4 text-[15px] leading-relaxed text-paper/85">
                   {tle
                     ? `Önümüzdeki ${DAYS} gün içinde ${city.from} çıplak gözle görülebilecek bir geçiş yok. İstasyon bu dönemde ya gündüz ya da Dünya’nın gölgesindeyken geçiyor.`
                     : 'Yörünge verisi şu an alınamadı. Sayfa saatte bir yeniden denenir; canlı konum için ISS takip sayfasına bakabilirsin.'}
@@ -157,7 +156,7 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
 
             <div>
               <h2 className="doc-title text-2xl text-paper">Nasıl izlenir?</h2>
-              <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-relaxed text-paper/85">
+              <ol className="mt-4 list-decimal space-y-2 pl-5 text-base leading-relaxed text-paper/85">
                 <li>Geçişten birkaç dakika önce dışarı çık; tablodaki “Belirir” yönüne dön.</li>
                 <li>İstasyon ufkun biraz üzerinde, yanıp sönmeyen parlak bir nokta olarak belirir ve gökyüzünü birkaç dakikada boydan boya geçer.</li>
                 <li>En yüksek noktası 40°’nin üzerindeyse şehir ışıklarında bile kolayca görülür; alçak geçişlerde binalar ve ağaçlar görüşü kapatabilir.</li>
@@ -170,8 +169,8 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
               <dl className="mt-4 space-y-4">
                 {faq.map((f) => (
                   <div key={f.q} className="border border-line bg-ink p-4">
-                    <dt className="text-sm font-semibold text-paper">{f.q}</dt>
-                    <dd className="mt-1 text-sm leading-relaxed text-paper/75">{f.a}</dd>
+                    <dt className="text-base font-semibold text-paper">{f.q}</dt>
+                    <dd className="mt-1.5 text-[15px] leading-relaxed text-paper/80">{f.a}</dd>
                   </div>
                 ))}
               </dl>
@@ -179,21 +178,21 @@ export default async function IssCityPage(props: PageProps<'/canli/iss-gecisleri
           </div>
 
           <aside className="space-y-6 lg:col-span-4">
-            <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
-              <div className="doc-kicker text-lime">Diğer şehirler</div>
-              <ul className="mt-3 grid grid-cols-2 gap-2">
+            <div className="border border-line bg-ink-2 p-5 text-sm">
+              <div className="font-medium text-lime">Diğer şehirler</div>
+              <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
                 {ISS_CITIES.filter((c) => c.slug !== city.slug).map((c) => (
                   <li key={c.slug}><Link href={`/canli/iss-gecisleri/${c.slug}`} className="text-paper/85 hover:text-lime">{c.name}</Link></li>
                 ))}
               </ul>
             </div>
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-sm">
               <Link href="/canli/iss" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-lime hover:text-lime">ISS canlı konum <ArrowUpRight size={14} /></Link>
               <Link href="/canli/bu-gece" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-lime hover:text-lime">Bu gece gökyüzü <ArrowUpRight size={14} /></Link>
               <Link href="/canli/iss-gecisleri" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-lime hover:text-lime">Tüm şehirler <ArrowUpRight size={14} /></Link>
             </div>
             {tle && (
-              <p className="font-mono text-[11px] leading-relaxed text-muted">
+              <p className="text-[13px] leading-relaxed text-paper/70">
                 Yörünge verisi: {tle.source}, {Math.max(0, tleAgeDays ?? 0).toFixed(1)} gün önce ölçüldü. Geçişler {fmtTime(now)} itibarıyla hesaplandı.
               </p>
             )}

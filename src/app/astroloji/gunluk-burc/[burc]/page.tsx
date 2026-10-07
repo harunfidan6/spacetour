@@ -46,9 +46,9 @@ export async function generateMetadata(props: PageProps<'/astroloji/gunluk-burc/
 function Score({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div>
-      <div className="flex items-center justify-between font-mono text-[11px] text-muted">
+      <div className="flex items-center justify-between text-sm text-paper/75">
         <span>{label}</span>
-        <span className="font-bold text-paper">%{value}</span>
+        <span className="font-semibold tabular-nums text-paper">%{value}</span>
       </div>
       <div className="mt-1.5 h-1.5 w-full bg-ink-3">
         <div className="h-full" style={{ width: `${value}%`, background: color }} />
@@ -126,20 +126,20 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
               label="Yorumu paylaş"
             />
             {(r.moonChange || r.mercuryRetro) && (
-              <div className="space-y-2 border-l-2 border-gold bg-ink-2 p-4 text-sm leading-relaxed text-paper/85">
+              <div className="space-y-2 border-l-2 border-gold bg-ink-2 p-4 text-[15px] leading-relaxed text-paper/85">
                 {r.moonChange && <p>{r.moonChange}</p>}
                 {r.mercuryRetro && <p>Merkür bugün geri harekette: yazışmalarda ve sözleşmelerde iki kez kontrol et.</p>}
               </div>
             )}
             {sections.map((sec) => (
               <article key={sec.k} className="border-b border-line pb-8">
-                <span className="doc-kicker text-gold">{sec.k}</span>
+                <span className="text-sm font-medium text-gold">{sec.k}</span>
                 <h2 className="doc-title mt-2 text-2xl text-paper">{sec.title}</h2>
                 <p className="mt-3 text-base leading-relaxed text-paper/85">{sec.text}</p>
               </article>
             ))}
             <article>
-              <span className="doc-kicker text-gold">Ay’ın havası</span>
+              <span className="text-sm font-medium text-gold">Ay’ın havası</span>
               <h2 className="doc-title mt-2 text-2xl text-paper">Ay {r.moonIn}</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{r.moonMood} {r.moonFocus}</p>
             </article>
@@ -151,7 +151,7 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
                 <ZodiacGlyph sign={s.id} size={32} className="text-gold" />
                 <div>
                   <div className="doc-title text-xl text-paper">{s.name}</div>
-                  <div className="font-mono text-[11px] text-muted">{s.dates} · {s.element}</div>
+                  <div className="mt-0.5 text-sm text-paper/70">{s.dates} · {s.element}</div>
                 </div>
               </div>
               <div className="mt-5 space-y-3">
@@ -161,13 +161,13 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
                 <Score label="Şans" value={r.scores.luck} color="var(--primary, #38bdf8)" />
               </div>
             </div>
-            <div className="border border-line bg-ink-2 p-5 text-sm leading-relaxed">
-              <span className="doc-kicker text-gold">Günün tavsiyesi</span>
-              <p className="mt-2 text-paper/85">{r.tip}</p>
-              <span className="doc-kicker mt-5 block text-gold">Uğurlu saatler</span>
-              <p className="mt-2 font-mono text-xs text-paper/80">{r.luckyHours}</p>
+            <div className="border border-line bg-ink-2 p-5 leading-relaxed">
+              <span className="text-sm font-medium text-gold">Günün tavsiyesi</span>
+              <p className="mt-2 text-[15px] text-paper/85">{r.tip}</p>
+              <span className="mt-5 block text-sm font-medium text-gold">Uğurlu saatler</span>
+              <p className="mt-2 text-[15px] tabular-nums text-paper/85">{r.luckyHours}</p>
             </div>
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-sm">
               <Link href={`/astroloji/burclar/${s.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
                 {s.name} burcunun özellikleri <ArrowUpRight size={14} />
               </Link>
@@ -182,11 +182,12 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
         </div>
 
         <nav aria-label="Diğer burçların günlük yorumu" className="mx-auto mt-16 max-w-6xl border-t border-line pt-8">
-          <h2 className="doc-kicker text-gold">Diğer burçlar bugün</h2>
-          <ul className="mt-4 grid grid-cols-2 gap-px bg-line sm:grid-cols-4 lg:grid-cols-6">
+          <h2 className="doc-title text-xl text-paper sm:text-2xl">Diğer burçlar bugün</h2>
+          {/* 11 burç: boş hücre gri kutu bırakmasın diye her bağlantı kendi çerçevesinde */}
+          <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
             {ZODIAC_SIGNS.filter((x) => x.id !== s.id).map((x) => (
               <li key={x.id}>
-                <Link href={`/astroloji/gunluk-burc/${x.id}`} className="flex items-center gap-2 bg-ink p-3 font-mono text-xs text-paper/80 hover:bg-ink-2 hover:text-gold">
+                <Link href={`/astroloji/gunluk-burc/${x.id}`} className="flex items-center gap-2 border border-line p-3 text-sm text-paper/85 hover:border-gold hover:text-gold">
                   <ZodiacGlyph sign={x.id} size={16} className="text-gold/80" /> {x.name}
                 </Link>
               </li>

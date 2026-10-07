@@ -19,7 +19,6 @@ export default function TakimyildizlarPage() {
     <div style={{ '--page-accent': 'var(--violet)' } as CSSProperties}>
       <ChapterHero
         variant="band"
-        chapter="03.III"
         section="Ansiklopedi · Gökyüzü haritası"
         headline={['Takım', 'yıldızları']}
         lede="Kuzey yarımküreden çıplak gözle görülebilen takımyıldızları, en iyi gözlem ayları ve mitolojik hikâyeleriyle."
@@ -28,32 +27,40 @@ export default function TakimyildizlarPage() {
         crumbs={[{ label: 'Ana sayfa', href: '/' }, { label: 'Ansiklopedi', href: '/ansiklopedi' }, { label: 'Takımyıldızları' }]}
         meta={[{ k: 'Takımyıldızı', v: constellations.length }]}
       />
-      <section className="px-[var(--gutter)] pb-28 pt-20">
-        <PartHeading part={1} title="Gökyüzünün" serif="haritası" aside={`${constellations.length} takımyıldızı`} />
+      <section className="px-[var(--gutter)] py-14 sm:py-20">
+        <PartHeading title="Gökyüzünün" serif="haritası" />
         <Reveal items="[data-card]" stagger={0.05} className="grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:fill-row-2 lg:fill-row-3">
-          {constellations.map((c, i) => (
-            <article key={c.id} id={c.id} data-card className="flex scroll-mt-24 flex-col bg-ink p-7 sm:p-8">
-              <div className="flex items-start justify-between">
-                <span className="doc-title text-4xl text-paper/80">{String(i + 1).padStart(2, '0')}</span>
-                <ConstellationGlyph id={c.id} size={44} className="text-violet" />
-              </div>
-              <h2 className="doc-title mt-8 text-3xl text-paper">{c.name}</h2>
-              <p className="doc-serif text-xl text-violet">{c.latinName}</p>
-              <p className="mt-4 text-sm leading-relaxed text-paper/75">{c.description}</p>
-              <p className="mt-4 border-l border-violet/40 pl-4 text-sm leading-relaxed text-paper/55">{c.mythology}</p>
-              <div className="mt-6 space-y-1.5 border-t border-white/10 pt-4 text-xs font-mono">
-                <div className="flex justify-between text-paper/80">
-                  <span className="text-muted">En Parlak Yıldız</span>
-                  <span className="text-violet text-right font-sans text-xs">{c.brightestStar}</span>
+          {constellations.map((c) => (
+            <article key={c.id} id={c.id} data-card className="flex scroll-mt-24 flex-col bg-ink p-6 sm:p-8">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="doc-title text-xl text-paper sm:text-2xl">{c.name}</h2>
+                  <p className="doc-serif mt-1 text-lg text-violet">{c.latinName}</p>
                 </div>
-                <div className="flex justify-between text-paper/80">
-                  <span className="text-muted">Gözlem Mevsimi</span>
-                  <span>{c.season}</span>
-                </div>
+                <ConstellationGlyph id={c.id} size={44} className="shrink-0 text-violet" />
               </div>
-              <div className="mt-4 flex justify-between border-t border-white/10 pt-4">
-                <span className="doc-caption">{c.mainStars} ana yıldız</span>
-                <span className="doc-caption text-paper/80">En iyi · {c.bestMonth}</span>
+              <p className="mt-5 text-base leading-relaxed text-paper/85">{c.description}</p>
+              <p className="mt-4 border-l border-violet/40 pl-4 text-[15px] leading-relaxed text-paper/80">{c.mythology}</p>
+              {/* Gözlem verileri kartın dibinde, komşu kartlarla hizalı */}
+              <div className="mt-auto pt-6">
+                <dl className="space-y-2 border-t border-white/10 pt-4 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-paper/70">En Parlak Yıldız</dt>
+                    <dd className="text-right text-violet">{c.brightestStar}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-paper/70">Gözlem Mevsimi</dt>
+                    <dd className="text-right text-paper/90">{c.season}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-paper/70">En iyi ay</dt>
+                    <dd className="text-right text-paper/90">{c.bestMonth}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-paper/70">Ana yıldız</dt>
+                    <dd className="text-right tabular-nums text-paper/90">{c.mainStars}</dd>
+                  </div>
+                </dl>
               </div>
             </article>
           ))}

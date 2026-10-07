@@ -108,7 +108,6 @@ function YearPage({ year }: { year: string }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <ChapterHero
         variant="band"
-        chapter="02 · Yıl"
         section={`Gök olayları takvimi · ${year}`}
         headline={[`${year}`, 'gök olayları']}
         lede={`${year} yılında ${list.length} gök olayı: tutulmalar, meteor yağmurları, süper Aylar, kavuşumlar, ekinoks ve gündönümleri. Tarihler İstanbul saatine göredir.`}
@@ -130,19 +129,19 @@ function YearPage({ year }: { year: string }) {
               <ul className="mt-4 divide-y divide-line border border-line">
                 {list.filter((e) => e.date.slice(5, 7) === m).map((e) => (
                   <li key={e.id}>
-                    <Link href={`/takvim/${eventSlug(e)}`} className="flex flex-wrap items-center justify-between gap-3 bg-ink p-4 hover:bg-ink-2">
+                    <Link href={`/takvim/${eventSlug(e)}`} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-ink p-4 hover:bg-ink-2">
                       <span>
-                        <span className="doc-kicker block text-gold">{eventTypeLabels[e.type]}</span>
-                        <span className="mt-1 block text-paper">{e.title}</span>
+                        <span className="block text-sm font-medium text-gold">{eventTypeLabels[e.type]}</span>
+                        <span className="mt-1 block text-base text-paper">{e.title}</span>
                       </span>
-                      <span className="font-mono text-xs text-muted">{fmtDate(e.date)}</span>
+                      <span className="font-mono text-[13px] text-paper/70">{fmtDate(e.date)}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-          <nav aria-label="Diğer yıllar" className="flex flex-wrap gap-2 border-t border-line pt-6 font-mono text-xs">
+          <nav aria-label="Diğer yıllar" className="flex flex-wrap gap-2 border-t border-line pt-6 text-sm">
             {EVENT_YEARS.filter((y) => y !== year).map((y) => (
               <Link key={y} href={`/takvim/${y}`} className="border border-line px-3 py-2 text-paper/80 hover:border-gold hover:text-gold">{y} gök olayları</Link>
             ))}
@@ -187,7 +186,6 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <ChapterHero
         variant="band"
-        chapter={`02 · ${eventTypeLabels[e.type]}`}
         section={`${fmtDate(e.date)}${e.time ? ` · ${e.time}` : ''}`}
         headline={[e.title, year]}
         lede={e.description}
@@ -204,31 +202,31 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12">
           <div className="space-y-8 lg:col-span-8">
             <article className="border-b border-line pb-8">
-              <span className="doc-kicker text-gold">Bu olayda</span>
-              <h2 className="doc-title mt-2 text-2xl text-paper">{e.title} nasıl gözlenir?</h2>
+              <span className="block text-sm font-medium text-gold">Bu olayda</span>
+              <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">{e.title} nasıl gözlenir?</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{e.details}</p>
             </article>
             <article className="border-b border-line pb-8">
-              <span className="doc-kicker text-gold">{eventTypeLabels[e.type]} nedir?</span>
-              <h2 className="doc-title mt-2 text-2xl text-paper">Gökyüzünde ne oluyor?</h2>
+              <span className="block text-sm font-medium text-gold">{eventTypeLabels[e.type]} nedir?</span>
+              <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">Gökyüzünde ne oluyor?</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{g.what}</p>
             </article>
             <article>
-              <span className="doc-kicker text-gold">Gözlem rehberi</span>
-              <h2 className="doc-title mt-2 text-2xl text-paper">İpuçları</h2>
+              <span className="block text-sm font-medium text-gold">Gözlem rehberi</span>
+              <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">İpuçları</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{g.how}</p>
             </article>
           </div>
           <aside className="space-y-6 lg:col-span-4">
-            <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
-              <div className="doc-kicker text-gold">Tarih</div>
+            <div className="border border-line bg-ink-2 p-5 text-sm">
+              <div className="font-medium text-gold">Tarih</div>
               <div className="doc-title mt-2 text-2xl text-paper">{when}</div>
-              <div className="mt-1 text-paper/75">{fmtDate(e.date)}{e.time ? ` · ${e.time}` : ''}</div>
-              <div className="mt-3 text-muted">{VISIBILITY[e.visibility]} görülebilir.</div>
+              <div className="mt-1 font-mono text-[13px] text-paper/80">{fmtDate(e.date)}{e.time ? ` · ${e.time}` : ''}</div>
+              <div className="mt-3 text-paper/70">{VISIBILITY[e.visibility]} görülebilir.</div>
             </div>
             {bodies.length > 0 && (
-              <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
-                <div className="doc-kicker text-gold">İlgili gökcisimleri</div>
+              <div className="border border-line bg-ink-2 p-5 text-sm">
+                <div className="font-medium text-gold">İlgili gökcisimleri</div>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {bodies.map((b) => (
                     <li key={b.id}><Link href={`/ansiklopedi/${b.id}`} className="inline-flex items-center gap-1.5 border border-line px-3 py-1.5 text-paper/85 hover:border-gold hover:text-gold">{b.name} <ArrowUpRight size={12} /></Link></li>
@@ -237,16 +235,16 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
               </div>
             )}
             {sameType.length > 0 && (
-              <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
-                <div className="doc-kicker text-gold">Diğer {eventTypeLabels[e.type].toLocaleLowerCase('tr-TR')} tarihleri</div>
+              <div className="border border-line bg-ink-2 p-5 text-sm">
+                <div className="font-medium text-gold">Diğer {eventTypeLabels[e.type].toLocaleLowerCase('tr-TR')} tarihleri</div>
                 <ul className="mt-3 space-y-2">
                   {sameType.map((x) => (
-                    <li key={x.id}><Link href={`/takvim/${eventSlug(x)}`} className="flex justify-between gap-3 text-paper/85 hover:text-gold"><span>{x.title}</span><span className="shrink-0 text-muted">{x.date.split('-').reverse().join('.')}</span></Link></li>
+                    <li key={x.id}><Link href={`/takvim/${eventSlug(x)}`} className="flex justify-between gap-3 text-paper/85 hover:text-gold"><span>{x.title}</span><span className="shrink-0 font-mono text-[13px] text-paper/70">{x.date.split('-').reverse().join('.')}</span></Link></li>
                   ))}
                 </ul>
               </div>
             )}
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-sm">
               {lunarMonth && <Link href={lunarMonth.href} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{lunarMonth.label} <ArrowUpRight size={14} /></Link>}
               <Link href={`/takvim/${year}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{year} gök olaylarının tamamı <ArrowUpRight size={14} /></Link>
               <Link href="/takvim" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Etkileşimli takvim <ArrowUpRight size={14} /></Link>

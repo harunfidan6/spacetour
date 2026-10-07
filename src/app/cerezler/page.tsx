@@ -15,15 +15,15 @@ export default function Page() {
     <InfoPage kicker="Yasal" title="Çerez politikası" path="/cerezler" updated="6 Ekim 2026" lede="Çerezler, ziyaret ettiğiniz sitenin tarayıcınıza kaydettiği küçük metin dosyalarıdır. Bu sayfa, sitemizde hangi çerezlerin ve tarayıcı depolama alanlarının kullanıldığını açıklar.">
       <Block title="Kullandığımız çerezler ve depolama alanları">
         <div className="overflow-x-auto">
-          <table className="w-full border border-line font-mono text-xs">
+          <table className="w-full min-w-[36rem] border border-line text-sm">
             <thead>
-              <tr className="bg-ink-2 text-left text-muted"><th className="p-3 font-normal">Ad</th><th className="p-3 font-normal">Sağlayıcı</th><th className="p-3 font-normal">Amaç</th><th className="p-3 font-normal">Süre</th></tr>
+              <tr className="bg-ink-2 text-left text-paper/70"><th className="p-3 font-medium">Ad</th><th className="p-3 font-medium">Sağlayıcı</th><th className="p-3 font-medium">Amaç</th><th className="p-3 font-medium">Süre</th></tr>
             </thead>
-            <tbody className="text-paper/85">
-              <tr className="border-t border-line"><td className="p-3">_ga, _ga_*</td><td className="p-3">Google Analytics</td><td className="p-3">Ziyaretçileri ayırt ederek kullanım istatistiği üretir; yalnızca onay verirseniz yerleşir</td><td className="p-3">2 yıla kadar</td></tr>
-              <tr className="border-t border-line"><td className="p-3">spacetour:cerez</td><td className="p-3">SpaceTour TR (localStorage)</td><td className="p-3">Çerez tercihinizi hatırlar</td><td className="p-3">Siz silene dek</td></tr>
-              <tr className="border-t border-line"><td className="p-3">astro_sid</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Aynı ziyaretteki sayfa görüntülemelerini ilişkilendirir</td><td className="p-3">Sekme kapanana dek</td></tr>
-              <tr className="border-t border-line"><td className="p-3">spacetour:intro</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Açılış animasyonunun aynı ziyarette tekrar oynamasını önler</td><td className="p-3">Sekme kapanana dek</td></tr>
+            <tbody className="align-top text-paper/85">
+              <tr className="border-t border-line"><td className="p-3 font-mono text-[13px]">_ga, _ga_*</td><td className="p-3">Google Analytics</td><td className="p-3">Ziyaretçileri ayırt ederek kullanım istatistiği üretir; yalnızca onay verirseniz yerleşir</td><td className="p-3">2 yıla kadar</td></tr>
+              <tr className="border-t border-line"><td className="p-3 font-mono text-[13px]">spacetour:cerez</td><td className="p-3">SpaceTour TR (localStorage)</td><td className="p-3">Çerez tercihinizi hatırlar</td><td className="p-3">Siz silene dek</td></tr>
+              <tr className="border-t border-line"><td className="p-3 font-mono text-[13px]">astro_sid</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Aynı ziyaretteki sayfa görüntülemelerini ilişkilendirir</td><td className="p-3">Sekme kapanana dek</td></tr>
+              <tr className="border-t border-line"><td className="p-3 font-mono text-[13px]">spacetour:intro</td><td className="p-3">SpaceTour TR (sessionStorage)</td><td className="p-3">Açılış animasyonunun aynı ziyarette tekrar oynamasını önler</td><td className="p-3">Sekme kapanana dek</td></tr>
             </tbody>
           </table>
         </div>

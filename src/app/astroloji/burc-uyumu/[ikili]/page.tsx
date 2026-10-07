@@ -119,36 +119,36 @@ export default async function IkiliPage(props: PageProps<'/astroloji/burc-uyumu/
               { k: 'Nitelik', title: `${a.modality} ve ${b.modality}`, text: r.modalityText },
             ].map((sec) => (
               <article key={sec.k} className="border-b border-line pb-8">
-                <span className="doc-kicker text-gold">{sec.k}</span>
+                <span className="text-sm font-medium text-gold">{sec.k}</span>
                 <h2 className="doc-title mt-2 text-2xl text-paper">{sec.title}</h2>
                 <p className="mt-3 text-base leading-relaxed text-paper/85">{sec.text}</p>
               </article>
             ))}
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <h2 className="doc-kicker text-gold">Güçlü yanlar</h2>
+                <h2 className="text-lg font-semibold text-paper">Güçlü yanlar</h2>
                 <ul className="mt-3 flex flex-wrap gap-2">
-                  {r.strengths.map((t) => <li key={t} className="border border-primary/40 bg-primary/5 px-2.5 py-1 text-xs text-primary">+ {t}</li>)}
+                  {r.strengths.map((t) => <li key={t} className="border border-primary/30 px-3 py-1 text-sm text-paper/85"><span className="text-primary">+</span> {t}</li>)}
                 </ul>
               </div>
               <div>
-                <h2 className="doc-kicker text-gold">Dikkat</h2>
+                <h2 className="text-lg font-semibold text-paper">Dikkat</h2>
                 <ul className="mt-3 flex flex-wrap gap-2">
-                  {r.watch.map((t) => <li key={t} className="border border-rose/40 bg-rose/5 px-2.5 py-1 text-xs text-rose">− {t}</li>)}
+                  {r.watch.map((t) => <li key={t} className="border border-rose/30 px-3 py-1 text-sm text-paper/85"><span className="text-rose">−</span> {t}</li>)}
                 </ul>
               </div>
             </div>
             <div className="border-l-2 border-gold bg-ink-2 p-4">
-              <h2 className="doc-kicker text-gold">Tavsiye</h2>
-              <p className="mt-2 text-sm leading-relaxed text-paper/85">{r.advice}</p>
+              <h2 className="text-lg font-semibold text-gold">Tavsiye</h2>
+              <p className="mt-2 text-base leading-relaxed text-paper/85">{r.advice}</p>
             </div>
             <div>
               <h2 className="doc-title text-2xl text-paper">Sık sorulanlar</h2>
               <dl className="mt-4 space-y-4">
                 {faq.map((f) => (
                   <div key={f.q} className="border border-line bg-ink p-4">
-                    <dt className="text-sm font-semibold text-paper">{f.q}</dt>
-                    <dd className="mt-1 text-sm leading-relaxed text-paper/75">{f.a}</dd>
+                    <dt className="text-base font-semibold text-paper">{f.q}</dt>
+                    <dd className="mt-1.5 text-[15px] leading-relaxed text-paper/80">{f.a}</dd>
                   </div>
                 ))}
               </dl>
@@ -162,13 +162,13 @@ export default async function IkiliPage(props: PageProps<'/astroloji/burc-uyumu/
                 <span className="display text-4xl text-paper">%{r.score}</span>
                 <ZodiacGlyph sign={b.id} size={40} className="text-gold" />
               </div>
-              <p className="mt-3 text-center font-mono text-xs uppercase tracking-wider text-gold">{r.verdict}</p>
-              <div className="mt-4 space-y-1 border-t border-line pt-3 font-mono text-[11px] text-muted">
-                <div className="flex justify-between"><span>{r.relation}</span><span className="text-paper">{r.base}</span></div>
-                <div className="flex justify-between"><span>Gelenekte öne çıkan eşleşme</span><span className="text-paper">{r.traditional ? '+3' : '—'}</span></div>
+              <p className="mt-3 text-center text-sm font-medium text-gold">{r.verdict}</p>
+              <div className="mt-4 space-y-1.5 border-t border-line pt-3 text-sm text-paper/70">
+                <div className="flex justify-between gap-3"><span>{r.relation}</span><span className="tabular-nums text-paper">{r.base}</span></div>
+                <div className="flex justify-between gap-3"><span>Gelenekte öne çıkan eşleşme</span><span className="tabular-nums text-paper">{r.traditional ? '+3' : '—'}</span></div>
               </div>
             </div>
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-sm">
               <Link href="/astroloji/burc-uyumu" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Başka ikili hesapla <ArrowUpRight size={14} /></Link>
               <Link href="/astroloji/sinastri" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Doğum haritalarıyla sinastri <ArrowUpRight size={14} /></Link>
               <Link href={`/astroloji/burclar/${a.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{a.name} burcu <ArrowUpRight size={14} /></Link>
@@ -180,12 +180,13 @@ export default async function IkiliPage(props: PageProps<'/astroloji/burc-uyumu/
         </div>
 
         <nav aria-label={`${a.name} burcunun diğer uyumları`} className="mx-auto mt-16 max-w-6xl border-t border-line pt-8">
-          <h2 className="doc-kicker text-gold">{a.name} burcunun diğer uyumları</h2>
-          <ul className="mt-4 grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-4">
+          <h2 className="doc-title text-xl text-paper sm:text-2xl">{a.name} burcunun diğer uyumları</h2>
+          {/* 11 ikili: son satırdaki son hücre boşluğu doldurur, gri kutu kalmaz */}
+          <ul className="mt-4 grid grid-cols-2 gap-px bg-line max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-4 lg:fill-row-4">
             {related.map((x) => (
               <li key={x.href}>
-                <Link href={x.href} className="flex items-center justify-between bg-ink p-3 font-mono text-xs text-paper/80 hover:bg-ink-2 hover:text-gold">
-                  <span>{x.label}</span><span className="text-muted">%{x.score}</span>
+                <Link href={x.href} className="flex h-full items-center justify-between gap-2 bg-ink p-3 text-sm text-paper/85 hover:bg-ink-2 hover:text-gold">
+                  <span>{x.label}</span><span className="tabular-nums text-paper/70">%{x.score}</span>
                 </Link>
               </li>
             ))}

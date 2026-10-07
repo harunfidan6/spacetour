@@ -20,7 +20,6 @@ export default function HaritaPage() {
           items={FAQS_BY_SECTION.harita}
           title="Gök Küresi & Gök Haritası Rehberi"
           serif="sıkça sorulan sorular"
-          kicker="Gözlem Geometrisi · SSS"
           description="İnteraktif gökyüzü haritası, Bortle ışık kirliliği ölçeği ve en parlak yıldızlar hakkında rehber."
           accentColor="var(--lime)"
         />

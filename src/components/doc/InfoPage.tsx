@@ -18,12 +18,12 @@ export function InfoPage({ kicker, title, lede, updated, path, children }: { kic
   return (
     <div className="px-[var(--gutter)] pb-24 pt-32 sm:pt-40">
       <div className="mx-auto max-w-3xl">
-        <span className="doc-kicker text-gold">{kicker}</span>
+        <span className="text-sm font-medium text-gold">{kicker}</span>
         <h1 className="doc-title mt-3 text-4xl text-paper sm:text-5xl">{title}</h1>
         <p className="mt-5 text-lg leading-relaxed text-paper/80">{lede}</p>
-        <p className="mt-3 font-mono text-xs text-muted">Son güncelleme: {updated}</p>
+        <p className="mt-3 text-sm text-paper/70">Son güncelleme: {updated}</p>
         <div className="info-prose mt-12 space-y-10 text-base leading-relaxed text-paper/85">{children}</div>
-        <nav aria-label="Kurumsal sayfalar" className="mt-16 flex flex-wrap gap-2 border-t border-line pt-6 font-mono text-xs">
+        <nav aria-label="Kurumsal sayfalar" className="mt-16 flex flex-wrap gap-2 border-t border-line pt-6 text-sm">
           {PAGES.filter((p) => p.href !== path).map((p) => (
             <Link key={p.href} href={p.href} className="border border-line px-3 py-2 text-paper/80 hover:border-gold hover:text-gold">{p.label}</Link>
           ))}
@@ -36,7 +36,7 @@ export function InfoPage({ kicker, title, lede, updated, path, children }: { kic
 export function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="doc-title text-2xl text-paper">{title}</h2>
+      <h2 className="doc-title text-xl text-paper sm:text-2xl">{title}</h2>
       <div className="mt-3 space-y-3">{children}</div>
     </section>
   );

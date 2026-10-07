@@ -73,7 +73,6 @@ export default function BurclarPage() {
       />
       <ChapterHero
         variant="band"
-        chapter="04"
         section="Astroloji · 12 burç arşivi"
         headline={['On iki', 'arketip']}
         lede="Her burcun elementi, yönetici gezegeni, mitolojik arketipi ve tarot karşılığı. Bir karta dokun, dosyası açılsın."
@@ -82,13 +81,11 @@ export default function BurclarPage() {
         crumbs={[{ label: 'Ana sayfa', href: '/' }, { label: 'Astroloji', href: '/astroloji' }, { label: '12 burç' }]}
       />
       <CelestialHorizonBar compact />
-      <section className="px-[var(--gutter)] pb-28 pt-16">
+      <section className="px-[var(--gutter)] py-14 sm:py-20">
         <PartHeading
-          part={1}
           title="12 zodyak"
           serif="takımyıldızı"
           description="Sidney Hall’un 1824 tarihli Urania’s Mirror yıldız kartlarıyla, elementlerine göre süzülebilir arşiv."
-          aside="Urania’s Mirror · 1824"
         />
         <ZodiacAtlas />
       </section>

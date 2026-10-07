@@ -7,7 +7,7 @@ import { getSection, moduleHref, type DocCollection, type DocModule, type DocSec
 
 type Entry = { kind: 'module'; item: DocModule } | { kind: 'collection'; item: DocCollection };
 
-function entryCard(section: DocSection, entry: Entry, number: string, size: 'md' | 'lg', wide: boolean) {
+function entryCard(section: DocSection, entry: Entry, size: 'md' | 'lg', wide: boolean) {
   const { item } = entry;
   const href = entry.kind === 'module' ? moduleHref(section, entry.item) : entry.item.href;
   const title = entry.kind === 'module' ? entry.item.short : entry.item.title;
@@ -15,7 +15,6 @@ function entryCard(section: DocSection, entry: Entry, number: string, size: 'md'
     <EpisodeCard
       key={href}
       href={href}
-      index={number}
       title={title}
       blurb={item.blurb}
       kind={item.kind}
@@ -55,7 +54,7 @@ export function EpisodeGrid({ section, entries, featureFirst = true }: { section
         const { sm, lg } = spans[i];
         return (
           <div key={i} className={`min-w-0 ${SPAN_SM[sm]} ${SPAN_LG[lg]}`}>
-            {entryCard(section, entry, String(i + 1).padStart(2, '0'), featured ? 'lg' : 'md', lg > 1)}
+            {entryCard(section, entry, featured ? 'lg' : 'md', lg > 1)}
           </div>
         );
       })}
@@ -92,7 +91,6 @@ export function SectionHub({
   return (
     <div style={{ '--page-accent': section.accent } as CSSProperties}>
       <ChapterHero
-        chapter={section.chapter}
         section={section.title}
         headline={section.headline}
         lede={section.lede}
@@ -101,28 +99,22 @@ export function SectionHub({
         meta={meta}
       />
 
-      <div className="space-y-24 px-[var(--gutter)] pb-28 pt-20 sm:space-y-32">
+      <div className="space-y-16 px-[var(--gutter)] pb-20 pt-14 sm:space-y-20 sm:pb-24 sm:pt-20">
         {intro}
         {section.groups ? (
-          section.groups.map((g, gi) => {
+          section.groups.map((g) => {
             const entries = [...modules, ...collections].filter((e) => e.item.group === g.name);
             const [title, ...rest] = g.name.split(' & ');
             return (
               <section key={g.name}>
-                <PartHeading part={gi + 1} title={title} serif={rest.length ? `& ${rest.join(' & ')}` : undefined} description={g.description} aside={`${entries.length} kısım`} />
+                <PartHeading title={title} serif={rest.length ? `& ${rest.join(' & ')}` : undefined} description={g.description} />
                 <EpisodeGrid section={section} entries={entries} featureFirst={false} />
               </section>
             );
           })
         ) : (
           <section>
-            <PartHeading
-              part={1}
-              title={partTitle ?? 'Bölümün'}
-              serif={partSerif ?? 'kısımları'}
-              description={partDescription}
-              aside={`${modules.length} kısım`}
-            />
+            <PartHeading title={partTitle ?? 'Bölümün'} serif={partSerif ?? 'kısımları'} description={partDescription} />
             <EpisodeGrid section={section} entries={[...modules, ...collections]} />
           </section>
         )}
