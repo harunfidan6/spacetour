@@ -162,8 +162,8 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
               <Link href={`/astroloji/burclar/${s.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
                 {s.name} burcunun özellikleri <ArrowUpRight size={14} />
               </Link>
-              <Link href="/astroloji/burc-uyumu" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
-                Burç uyumunu hesapla <ArrowUpRight size={14} />
+              <Link href={`/astroloji/burclar/${s.id}#uyum`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
+                {s.name} burcunun uyumları <ArrowUpRight size={14} />
               </Link>
               <Link href="/astroloji/dogum-haritasi" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
                 Doğum haritanı çıkar <ArrowUpRight size={14} />
