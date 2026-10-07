@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
-import { Satellite, Compass, Activity, Eye, ExternalLink, Sparkles, Ruler } from 'lucide-react';
+import Link from 'next/link';
+import { Satellite, Compass, Activity, Eye, Sparkles, Ruler, ArrowUpRight } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { useInView } from '@/lib/useInView';
 import { usePolledJson } from '@/lib/usePolledJson';
 import { getSunEquatorial } from '@/lib/astrophysics/skyDomeEphemeris';
 import { compassPoint } from '@/lib/astrophysics/skyTonight';
 import { getLocalSiderealTime, raDecToAltAz } from '@/utils/astronomy';
+import { foldTr } from '@/lib/text';
 
 // Public, CORS-enabled position feed for NORAD 25544 (the ISS)
 const ISS_API = 'https://api.wheretheiss.at/v1/satellites/25544';
@@ -182,14 +184,12 @@ export function IssTracker() {
               <Compass size={12} className="text-lime shrink-0" />
               {view?.verdict ?? '—'}
             </span>
-            <a
-              href="https://spotthestation.nasa.gov/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={`/canli/iss-gecisleri/${foldTr(selectedCity)}`}
               className="text-[10px] text-solar mt-1 inline-flex items-center gap-1 hover:underline"
             >
-              Geçiş saatleri: NASA Spot the Station <ExternalLink size={10} />
-            </a>
+              {selectedCity} geçiş saatleri <ArrowUpRight size={10} />
+            </Link>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { ChapterHero } from '@/components/doc/ChapterHero';
 import { DOC_IMAGES } from '@/data/docImages';
 import { events, eventTypeLabels, type AstronomicalEvent, type EventType } from '@/data/events';
 import { eventSlug, eventBySlug, EVENT_YEARS } from '@/lib/eventSlug';
+import { eventBodies, eventLunarMonth } from '@/lib/eventLinks';
 import { buildPageMetadata, getArticleJsonLd, getBreadcrumbJsonLd, CONTENT_DATES } from '@/lib/seo';
 
 // "Kaç gün kaldı" bilgisi güncel kalsın
@@ -162,6 +163,8 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
   const when = left > 1 ? `${left} gün kaldı` : left === 1 ? 'Yarın' : left === 0 ? 'Bugün' : 'Geçti';
   const year = e.date.slice(0, 4);
   const sameType = events.filter((x) => x.type === e.type && x.id !== e.id).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6);
+  const bodies = eventBodies(e);
+  const lunarMonth = eventLunarMonth(e);
 
   const articleJsonLd = getArticleJsonLd({
     path: `/takvim/${slug}`,
@@ -223,6 +226,16 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
               <div className="mt-1 text-paper/75">{fmtDate(e.date)}{e.time ? ` · ${e.time}` : ''}</div>
               <div className="mt-3 text-muted">{VISIBILITY[e.visibility]} görülebilir.</div>
             </div>
+            {bodies.length > 0 && (
+              <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
+                <div className="doc-kicker text-gold">İlgili gökcisimleri</div>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {bodies.map((b) => (
+                    <li key={b.id}><Link href={`/ansiklopedi/${b.id}`} className="inline-flex items-center gap-1.5 border border-line px-3 py-1.5 text-paper/85 hover:border-gold hover:text-gold">{b.name} <ArrowUpRight size={12} /></Link></li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {sameType.length > 0 && (
               <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
                 <div className="doc-kicker text-gold">Diğer {eventTypeLabels[e.type].toLocaleLowerCase('tr-TR')} tarihleri</div>
@@ -234,6 +247,7 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
               </div>
             )}
             <div className="space-y-2 font-mono text-xs">
+              {lunarMonth && <Link href={lunarMonth.href} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{lunarMonth.label} <ArrowUpRight size={14} /></Link>}
               <Link href={`/takvim/${year}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{year} gök olaylarının tamamı <ArrowUpRight size={14} /></Link>
               <Link href="/takvim" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Etkileşimli takvim <ArrowUpRight size={14} /></Link>
               <Link href="/canli/bu-gece" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Bu gece gökyüzünde <ArrowUpRight size={14} /></Link>

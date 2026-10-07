@@ -173,6 +173,8 @@ export default async function IkiliPage(props: PageProps<'/astroloji/burc-uyumu/
               <Link href="/astroloji/sinastri" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Doğum haritalarıyla sinastri <ArrowUpRight size={14} /></Link>
               <Link href={`/astroloji/burclar/${a.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{a.name} burcu <ArrowUpRight size={14} /></Link>
               {a.id !== b.id && <Link href={`/astroloji/burclar/${b.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{b.name} burcu <ArrowUpRight size={14} /></Link>}
+              <Link href={`/astroloji/gunluk-burc/${a.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{a.name} burcu bugün <ArrowUpRight size={14} /></Link>
+              {a.id !== b.id && <Link href={`/astroloji/gunluk-burc/${b.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{b.name} burcu bugün <ArrowUpRight size={14} /></Link>}
             </div>
           </aside>
         </div>

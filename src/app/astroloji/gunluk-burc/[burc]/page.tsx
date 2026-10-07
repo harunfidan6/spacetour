@@ -10,6 +10,7 @@ import { DOC_IMAGES, type DocImageKey } from '@/data/docImages';
 import { dailyReading } from '@/lib/astrology/dailyHoroscope';
 import { BASE_URL, SITE_NAME, getArticleJsonLd, getBreadcrumbJsonLd } from '@/lib/seo';
 import { nameCase } from '@/lib/text';
+import { ShareButtons } from '@/components/ui/ShareButtons';
 
 // Her burcun bugünkü yorumu sunucuda üretilir; sayfa yarım saatte bir yenilenir (gece yarısından sonra yeni gün)
 export const revalidate = 1800;
@@ -31,7 +32,8 @@ export async function generateMetadata(props: PageProps<'/astroloji/gunluk-burc/
   const url = `${BASE_URL}/astroloji/gunluk-burc/${s.id}`;
   const title = `${s.name} Burcu Günlük Yorum · Bugün | SpaceTour TR`;
   const description = `${todayLabel(now)}: Ay ${r.moonIn}, ${nameCase(s.name, 'ilgi', '’')} ${r.house}. evinde (${r.houseArea}). ${s.name} burcu için bugünün aşk, kariyer ve sağlık yorumu.`.slice(0, 158);
-  const image = `${BASE_URL}/astroloji/burclar/${s.id}/opengraph-image`;
+  // Günün yorumunu gösteren paylaşım kartı (opengraph-image.tsx)
+  const image = `${BASE_URL}/astroloji/gunluk-burc/${s.id}/opengraph-image`;
   return {
     title: { absolute: title },
     description,
@@ -75,7 +77,7 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
   const articleJsonLd = getArticleJsonLd({
     path: `/astroloji/gunluk-burc/${s.id}`,
     headline: `${s.name} burcu günlük yorum · ${day}`,
-    image: `${BASE_URL}/astroloji/burclar/${s.id}/opengraph-image`,
+    image: `${BASE_URL}/astroloji/gunluk-burc/${s.id}/opengraph-image`,
     datePublished: isoDay(now),
   });
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
@@ -116,6 +118,13 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
       <section aria-label={`${s.name} burcu günlük yorum`} className="px-[var(--gutter)] py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12">
           <div className="space-y-8 lg:col-span-8">
+            {/* Tarihli bağlantı: WhatsApp gibi uygulamalar önizlemeyi adrese göre önbellekler, her gün yeni kart görünsün */}
+            <ShareButtons
+              url={`${BASE_URL}/astroloji/gunluk-burc/${s.id}?tarih=${isoDay(now)}`}
+              title={`${s.name} burcu bugün · ${day}`}
+              text={`${s.name} burcu bugün (${day}): ${r.headline}`}
+              label="Yorumu paylaş"
+            />
             {(r.moonChange || r.mercuryRetro) && (
               <div className="space-y-2 border-l-2 border-gold bg-ink-2 p-4 text-sm leading-relaxed text-paper/85">
                 {r.moonChange && <p>{r.moonChange}</p>}
@@ -162,8 +171,8 @@ export default async function GunlukBurcPage(props: PageProps<'/astroloji/gunluk
               <Link href={`/astroloji/burclar/${s.id}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
                 {s.name} burcunun özellikleri <ArrowUpRight size={14} />
               </Link>
-              <Link href="/astroloji/burc-uyumu" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
-                Burç uyumunu hesapla <ArrowUpRight size={14} />
+              <Link href={`/astroloji/burclar/${s.id}#uyum`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
+                {s.name} burcunun uyumları <ArrowUpRight size={14} />
               </Link>
               <Link href="/astroloji/dogum-haritasi" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">
                 Doğum haritanı çıkar <ArrowUpRight size={14} />

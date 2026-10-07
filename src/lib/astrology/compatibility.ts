@@ -154,3 +154,10 @@ export function signCompatibility(a: ZodiacSign, b: ZodiacSign): CompatibilityRe
     love: areas.love, friendship: areas.friendship, work: areas.work, strengths: areas.strengths, watch: areas.watch, advice: ADVICE[sep],
   };
 }
+
+/** Burç ikilisinin kalıcı adresi: burç sırasına göre önce gelen başta (aslan-koc → koc-aslan) */
+export function pairSlug(a: string, b: string): string {
+  const ia = ZODIAC_SIGNS.findIndex((s) => s.id === a);
+  const ib = ZODIAC_SIGNS.findIndex((s) => s.id === b);
+  return ia <= ib ? `${a}-${b}` : `${b}-${a}`;
+}

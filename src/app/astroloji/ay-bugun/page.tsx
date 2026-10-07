@@ -11,6 +11,7 @@ import { eventSlug } from '@/lib/eventSlug';
 import { getMoonPhase } from '@/lib/astrophysics/skyDomeEphemeris';
 import { longitude, localMidnight, moonSign, nextMoonIngress, voidOfCourse, SIGN_IDS, SIGN_NAMES, SIGN_IN } from '@/lib/astrology/dailySky';
 import { buildPageMetadata, getBreadcrumbJsonLd } from '@/lib/seo';
+import { MONTH_NAMES, monthSlug } from '@/lib/astrology/lunarCalendar';
 
 // Ay ~2,5 günde bir burç değiştirir: sayfa 15 dakikada bir yeniden üretilir
 export const revalidate = 900;
@@ -152,6 +153,7 @@ export default function AyBugunPage() {
               </div>
             )}
             <div className="space-y-2 font-mono text-xs">
+              <Link href={`/astroloji/ay-takvimi/${monthSlug(Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1)}`} className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">{MONTH_NAMES[Number(today.slice(5, 7)) - 1]} Ay takvimi <ArrowUpRight size={14} /></Link>
               <Link href="/astroloji/ay-evreleri" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Ay evreleri ve ritüeller <ArrowUpRight size={14} /></Link>
               <Link href="/astroloji/gunluk-burc" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Günlük burç yorumları <ArrowUpRight size={14} /></Link>
               <Link href="/takvim" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Gök olayları takvimi <ArrowUpRight size={14} /></Link>

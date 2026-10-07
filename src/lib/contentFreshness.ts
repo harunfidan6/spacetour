@@ -33,6 +33,8 @@ const istanbulDay = (d: Date) => d.toLocaleDateString('sv-SE', { timeZone: TZ })
 const RETRY_DELAY_MS = 4000;
 // "Ay bugün" 15 dakikada bir yenilenir; üretim ve önbellek gecikmesi için pay
 const MOON_MAX_AGE_MIN = 20;
+// ISS geçiş sayfaları saatte bir yenilenir
+const ISS_MAX_AGE_MIN = 75;
 const SIGN_LABELS: Record<string, string> = Object.fromEntries(SIGN_IDS.map((id, i) => [id, SIGN_NAMES[i]]));
 
 const decode = (html: string) =>
@@ -93,7 +95,14 @@ export async function runFreshnessCheck(origin: string, source: FreshnessReport[
     return { fresh: true, note: `Ay ${expected} burcunda gösteriliyor.` };
   });
 
-  const checks = await Promise.all([moonCheck, ...signChecks]);
+  const issCheck = checkPage(origin, '/canli/iss-gecisleri/istanbul', 'ISS geçişleri · İstanbul', (html, generatedAt) => {
+    const ageMin = (now.getTime() - generatedAt.getTime()) / 60000;
+    if (ageMin > ISS_MAX_AGE_MIN) return { fresh: false, note: `Sayfa ${Math.round(ageMin)} dakika önce üretilmiş (en fazla ${ISS_MAX_AGE_MIN} olmalı).` };
+    if (html.includes('data-tle="yok"')) return { fresh: false, note: 'Yörünge verisi (TLE) alınamamış; geçişler gösterilemiyor.' };
+    return { fresh: true, note: 'Geçişler güncel yörünge verisiyle hesaplanmış.' };
+  });
+
+  const checks = await Promise.all([moonCheck, issCheck, ...signChecks]);
   return {
     checkedAt: now.toISOString(),
     source,

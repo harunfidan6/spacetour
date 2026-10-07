@@ -9,6 +9,7 @@ import { ZodiacDossier } from '@/components/doc/ZodiacDossier';
 import { ZodiacGlyph, PlanetGlyph } from '@/components/ui/CosmicGlyphs';
 import { CelestialHorizonBar } from '@/components/astrology/CelestialHorizonBar';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
+import { pairSlug, signCompatibility } from '@/lib/astrology/compatibility';
 import { DOC_IMAGES, type DocImageKey } from '@/data/docImages';
 import {
   buildSignMetadata,
@@ -188,7 +189,7 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
                 <ArrowUpRight size={14} />
               </Link>
               <Link
-                href="/astroloji/burc-uyumu"
+                href="#uyum"
                 className="w-full py-2 px-3 border border-gold/40 text-gold hover:bg-gold/10 flex items-center justify-between transition-colors uppercase tracking-wider text-[11px]"
               >
                 <span>{s.name} Uyumunu Hesapla</span>
@@ -252,13 +253,13 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
                 {matches.map((m) => (
                   <li key={m.id}>
                     <Link
-                      href={`/astroloji/burclar/${m.id}`}
+                      href={`/astroloji/burc-uyumu/${pairSlug(s.id, m.id)}`}
                       className="group flex items-center gap-3 border border-gold/20 bg-ink p-4 transition-all hover:border-gold/50 hover:bg-ink-2"
                     >
                       <ZodiacGlyph sign={m.id} size={26} className="text-gold shrink-0" />
                       <div>
-                        <span className="doc-title text-lg text-paper block">{m.name}</span>
-                        <span className="text-[10px] text-muted">{m.element} · {m.modality}</span>
+                        <span className="doc-title text-lg text-paper block">{s.name} – {m.name}</span>
+                        <span className="text-[10px] text-muted">{m.element} · {m.modality} · uyum %{signCompatibility(s, m).score}</span>
                       </div>
                       <ArrowUpRight size={15} className="ml-auto text-gold/60 transition-colors group-hover:text-gold" />
                     </Link>
@@ -268,13 +269,29 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
             </section>
           )}
 
+          {/* Diğer 11 burçla (ve kendisiyle) uyum: ikili sayfalarına bağlantılar */}
+          <section id="uyum" className="space-y-4">
+            <h2 className="doc-kicker text-gold">{s.name} burcunun diğer burçlarla uyumu</h2>
+            <ul className="grid grid-cols-2 gap-px border border-line bg-line font-mono text-xs sm:grid-cols-3">
+              {ZODIAC_SIGNS.map((x) => (
+                <li key={x.id}>
+                  <Link href={`/astroloji/burc-uyumu/${pairSlug(s.id, x.id)}`} className="flex items-center gap-2 bg-ink p-3 text-paper/85 hover:bg-ink-2 hover:text-gold">
+                    <ZodiacGlyph sign={x.id} size={14} className="shrink-0 text-gold" />
+                    <span>{s.name} – {x.name}</span>
+                    <span className="ml-auto text-muted">%{signCompatibility(s, x).score}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* Sky Exploration Hop */}
           <div className="flex flex-col gap-2 sm:flex-row font-mono text-xs">
             <Link
-              href="/astroloji/burc-uyumu"
+              href="/astroloji/sinastri"
               className="group flex flex-1 items-center justify-between border border-gold/30 bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-gold"
             >
-              <span className="font-bold text-gold uppercase">Burç Uyumunu Hesapla →</span>
+              <span className="font-bold text-gold uppercase">Doğum Haritasıyla Uyum →</span>
               <Heart size={16} className="text-gold" />
             </Link>
             <Link
