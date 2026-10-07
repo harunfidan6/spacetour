@@ -90,7 +90,7 @@ export function FreshnessPanel() {
       </div>
 
       <p className="text-xs text-muted">
-        Günlük burç (12 sayfa) ve Ay bugün sayfası canlı siteden çekilir; bugünün içeriği yayında mı diye bakılır. Eski sürüm bulunursa denetim
+        Günlük burç (12 sayfa), Ay bugün ve ISS geçişleri sayfaları canlı siteden çekilir; bugünün içeriği yayında mı diye bakılır. Eski sürüm bulunursa denetim
         yenilemeyi tetikler ve sayfayı yeniden kontrol eder.
         {report && <> Son denetim: <span className="text-paper">{fmt(report.checkedAt)}</span>.</>}
       </p>

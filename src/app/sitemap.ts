@@ -5,6 +5,8 @@ import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { BASE_URL } from '@/lib/seo';
 import { events } from '@/data/events';
 import { eventSlug, EVENT_YEARS } from '@/lib/eventSlug';
+import { allLunarMonths } from '@/lib/astrology/lunarCalendar';
+import { ISS_CITIES } from '@/lib/issPasses';
 
 // Günlük içerikli sayfaların değişiklik tarihi her gün yenilensin
 export const revalidate = 86400;
@@ -135,6 +137,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...EVENT_YEARS.map((y) => ({ url: `${BASE_URL}/takvim/${y}`, changeFrequency: 'weekly' as const, priority: 0.85 })),
     ...events.map((e) => ({ url: `${BASE_URL}/takvim/${eventSlug(e)}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
     ...['merkur', 'venus', 'mars', 'jupiter', 'saturn'].flatMap((p) => ['2026', '2027'].map((y) => ({ url: `${BASE_URL}/astroloji/retrolar/${p}-${y}`, changeFrequency: 'monthly' as const, priority: 0.8 }))),
+    { url: `${BASE_URL}/astroloji/ay-takvimi`, changeFrequency: 'monthly', priority: 0.85 },
+    ...allLunarMonths().map((m) => ({ url: `${BASE_URL}/astroloji/ay-takvimi/${m.slug}`, changeFrequency: 'yearly' as const, priority: 0.75 })),
+    { url: `${BASE_URL}/canli/iss-gecisleri`, lastModified: currentDate, changeFrequency: 'daily', priority: 0.85 },
+    ...ISS_CITIES.map((c) => ({ url: `${BASE_URL}/canli/iss-gecisleri/${c.slug}`, lastModified: currentDate, changeFrequency: 'daily' as const, priority: 0.8 })),
   ];
 
   // Deduplicate URLs in case of overlaps
