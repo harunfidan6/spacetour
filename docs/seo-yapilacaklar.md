@@ -49,7 +49,7 @@ Son güncelleme: 7 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 - [x] 69 gök olayına ayrı sayfa (`/takvim/tam-gunes-tutulmasi-12-agustos-2026`) ve yıl özetleri (`/takvim/2026`…), tür rehberleri ve iç bağlantılar.
 - [x] ISS görünür geçişleri, 16 şehir (`/canli/iss-gecisleri/istanbul`): CelesTrak TLE + SGP4, saatte bir yenilenir, FAQPage; canlı ISS takipçisi buraya bağlanır (7 Ekim).
 - [x] Gezegen sayfalarına veriden üretilen soru-cevap + FAQPage (uydu sayıları Wikipedia 2026 ile güncellendi: Jüpiter 115, Satürn 293, Uranüs 29).
-- [ ] Araç sayfalarına "nasıl hesaplanır" ve gerçek soru-cevaplar.
+- [x] 10 astroloji aracına "nasıl hesaplanır" adımları ve araca özel SSS + FAQPage (`src/data/toolMethods.ts`, 7 Ekim). Laboratuvar araçları: kalan.
 
 ## P5 — Güven sinyalleri
 
@@ -65,11 +65,11 @@ Son güncelleme: 7 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 
 ## P7 — İç bağlantılar
 
-- [ ] Burç ↔ günlük yorum ↔ uyum ↔ doğum haritası; takvim olayları ↔ gezegen sayfaları; görünür konum yolu.
+- [x] Burç ↔ 12 ikili uyum sayfası ↔ günlük yorum ↔ doğum haritası; gök olayları → ilgili gökcisimleri ve o ayın Ay takvimi (7 Ekim).
 
 ## P8 — Sosyal ve dış bağlantılar
 
-- [ ] Günlük burç için otomatik paylaşım görseli, paylaş düğmeleri.
+- [x] Günlük burç paylaşım kartı (günün yorumu + puanlar) ve WhatsApp/X/Telegram/kopyala düğmeleri; tarihli paylaşım bağlantısı (7 Ekim).
 - [x] Instagram @spacetourtr: Organization `sameAs`, altbilgi ve İletişim bağlantısı.
 - [x] Instagram 1. hafta: 7 kart + açıklamalar (`tools/instagram/`).
 - [x] Instagram günlük burç hikâye paketi (`tools/instagram/hikayeler.mjs`, 7 Ekim).
