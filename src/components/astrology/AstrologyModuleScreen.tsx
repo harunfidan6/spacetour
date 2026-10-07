@@ -11,6 +11,8 @@ import { NextChapter } from '@/components/doc/NextChapter';
 import { PartHeading } from '@/components/doc/PartHeading';
 import { findModule, moduleHref } from '@/data/sections';
 import { MODULE_GUIDES } from '@/data/moduleGuides';
+import { TOOL_METHODS } from '@/data/toolMethods';
+import { FaqAccordion } from '@/components/doc/FaqAccordion';
 import { CelestialHorizonBar } from './CelestialHorizonBar';
 
 const CHAMBER_ROMAN: Record<string, string> = {
@@ -26,6 +28,7 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
 
   const { section, module: mod, index, prev, next } = found;
   const guide = MODULE_GUIDES[`astroloji/${mod.slug}`];
+  const method = TOOL_METHODS[`astroloji/${mod.slug}`];
   const chamberName = mod.group || 'Doğum & Sinastri';
   const chamberRoman = CHAMBER_ROMAN[chamberName] || 'I. ODA';
 
@@ -214,7 +217,42 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
         </section>
       )}
 
-      {/* 6. Next Instrument in Line */}
+      {/* 6. Nasıl hesaplanır? (aracın gerçek yöntemi) */}
+      {method && (
+        <section aria-label={method.title} className="border-t border-gold/20 px-[var(--gutter)] py-16 sm:py-24">
+          <div className="mx-auto max-w-5xl space-y-8">
+            <div className="flex items-center gap-4 border-b border-gold/20 pb-3">
+              <span className="doc-kicker text-gold">Yöntem</span>
+              <span aria-hidden className="doc-rule flex-1" />
+              <span className="doc-caption text-paper/60">Hesaplama adımları</span>
+            </div>
+            <h2 className="doc-title text-3xl text-paper sm:text-4xl">{method.title}</h2>
+            <p className="max-w-3xl text-base leading-relaxed text-paper/80 sm:text-lg">{method.intro}</p>
+            <ol className="grid gap-px border border-gold/20 bg-gold/10 sm:grid-cols-2">
+              {method.steps.map((step, i) => (
+                <li key={step.title} className="flex flex-col bg-ink p-6 sm:p-7">
+                  <span className="doc-title mb-3 text-2xl text-gold/70">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 className="doc-title mb-2 text-lg text-paper">{step.title}</h3>
+                  <p className="text-sm leading-relaxed text-paper/75">{step.desc}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* 7. Araca özel soru-cevaplar (FAQPage şemasıyla) */}
+      {method && method.faq.length > 0 && (
+        <FaqAccordion
+          items={method.faq}
+          title="Sık sorulanlar"
+          serif={mod.short}
+          kicker="Soru & cevap"
+          description={`${mod.short} hakkında en çok merak edilenler.`}
+        />
+      )}
+
+      {/* 8. Next Instrument in Line */}
       <NextChapter
         next={{
           href: moduleHref(section, next),

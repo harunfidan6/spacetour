@@ -107,13 +107,12 @@ export function FaqAccordion({
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div className="pb-6 pl-7 sm:pl-10 pr-4 animate-in fade-in-50 duration-200">
-                    <p className="text-sm sm:text-base leading-relaxed text-paper/75">
-                      {item.answer}
-                    </p>
-                  </div>
-                )}
+                {/* Kapalı cevaplar da HTML'de kalır (arama motorları için); yalnızca gizlenir */}
+                <div hidden={!isOpen} className="pb-6 pl-7 sm:pl-10 pr-4 animate-in fade-in-50 duration-200">
+                  <p className="text-sm sm:text-base leading-relaxed text-paper/75">
+                    {item.answer}
+                  </p>
+                </div>
               </div>
             );
           })}
