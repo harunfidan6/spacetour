@@ -180,6 +180,8 @@ export interface DailyReading {
   dayRuler: string;
   mercuryRetro: boolean;
   moonChange: string | null;
+  /** Opening line of the reading (the house theme); `energy` starts with it */
+  headline: string;
   energy: string;
   love: string;
   career: string;
@@ -209,6 +211,7 @@ export function dailyReading(signId: string, date: Date): DailyReading {
   const mercuryRetro = isRetrograde('mercury', noon);
   const H = HOUSES[house - 1];
   const seed = `${key}|${signId}`;
+  const headline = pick(H.energy, `${seed}|e`);
 
   // The Moon changes sign during the waking hours of the day? (Readings use the noon sign.)
   const ingress = nextMoonIngress(new Date(localMidnight(date)));
@@ -245,7 +248,8 @@ export function dailyReading(signId: string, date: Date): DailyReading {
     dayRuler: BODY_NAMES[dayRuler],
     mercuryRetro,
     moonChange,
-    energy: `${pick(H.energy, `${seed}|e`)} ${tone.line} ${PHASES[phase.key]}`,
+    headline,
+    energy: `${headline} ${tone.line} ${PHASES[phase.key]}`,
     love: pick(H.love, `${seed}|l`) + (dayRuler === 'venus' ? ' Venüs gününde romantik jestler iki kat etkili.' : ''),
     career:
       pick(H.career, `${seed}|c`) +

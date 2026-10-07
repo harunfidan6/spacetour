@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500;62..125,800&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;600&family=Geist:wght@400;500&display=block" rel="stylesheet" />
+<style>
+  :root { --ink: #050508; --paper: #f4f3ee; --muted: #a8a69f; --gold: #f5c542; --accent: var(--gold); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; background: var(--ink); overflow: hidden; }
+  .story { position: relative; width: 1080px; height: 1920px; color: var(--paper); font-family: 'Geist', sans-serif; }
+  .bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,5,8,0.9) 0%, rgba(5,5,8,0.55) 22%, rgba(5,5,8,0.78) 45%, rgba(5,5,8,0.94) 70%, var(--ink) 100%); }
+  /* Instagram arayüzü üstte ~180px, altta ~250px kaplar: içerik bu alanların dışında */
+  .top { position: absolute; top: 190px; left: 72px; right: 72px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 34px; letter-spacing: -0.01em; }
+  .brand i { width: 52px; height: 52px; display: block; }
+  .brand i svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .brand b { font-weight: 500; color: var(--gold); }
+  .kicker { font-family: 'Geist Mono', monospace; font-size: 22px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); text-shadow: 0 1px 12px rgba(0,0,0,0.6); }
+  .main { position: absolute; top: 290px; left: 72px; right: 72px; }
+  h1 { font-family: 'Archivo', sans-serif; font-weight: 800; font-stretch: 112%; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.02em; font-size: var(--size, 150px); }
+  h1 em { display: block; font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.01em; color: var(--accent); font-size: 1.05em; line-height: 0.95; }
+
+  /* Kapak */
+  .sky { margin-top: 64px; border-top: 1px solid rgba(255,255,255,0.18); }
+  .sky .row { padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.18); }
+  .sky .label { font-family: 'Geist Mono', monospace; font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .sky .value { font-size: 40px; line-height: 1.3; }
+  .sky .value small { display: block; margin-top: 10px; font-size: 32px; line-height: 1.4; color: rgba(244,243,238,0.8); }
+  .next { position: absolute; left: 72px; right: 72px; bottom: 390px; }
+  .next .label { font-family: 'Geist Mono', monospace; font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+  .chips { display: flex; gap: 14px; }
+  .chips span { flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; border: 1.5px solid var(--c); color: var(--c); font-family: 'Geist Mono', monospace; font-size: 24px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Element sayfası: 3 burç */
+  .signs { margin-top: 40px; display: flex; flex-direction: column; gap: 20px; }
+  .sign { padding: 26px 34px 28px; border-radius: 28px; background: rgba(12,12,18,0.72); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(6px); }
+  .sign header { display: flex; align-items: baseline; gap: 22px; }
+  .sign .sym { font-family: 'DejaVu Sans', sans-serif; font-size: 58px; line-height: 1; color: var(--accent); transform: translateY(6px); }
+  .sign h2 { font-family: 'Archivo', sans-serif; font-weight: 800; font-stretch: 112%; text-transform: uppercase; font-size: 58px; letter-spacing: -0.01em; line-height: 1; }
+  .sign .dates { margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 21px; color: var(--muted); letter-spacing: 0.04em; }
+  .sign .area { margin-top: 14px; font-family: 'Geist Mono', monospace; font-size: 21px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  .sign p { margin-top: 10px; font-size: 31px; line-height: 1.36; color: rgba(244,243,238,0.92); }
+  .scores { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .score { font-family: 'Geist Mono', monospace; font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .score b { float: right; font-weight: 600; color: var(--paper); letter-spacing: 0.02em; }
+  .bar { margin-top: 10px; height: 8px; border-radius: 99px; background: rgba(255,255,255,0.12); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 250px; display: flex; flex-direction: column; gap: 10px; font-family: 'Geist Mono', monospace; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .foot .url { font-size: 26px; color: var(--paper); letter-spacing: 0.04em; text-transform: none; }
+</style>
+</head>
+<body>
+<div class="story">
+  <div class="bg" id="bg"></div>
+  <div class="shade"></div>
+  <div class="top">
+    <div class="brand"><i></i><span>Spacetour<b>.tr</b></span></div>
+    <div class="kicker" id="kicker"></div>
+  </div>
+  <div class="main">
+    <h1 id="title"></h1>
+    <div id="content"></div>
+  </div>
+  <div id="extra"></div>
+  <div class="foot">
+    <span id="credit" lang="en"></span>
+    <span class="url" id="url"></span>
+  </div>
+</div>
+<script>
+  // Hikâye verisi hikayeler.mjs tarafından window.HIKAYE olarak verilir
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  function render(h) {
+    if (h.logo) document.querySelector('.brand i').innerHTML = h.logo;
+    if (h.accent) document.documentElement.style.setProperty('--accent', h.accent);
+    if (h.size) document.documentElement.style.setProperty('--size', h.size + 'px');
+    const bg = document.getElementById('bg');
+    bg.style.backgroundImage = `url("${h.image}")`;
+    if (h.position) bg.style.backgroundPosition = h.position;
+    if (h.dim) bg.style.filter = `brightness(${1 - h.dim})`;
+    document.getElementById('kicker').textContent = h.kicker;
+    const t = document.getElementById('title');
+    t.textContent = h.title;
+    if (h.serif) t.appendChild(el('em', null, h.serif));
+    const content = document.getElementById('content');
+
+    if (h.rows) {
+      const sky = el('div', 'sky');
+      for (const r of h.rows) {
+        const row = el('div', 'row');
+        row.append(el('div', 'label', r.label));
+        const v = el('div', 'value', r.value);
+        if (r.note) v.append(el('small', null, r.note));
+        row.append(v);
+        sky.append(row);
+      }
+      content.append(sky);
+    }
+
+    if (h.elements) {
+      const next = el('div', 'next');
+      next.append(el('div', 'label', 'Burcunu bul · sonraki hikâyeler'));
+      const chips = el('div', 'chips');
+      for (const [name, color] of h.elements) { const c = el('span', null, name); c.style.setProperty('--c', color); chips.append(c); }
+      next.append(chips);
+      document.getElementById('extra').append(next);
+    }
+
+    if (h.signs) {
+      const list = el('div', 'signs');
+      for (const s of h.signs) {
+        const card = el('section', 'sign');
+        const head = el('header');
+        head.append(el('span', 'sym', s.symbol + '︎'), el('h2', null, s.name), el('span', 'dates', s.dates));
+        card.append(head, el('div', 'area', `Gündem · ${s.area}`), el('p', null, s.text));
+        const scores = el('div', 'scores');
+        for (const [label, n] of s.scores) {
+          const sc = el('div', 'score', label);
+          sc.append(el('b', null, String(n)));
+          const bar = el('div', 'bar'); const fill = el('i'); fill.style.width = n + '%'; bar.append(fill);
+          sc.append(bar);
+          scores.append(sc);
+        }
+        card.append(scores);
+        list.append(card);
+      }
+      content.append(list);
+    }
+
+    document.getElementById('credit').textContent = h.credit ? `Görsel · ${h.credit}` : '';
+    document.getElementById('url').textContent = h.url;
+  }
+  if (window.HIKAYE) render(window.HIKAYE);
+</script>
+</body>
+</html>

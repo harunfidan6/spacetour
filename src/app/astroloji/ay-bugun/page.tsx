@@ -56,7 +56,8 @@ export default function AyBugunPage() {
   ]);
 
   return (
-    <div style={{ '--page-accent': 'var(--primary, #38bdf8)' } as CSSProperties} className="relative">
+    // data-generated: yönetici panelindeki günlük içerik denetimi sayfanın üretildiği anı buradan okur
+    <div style={{ '--page-accent': 'var(--primary, #38bdf8)' } as CSSProperties} className="relative" data-generated={now.toISOString()}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <ChapterHero

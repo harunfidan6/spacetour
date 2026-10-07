@@ -119,6 +119,27 @@ Mayıs’tan beri retroda olan Plüton, 14 Ekim’de Kova 3°’de düz harekete
 #plüton #retro #astroloji #kova #gezegenler #burçlar
 ```
 
+## Ek · Andromeda (`08-andromeda.png`)
+
+Haftanın herhangi bir akşamı paylaşılabilir; 10 Ekim Yeni Ay’ına yakın günler gözlem için en karanlık geceler.
+
+```
+Bu gece 2,5 milyon yıllık bir ışığa bakabilirsin. 🌌
+
+Andromeda Galaksisi (M31), çıplak gözle görülebilen en uzak cisim. Gözüne ulaşan ışık yola çıktığında Dünya’da henüz insan türü yoktu.
+
+Nasıl bulunur?
+🔭 Saat 21:00’den sonra doğu-kuzeydoğuya bak
+✦ “W” şeklindeki Kraliçe (Kassiopeia) takımyıldızını bul
+🌌 Hemen altında, soluk ve uzunca bir bulut lekesi: Andromeda
+
+Şehir ışıklarından uzakta ve Ay’sız gecelerde çok daha belirgin. Dürbünle bakarsan parlak çekirdeği seçebilirsin.
+
+Yaklaşık 1 trilyon yıldızlı bu komşu, 4,5 milyar yıl sonra Samanyolu ile birleşecek. Optik, kızılötesi, X-ışını ve radyo görüntüleri: spacetour.com.tr/ansiklopedi/gok-cisimleri
+
+#andromeda #galaksi #uzay #astronomi #gökyüzü #samanyolu #astrofotoğraf #gökbilim
+```
+
 ---
 
 ## Reels önerisi

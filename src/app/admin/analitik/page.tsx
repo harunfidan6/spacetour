@@ -33,6 +33,7 @@ import { AnalyticsStatsResponse } from '@/types/analytics';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
+import { FreshnessPanel } from './FreshnessPanel';
 
 async function requestStats(demo: boolean, period: string = 'today'): Promise<{ data: AnalyticsStatsResponse | null; unauthorized?: boolean }> {
   try {
@@ -475,6 +476,9 @@ export default function AdminAnalyticsPage() {
         </div>
       )}
     </div>
+
+      {/* Günlük içerik denetimi (günlük burç, Ay bugün) */}
+      <FreshnessPanel />
 
       {/* Time Period Selector Tabs */}
       <div className="relative ticks border border-line bg-ink-2 p-3 sm:p-4">
