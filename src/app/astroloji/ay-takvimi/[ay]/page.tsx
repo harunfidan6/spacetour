@@ -115,10 +115,10 @@ export default async function LunarMonthPage(props: PageProps<'/astroloji/ay-tak
               <h2 className="doc-title text-2xl text-paper">Ana evreler</h2>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {m.phases.map((p) => (
-                  <div key={p.at.toISOString()} className="border border-line bg-ink-2 p-4 font-mono text-xs">
-                    <div className="doc-kicker text-gold">{p.name}</div>
+                  <div key={p.at.toISOString()} className="border border-line bg-ink-2 p-4">
+                    <div className="text-sm font-medium text-gold">{p.name}</div>
                     <div className="mt-2 text-base text-paper">{fmtDateTime(p.at)}</div>
-                    <div className="mt-1 inline-flex items-center gap-2 text-paper/75"><ZodiacGlyph sign={SIGN_IDS[p.sign]} size={14} className="text-gold" />Ay {SIGN_IN[p.sign]}</div>
+                    <div className="mt-1 inline-flex items-center gap-2 text-sm text-paper/80"><ZodiacGlyph sign={SIGN_IDS[p.sign]} size={14} className="text-gold" />Ay {SIGN_IN[p.sign]}</div>
                   </div>
                 ))}
               </div>
@@ -126,30 +126,30 @@ export default async function LunarMonthPage(props: PageProps<'/astroloji/ay-tak
 
             <div>
               <h2 className="doc-title text-2xl text-paper">Gün gün Ay</h2>
-              <p className="mt-2 text-sm text-paper/70">Evre ve aydınlık oranı günün öğlen saatine göre. Ay o gün burç değiştiriyorsa geçtiği burç ve saat yazılı.</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-paper/80">Evre ve aydınlık oranı günün öğlen saatine göre. Ay o gün burç değiştiriyorsa geçtiği burç ve saat yazılı.</p>
               <div className="mt-4 overflow-x-auto">
-                <table className="w-full border border-line font-mono text-xs">
+                <table className="w-full border border-line text-sm">
                   <thead>
-                    <tr className="bg-ink-2 text-left text-muted">
-                      <th className="p-3 font-normal">Gün</th>
-                      <th className="p-3 font-normal">Evre</th>
-                      <th className="hidden p-3 font-normal sm:table-cell">Aydınlık</th>
-                      <th className="p-3 font-normal">Ay’ın burcu</th>
+                    <tr className="bg-ink-2 text-left text-paper/70">
+                      <th className="p-3 font-medium">Gün</th>
+                      <th className="p-3 font-medium">Evre</th>
+                      <th className="hidden p-3 font-medium sm:table-cell">Aydınlık</th>
+                      <th className="p-3 font-medium">Ay’ın burcu</th>
                     </tr>
                   </thead>
                   <tbody>
                     {m.days.map((d) => (
                       <tr key={d.day} className={`border-t border-line ${d.mainPhase ? 'bg-gold/5' : ''}`}>
-                        <td className="p-3 text-paper/85 sm:whitespace-nowrap">{fmtDay(d.date)} <span className="block text-muted sm:inline">{fmtWeekday(d.date)}</span></td>
+                        <td className="p-3 text-paper/85 sm:whitespace-nowrap">{fmtDay(d.date)} <span className="block text-paper/70 sm:inline">{fmtWeekday(d.date)}</span></td>
                         <td className="p-3 text-paper/80">
                           {d.mainPhase ? <span className="text-gold">{d.mainPhase.name} · {fmtTime(d.mainPhase.at)}</span> : d.phaseName}
-                          <span className="block text-muted sm:hidden">%{Math.round(d.illumination * 100)} aydınlık</span>
+                          <span className="block text-[13px] tabular-nums text-paper/70 sm:hidden">%{Math.round(d.illumination * 100)} aydınlık</span>
                         </td>
-                        <td className="hidden p-3 text-paper/75 sm:table-cell">%{Math.round(d.illumination * 100)}</td>
+                        <td className="hidden p-3 tabular-nums text-paper/80 sm:table-cell">%{Math.round(d.illumination * 100)}</td>
                         <td className="p-3 text-paper">
                           <span className="inline-flex items-center gap-2"><ZodiacGlyph sign={SIGN_IDS[d.startSign]} size={14} className="text-gold" />{SIGN_NAMES[d.startSign]}</span>
                           {d.ingress && (
-                            <span className="ml-2 inline-flex items-center gap-2 text-paper/75">→ <ZodiacGlyph sign={SIGN_IDS[d.ingress.sign]} size={14} className="text-gold" />{SIGN_NAMES[d.ingress.sign]} <span className="text-muted">{fmtTime(d.ingress.at)}</span></span>
+                            <span className="ml-2 inline-flex items-center gap-2 text-paper/80">→ <ZodiacGlyph sign={SIGN_IDS[d.ingress.sign]} size={14} className="text-gold" />{SIGN_NAMES[d.ingress.sign]} <span className="tabular-nums text-paper/70">{fmtTime(d.ingress.at)}</span></span>
                           )}
                         </td>
                       </tr>
@@ -164,14 +164,14 @@ export default async function LunarMonthPage(props: PageProps<'/astroloji/ay-tak
               <dl className="mt-4 space-y-4">
                 {faq.map((f) => (
                   <div key={f.q} className="border border-line bg-ink p-4">
-                    <dt className="text-sm font-semibold text-paper">{f.q}</dt>
-                    <dd className="mt-1 text-sm leading-relaxed text-paper/75">{f.a}</dd>
+                    <dt className="text-base font-semibold text-paper">{f.q}</dt>
+                    <dd className="mt-1.5 text-[15px] leading-relaxed text-paper/80">{f.a}</dd>
                   </div>
                 ))}
               </dl>
             </div>
 
-            <nav aria-label="Diğer aylar" className="flex items-center justify-between gap-3 font-mono text-xs">
+            <nav aria-label="Diğer aylar" className="flex items-center justify-between gap-3 text-sm">
               {prev ? (
                 <Link href={`/astroloji/ay-takvimi/${prev.slug}`} className="flex items-center gap-2 border border-line p-3 text-paper/85 hover:border-gold hover:text-gold"><ArrowLeft size={14} />{MONTH_NAMES[prev.month]} {prev.year}</Link>
               ) : <span />}
@@ -183,16 +183,16 @@ export default async function LunarMonthPage(props: PageProps<'/astroloji/ay-tak
 
           <aside className="space-y-6 lg:col-span-4">
             {monthEvents.length > 0 && (
-              <div className="border border-line bg-ink-2 p-5 font-mono text-xs">
-                <div className="doc-kicker text-gold">{m.name} gök olayları</div>
+              <div className="border border-line bg-ink-2 p-5 text-sm">
+                <div className="font-medium text-gold">{m.name} gök olayları</div>
                 <ul className="mt-3 space-y-2">
                   {monthEvents.map((e) => (
-                    <li key={e.id}><Link href={`/takvim/${eventSlug(e)}`} className="flex justify-between gap-3 text-paper/85 hover:text-gold"><span>{e.title}</span><span className="shrink-0 text-muted">{new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</span></Link></li>
+                    <li key={e.id}><Link href={`/takvim/${eventSlug(e)}`} className="flex justify-between gap-3 text-paper/85 hover:text-gold"><span>{e.title}</span><span className="shrink-0 text-paper/70">{new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</span></Link></li>
                   ))}
                 </ul>
               </div>
             )}
-            <div className="space-y-2 font-mono text-xs">
+            <div className="space-y-2 text-sm">
               <Link href="/astroloji/ay-bugun" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Ay bugün hangi burçta? <ArrowUpRight size={14} /></Link>
               <Link href="/astroloji/ay-takvimi" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Tüm aylar <ArrowUpRight size={14} /></Link>
               <Link href="/astroloji/ay-evreleri" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-gold hover:text-gold">Ay evreleri ve ritüeller <ArrowUpRight size={14} /></Link>

@@ -48,114 +48,113 @@ export function CelestialHorizonBar({
   return (
     <div
       aria-label="Anlık Göksel Ufuk Saati"
-      className={`border-y border-gold/20 bg-ink-2/95 backdrop-blur-md ${
-        compact ? 'py-3 px-[var(--gutter)]' : 'py-5 px-[var(--gutter)]'
+      className={`border-y border-gold/15 bg-ink-2 ${
+        compact ? 'py-4 px-[var(--gutter)]' : 'py-6 px-[var(--gutter)]'
       } ${className}`}
     >
       <div className="mx-auto max-w-6xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gold/15 pb-2.5 mb-3">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="grid h-6 w-6 place-items-center rounded-full border border-gold/50 bg-gold/10 text-gold shadow-[0_0_10px_rgba(245,197,66,0.2)]">
-              <Compass size={13} />
-            </span>
+            <Compass size={16} className="shrink-0 text-gold" />
             <div>
-              <span className="doc-kicker text-gold text-[10px]">CANLI GÖKSEL UFUK SAATİ</span>
-              <span className="doc-caption block text-[10px] text-paper/60">İstanbul Efemerisi · UTC+3</span>
+              <span className="block text-sm font-semibold text-paper">Canlı göksel ufuk saati</span>
+              <span className="block text-[13px] text-paper/70">İstanbul Efemerisi · UTC+3</span>
             </div>
           </div>
+          {/* Canlı veri göstergesi: tek nabız noktası (diğer döngülü animasyonlar kaldırıldı) */}
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-lime animate-pulse" />
-            <span className="font-mono text-xs text-paper/80 font-bold">
+            <span className="font-mono text-sm tabular-nums text-paper/85">
               {isMounted ? now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '09:00'}
             </span>
           </div>
         </div>
 
         {/* 4 Ephemeris Reading Slates */}
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 text-xs font-mono">
+        <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10 sm:grid-cols-4">
           {/* 1. Sun Sign & Exact Degree */}
-          <div className="border border-gold/20 bg-ink/80 p-2.5 sm:p-3 relative overflow-hidden group hover:border-gold/40 transition-colors">
-            <div className="flex items-center justify-between text-muted text-[10px]">
-              <span className="uppercase">GÜNEŞ KONUMU</span>
-              <Sun size={12} className="text-solar" />
+          <div className="min-w-0 bg-ink p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 text-xs leading-snug text-paper/70">
+              <span>Güneş konumu</span>
+              <Sun size={13} className="shrink-0 text-solar" />
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-paper">
+            <div className="mt-1.5 flex items-center gap-1.5 text-paper">
               <ZodiacGlyph
                 sign={SIGN_IDS[currentSunSignIndex] || 'terazi'}
                 size={18}
                 className="text-gold shrink-0"
               />
-              <span className="font-bold text-sm sm:text-base text-paper truncate">
+              <span className="truncate text-base font-semibold text-paper">
                 {SIGN_NAMES[currentSunSignIndex] || 'Güneş'}
               </span>
             </div>
-            <span className="doc-caption block text-[10px] text-gold mt-0.5">
+            <span className="mt-0.5 block text-[13px] leading-snug text-paper/70">
               {currentSunDegree}° {SIGN_IN[currentSunSignIndex] || ''}
             </span>
           </div>
 
           {/* 2. Moon Phase & Sign */}
-          <div className="border border-gold/20 bg-ink/80 p-2.5 sm:p-3 relative overflow-hidden group hover:border-gold/40 transition-colors">
-            <div className="flex items-center justify-between text-muted text-[10px]">
-              <span className="uppercase">AY VE EVRE</span>
-              <MoonPhaseVectorGlyph phaseId={currentCalc.phase.id} size={14} className="text-paper/80" />
+          <div className="min-w-0 bg-ink p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 text-xs leading-snug text-paper/70">
+              <span>Ay ve evre</span>
+              <MoonPhaseVectorGlyph phaseId={currentCalc.phase.id} size={14} className="shrink-0 text-paper/80" />
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-paper">
+            <div className="mt-1.5 flex items-center gap-1.5 text-paper">
               <ZodiacGlyph
                 sign={SIGN_IDS[currentMoonSignIndex] || 'yengec'}
                 size={18}
                 className="text-sky-300 shrink-0"
               />
-              <span className="font-bold text-sm sm:text-base text-paper truncate">
+              <span className="truncate text-base font-semibold text-paper">
                 {currentMoonSign.sign}
               </span>
             </div>
-            <span className="doc-caption block text-[10px] text-paper/70 mt-0.5 truncate">
+            <span className="mt-0.5 block text-[13px] leading-snug text-paper/70">
               {currentCalc.phase.name} · %{currentCalc.illuminationPercent}
             </span>
           </div>
 
           {/* 3. Chaldean Planetary Hour */}
-          <div className="border border-gold/20 bg-ink/80 p-2.5 sm:p-3 relative overflow-hidden group hover:border-gold/40 transition-colors">
-            <div className="flex items-center justify-between text-muted text-[10px]">
-              <span className="uppercase">GEZEGEN SAATİ</span>
-              <Clock size={12} className="text-violet" />
+          <div className="min-w-0 bg-ink p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 text-xs leading-snug text-paper/70">
+              <span>Gezegen saati</span>
+              <Clock size={13} className="shrink-0 text-violet" />
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-paper">
+            <div className="mt-1.5 flex items-center gap-1.5 text-paper">
               <PlanetGlyph planet={currentHourSlot.ruler} size={16} className="text-violet shrink-0" />
-              <span className="font-bold text-sm sm:text-base text-paper truncate">
+              <span className="truncate text-base font-semibold text-paper">
                 {BODY_NAMES[currentHourSlot.ruler] || currentHourSlot.ruler}
               </span>
             </div>
-            <span className="doc-caption block text-[10px] text-paper/70 mt-0.5">
+            <span className="mt-0.5 block text-[13px] leading-snug text-paper/70">
               {currentHourSlot.isDay ? 'Gündüz Saati' : 'Gece Saati'} · Keldani
             </span>
           </div>
 
-          {/* 4. Moon Void-of-Course Detector */}
-          <div className="border border-gold/20 bg-ink/80 p-2.5 sm:p-3 relative overflow-hidden group hover:border-gold/40 transition-colors">
-            <div className="flex items-center justify-between text-muted text-[10px]">
-              <span className="uppercase">BOŞLUKTAKİ AY (VoC)</span>
+          {/* 4. Moon Void-of-Course Detector (durum rozeti; döngülü animasyon yok) */}
+          <div className="min-w-0 bg-ink p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 text-xs leading-snug text-paper/70">
+              <span>Boşluktaki Ay (VoC)</span>
               <ShieldAlert
-                size={12}
-                className={voidStatus.isVoidNow ? 'text-solar animate-pulse' : 'text-lime'}
+                size={13}
+                className={`shrink-0 ${voidStatus.isVoidNow ? 'text-solar' : 'text-lime'}`}
               />
             </div>
-            <div className="mt-1 flex items-center gap-1.5">
+            <div className="mt-1.5 flex items-center gap-1.5">
               <span
-                className={`inline-block h-2 w-2 rounded-full ${
-                  voidStatus.isVoidNow ? 'bg-solar animate-ping' : 'bg-lime'
+                className={`inline-block h-2 w-2 shrink-0 rounded-full ${
+                  voidStatus.isVoidNow ? 'bg-solar' : 'bg-lime'
                 }`}
               />
               <span
-                className={`font-bold text-sm sm:text-base truncate ${
+                className={`truncate text-base font-semibold ${
                   voidStatus.isVoidNow ? 'text-solar' : 'text-lime'
                 }`}
               >
                 {voidStatus.isVoidNow ? 'Boşlukta (VoC)' : 'Dengeli / Aktif'}
               </span>
             </div>
-            <span className="doc-caption block text-[10px] text-paper/70 mt-0.5 truncate">
+            <span className="mt-0.5 block text-[13px] leading-snug text-paper/70">
               {voidStatus.isVoidNow ? 'Yeni adım atılmamalı' : 'Rutine & eyleme uygun'}
             </span>
           </div>

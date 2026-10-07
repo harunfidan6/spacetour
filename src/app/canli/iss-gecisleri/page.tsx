@@ -35,7 +35,6 @@ export default async function IssPassesHub() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <ChapterHero
         variant="band"
-        chapter="06 · Canlı"
         section="ISS geçişleri"
         headline={['ISS', 'ne zaman görünür?']}
         lede="Uluslararası Uzay İstasyonu gün batımından sonra ve gün doğumundan önce, yanıp sönmeyen parlak bir yıldız gibi gökyüzünü birkaç dakikada geçer. Şehrini seç, önümüzdeki 10 günün görünür geçişlerini gör."
@@ -48,25 +47,25 @@ export default async function IssPassesHub() {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <h2 className="doc-title text-2xl text-paper">Şehirler ve sıradaki görünür geçiş</h2>
-            {!tle && <p className="mt-4 border border-line bg-ink-2 p-4 text-sm text-paper/80">Yörünge verisi şu an alınamadı; sayfa saatte bir yeniden denenir.</p>}
-            <ul className="mt-4 grid gap-2 font-mono text-xs sm:grid-cols-2">
+            {!tle && <p className="mt-4 border border-line bg-ink-2 p-4 text-[15px] leading-relaxed text-paper/85">Yörünge verisi şu an alınamadı; sayfa saatte bir yeniden denenir.</p>}
+            <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
               {rows.map(({ city, next, count }) => (
                 <li key={city.slug}>
                   <Link href={`/canli/iss-gecisleri/${city.slug}`} className="flex items-center justify-between gap-3 border border-line p-3 hover:border-lime">
                     <span>
-                      <span className="block text-sm text-paper">{city.name}</span>
-                      <span className="text-muted">{tle ? (next ? `${fmt(next.start)} · ${compass(next.startAz)} → ${compass(next.endAz)} · ${Math.round(next.maxEl)}°` : '10 gün içinde görünür geçiş yok') : '—'}</span>
+                      <span className="block text-base font-medium text-paper">{city.name}</span>
+                      <span className="mt-0.5 block text-[13px] tabular-nums text-paper/70">{tle ? (next ? `${fmt(next.start)} · ${compass(next.startAz)} → ${compass(next.endAz)} · ${Math.round(next.maxEl)}°` : '10 gün içinde görünür geçiş yok') : '—'}</span>
                     </span>
-                    {tle && <span className="shrink-0 text-lime">{count} geçiş</span>}
+                    {tle && <span className="shrink-0 tabular-nums text-lime">{count} geçiş</span>}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-          <aside className="space-y-2 font-mono text-xs lg:col-span-4">
+          <aside className="space-y-2 text-sm lg:col-span-4">
             <Link href="/canli/iss" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-lime hover:text-lime">ISS canlı konum <ArrowUpRight size={14} /></Link>
             <Link href="/canli/bu-gece" className="flex items-center justify-between border border-line p-3 text-paper/85 hover:border-lime hover:text-lime">Bu gece gökyüzü <ArrowUpRight size={14} /></Link>
-            <p className="pt-2 text-[11px] leading-relaxed text-muted">Geçişler NORAD yörünge elemanlarıyla SGP4 modeliyle hesaplanır; saatler İstanbul saatiyle.</p>
+            <p className="pt-2 text-[13px] leading-relaxed text-paper/70">Geçişler NORAD yörünge elemanlarıyla SGP4 modeliyle hesaplanır; saatler İstanbul saatiyle.</p>
           </aside>
         </div>
       </section>

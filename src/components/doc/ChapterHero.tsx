@@ -14,12 +14,12 @@ export interface Crumb {
 }
 
 /**
- * Documentary title card: a full-bleed photograph that settles in, a chapter
- * slate, an oversized headline and the photo credit as a caption.
- * `variant="full"` fills the viewport (section hubs); `"band"` is shorter (sub-pages).
+ * Documentary title card: a full-bleed photograph that settles in, the location (breadcrumbs, or
+ * the section name when there are none), a large headline and the photo credit as a caption.
+ * `variant="full"` is tall (section hubs); `"band"` is shorter (sub-pages). Kept calm on purpose:
+ * one slate, no fading copy, no looping cues.
  */
 export function ChapterHero({
-  chapter,
   section,
   headline,
   lede,
@@ -31,7 +31,8 @@ export function ChapterHero({
   children,
   imagePosition = 'center',
 }: {
-  chapter: string;
+  /** Eski "Bölüm 04" künyesi; artık gösterilmiyor (çağıran sayfalar uyum için gönderebilir) */
+  chapter?: string;
   section: string;
   headline: [string, string?];
   lede?: ReactNode;
@@ -45,15 +46,14 @@ export function ChapterHero({
 }) {
   const root = useRef<HTMLElement>(null);
 
-  // Scroll: the photograph drifts slower than the page and the copy fades out.
+  // Scroll: the photograph drifts slower than the page (the copy stays put and readable).
   useGsap(
     () => {
       const el = root.current;
       if (!el || prefersReducedMotion()) return;
       gsap
         .timeline({ scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: 0.4 } })
-        .to('[data-hero-photo]', { yPercent: 18, ease: 'none' }, 0)
-        .to('[data-hero-copy]', { y: -60, autoAlpha: 0.1, ease: 'none' }, 0);
+        .to('[data-hero-photo]', { yPercent: 18, ease: 'none' }, 0);
     },
     [],
     root
@@ -64,7 +64,7 @@ export function ChapterHero({
   return (
     <section
       ref={root}
-      className={`relative isolate flex overflow-hidden bg-ink ${full ? 'min-h-[100svh]' : 'min-h-[72svh]'}`}
+      className={`relative isolate flex overflow-hidden bg-ink ${full ? 'min-h-[88svh]' : 'min-h-[56svh]'}`}
       style={{ '--page-accent': accent } as CSSProperties}
     >
       <div data-hero-photo className="absolute inset-0 -z-10 overflow-hidden will-change-transform">
@@ -85,10 +85,10 @@ export function ChapterHero({
 
       <div
         data-hero-copy
-        className={`relative flex w-full flex-col justify-end px-[var(--gutter)] ${full ? 'pb-16 pt-28 sm:pb-20' : 'pb-12 pt-28 sm:pb-14'}`}
+        className={`relative flex w-full flex-col justify-end px-[var(--gutter)] ${full ? 'pb-14 pt-28 sm:pb-16' : 'pb-10 pt-28 sm:pb-12'}`}
       >
         {crumbs && crumbs.length > 0 && (
-          <nav aria-label="Konum" className="mb-8 flex flex-wrap items-center gap-1.5 text-paper/60">
+          <nav aria-label="Konum" className="mb-6 flex flex-wrap items-center gap-1.5 text-paper/70">
             {crumbs.map((c, i) => (
               <span key={c.label} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight size={12} aria-hidden className="text-paper/30" />}
@@ -106,16 +106,15 @@ export function ChapterHero({
           </nav>
         )}
 
-        <div className="flex items-center gap-4">
+        {/* Konum zaten içerik yolunda yazıyorsa ikinci bir künye satırı eklenmez */}
+        {!crumbs?.length && (
           <span className="doc-kicker" style={{ color: accent }}>
-            Bölüm {chapter}
+            {section}
           </span>
-          <span className="doc-rule w-16 sm:w-28" aria-hidden />
-          <span className="doc-kicker text-paper/70">{section}</span>
-        </div>
+        )}
 
         <h1
-          className={`doc-title mt-6 text-paper ${full ? 'text-[clamp(3.4rem,11vw,11.5rem)]' : 'text-[clamp(2.6rem,7.5vw,7.5rem)]'}`}
+          className={`doc-title text-paper ${crumbs?.length ? '' : 'mt-5'} ${full ? 'text-[clamp(3rem,9vw,8.5rem)]' : 'text-[clamp(2.25rem,6vw,5.25rem)]'}`}
         >
           <SplitReveal as="span" className="block pt-[0.08em]" trigger="intro" effect="rise">
             {headline[0]}
@@ -129,7 +128,7 @@ export function ChapterHero({
 
         <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
           {lede && (
-            <p className="max-w-xl text-base leading-relaxed text-paper/80 sm:text-lg lg:col-span-6">{lede}</p>
+            <p className="max-w-xl text-base leading-relaxed text-paper/90 sm:text-lg lg:col-span-6">{lede}</p>
           )}
           {meta && meta.length > 0 && (
             <dl className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4 lg:col-span-6">
@@ -145,19 +144,7 @@ export function ChapterHero({
 
         {children && <div className="mt-10">{children}</div>}
 
-        <div className="mt-12 flex items-end justify-between gap-6">
-          {full ? (
-            <span className="flex items-center gap-3 text-paper/60" aria-hidden>
-              <span className="relative h-10 w-px overflow-hidden bg-white/20">
-                <span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_1.8s_cubic-bezier(.76,0,.24,1)_infinite]" style={{ background: accent }} />
-              </span>
-              <span className="doc-caption">Kaydır</span>
-            </span>
-          ) : (
-            <span />
-          )}
-          <p className="doc-caption max-w-[60%] text-right">Görsel · {image.credit}</p>
-        </div>
+        <p className="doc-caption mt-10 self-end text-right">Görsel · {image.credit}</p>
       </div>
     </section>
   );

@@ -19,7 +19,6 @@ export default function LaboratuvarPage() {
     <div style={{ '--page-accent': section.accent } as CSSProperties}>
       <ChapterHero
         variant="band"
-        chapter="03.II"
         section="Ansiklopedi · Laboratuvar"
         headline={['Deneyerek', 'öğren']}
         lede="Kepler yörüngelerinden kütleçekim dalgalarına: evrenin kurallarını kaydırıcılarla dene."
@@ -28,8 +27,8 @@ export default function LaboratuvarPage() {
         crumbs={[{ label: 'Ana sayfa', href: '/' }, { label: 'Ansiklopedi', href: '/ansiklopedi' }, { label: 'Laboratuvar' }]}
         meta={[{ k: 'Deney', v: section.modules.length }]}
       />
-      <section className="px-[var(--gutter)] pb-28 pt-20">
-        <PartHeading part={1} title="On" serif="laboratuvar" aside={`${section.modules.length} kısım`} />
+      <section className="px-[var(--gutter)] py-14 sm:py-20">
+        <PartHeading title="On" serif="laboratuvar" />
         <EpisodeGrid section={section} entries={section.modules.map((item) => ({ kind: 'module', item }))} />
       </section>
     </div>

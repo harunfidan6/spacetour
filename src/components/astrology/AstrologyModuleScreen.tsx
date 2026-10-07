@@ -15,33 +15,24 @@ import { TOOL_METHODS } from '@/data/toolMethods';
 import { FaqAccordion } from '@/components/doc/FaqAccordion';
 import { CelestialHorizonBar } from './CelestialHorizonBar';
 
-const CHAMBER_ROMAN: Record<string, string> = {
-  'Doğum & Sinastri': 'I. ODA',
-  'Tarot & Kehanet': 'II. ODA',
-  'Transitler & Ay': 'III. ODA',
-  'Numeroloji & Zodyak': 'IV. ODA',
-};
-
 export function AstrologyModuleScreen({ slug }: { slug: string }) {
   const found = findModule('astroloji', slug);
   if (!found) return null;
 
-  const { section, module: mod, index, prev, next } = found;
+  const { section, module: mod, prev, next } = found;
   const guide = MODULE_GUIDES[`astroloji/${mod.slug}`];
   const method = TOOL_METHODS[`astroloji/${mod.slug}`];
   const chamberName = mod.group || 'Doğum & Sinastri';
-  const chamberRoman = CHAMBER_ROMAN[chamberName] || 'I. ODA';
 
   // Find all sibling modules in the same chamber
   const chamberSiblings = section.modules.filter((m) => m.group === chamberName);
 
   return (
     <div style={{ '--page-accent': 'var(--gold)' } as CSSProperties} className="relative">
-      {/* 1. Bespoke Celestial Subpage Hero */}
+      {/* 1. Bespoke Celestial Subpage Hero ("I. ODA" gibi süs künyeleri yok; grup adı içerik yolunda) */}
       <ChapterHero
         variant="band"
-        chapter={`04 · ${String(index + 1).padStart(2, '0')}`}
-        section={`Astroloji · ${chamberRoman}: ${chamberName}`}
+        section={`Astroloji · ${chamberName}`}
         headline={[mod.short]}
         accent="var(--gold)"
         image={mod.image}
@@ -53,14 +44,13 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
         ]}
         lede={
           <>
-            <span className="doc-serif mb-2 block text-2xl text-paper sm:text-3xl">
+            <span className="doc-serif mb-3 block text-xl text-paper sm:text-2xl">
               {mod.title}
             </span>
-            <span className="text-paper/80 leading-relaxed block">{mod.blurb}</span>
+            <span className="block leading-relaxed">{mod.blurb}</span>
           </>
         }
         meta={[
-          { k: 'Oda', v: chamberRoman },
           { k: 'Tür', v: mod.kind },
           { k: 'Hesaplama', v: 'JPL Efemerisi' },
         ]}
@@ -73,12 +63,12 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
       {chamberSiblings.length > 1 && (
         <nav
           aria-label={`${chamberName} araçları`}
-          className="border-b border-gold/15 bg-ink px-[var(--gutter)] py-3"
+          className="border-b border-white/10 bg-ink px-[var(--gutter)] py-3"
         >
-          <div className="mx-auto max-w-6xl flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-            <span className="text-muted uppercase text-[10px] tracking-wider flex items-center gap-1.5">
-              <AstrolabeGlyph size={13} className="text-gold" />
-              <span>{chamberRoman} ENSTRÜMANLARI:</span>
+          <div className="mx-auto max-w-6xl flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+            <span className="flex items-center gap-2 text-paper/70">
+              <AstrolabeGlyph size={14} className="text-gold" />
+              <span>{chamberName}</span>
             </span>
 
             <div className="flex flex-wrap items-center gap-1.5">
@@ -88,10 +78,10 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
                   <Link
                     key={sib.slug}
                     href={`/astroloji/${sib.slug}`}
-                    className={`px-3 py-1 border transition-all uppercase tracking-wider text-[11px] ${
+                    className={`border px-3 py-1.5 text-sm transition-colors ${
                       isActive
-                        ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_12px_rgba(245,197,66,0.3)]'
-                        : 'border-white/10 bg-ink-2 text-muted hover:border-gold/40 hover:text-paper'
+                        ? 'border-gold bg-gold font-semibold text-ink'
+                        : 'border-white/10 bg-ink-2 text-paper/75 hover:border-gold/40 hover:text-paper'
                     }`}
                   >
                     {sib.short}
@@ -115,76 +105,54 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
       {guide && (
         <section
           aria-label={`${mod.title} Rehberi`}
-          className="guide border-t border-gold/20 bg-gradient-to-b from-ink-2/60 via-ink to-ink px-[var(--gutter)] py-16 sm:py-24"
+          className="guide border-t border-white/10 bg-ink-2/40 px-[var(--gutter)] py-14 sm:py-20"
         >
-          <div className="mx-auto max-w-5xl space-y-14">
-            <PartHeading
-              part={2}
-              title={guide.title}
-              serif={guide.serif}
-              aside={`EZOTERİK METİN · ${chamberRoman}`}
-              description={guide.summary}
-            />
+          <div className="mx-auto max-w-5xl space-y-12 sm:space-y-14">
+            {/* Başlık; "EZOTERİK METİN · I. ODA" yan künyesi kaldırıldı */}
+            <PartHeading title={guide.title} serif={guide.serif} description={guide.summary} />
 
-            <div className="space-y-6 text-base leading-relaxed text-paper/85 sm:text-lg">
+            <div className="space-y-5 text-base leading-relaxed text-paper/85 sm:text-lg">
               {guide.intro.map((p, i) => (
                 <p
                   key={i}
-                  className={
-                    i === 0
-                      ? 'doc-serif text-xl sm:text-2xl text-paper leading-relaxed border-l-2 border-gold pl-5'
-                      : 'leading-relaxed text-paper/80'
-                  }
+                  className={i === 0 ? 'doc-serif border-l-2 border-gold/60 pl-5 text-lg leading-relaxed text-paper sm:text-xl' : undefined}
                 >
                   {p}
                 </p>
               ))}
             </div>
 
-            {/* How-To Reading Guide */}
+            {/* How-To Reading Guide: süs künyesi yerine sade ara başlık */}
             {guide.howTo && guide.howTo.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 border-b border-gold/20 pb-3">
-                  <span className="doc-kicker text-gold">Kadim Okuma Rehberi</span>
-                  <span aria-hidden className="doc-rule flex-1" />
-                  <span className="doc-caption text-paper/60">{guide.howToTitle ?? 'Nasıl Okunur?'}</span>
-                </div>
+              <div>
+                <p className="mb-5 text-lg font-semibold text-paper">{guide.howToTitle ?? 'Nasıl Okunur?'}</p>
 
-                <div className="grid gap-px border border-gold/20 bg-gold/10 sm:grid-cols-3">
+                <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 sm:fill-row-3">
                   {guide.howTo.map((step) => (
-                    <article key={step.step} className="flex flex-col bg-ink p-6 sm:p-7">
-                      <span className="doc-title text-3xl text-gold/70 mb-3">{step.step}</span>
-                      <h3 className="doc-title text-xl text-paper mb-2">{step.title}</h3>
-                      <p className="text-sm leading-relaxed text-paper/75">{step.desc}</p>
+                    <article key={step.step} className="flex flex-col bg-ink p-6">
+                      <span className="mb-3 text-sm font-semibold tabular-nums text-gold">{step.step}</span>
+                      <h3 className="doc-title mb-2 text-lg text-paper">{step.title}</h3>
+                      <p className="text-[15px] leading-relaxed text-paper/80">{step.desc}</p>
                     </article>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Esoteric Facts Grid */}
+            {/* Facts Grid */}
             {guide.facts && guide.facts.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 border-b border-gold/20 pb-3">
-                  <span className="doc-kicker text-gold">Göksel Parametreler & Formüller</span>
-                  <span aria-hidden className="doc-rule flex-1" />
-                  <span className="doc-caption text-paper/60">{guide.factsTitle ?? 'Veriler'}</span>
-                </div>
+              <div>
+                <p className="mb-5 text-lg font-semibold text-paper">{guide.factsTitle ?? 'Veriler'}</p>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4 sm:max-lg:fill-row-2 lg:fill-row-4">
                   {guide.facts.map((fact) => (
-                    <div
-                      key={fact.label}
-                      className="border border-gold/20 bg-ink-2/80 p-4 space-y-1.5"
-                    >
-                      <span className="doc-caption block text-[10px] text-gold uppercase tracking-wider">
-                        {fact.label}
-                      </span>
-                      <span className="font-mono text-base font-bold text-paper block">
+                    <div key={fact.label} className="flex min-w-0 flex-col bg-ink p-5">
+                      <span className="text-sm text-paper/70">{fact.label}</span>
+                      <span className="mt-2 break-words font-mono text-base font-semibold text-paper">
                         {fact.value}
                       </span>
                       {fact.desc && (
-                        <p className="text-xs text-paper/60 font-sans leading-relaxed">
+                        <p className="mt-2 text-sm leading-relaxed text-paper/75">
                           {fact.desc}
                         </p>
                       )}
@@ -196,17 +164,17 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
 
             {/* Takeaways / "Biliyor Muydunuz?" */}
             {guide.takeaways && guide.takeaways.length > 0 && (
-              <div className="border border-gold/30 bg-gold/[0.04] p-6 sm:p-8 space-y-4">
-                <div className="flex items-center gap-2 text-gold">
-                  <Sparkles size={16} />
-                  <span className="doc-kicker text-gold">
+              <div className="space-y-4 border border-white/10 bg-ink p-6 sm:p-8">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-gold" />
+                  <span className="text-lg font-semibold text-paper">
                     {guide.takeawaysTitle ?? 'Biliyor Muydunuz?'}
                   </span>
                 </div>
                 <div className="space-y-3">
                   {guide.takeaways.map((takeaway, i) => (
-                    <div key={i} className="flex items-start gap-3 text-sm leading-relaxed text-paper/85">
-                      <span className="text-gold font-mono font-bold mt-0.5">✦</span>
+                    <div key={i} className="flex items-start gap-3 text-base leading-relaxed text-paper/85">
+                      <span className="shrink-0 text-gold/70">✦</span>
                       <span>{takeaway}</span>
                     </div>
                   ))}
@@ -219,21 +187,18 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
 
       {/* 6. Nasıl hesaplanır? (aracın gerçek yöntemi) */}
       {method && (
-        <section aria-label={method.title} className="border-t border-gold/20 px-[var(--gutter)] py-16 sm:py-24">
-          <div className="mx-auto max-w-5xl space-y-8">
-            <div className="flex items-center gap-4 border-b border-gold/20 pb-3">
-              <span className="doc-kicker text-gold">Yöntem</span>
-              <span aria-hidden className="doc-rule flex-1" />
-              <span className="doc-caption text-paper/60">Hesaplama adımları</span>
-            </div>
-            <h2 className="doc-title text-3xl text-paper sm:text-4xl">{method.title}</h2>
-            <p className="max-w-3xl text-base leading-relaxed text-paper/80 sm:text-lg">{method.intro}</p>
-            <ol className="grid gap-px border border-gold/20 bg-gold/10 sm:grid-cols-2">
+        <section aria-label={method.title} className="border-t border-white/10 px-[var(--gutter)] py-14 sm:py-20">
+          <div className="mx-auto max-w-5xl">
+            {/* PartHeading ile aynı düzen: tek ince çizgi + başlık (künye satırı yok) */}
+            <span aria-hidden className="doc-rule block w-16" />
+            <h2 className="doc-title mt-5 text-[clamp(1.6rem,3.4vw,2.5rem)] text-paper">{method.title}</h2>
+            <p className="mt-4 max-w-3xl text-base leading-relaxed text-paper/85 sm:text-lg">{method.intro}</p>
+            <ol className="mt-8 grid gap-px border border-white/10 bg-white/10 sm:grid-cols-2 sm:fill-row-2">
               {method.steps.map((step, i) => (
-                <li key={step.title} className="flex flex-col bg-ink p-6 sm:p-7">
-                  <span className="doc-title mb-3 text-2xl text-gold/70">{String(i + 1).padStart(2, '0')}</span>
+                <li key={step.title} className="flex flex-col bg-ink p-6">
+                  <span className="mb-3 text-sm font-semibold tabular-nums text-gold">{String(i + 1).padStart(2, '0')}</span>
                   <h3 className="doc-title mb-2 text-lg text-paper">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-paper/75">{step.desc}</p>
+                  <p className="text-[15px] leading-relaxed text-paper/80">{step.desc}</p>
                 </li>
               ))}
             </ol>
@@ -247,7 +212,6 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
           items={method.faq}
           title="Sık sorulanlar"
           serif={mod.short}
-          kicker="Soru & cevap"
           description={`${mod.short} hakkında en çok merak edilenler.`}
         />
       )}
@@ -257,7 +221,6 @@ export function AstrologyModuleScreen({ slug }: { slug: string }) {
         next={{
           href: moduleHref(section, next),
           label: 'Sıradaki Enstrüman',
-          number: `04.${((index + 1) % section.modules.length) + 1}`,
           title: next.short,
           image: next.image,
         }}

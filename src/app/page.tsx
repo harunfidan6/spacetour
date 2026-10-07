@@ -16,7 +16,8 @@ const SECTION_SYNOPSES: Record<string, string> = {
 
 export default function Home() {
   return (
-    <div className="relative bg-ink text-paper">
+    // data-home: iç sayfalara özel sakin tipografi (globals.css "İç sayfalar") ana sayfaya uygulanmasın
+    <div data-home className="relative bg-ink text-paper">
       <HomeHero />
 
       {/* Table of contents — the seven chapters at a glance */}

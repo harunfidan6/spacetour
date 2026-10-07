@@ -20,7 +20,6 @@ export default function CanliPage() {
           items={FAQS_BY_SECTION.canli}
           title="Canlı Gökyüzü & ISS Rehberi"
           serif="sıkça sorulan sorular"
-          kicker="Telemetri & Gözlem · SSS"
           description="ISS geçiş saatleri, çıplak gözle gözlem ipuçları ve jeomanyetik fırtınalar hakkında merak edilenler."
           accentColor="var(--lime)"
         />

@@ -85,15 +85,15 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
       {/* 2. Live Celestial Horizon Bar */}
       <CelestialHorizonBar compact />
 
-      {/* 3. 12 Sacred Zodiac Glyphs Quick-Jump Strip */}
+      {/* 3. 12 burç arasında hızlı geçiş: sade, normal yazımlı düğmeler; içerik ızgarasıyla aynı genişlik */}
       <nav
         aria-label="12 Burç Arasında Hızlı Geçiş"
-        className="border-b border-gold/20 bg-ink-2/95 px-[var(--gutter)] py-2.5 backdrop-blur-md"
+        className="border-b border-line bg-ink-2 px-[var(--gutter)] py-3"
       >
-        <div className="mx-auto max-w-6xl flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
-          <span className="font-mono text-[10px] text-muted uppercase tracking-wider shrink-0 mr-2 flex items-center gap-1">
-            <Compass size={12} className="text-gold" />
-            <span className="hidden sm:inline">ZODYAK ÇARKI:</span>
+        <div className="mx-auto max-w-7xl flex items-center justify-between gap-3 overflow-x-auto no-scrollbar">
+          <span className="mr-1 flex shrink-0 items-center gap-1.5 text-sm text-paper/70">
+            <Compass size={14} className="text-gold" />
+            <span className="hidden sm:inline">Zodyak çarkı</span>
           </span>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -103,15 +103,15 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
                 <Link
                   key={sign.id}
                   href={`/astroloji/burclar/${sign.id}`}
-                  className={`flex items-center gap-1.5 px-3 py-1 border transition-all text-xs font-mono whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 whitespace-nowrap border px-2.5 py-1.5 text-sm transition-colors ${
                     isCurrent
-                      ? 'border-gold bg-gold text-ink font-bold shadow-[0_0_15px_rgba(245,197,66,0.35)]'
-                      : 'border-white/10 bg-ink text-muted hover:border-gold/40 hover:text-paper'
+                      ? 'border-gold bg-gold font-semibold text-ink'
+                      : 'border-line text-paper/80 hover:border-gold/40 hover:text-paper'
                   }`}
                   title={`${sign.name} (${sign.dates})`}
                 >
-                  <ZodiacGlyph sign={sign.id} size={15} className={isCurrent ? 'text-ink' : 'text-gold'} />
-                  <span className="text-[11px]">{sign.name}</span>
+                  <ZodiacGlyph sign={sign.id} size={14} className={isCurrent ? 'text-ink' : 'text-gold'} />
+                  <span>{sign.name}</span>
                 </Link>
               );
             })}
@@ -120,30 +120,25 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
       </nav>
 
       {/* 4. Main Body: Aside Dossier + Long-form Sections */}
-      <div className="grid gap-12 lg:gap-16 px-[var(--gutter)] py-16 lg:grid-cols-12 mx-auto max-w-7xl">
-        {/* Left Sticky Sacred Dossier Card */}
+      <div className="grid gap-12 lg:gap-16 px-[var(--gutter)] py-14 sm:py-20 lg:grid-cols-12 mx-auto max-w-7xl">
+        {/* Sol künye kartı: parıltı ve büyük harfli mono etiketler yerine düz zemin, okunur alan adları */}
         <aside className="lg:col-span-4">
-          <div className="flex flex-col items-start gap-6 border border-gold/40 bg-gradient-to-b from-ink-2 via-ink to-ink p-7 sm:p-8 shadow-[0_0_35px_rgba(245,197,66,0.08)] lg:sticky lg:top-24">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gold/15 rounded-full blur-2xl" />
-              <ZodiacGlyph sign={s.id} size={110} className="text-gold relative z-10" />
-            </div>
+          <div className="flex flex-col items-start gap-6 border border-gold/25 bg-ink-2 p-6 sm:p-8 lg:sticky lg:top-24">
+            <ZodiacGlyph sign={s.id} size={88} className="text-gold" />
 
             <div>
-              <span className="doc-caption text-gold uppercase tracking-widest text-[10px]">
-                ARKETİPSEL KİMLİK
-              </span>
-              <p className="doc-title mt-1 text-3xl text-paper">{s.traits.archetype}</p>
-              <p className="doc-serif mt-2 text-xl text-gold italic leading-snug">
+              <span className="text-sm text-paper/70">Arketipsel kimlik</span>
+              <p className="doc-title mt-1 text-2xl text-paper">{s.traits.archetype}</p>
+              <p className="doc-serif mt-2 text-xl text-gold leading-snug">
                 “{s.traits.motto}”
               </p>
             </div>
 
             {/* Quick Astrological Specifications */}
-            <dl className="grid w-full grid-cols-2 gap-3.5 border-t border-gold/20 pt-5 font-mono text-xs">
+            <dl className="grid w-full grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-5 text-[15px]">
               <div>
-                <dt className="doc-caption text-muted text-[10px] uppercase">YÖNETİCİ GEZEGEN</dt>
-                <dd className="mt-1 font-bold text-paper">
+                <dt className="text-sm text-paper/70">Yönetici gezegen</dt>
+                <dd className="mt-1 font-semibold text-paper">
                   <Link
                     href={`/ansiklopedi/${s.rulingPlanetId}`}
                     className="flex items-center gap-1.5 hover:text-gold transition-colors group"
@@ -151,92 +146,92 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
                   >
                     <PlanetGlyph planet={s.rulingPlanet} size={14} className="text-gold" />
                     <span className="underline decoration-gold/40 underline-offset-2 group-hover:decoration-gold">{s.rulingPlanet}</span>
-                    <ArrowUpRight size={10} className="text-gold/60 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowUpRight size={12} className="text-gold/60 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                 </dd>
               </div>
 
               <div>
-                <dt className="doc-caption text-muted text-[10px] uppercase">ELEMENT & NİTELİK</dt>
-                <dd className="mt-1 font-bold text-paper">
+                <dt className="text-sm text-paper/70">Element & nitelik</dt>
+                <dd className="mt-1 font-semibold text-paper">
                   {s.element} · {s.modality}
                 </dd>
               </div>
 
               <div>
-                <dt className="doc-caption text-muted text-[10px] uppercase">UĞURLU METAL</dt>
+                <dt className="text-sm text-paper/70">Uğurlu metal</dt>
                 <dd className="mt-1 text-paper/85">{s.details.metal}</dd>
               </div>
 
               <div>
-                <dt className="doc-caption text-muted text-[10px] uppercase">UĞURLU SAYILAR</dt>
-                <dd className="mt-1 text-gold font-bold">{s.details.luckyNumbers.join(' · ')}</dd>
+                <dt className="text-sm text-paper/70">Uğurlu sayılar</dt>
+                <dd className="mt-1 font-semibold tabular-nums text-gold">{s.details.luckyNumbers.join(' · ')}</dd>
               </div>
 
-              <div className="col-span-2 border-t border-white/5 pt-2">
-                <dt className="doc-caption text-muted text-[10px] uppercase">UYUMLU RENKLER</dt>
-                <dd className="mt-1 text-paper/80">{s.details.colors.join(', ')}</dd>
+              <div className="col-span-2 border-t border-line pt-3">
+                <dt className="text-sm text-paper/70">Uyumlu renkler</dt>
+                <dd className="mt-1 text-paper/85">{s.details.colors.join(', ')}</dd>
               </div>
             </dl>
 
             {/* Direct Tool Actions */}
-            <div className="w-full space-y-2 pt-2 border-t border-gold/20 font-mono text-xs">
+            <div className="w-full space-y-2 border-t border-line pt-5 text-sm">
               <Link
                 href="/astroloji/dogum-haritasi"
-                className="w-full py-2.5 px-3 bg-gold text-ink font-bold flex items-center justify-between transition-opacity hover:opacity-90 uppercase tracking-wider text-[11px]"
+                className="flex w-full items-center justify-between bg-gold px-3 py-2.5 font-semibold text-ink transition-opacity hover:opacity-90"
               >
                 <span>Doğum Haritanı Çıkar</span>
-                <ArrowUpRight size={14} />
+                <ArrowUpRight size={15} />
               </Link>
               <Link
                 href="#uyum"
-                className="w-full py-2 px-3 border border-gold/40 text-gold hover:bg-gold/10 flex items-center justify-between transition-colors uppercase tracking-wider text-[11px]"
+                className="flex w-full items-center justify-between border border-gold/40 px-3 py-2.5 text-gold transition-colors hover:bg-gold/10"
               >
                 <span>{s.name} Uyumunu Hesapla</span>
-                <Heart size={13} />
+                <Heart size={14} />
               </Link>
             </div>
           </div>
         </aside>
 
         {/* Right Content Stream */}
-        <div className="space-y-14 lg:col-span-8">
+        <div className="space-y-14 sm:space-y-16 lg:col-span-8">
           <ZodiacDossier sign={s} index={index} image={signImage(s.id)} />
 
-          {/* Deep Tarot Arcana Section */}
-          <section className="border border-gold/30 bg-gold/[0.04] p-6 sm:p-8 space-y-3">
-            <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-gold" />
-              <h2 className="doc-kicker text-gold">
+          {/* Tarot eşleşmesi: başlık normal yazımla, alıntı daha ölçülü boyutta */}
+          <section className="space-y-4 border border-gold/25 bg-gold/[0.04] p-6 sm:p-8">
+            <div className="flex items-start gap-2">
+              <Sparkles size={18} className="mt-0.5 shrink-0 text-gold" />
+              <h2 className="text-lg font-semibold leading-snug text-paper">
                 Majör Arkana Tarot Eşleşmesi · {s.tarotCard.name} ({s.tarotCard.number})
               </h2>
             </div>
-            <p className="text-base leading-relaxed text-paper/85 font-sans">
+            <p className="text-base leading-relaxed text-paper/85">
               {s.tarotCard.symbolism}
             </p>
-            <p className="doc-serif text-2xl sm:text-3xl text-gold italic pt-2">
+            <p className="doc-serif text-xl leading-snug text-gold sm:text-2xl">
               “{s.tarotCard.guidance}”
             </p>
           </section>
 
-          {/* Strengths & Shadows */}
-          <section className="grid gap-6 sm:grid-cols-2">
-            <div className="border border-lime/30 bg-ink-2/60 p-5 space-y-3">
-              <h2 className="doc-kicker text-lime font-mono">IŞIKLI / GÜÇLÜ YÖNLER</h2>
+          {/* Güçlü ve gölge yönler: renk yalnızca başlıkta ve +/− işaretinde, haplar sade */}
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-3 border border-lime/25 bg-ink-2/60 p-5 sm:p-6">
+              <h2 className="text-lg font-semibold text-lime">Işıklı / güçlü yönler</h2>
               <ul className="flex flex-wrap gap-2">
                 {s.traits.strengths.map((t) => (
-                  <li key={t} className="rounded-full border border-lime/40 bg-lime/10 px-3 py-1 text-xs text-lime font-mono">
-                    + {t}
+                  <li key={t} className="rounded-full border border-lime/30 px-3 py-1 text-sm text-paper/85">
+                    <span className="text-lime">+</span> {t}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="border border-rose/30 bg-ink-2/60 p-5 space-y-3">
-              <h2 className="doc-kicker text-rose font-mono">GÖLGE / GELİŞİM YÖNLERİ</h2>
+            <div className="space-y-3 border border-rose/25 bg-ink-2/60 p-5 sm:p-6">
+              <h2 className="text-lg font-semibold text-rose">Gölge / gelişim yönleri</h2>
               <ul className="flex flex-wrap gap-2">
                 {s.traits.shadows.map((t) => (
-                  <li key={t} className="rounded-full border border-rose/40 bg-rose/10 px-3 py-1 text-xs text-rose font-mono">
-                    − {t}
+                  <li key={t} className="rounded-full border border-rose/30 px-3 py-1 text-sm text-paper/85">
+                    <span className="text-rose">−</span> {t}
                   </li>
                 ))}
               </ul>
@@ -246,22 +241,22 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
           {/* Cosmic Love Matches */}
           {matches.length > 0 && (
             <section className="space-y-4">
-              <h2 className="doc-kicker text-gold">
+              <h2 className="doc-title text-xl text-paper sm:text-2xl">
                 Kozmik Çekim & Aşk Uyumu ({s.name})
               </h2>
-              <ul className="grid gap-2 sm:grid-cols-2 font-mono text-xs">
+              <ul className="grid gap-2 sm:grid-cols-2">
                 {matches.map((m) => (
                   <li key={m.id}>
                     <Link
                       href={`/astroloji/burc-uyumu/${pairSlug(s.id, m.id)}`}
-                      className="group flex items-center gap-3 border border-gold/20 bg-ink p-4 transition-all hover:border-gold/50 hover:bg-ink-2"
+                      className="group flex items-center gap-3 border border-gold/20 bg-ink p-4 transition-colors hover:border-gold/50 hover:bg-ink-2"
                     >
                       <ZodiacGlyph sign={m.id} size={26} className="text-gold shrink-0" />
                       <div>
                         <span className="doc-title text-lg text-paper block">{s.name} – {m.name}</span>
-                        <span className="text-[10px] text-muted">{m.element} · {m.modality} · uyum %{signCompatibility(s, m).score}</span>
+                        <span className="text-sm text-paper/70">{m.element} · {m.modality} · uyum %{signCompatibility(s, m).score}</span>
                       </div>
-                      <ArrowUpRight size={15} className="ml-auto text-gold/60 transition-colors group-hover:text-gold" />
+                      <ArrowUpRight size={15} className="ml-auto shrink-0 text-gold/60 transition-colors group-hover:text-gold" />
                     </Link>
                   </li>
                 ))}
@@ -271,46 +266,46 @@ export default async function BurcPage(props: PageProps<'/astroloji/burclar/[bur
 
           {/* Diğer 11 burçla (ve kendisiyle) uyum: ikili sayfalarına bağlantılar */}
           <section id="uyum" className="space-y-4">
-            <h2 className="doc-kicker text-gold">{s.name} burcunun diğer burçlarla uyumu</h2>
-            <ul className="grid grid-cols-2 gap-px border border-line bg-line font-mono text-xs sm:grid-cols-3">
+            <h2 className="doc-title text-xl text-paper sm:text-2xl">{s.name} burcunun diğer burçlarla uyumu</h2>
+            <ul className="grid grid-cols-2 gap-px border border-line bg-line text-sm sm:grid-cols-3">
               {ZODIAC_SIGNS.map((x) => (
                 <li key={x.id}>
-                  <Link href={`/astroloji/burc-uyumu/${pairSlug(s.id, x.id)}`} className="flex items-center gap-2 bg-ink p-3 text-paper/85 hover:bg-ink-2 hover:text-gold">
+                  <Link href={`/astroloji/burc-uyumu/${pairSlug(s.id, x.id)}`} className="flex h-full items-center gap-2 bg-ink p-3 text-paper/85 hover:bg-ink-2 hover:text-gold">
                     <ZodiacGlyph sign={x.id} size={14} className="shrink-0 text-gold" />
                     <span>{s.name} – {x.name}</span>
-                    <span className="ml-auto text-muted">%{signCompatibility(s, x).score}</span>
+                    <span className="ml-auto tabular-nums text-paper/70">%{signCompatibility(s, x).score}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           </section>
 
-          {/* Sky Exploration Hop */}
-          <div className="flex flex-col gap-2 sm:flex-row font-mono text-xs">
+          {/* Devam bağlantıları: hepsi aynı sade biçimde, büyük harf yok */}
+          <div className="flex flex-col gap-2 text-sm sm:flex-row">
             <Link
               href="/astroloji/sinastri"
-              className="group flex flex-1 items-center justify-between border border-gold/30 bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-gold"
+              className="group flex flex-1 items-center justify-between gap-3 border border-gold/30 bg-ink p-4 transition-colors hover:border-gold hover:bg-ink-2"
             >
-              <span className="font-bold text-gold uppercase">Doğum Haritasıyla Uyum →</span>
-              <Heart size={16} className="text-gold" />
+              <span className="font-semibold text-gold">Doğum Haritasıyla Uyum →</span>
+              <Heart size={16} className="shrink-0 text-gold" />
             </Link>
             <Link
               href={`/astroloji/gunluk-burc/${s.id}`}
-              className="group flex flex-1 items-center justify-between border border-line bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-line"
+              className="group flex flex-1 items-center justify-between gap-3 border border-line bg-ink p-4 text-paper/85 transition-colors hover:border-gold/40 hover:bg-ink-2 hover:text-paper"
             >
               <span className="flex items-center gap-2">
-                <Sparkles size={16} className="text-gold" /> {s.name} Burcu Bugün
+                <Sparkles size={16} className="shrink-0 text-gold" /> {s.name} Burcu Bugün
               </span>
-              <ArrowUpRight size={16} className="text-paper/60" />
+              <ArrowUpRight size={16} className="shrink-0 text-paper/60" />
             </Link>
             <Link
               href="/harita/planetaryum"
-              className="group flex flex-1 items-center justify-between border border-line bg-ink p-4 text-paper transition-all hover:bg-ink-2 hover:border-line"
+              className="group flex flex-1 items-center justify-between gap-3 border border-line bg-ink p-4 text-paper/85 transition-colors hover:border-gold/40 hover:bg-ink-2 hover:text-paper"
             >
               <span className="flex items-center gap-2">
-                <Telescope size={16} className="text-paper/70" /> {s.name} Takımyıldızını 3D Gör
+                <Telescope size={16} className="shrink-0 text-paper/70" /> {s.name} Takımyıldızını 3D Gör
               </span>
-              <ArrowUpRight size={16} className="text-muted group-hover:text-paper" />
+              <ArrowUpRight size={16} className="shrink-0 text-paper/60 group-hover:text-paper" />
             </Link>
           </div>
         </div>

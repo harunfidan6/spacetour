@@ -1,34 +1,26 @@
 import type { ReactNode } from 'react';
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-
-/** A documentary part divider: "KISIM II" slate, title and a short synopsis. */
+/** Bölüm başlığı: ince çizgi, başlık (isteğe bağlı serif vurgu) ve kısa açıklama. */
 export function PartHeading({
-  part,
   title,
   serif,
   description,
-  aside,
   id,
 }: {
-  part: number;
+  /** Eski "Kısım II" künyesi; artık gösterilmiyor */
+  part?: number;
   title: string;
   serif?: string;
   description?: ReactNode;
+  /** Eski künye satırının sağ ucu; artık gösterilmiyor */
   aside?: ReactNode;
   id?: string;
 }) {
   return (
-    <header id={id} className="mb-10 scroll-mt-24 sm:mb-14">
-      <div className="flex items-center gap-4">
-        <span className="doc-kicker" style={{ color: 'var(--page-accent)' }}>
-          Kısım {ROMAN[part - 1] ?? part}
-        </span>
-        <span aria-hidden className="doc-rule flex-1" />
-        {aside && <span className="doc-caption">{aside}</span>}
-      </div>
-      <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:items-end">
-        <h2 className="doc-title text-[clamp(1.75rem,5.4vw,5rem)] break-words text-paper lg:col-span-7">
+    <header id={id} className="mb-8 scroll-mt-24 sm:mb-10">
+      <span aria-hidden className="doc-rule block w-16" />
+      <div className="mt-5 grid gap-4 lg:grid-cols-12 lg:items-end">
+        <h2 className="doc-title text-[clamp(1.6rem,3.4vw,2.75rem)] text-paper lg:col-span-7">
           {title}
           {serif && (
             <>
@@ -39,7 +31,7 @@ export function PartHeading({
             </>
           )}
         </h2>
-        {description && <p className="max-w-lg text-sm leading-relaxed text-paper/65 sm:text-base lg:col-span-5 break-words">{description}</p>}
+        {description && <p className="max-w-lg text-base leading-relaxed text-paper/80 lg:col-span-5">{description}</p>}
       </div>
     </header>
   );

@@ -8,7 +8,6 @@ export default function YolculukPage() {
   return (
     <div style={{ '--page-accent': section.accent } as CSSProperties}>
       <ChapterHero
-        chapter={section.chapter}
         section={section.title}
         headline={section.headline}
         lede={section.lede}

@@ -7,8 +7,7 @@ import { PlanetHologram3D } from '@/components/space/PlanetHologram3D';
 import { PlanetOrb, OrbCanvas } from '@/components/space/PlanetOrb';
 import { SplitReveal } from '@/components/motion/SplitReveal';
 import { FitText } from '@/components/motion/FitText';
-import { Reveal, Scramble, Ticks } from '@/components/motion/primitives';
-import { Marquee } from '@/components/motion/Marquee';
+import { Reveal } from '@/components/motion/primitives';
 import { buildPlanetMetadata, getBreadcrumbJsonLd, getArticleJsonLd, getFaqPageJsonLd, CONTENT_DATES, BASE_URL } from '@/lib/seo';
 import { nameCase } from '@/lib/text';
 
@@ -170,86 +169,69 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
       />
       <OrbCanvas />
       <div className="px-[var(--gutter)] pt-24 sm:pt-28">
-        <div className="flex items-center gap-4 border-b border-line pb-4">
-          <Link href="/ansiklopedi/gok-cisimleri" className="label group flex items-center gap-2 text-paper transition-colors hover:text-violet">
+        {/* Konum satırı; tür etiketi mobilde de görünür */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-4 text-sm">
+          <Link href="/ansiklopedi/gok-cisimleri" className="group flex items-center gap-2 font-medium text-paper transition-colors hover:text-violet">
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" /> Arşiv
           </Link>
-          <span className="label text-muted">
-            (03) Kayıt {String(index + 1).padStart(2, '0')} / {String(planets.length).padStart(2, '0')}
+          <span className="text-paper/70">
+            Kayıt {String(index + 1).padStart(2, '0')} / {String(planets.length).padStart(2, '0')}
           </span>
-          <span className="label ml-auto hidden text-violet sm:inline">{TYPE_LABEL[planet.type] ?? planet.type}</span>
+          <span className="ml-auto text-violet">{TYPE_LABEL[planet.type] ?? planet.type}</span>
         </div>
 
-        <FitText heading className="display mt-8 leading-[0.8] text-paper" fallback="18vw" max={420}>
+        {/* Sayfanın tek büyük başlığı: genişliğe sığar, en fazla 12rem */}
+        <FitText heading className="display mt-8 leading-[0.8] text-paper" fallback="min(18vw, 12rem)" max={192}>
           <SplitReveal as="span" trigger="intro" effect="tilt" stagger={0.05} duration={1.3}>
             {planet.name}
           </SplitReveal>
         </FitText>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-12">
-          <div className="flex flex-col justify-between gap-8 lg:col-span-5">
+          <div className="flex flex-col justify-between gap-6 lg:col-span-5">
             <div>
-              <SplitReveal as="p" by="lines" trigger="intro" delay={0.3} className="mt-6 text-xl leading-snug text-paper/85 sm:text-2xl">
+              <SplitReveal as="p" by="lines" trigger="intro" delay={0.3} className="text-lg leading-relaxed text-paper/85 sm:text-xl">
                 {planet.description}
               </SplitReveal>
             </div>
-            <p className="label text-muted">Sürükle: 360° döndür · Tekerlek: yakınlaştır</p>
+            <p className="text-sm text-paper/70">Sürükle: 360° döndür · Tekerlek: yakınlaştır</p>
           </div>
-          <Reveal mode="clip" className="ticks relative lg:col-span-7">
-            <Ticks />
+          <Reveal mode="clip" className="relative lg:col-span-7">
             <PlanetHologram3D id={planet.id} />
           </Reveal>
         </div>
       </div>
 
-      <div className="mt-16 border-y border-line bg-violet py-3 text-ink overflow-hidden max-w-full">
-        <Marquee speed={50}>
-          {[planet.name, TYPE_LABEL[planet.type] ?? planet.type, planet.facts.çap, planet.facts.sıcaklık].map((t, i) => (
-            <span key={i} className="label flex items-center gap-6 px-6 text-sm font-semibold">
-              {t} <span>✦</span>
-            </span>
-          ))}
-        </Marquee>
-      </div>
-
-      <div className="space-y-20 px-[var(--gutter)] pb-28 pt-16">
+      <div className="space-y-16 px-[var(--gutter)] py-14 sm:space-y-20 sm:py-20">
         <Reveal items="[data-fact]" stagger={0.08} className="grid grid-cols-2 gap-px border border-line bg-line lg:grid-cols-4">
           {facts.map((f) => (
             <div key={f.k} data-fact className="bg-ink p-5 sm:p-7">
-              <div className="label text-muted">{f.k}</div>
-              <div className="display display-tight mt-4 text-[clamp(1.4rem,2.6vw,2.4rem)] leading-[0.95] text-violet">
-                <Scramble text={f.v} />
-              </div>
+              <div className="text-sm text-paper/70">{f.k}</div>
+              <div className="doc-title mt-3 text-[clamp(1.25rem,2.2vw,2rem)] text-violet">{f.v}</div>
             </div>
           ))}
         </Reveal>
 
         <div className="grid gap-12 lg:grid-cols-12">
           <article className="lg:col-span-8">
-            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
-              <span className="label text-violet">(R)</span>
-              <span className="label text-paper">Bilimsel rapor</span>
+            <div className="mb-6 border-t border-line pt-5">
+              <span className="doc-title block text-xl text-paper sm:text-2xl">Bilimsel rapor</span>
             </div>
-            <div className="max-w-3xl space-y-6 text-lg leading-relaxed text-paper/75 sm:text-xl">
+            <div className="max-w-3xl space-y-5 text-base leading-relaxed text-paper/85 sm:text-lg">
               {paragraphs.map((p, i) => (
-                <SplitReveal key={i} as="p" by="lines" stagger={0.06}>
-                  {p}
-                </SplitReveal>
+                <p key={i}>{p}</p>
               ))}
             </div>
           </article>
           <aside className="lg:col-span-4">
-            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
-              <span className="label text-violet">(T)</span>
-              <span className="label text-paper">Ekstra telemetri</span>
+            <div className="mb-2 border-t border-line pt-5">
+              <span className="doc-title block text-xl text-paper sm:text-2xl">Ekstra telemetri</span>
             </div>
-            <dl className="border-t border-line">
+            <dl>
               {telemetry.map((t) => (
                 <div key={t.k} className="flex items-baseline justify-between gap-4 border-b border-line py-4">
-                  <dt className="label text-muted">{t.k}</dt>
-                  <dd className="text-right font-mono text-sm text-paper">
-                    <Scramble text={t.v} />
-                  </dd>
+                  <dt className="text-sm text-paper/70">{t.k}</dt>
+                  <dd className="text-right font-mono text-sm text-paper">{t.v}</dd>
                 </div>
               ))}
             </dl>
@@ -258,30 +240,26 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
 
         {/* Keşif Tarihçesi ve Türkiye'den Gözlem */}
         <section aria-label="Keşif ve Gözlem" className="grid gap-px border border-line bg-line lg:grid-cols-2 sm:max-lg:fill-row-2">
-          <div className="bg-ink p-7 sm:p-9 flex flex-col">
-            <div className="flex items-center gap-3 border-b border-line pb-4 mb-6">
-              <span className="label text-violet">(K)</span>
-              <span className="label text-paper">Keşif &amp; Gözlem Tarihçesi</span>
-            </div>
+          <div className="flex flex-col bg-ink p-6 sm:p-8">
+            <span className="doc-title mb-5 block text-xl text-paper sm:text-2xl">Keşif &amp; Gözlem Tarihçesi</span>
             <div className="space-y-4">
               <div>
-                <span className="label text-muted">Tarih &amp; Kaşif</span>
-                <p className="doc-serif text-xl text-paper mt-1">{planet.discovery.date} · {planet.discovery.discoverer}</p>
+                <span className="text-sm text-paper/70">Tarih &amp; Kaşif</span>
+                <p className="doc-serif mt-1 text-xl text-paper">{planet.discovery.date} · {planet.discovery.discoverer}</p>
               </div>
-              <p className="text-sm leading-relaxed text-paper/75 pt-2">{planet.discovery.history}</p>
+              <p className="text-base leading-relaxed text-paper/85">{planet.discovery.history}</p>
             </div>
           </div>
 
-          <div className="bg-ink p-7 sm:p-9 flex flex-col">
-            <div className="flex items-center gap-3 border-b border-line pb-4 mb-6">
-              <span className="label text-violet">(G)</span>
-              <span className="label text-paper">Türkiye’den Nasıl Gözlenir?</span>
-            </div>
-            <p className="text-sm leading-relaxed text-paper/80">{planet.observationTurkey}</p>
+          <div className="flex flex-col bg-ink p-6 sm:p-8">
+            <span className="doc-title mb-5 block text-xl text-paper sm:text-2xl">Türkiye’den Nasıl Gözlenir?</span>
+            <p className="text-base leading-relaxed text-paper/85">{planet.observationTurkey}</p>
             {planet.moonsInfo && planet.moonsInfo.notable.length > 0 && (
-              <div className="mt-auto pt-6 border-t border-line">
-                <span className="label text-muted">Önemli Uyduları ({planet.moonsInfo.count} Adet)</span>
-                <p className="font-mono text-xs text-paper/90 mt-1">{planet.moonsInfo.notable.join(' · ')}</p>
+              <div className="mt-auto pt-6">
+                <div className="border-t border-line pt-5">
+                  <span className="text-sm text-paper/70">Önemli Uyduları ({planet.moonsInfo.count} Adet)</span>
+                  <p className="mt-1 text-[15px] leading-relaxed text-paper/90">{planet.moonsInfo.notable.join(' · ')}</p>
+                </div>
               </div>
             )}
           </div>
@@ -290,21 +268,18 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
         {/* Uzay Görevleri */}
         {planet.missions && planet.missions.length > 0 && (
           <section aria-label="Uzay Görevleri">
-            <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
-              <span className="label text-violet">(M)</span>
-              <h2 className="label text-paper">Ziyaret Eden Uzay Görevleri</h2>
+            <div className="mb-6 border-t border-line pt-5">
+              <h2 className="doc-title text-xl text-paper sm:text-2xl">Ziyaret Eden Uzay Görevleri</h2>
             </div>
             <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4 sm:max-lg:fill-row-2 lg:fill-row-4">
               {planet.missions.map((m) => (
-                <div key={m.name} className="bg-ink p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-xs font-mono text-violet mb-2">
-                      <span>{m.agency}</span>
-                      <span>{m.year}</span>
-                    </div>
-                    <h3 className="doc-title text-xl text-paper mb-2">{m.name}</h3>
+                <div key={m.name} className="flex flex-col bg-ink p-6">
+                  <div className="flex items-center justify-between gap-3 text-sm text-violet">
+                    <span>{m.agency}</span>
+                    <span className="tabular-nums">{m.year}</span>
                   </div>
-                  <p className="text-xs leading-relaxed text-paper/70 mt-3">{m.role}</p>
+                  <h3 className="doc-title mt-2 text-xl text-paper">{m.name}</h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-paper/80">{m.role}</p>
                 </div>
               ))}
             </div>
@@ -315,13 +290,13 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
         {planet.biliyorMuydun && planet.biliyorMuydun.length > 0 && (
           <section aria-label="Biliyor Muydunuz" className="rounded-xl border border-white/[0.08] bg-black/40 p-6 sm:p-8 backdrop-blur-md">
             <div className="flex items-center gap-3 mb-6">
-              <span className="h-2 w-2 rounded-full bg-violet" />
-              <h2 className="doc-title text-xl text-paper">Biliyor Muydunuz?</h2>
+              <span aria-hidden className="h-2 w-2 rounded-full bg-violet" />
+              <h2 className="doc-title text-xl text-paper sm:text-2xl">Biliyor Muydunuz?</h2>
             </div>
             <ul className="space-y-4">
               {planet.biliyorMuydun.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-4 text-sm sm:text-base leading-relaxed text-paper/75">
-                  <span className="doc-kicker shrink-0 mt-0.5 text-paper/40">—</span>
+                <li key={idx} className="flex items-start gap-4 text-base leading-relaxed text-paper/85">
+                  <span aria-hidden className="shrink-0 text-paper/40">—</span>
                   <span>{item}</span>
                 </li>
               ))}
@@ -331,28 +306,23 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
 
         {/* Sık sorulanlar */}
         <section aria-label={`${planet.name} hakkında sık sorulanlar`}>
-          <div className="mb-6 flex items-center gap-3 border-t border-line pt-4">
-            <span className="label text-violet">(S)</span>
-            <h2 className="label text-paper">{planet.name} hakkında sık sorulanlar</h2>
+          <div className="mb-6 border-t border-line pt-5">
+            <h2 className="doc-title text-xl text-paper sm:text-2xl">{planet.name} hakkında sık sorulanlar</h2>
           </div>
           <dl className="grid gap-px border border-line bg-line sm:grid-cols-2">
             {faq.map((q) => (
               <div key={q.question} className="bg-ink p-6">
-                <dt className="doc-title text-lg leading-tight text-paper">{q.question}</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-paper/75">{q.answer}</dd>
+                <dt className="doc-title text-lg text-paper">{q.question}</dt>
+                <dd className="mt-2 text-base leading-relaxed text-paper/85">{q.answer}</dd>
               </div>
             ))}
           </dl>
         </section>
 
         {/* İlişkili Laboratuvar Deneyleri ve Zodyak Bağlantıları (Topic Cluster) */}
-        <section aria-label="İlişkili Kozmik Enstrümanlar" className="border-t border-line pt-8">
-          <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
-            <div>
-              <span className="doc-kicker text-violet text-xs">Kozmik Ağ · Topic Cluster</span>
-              <h2 className="doc-title text-2xl text-paper mt-1">{planet.name} ile İlgili Enstrümanlar</h2>
-            </div>
-            <span className="doc-caption text-muted">Kozmik Atlas</span>
+        <section aria-label="İlişkili Kozmik Enstrümanlar">
+          <div className="mb-6 border-t border-line pt-5">
+            <h2 className="doc-title text-xl text-paper sm:text-2xl">{planet.name} ile İlgili Enstrümanlar</h2>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -362,18 +332,18 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
               className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
             >
               <div>
-                <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
-                  <span>LABORATUVAR</span>
+                <div className="mb-2 flex items-center justify-between text-sm text-paper/70">
+                  <span>Laboratuvar</span>
                   <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
                 <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                   {nameCase(planet.name, 'bulunma', '’')} Kaç Kilosunuz?
                 </h3>
-                <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                <p className="mt-2 text-[15px] leading-relaxed text-paper/80">
                   Yerçekimi odasında ağırlığınızı {nameCase(planet.name, 'ilgi', '’')} yüzey ivmesine göre test edin.
                 </p>
               </div>
-              <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Simülatörü Başlat →</span>
+              <span className="mt-4 text-sm font-medium text-violet">Simülatörü Başlat →</span>
             </Link>
 
             {/* 2. Kepler Yörünge Modeli */}
@@ -382,40 +352,40 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
               className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
             >
               <div>
-                <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
-                  <span>3D ORRERY</span>
+                <div className="mb-2 flex items-center justify-between text-sm text-paper/70">
+                  <span>3D orrery</span>
                   <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
                 <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                   Güneş Çevresindeki Yörüngesi
                 </h3>
-                <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                <p className="mt-2 text-[15px] leading-relaxed text-paper/80">
                   Kepler yasalarıyla {planet.facts.yörüngeSüresi} periyodundaki 3D yörünge hareketini izleyin.
                 </p>
               </div>
-              <span className="doc-caption text-violet mt-4 font-mono text-[11px]">3D Modeli Aç →</span>
+              <span className="mt-4 text-sm font-medium text-violet">3D Modeli Aç →</span>
             </Link>
 
             {/* 3. Zodyak Yönetici Burcu veya 3D Yolculuk */}
             {PLANET_TO_ZODIAC[planet.id] && PLANET_TO_ZODIAC[planet.id].length > 0 ? (
               <div className="flex flex-col justify-between border border-line bg-ink p-5">
                 <div>
-                  <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
-                    <span>ASTROLOJİ ETKİSİ</span>
+                  <div className="mb-2 flex items-center justify-between text-sm text-paper/70">
+                    <span>Astroloji etkisi</span>
                     <span className="text-gold">✦</span>
                   </div>
                   <h3 className="doc-title text-lg text-paper">
                     Yönettiği Zodyak Burçları
                   </h3>
-                  <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                  <p className="mt-2 text-[15px] leading-relaxed text-paper/80">
                     {planet.name}, mitolojik ve astrolojik olarak şu arketiplerin yöneticisidir:
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-3 flex flex-wrap gap-2">
                     {PLANET_TO_ZODIAC[planet.id].map((z) => (
                       <Link
                         key={z.id}
                         href={`/astroloji/burclar/${z.id}`}
-                        className="rounded border border-gold/30 bg-gold/10 px-2 py-1 font-mono text-xs text-gold transition-colors hover:bg-gold hover:text-ink"
+                        className="rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-sm text-gold transition-colors hover:bg-gold hover:text-ink"
                       >
                         {z.name} →
                       </Link>
@@ -429,18 +399,18 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
                 className="group flex flex-col justify-between border border-line bg-ink p-5 transition-all hover:border-violet/40 hover:bg-ink-2"
               >
                 <div>
-                  <div className="flex items-center justify-between text-xs text-muted mb-2 font-mono">
-                    <span>3D SİMÜLASYON</span>
+                  <div className="mb-2 flex items-center justify-between text-sm text-paper/70">
+                    <span>3D simülasyon</span>
                     <ArrowUpRight size={14} className="text-violet transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
                   <h3 className="doc-title text-lg text-paper group-hover:text-violet transition-colors">
                     Güneş Sistemi’nde Keşfet
                   </h3>
-                  <p className="mt-1 text-xs text-paper/70 leading-relaxed">
+                  <p className="mt-2 text-[15px] leading-relaxed text-paper/80">
                     WebGL 3D uzay atlasında {nameCase(planet.name, 'yonelme', '’')} doğru gerçek zamanlı uçuş yapın.
                   </p>
                 </div>
-                <span className="doc-caption text-violet mt-4 font-mono text-[11px]">Uzay Uçuşunu Başlat →</span>
+                <span className="mt-4 text-sm font-medium text-violet">Uzay Uçuşunu Başlat →</span>
               </Link>
             )}
           </div>
@@ -453,12 +423,12 @@ export default async function PlanetDetail(props: PageProps<'/ansiklopedi/[id]'>
           ].map(({ p, label, dir }) => (
             <Link key={label} href={`/ansiklopedi/${p.id}`} className={`group relative overflow-hidden bg-ink p-6 sm:p-10 ${dir > 0 ? 'text-right' : ''}`}>
               <span aria-hidden className={`absolute inset-0 scale-x-0 bg-violet transition-transform duration-500 ease-[cubic-bezier(.76,0,.24,1)] group-hover:scale-x-100 ${dir > 0 ? 'origin-right' : 'origin-left'}`} />
-              <span className={`label relative flex items-center gap-2 text-muted group-hover:text-ink ${dir > 0 ? 'justify-end' : ''}`}>
+              <span className={`relative flex items-center gap-2 text-sm text-paper/70 group-hover:text-ink ${dir > 0 ? 'justify-end' : ''}`}>
                 {dir < 0 && <ArrowLeft size={14} />} {label} {dir > 0 && <ArrowRight size={14} />}
               </span>
               <span className={`relative mt-4 flex items-center gap-4 ${dir > 0 ? 'flex-row-reverse' : ''}`}>
                 <PlanetOrb id={p.id} className="h-14 w-14 transition-transform duration-500 group-hover:scale-110 sm:h-20 sm:w-20" spin={1.5} />
-                <span className="display min-w-0 break-words pt-[0.12em] text-[clamp(1.8rem,4vw,4rem)] text-paper transition-colors group-hover:text-ink">{p.name}</span>
+                <span className="doc-title min-w-0 text-2xl text-paper transition-colors group-hover:text-ink sm:text-3xl">{p.name}</span>
               </span>
             </Link>
           ))}

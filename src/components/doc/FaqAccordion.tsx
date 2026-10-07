@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import type { FaqItem } from '@/data/faqs';
 import { getFaqPageJsonLd } from '@/lib/seo';
 
@@ -9,7 +9,6 @@ export function FaqAccordion({
   items,
   title = 'Kozmik Rehber & SSS',
   serif = 'merak edilenler',
-  kicker = 'Arama & Bilgi Merkezi',
   description = 'Sıkça sorulan sorular, gözlem ilkeleri ve temel kavramlar rehberi.',
   accentColor = 'var(--page-accent, var(--gold))',
   includeSchema = true,
@@ -17,6 +16,7 @@ export function FaqAccordion({
   items: FaqItem[];
   title?: string;
   serif?: string;
+  /** Eski yan künye ("Arama & Bilgi Merkezi"); artık gösterilmiyor */
   kicker?: string;
   description?: string;
   accentColor?: string;
@@ -33,7 +33,7 @@ export function FaqAccordion({
   return (
     <section
       aria-label={title}
-      className="border-t border-white/10 bg-ink-2/60 px-[var(--gutter)] py-20 sm:py-28 backdrop-blur-sm"
+      className="border-t border-white/10 bg-ink-2/60 px-[var(--gutter)] py-14 sm:py-20"
     >
       {schemaJson && (
         <script
@@ -43,28 +43,16 @@ export function FaqAccordion({
       )}
 
       <div className="mx-auto max-w-4xl">
-        {/* Section Heading */}
-        <div className="mb-12 border-b border-white/10 pb-8">
-          <div className="flex items-center gap-2">
-            <span
-              className="grid h-6 w-6 place-items-center rounded-full border border-white/20 bg-white/5"
-              style={{ color: accentColor }}
-            >
-              <HelpCircle size={13} />
-            </span>
-            <span className="doc-kicker text-xs uppercase tracking-widest text-paper/60">
-              {kicker}
-            </span>
-          </div>
-
-          <h2 className="doc-title mt-3 text-3xl sm:text-4xl text-paper">
+        {/* Section Heading: yan künye ve simge yok, yalnızca başlık ve kısa açıklama */}
+        <div className="mb-8">
+          <h2 className="doc-title text-2xl text-paper sm:text-3xl">
             {title}{' '}
             <span className="doc-serif italic text-paper/70 font-normal">
               {serif}
             </span>
           </h2>
 
-          <p className="mt-3 text-sm sm:text-base leading-relaxed text-paper/70 max-w-2xl">
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
             {description}
           </p>
         </div>
@@ -83,7 +71,7 @@ export function FaqAccordion({
                 >
                   <span className="flex items-start gap-3 sm:gap-4 pr-2">
                     <span
-                      className="font-mono text-xs sm:text-sm font-bold shrink-0 mt-0.5"
+                      className="mt-0.5 shrink-0 font-mono text-sm tabular-nums sm:mt-1"
                       style={{ color: isOpen ? accentColor : 'rgba(255, 255, 255, 0.62)' }}
                     >
                       {String(idx + 1).padStart(2, '0')}.
@@ -108,8 +96,8 @@ export function FaqAccordion({
                 </button>
 
                 {/* Kapalı cevaplar da HTML'de kalır (arama motorları için); yalnızca gizlenir */}
-                <div hidden={!isOpen} className="pb-6 pl-7 sm:pl-10 pr-4 animate-in fade-in-50 duration-200">
-                  <p className="text-sm sm:text-base leading-relaxed text-paper/75">
+                <div hidden={!isOpen} className="pb-6 pl-9 sm:pl-10 pr-4 animate-in fade-in-50 duration-200">
+                  <p className="text-base leading-relaxed text-paper/85">
                     {item.answer}
                   </p>
                 </div>
