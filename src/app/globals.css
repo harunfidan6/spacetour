@@ -694,3 +694,38 @@ html[data-film] .doc-img { opacity: 1 !important; transition: none; }
   [data-print-poster] [data-print-grid] { grid-template-columns: 5fr 7fr !important; gap: 24px !important; }
   html:has([data-print-poster]), body:has([data-print-poster]) { height: auto !important; min-height: 0 !important; background: #0a0a0f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* --------------------------------------------------------------------------
+   İç sayfalar: sakin okuma düzeni
+   Ana sayfa ([data-home]) ile üst ve alt bilgi (main dışında) etkilenmez. Sayfanın tek büyük
+   harfli başlığı h1'dir; ara başlıklar ve kart başlıkları normal yazımla, daha dar ve sakin.
+   Etiketler okunur boyutta ve az aralıklı; açıklama metinleri daha parlak.
+   -------------------------------------------------------------------------- */
+main:not(:has(> [data-home])) .doc-title:not(h1, h1 *) {
+  font-weight: 700;
+  font-stretch: 100%;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
+main:not(:has(> [data-home])) :is(h2, h3, h4).display {
+  font-stretch: 100%;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+main:not(:has(> [data-home])) .doc-kicker {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+main:not(:has(> [data-home])) .doc-caption {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgb(244 243 238 / 0.62);
+}
+main:not(:has(> [data-home])) .label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+/* Köşe nişangâh işaretleri iç sayfalarda süs kalabalığı yaratıyor */
+main:not(:has(> [data-home])) .ticks > .tick { display: none; }
