@@ -2,20 +2,27 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Heart } from 'lucide-react';
+import { ArrowRight, Heart } from 'lucide-react';
 import { ZODIAC_SIGNS } from '@/data/zodiac';
 import { signCompatibility } from '@/lib/astrology/compatibility';
-import { Ticks } from '@/components/motion/primitives';
 import { ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 
 const RING = 2 * Math.PI * 88;
 
-const ELEMENT_COLORS: Record<string, { text: string; bg: string; border: string; glow: string }> = {
-  Ateş: { text: 'text-gold', bg: 'bg-gold/10', border: 'border-gold/40', glow: 'shadow-[0_0_25px_rgba(245,197,66,0.2)]' },
-  Toprak: { text: 'text-lime', bg: 'bg-lime/10', border: 'border-lime/40', glow: 'shadow-[0_0_25px_rgba(132,204,22,0.2)]' },
-  Hava: { text: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/40', glow: 'shadow-[0_0_25px_rgba(0,212,255,0.2)]' },
-  Su: { text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/40', glow: 'shadow-[0_0_25px_rgba(96,165,250,0.2)]' },
+const ELEMENT_COLORS: Record<string, { text: string; bg: string; border: string }> = {
+  Ateş: { text: 'text-gold', bg: 'bg-gold/10', border: 'border-gold/40' },
+  Toprak: { text: 'text-lime', bg: 'bg-lime/10', border: 'border-lime/40' },
+  Hava: { text: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/40' },
+  Su: { text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/40' },
 };
+
+// Ortak görünüm sınıfları
+const SECTION_LABEL = 'text-sm text-paper/70';
+const SIGN_SELECT =
+  'font-display w-full cursor-pointer appearance-none truncate border-b-2 border-line bg-transparent py-2 pl-4 pr-8 text-center text-2xl font-semibold text-paper transition-colors focus:border-gold focus:outline-none';
+const QUICK_BUTTON = 'grid h-9 place-items-center rounded transition-colors cursor-pointer';
+const QUICK_ACTIVE = 'bg-gold text-ink';
+const QUICK_IDLE = 'text-paper/75 hover:bg-ink hover:text-gold';
 
 export function ZodiacCompatibility() {
   const [signA, setSignA] = useState('koc');
@@ -39,44 +46,36 @@ export function ZodiacCompatibility() {
 
 
   return (
-    <div className="ticks relative border border-line bg-ink-2 p-6 sm:p-10 space-y-10">
-      <Ticks />
-
+    <div className="border border-line bg-ink-2 p-4 sm:p-8 space-y-10">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-6">
-        <div>
-          <div className="label flex items-center gap-2 text-gold">
-            <Sparkles size={14} className="animate-pulse" />
-            <span>ZODYAK AŞK & ARKETİP KİMYASI</span>
-          </div>
-          <h2 className="display display-tight mt-2 text-2xl sm:text-3xl font-black text-paper">
-            Burç Uyumu <span className="serif-i text-gold">& Elementel Rezonans</span>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-line pb-6">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Burç uyumu ve element dengesi
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-paper/70 font-sans max-w-xl">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-paper/80 sm:text-base">
             İki Güneş burcunun ekliptik üzerindeki açısal ilişkisini, simyasal element dengesini ve arketipsel sinerjisini keşfedin.
           </p>
         </div>
 
         <Link
           href="/astroloji/sinastri"
-          className="group inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider border border-rose-signal text-rose-signal hover:bg-rose-signal hover:text-ink transition-colors shrink-0"
+          className="group inline-flex min-h-10 items-center gap-2 self-start sm:self-auto px-4 py-2 text-sm font-medium border border-rose-signal text-rose-signal hover:bg-rose-signal hover:text-ink transition-colors shrink-0"
         >
-          <Heart size={14} className="text-rose-signal group-hover:text-ink" />
-          <span>Derin Sinastri Analizine Geç</span>
-          <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          <Heart size={16} className="text-rose-signal group-hover:text-ink" />
+          <span>Sinastri analizine geç</span>
+          <ArrowRight size={16} />
         </Link>
       </div>
 
       {/* Main Interactive Stage: Side A - Score Dial - Side B */}
-      <div className="grid items-center gap-8 lg:grid-cols-12">
-        {/* Left Side: Sign A Pedestal & Quick Selector */}
+      <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-8">
+        {/* Left Side: Sign A & Quick Selector */}
         <div className="flex flex-col items-center text-center lg:col-span-4 space-y-4">
-          <div className="label text-muted text-[11px] uppercase tracking-wider">1. GÜNEŞ BURCU</div>
+          <div className={SECTION_LABEL}>1. Güneş burcu</div>
 
-          {/* Pedestal */}
-          <div className={`relative flex h-32 w-32 items-center justify-center rounded-2xl border ${styleA.border} ${styleA.bg} ${styleA.glow} transition-all duration-500`}>
-            <div className="absolute inset-1 rounded-xl border border-dashed border-white/10 pointer-events-none" />
-            <ZodiacGlyph sign={a.id} size={72} className={styleA.text} />
+          <div className={`flex h-28 w-28 items-center justify-center rounded-2xl border ${styleA.border} ${styleA.bg} transition-colors duration-500`}>
+            <ZodiacGlyph sign={a.id} size={64} className={styleA.text} />
           </div>
 
           {/* Sign Title & Selector */}
@@ -86,7 +85,7 @@ export function ZodiacCompatibility() {
                 aria-label="1. burcu seçin"
                 value={signA}
                 onChange={(e) => setSignA(e.target.value)}
-                className="display display-tight w-full cursor-pointer appearance-none truncate border-b-2 border-line bg-transparent py-2 pl-4 pr-8 text-center text-2xl font-bold text-paper transition-colors focus:border-gold focus:outline-none"
+                className={SIGN_SELECT}
               >
                 {ZODIAC_SIGNS.map((s) => (
                   <option key={s.id} value={s.id} className="bg-ink font-sans text-sm font-normal">
@@ -96,15 +95,15 @@ export function ZodiacCompatibility() {
               </select>
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gold/70">▼</span>
             </div>
-            <div className="label mt-2 text-muted text-[11px]">
-              {a.latinName} · <strong className={styleA.text}>{a.element}</strong> · {a.modality}
+            <div className="mt-2 text-sm text-paper/70">
+              {a.latinName} · <strong className={`font-medium ${styleA.text}`}>{a.element}</strong> · {a.modality}
             </div>
           </div>
 
           {/* Quick Glyph Strip for Sign A */}
-          <div className="w-full max-w-xs pt-2">
-            <span className="doc-caption text-[11px] text-muted block mb-1.5">HIZLI SEÇ:</span>
-            <div className="grid grid-cols-6 gap-1 border border-line bg-ink p-1.5">
+          <div className="w-full max-w-xs pt-1">
+            <span className="mb-1.5 block text-xs text-paper/70">Hızlı seçim</span>
+            <div className="grid grid-cols-6 gap-1">
               {ZODIAC_SIGNS.map((s) => {
                 const isSelected = s.id === signA;
                 return (
@@ -113,13 +112,9 @@ export function ZodiacCompatibility() {
                     onClick={() => setSignA(s.id)}
                     aria-label={`1. burç: ${s.name}`}
                     title={s.name}
-                    className={`h-7 grid place-items-center rounded transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-gold text-ink font-bold shadow-xs'
-                        : 'text-paper/75 hover:text-gold hover:bg-ink-2'
-                    }`}
+                    className={`${QUICK_BUTTON} ${isSelected ? QUICK_ACTIVE : QUICK_IDLE}`}
                   >
-                    <ZodiacGlyph sign={s.id} size={15} />
+                    <ZodiacGlyph sign={s.id} size={16} />
                   </button>
                 );
               })}
@@ -127,12 +122,9 @@ export function ZodiacCompatibility() {
           </div>
         </div>
 
-        {/* Center: Dynamic Animated Astrolabe Score Ring */}
-        <div className="relative mx-auto flex flex-col items-center justify-center lg:col-span-4">
-          <div className="relative grid aspect-square w-full max-w-[240px] place-items-center">
-            {/* Background pulsating radial aura */}
-            <div className="absolute inset-0 rounded-full bg-gold/5 blur-2xl pointer-events-none" />
-
+        {/* Center: Score Ring */}
+        <div className="mx-auto flex w-full flex-col items-center lg:col-span-4">
+          <div className="relative grid aspect-square w-full max-w-[220px] place-items-center">
             <svg viewBox="-100 -100 200 200" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
               {/* Outer tick track */}
               <circle r="92" fill="none" stroke="var(--line)" strokeWidth="1" strokeDasharray="2 3" />
@@ -153,55 +145,53 @@ export function ZodiacCompatibility() {
               <circle r="75" fill="none" stroke="rgba(245, 197, 66, 0.15)" strokeWidth="1" />
             </svg>
 
-            <div className="text-center z-10" aria-live="polite">
-              <div className="label text-muted text-[11px] tracking-wide uppercase">UYUM</div>
-              <div className="display display-tight mt-1 text-5xl font-black text-paper font-mono">
+            <div className="relative text-center" aria-live="polite">
+              <div className="text-sm text-paper/70">Uyum</div>
+              <div className="mt-1 font-mono text-5xl font-semibold leading-none text-paper tabular-nums">
                 %{score}
               </div>
               <span className="sr-only">{result.verdict}</span>
             </div>
           </div>
+          <div aria-hidden className="mt-4 border border-gold/30 bg-gold/10 px-3 py-1 text-center text-sm font-medium text-gold">
+            {result.verdict}
+          </div>
           <Link
             href={`/astroloji/burc-uyumu/${ZODIAC_SIGNS.indexOf(a) <= ZODIAC_SIGNS.indexOf(b) ? `${a.id}-${b.id}` : `${b.id}-${a.id}`}`}
-            className="mt-2 font-mono text-[11px] text-gold hover:underline"
+            className="mt-2 inline-flex min-h-9 items-center text-center text-sm text-gold hover:underline"
           >
             {a.id === b.id ? `İki ${a.name}` : `${a.name} ve ${b.name}`} uyumunun tam yorumu →
           </Link>
-          <div aria-hidden className="mt-3 inline-block px-3 py-1 font-mono text-xs uppercase tracking-wider font-bold bg-gold/15 text-gold border border-gold/30">
-            {result.verdict}
-          </div>
 
           {/* Puanın hesabı: açının taban puanı + geleneksel eşleşme */}
-          <div className="w-full max-w-xs mt-5 bg-ink p-3.5 border border-line font-mono text-[11px] text-muted">
-            <div className="doc-caption text-[11px] text-muted mb-2">PUAN NASIL HESAPLANDI</div>
+          <div className="mt-4 w-full max-w-xs border border-line bg-ink p-4 text-sm text-paper/80">
+            <div className="mb-2 text-xs text-paper/70">Puan nasıl hesaplandı</div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-paper/85">{result.relation}</div>
-                <div className="text-[11px] text-muted">
+                <div className="text-xs text-paper/70">
                   {result.separation === 0 ? 'Aynı burç · 0°' : `${result.separation} burç arası · ${result.separation * 30}°`}
                 </div>
               </div>
-              <span className="shrink-0 font-bold text-paper">{result.base}</span>
+              <span className="shrink-0 font-mono font-semibold text-paper">{result.base}</span>
             </div>
             <div className="mt-2 flex items-center justify-between gap-3">
               <span className="min-w-0">Gelenekte öne çıkan eşleşme</span>
-              <span className={`shrink-0 font-bold ${result.traditional ? 'text-gold' : 'text-muted'}`}>{result.traditional ? '+3' : '—'}</span>
+              <span className={`shrink-0 font-mono font-semibold ${result.traditional ? 'text-gold' : 'text-paper/60'}`}>{result.traditional ? '+3' : '—'}</span>
             </div>
             <div className="mt-2 flex items-center justify-between gap-3 border-t border-line pt-2">
               <span className="text-paper/85">Toplam</span>
-              <span className="shrink-0 font-bold text-gold">%{score}</span>
+              <span className="shrink-0 font-mono font-semibold text-gold">%{score}</span>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Sign B Pedestal & Quick Selector */}
+        {/* Right Side: Sign B & Quick Selector */}
         <div className="flex flex-col items-center text-center lg:col-span-4 space-y-4">
-          <div className="label text-muted text-[11px] uppercase tracking-wider">2. GÜNEŞ BURCU</div>
+          <div className={SECTION_LABEL}>2. Güneş burcu</div>
 
-          {/* Pedestal */}
-          <div className={`relative flex h-32 w-32 items-center justify-center rounded-2xl border ${styleB.border} ${styleB.bg} ${styleB.glow} transition-all duration-500`}>
-            <div className="absolute inset-1 rounded-xl border border-dashed border-white/10 pointer-events-none" />
-            <ZodiacGlyph sign={b.id} size={72} className={styleB.text} />
+          <div className={`flex h-28 w-28 items-center justify-center rounded-2xl border ${styleB.border} ${styleB.bg} transition-colors duration-500`}>
+            <ZodiacGlyph sign={b.id} size={64} className={styleB.text} />
           </div>
 
           {/* Sign Title & Selector */}
@@ -211,7 +201,7 @@ export function ZodiacCompatibility() {
                 aria-label="2. burcu seçin"
                 value={signB}
                 onChange={(e) => setSignB(e.target.value)}
-                className="display display-tight w-full cursor-pointer appearance-none truncate border-b-2 border-line bg-transparent py-2 pl-4 pr-8 text-center text-2xl font-bold text-paper transition-colors focus:border-gold focus:outline-none"
+                className={SIGN_SELECT}
               >
                 {ZODIAC_SIGNS.map((s) => (
                   <option key={s.id} value={s.id} className="bg-ink font-sans text-sm font-normal">
@@ -221,15 +211,15 @@ export function ZodiacCompatibility() {
               </select>
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gold/70">▼</span>
             </div>
-            <div className="label mt-2 text-muted text-[11px]">
-              {b.latinName} · <strong className={styleB.text}>{b.element}</strong> · {b.modality}
+            <div className="mt-2 text-sm text-paper/70">
+              {b.latinName} · <strong className={`font-medium ${styleB.text}`}>{b.element}</strong> · {b.modality}
             </div>
           </div>
 
           {/* Quick Glyph Strip for Sign B */}
-          <div className="w-full max-w-xs pt-2">
-            <span className="doc-caption text-[11px] text-muted block mb-1.5">HIZLI SEÇ:</span>
-            <div className="grid grid-cols-6 gap-1 border border-line bg-ink p-1.5">
+          <div className="w-full max-w-xs pt-1">
+            <span className="mb-1.5 block text-xs text-paper/70">Hızlı seçim</span>
+            <div className="grid grid-cols-6 gap-1">
               {ZODIAC_SIGNS.map((s) => {
                 const isSelected = s.id === signB;
                 return (
@@ -238,13 +228,9 @@ export function ZodiacCompatibility() {
                     onClick={() => setSignB(s.id)}
                     aria-label={`2. burç: ${s.name}`}
                     title={s.name}
-                    className={`h-7 grid place-items-center rounded transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-gold text-ink font-bold shadow-xs'
-                        : 'text-paper/75 hover:text-gold hover:bg-ink-2'
-                    }`}
+                    className={`${QUICK_BUTTON} ${isSelected ? QUICK_ACTIVE : QUICK_IDLE}`}
                   >
-                    <ZodiacGlyph sign={s.id} size={15} />
+                    <ZodiacGlyph sign={s.id} size={16} />
                   </button>
                 );
               })}
@@ -253,20 +239,22 @@ export function ZodiacCompatibility() {
         </div>
       </div>
 
-      {/* 3 Detailed Scientific Breakdown Cards */}
+      {/* Açı, element ve nitelik yorumları */}
       <div className="grid gap-px border border-line bg-line md:grid-cols-3" aria-live="polite">
         {[
-          { k: 'ZODYAK AÇISI & İLİŞKİ', title: result.relation, text: result.relationText, badge: 'Açı Geometrisi' },
-          { k: 'ELEMENTEL SİNERJİ', title: `${a.element} + ${b.element}`, text: result.elementText, badge: isSameElement ? 'Aynı Element' : isComplementary ? 'Tamamlayıcı' : 'Dinamik' },
-          { k: 'NİTELİK ETKİLEŞİMİ', title: `${a.modality} · ${b.modality}`, text: result.modalityText, badge: 'Eylem Biçimi' },
+          { k: 'Açı ve ilişki', title: result.relation, text: result.relationText, badge: null },
+          { k: 'Element uyumu', title: `${a.element} + ${b.element}`, text: result.elementText, badge: isSameElement ? 'Aynı element' : isComplementary ? 'Tamamlayıcı' : 'Dinamik' },
+          { k: 'Nitelik etkileşimi', title: `${a.modality} · ${b.modality}`, text: result.modalityText, badge: null },
         ].map((r) => (
           <div key={r.k} className="bg-ink p-5 sm:p-6 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="doc-caption text-gold">{r.k}</span>
-              <span className="text-[11px] px-1.5 py-0.5 border border-line bg-ink-2 text-muted">{r.badge}</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm text-paper/70">{r.k}</span>
+              {r.badge && (
+                <span className="border border-line px-2 py-0.5 text-xs text-paper/75">{r.badge}</span>
+              )}
             </div>
-            <div className="doc-title text-base sm:text-lg text-paper font-bold">{r.title}</div>
-            <p className="text-xs sm:text-sm leading-relaxed text-paper/75 font-sans">{r.text}</p>
+            <div className="font-display text-lg font-semibold leading-snug text-paper">{r.title}</div>
+            <p className="text-base leading-relaxed text-paper/85">{r.text}</p>
           </div>
         ))}
       </div>
@@ -274,52 +262,58 @@ export function ZodiacCompatibility() {
       {/* Life areas: love, friendship, work */}
       <div className="grid gap-px border border-line bg-line md:grid-cols-3">
         {[
-          { k: 'AŞK', text: result.love, color: 'text-rose' },
-          { k: 'DOSTLUK', text: result.friendship, color: 'text-primary' },
-          { k: 'İŞ BİRLİĞİ', text: result.work, color: 'text-gold' },
+          { k: 'Aşk', text: result.love, color: 'text-rose' },
+          { k: 'Dostluk', text: result.friendship, color: 'text-primary' },
+          { k: 'İş birliği', text: result.work, color: 'text-gold' },
         ].map((r) => (
           <div key={r.k} className="bg-ink p-5 sm:p-6 space-y-2">
-            <span className={`doc-caption ${r.color}`}>{r.k}</span>
-            <p className="text-xs sm:text-sm leading-relaxed text-paper/80 font-sans">{r.text}</p>
+            <span className={`block text-sm font-medium ${r.color}`}>{r.k}</span>
+            <p className="text-base leading-relaxed text-paper/85">{r.text}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-3">
         <div>
-          <span className="doc-caption text-muted">GÜÇLÜ YANLAR</span>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <span className="text-sm text-paper/70">Güçlü yanlar</span>
+          <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-paper/85">
             {result.strengths.map((t) => (
-              <li key={t} className="border border-primary/40 bg-primary/5 px-2.5 py-1 text-xs text-primary">+ {t}</li>
+              <li key={t} className="flex gap-2">
+                <span className="shrink-0 text-primary">+</span>
+                <span className="min-w-0">{t}</span>
+              </li>
             ))}
           </ul>
         </div>
         <div>
-          <span className="doc-caption text-muted">DİKKAT</span>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <span className="text-sm text-paper/70">Dikkat</span>
+          <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-paper/85">
             {result.watch.map((t) => (
-              <li key={t} className="border border-rose/40 bg-rose/5 px-2.5 py-1 text-xs text-rose">− {t}</li>
+              <li key={t} className="flex gap-2">
+                <span className="shrink-0 text-rose">−</span>
+                <span className="min-w-0">{t}</span>
+              </li>
             ))}
           </ul>
         </div>
         <div>
-          <span className="doc-caption text-muted">TAVSİYE</span>
-          <p className="mt-3 text-sm leading-relaxed text-paper/80">{result.advice}</p>
+          <span className="text-sm text-paper/70">Tavsiye</span>
+          <p className="mt-2 text-base leading-relaxed text-paper/85">{result.advice}</p>
         </div>
       </div>
 
       {/* Deep Link Advisory Note */}
-      <div className="border border-line bg-ink p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
-        <p className="text-paper/75 font-sans">
+      <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <p className="text-sm leading-relaxed text-paper/80">
           {result.traditional ? '★ Geleneksel astroloji kaynaklarında bu ikili öne çıkan eşleşmeler arasındadır. ' : ''}
           Bu hesaplama yalnızca Güneş burçlarını kıyaslar. Gerçek bir ilişki dinamiği için Güneş, Ay, Yükselen ve Venüs-Mars konumlarını sinastri modülünde karşılaştırın.
         </p>
         <Link
           href="/astroloji/sinastri"
-          className="shrink-0 text-gold hover:underline flex items-center gap-1 font-bold whitespace-nowrap"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1 self-start whitespace-nowrap text-sm font-medium text-gold hover:underline sm:self-auto"
         >
-          <span>Sinastri Haritası Başlat</span>
-          <ArrowRight size={13} />
+          <span>Sinastri haritası başlat</span>
+          <ArrowRight size={14} />
         </Link>
       </div>
     </div>

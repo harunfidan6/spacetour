@@ -2,8 +2,6 @@
 
 import React, { useState, useMemo, useId } from 'react';
 import {
-  Heart,
-  Sparkles,
   Flame,
   Shield,
   Brain,
@@ -12,19 +10,15 @@ import {
   AlertTriangle,
   Lightbulb,
   ArrowRightLeft,
-  Calendar,
-  Clock,
   MapPin,
   Layers
 } from 'lucide-react';
-import { ZODIAC_SIGNS, daysInMonth } from '@/data/zodiac';
-import { Ticks } from '@/components/motion/primitives';
+import { daysInMonth } from '@/data/zodiac';
 import { NumericInput } from '@/components/ui/NumericInput';
 import {
   ZodiacGlyph,
   PlanetGlyph,
   AscendantGlyph,
-  AstrolabeGlyph,
   FireElementGlyph,
   EarthElementGlyph,
   AirElementGlyph,
@@ -37,6 +31,14 @@ import {
   type BirthProfile,
   type AspectCategory
 } from '@/lib/astrology/synastry';
+
+// Ortak görünüm sınıfları: form alanları ve sekmeler
+const FIELD_LABEL = 'mb-1 block text-xs text-paper/70';
+const FIELD_CONTROL =
+  'h-10 w-full min-w-0 border border-line bg-ink px-2.5 text-sm text-paper outline-none transition-colors';
+const TAB_BASE = 'inline-flex min-h-10 items-center gap-2 border px-3.5 py-2 text-sm transition-colors';
+const TAB_ACTIVE = 'border-rose-signal bg-rose-signal font-semibold text-ink';
+const TAB_IDLE = 'border-line bg-ink-2 text-paper/75 hover:bg-ink hover:text-paper';
 
 export function SynastryChartCalculator() {
   // Person 1 State
@@ -133,36 +135,23 @@ export function SynastryChartCalculator() {
   }, [analysis.aspects, aspectFilter]);
 
   return (
-    <div id="sinastri-analizi" className="ticks relative border border-line bg-ink p-4 sm:p-8 lg:p-10 space-y-8">
-      <Ticks />
-
+    <div id="sinastri-analizi" className="border border-line bg-ink p-4 sm:p-6 lg:p-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-rose-signal">
-            <Heart className="h-4 w-4 animate-pulse" />
-            <span>İKİLİ DOĞUM HARİTASI ÇAPRAZ EFEMERİS ANALİZİ</span>
-          </div>
-          <h2 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
-            Sinastri <span className="serif-i text-rose-signal">& Kozmik İlişki Uyumu</span>
-          </h2>
-          <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-paper/70 font-sans">
-            NASA JPL efemeris algoritmasıyla her iki partnerin Güneş, Ay, Yükselen, Venüs, Mars, Merkür, Jüpiter ve Satürn koordinatlarını hesaplayarak gerçek Ptolemaic çapraz açıları ve ruhsal rezonansı keşfedin.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 label text-rose-signal bg-ink-2 border border-line px-4 py-2 shrink-0">
-          <AstrolabeGlyph size={16} className="text-rose-signal" />
-          <span>Hassas Efemeris Motoru</span>
-        </div>
+      <div>
+        <h2 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Sinastri ve ilişki uyumu
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-paper/80 sm:text-base">
+          NASA JPL efemeris algoritmasıyla her iki partnerin Güneş, Ay, Yükselen, Venüs, Mars, Merkür, Jüpiter ve Satürn koordinatlarını hesaplayarak gerçek Ptolemaic çapraz açıları ve ruhsal rezonansı keşfedin.
+        </p>
       </div>
 
       {/* Dual Partner Input Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Partner 1 Inputs */}
-        <div className="border border-line bg-ink-2 p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <div className="flex min-w-0 flex-1 basis-32 items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-gold shrink-0" />
               <input
                 aria-label="Birinci partnerin adı"
@@ -170,148 +159,153 @@ export function SynastryChartCalculator() {
                 value={p1Name}
                 onChange={(e) => setP1Name(e.target.value)}
                 placeholder="1. Partner"
-                className="min-w-0 w-full bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-gold"
+                className="h-10 min-w-0 w-full bg-transparent text-base font-semibold text-paper outline-none border-b border-dashed border-line focus:border-gold"
               />
             </div>
-            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap label text-gold font-bold">
+            <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium text-gold">
               <ZodiacGlyph sign={p1Chart.sun.signId} size={16} className="text-gold" />
-              <span>{p1Chart.sun.signName} Burcu</span>
+              <span>{p1Chart.sun.signName} burcu</span>
             </div>
           </div>
 
-          {/* Date & Time Inputs */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-line bg-line text-xs font-mono">
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
-              <NumericInput
-                id={`${fid}-p1-day`}
-                min={1}
-                max={p1MaxDay}
-                value={p1Day}
-                onValueChange={setP1Day}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
+          {/* Date, Time & City Inputs */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_5.5rem] gap-2">
+              <div>
+                <label htmlFor={`${fid}-p1-day`} className={FIELD_LABEL}>Gün</label>
+                <NumericInput
+                  id={`${fid}-p1-day`}
+                  min={1}
+                  max={p1MaxDay}
+                  value={p1Day}
+                  onValueChange={setP1Day}
+                  className={`${FIELD_CONTROL} font-mono focus:border-gold`}
+                />
+              </div>
+
+              <div>
+                <label htmlFor={`${fid}-p1-month`} className={FIELD_LABEL}>Ay</label>
+                <select
+                  id={`${fid}-p1-month`}
+                  value={p1Month}
+                  onChange={(e) => changeP1Month(parseInt(e.target.value, 10))}
+                  className={`${FIELD_CONTROL} cursor-pointer focus:border-gold`}
+                >
+                  {months.map((m, idx) => (
+                    <option key={m} value={idx + 1} className="bg-ink-2 text-paper">{m}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor={`${fid}-p1-year`} className={FIELD_LABEL}>Yıl</label>
+                <NumericInput
+                  id={`${fid}-p1-year`}
+                  min={1920}
+                  max={2030}
+                  value={p1Year}
+                  onValueChange={changeP1Year}
+                  className={`${FIELD_CONTROL} font-mono focus:border-gold`}
+                />
+              </div>
             </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
-              <select
-                id={`${fid}-p1-month`}
-                value={p1Month}
-                onChange={(e) => changeP1Month(parseInt(e.target.value, 10))}
-                className="w-full bg-transparent font-bold text-paper outline-none cursor-pointer"
-              >
-                {months.map((m, idx) => (
-                  <option key={m} value={idx + 1} className="bg-ink-2 text-paper">{m}</option>
-                ))}
-              </select>
-            </div>
+            <div className="grid grid-cols-[4.5rem_4.5rem_minmax(0,1fr)] gap-2">
+              <div>
+                <label htmlFor={`${fid}-p1-hour`} className={FIELD_LABEL}>Saat</label>
+                <NumericInput
+                  id={`${fid}-p1-hour`}
+                  min={0}
+                  max={23}
+                  value={p1Hour}
+                  onValueChange={setP1Hour}
+                  className={`${FIELD_CONTROL} font-mono focus:border-gold`}
+                />
+              </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
-              <NumericInput
-                id={`${fid}-p1-year`}
-                min={1920}
-                max={2030}
-                value={p1Year}
-                onValueChange={changeP1Year}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
-            </div>
+              <div>
+                <label htmlFor={`${fid}-p1-minute`} className={FIELD_LABEL}>Dakika</label>
+                <NumericInput
+                  id={`${fid}-p1-minute`}
+                  min={0}
+                  max={59}
+                  value={p1Minute}
+                  onValueChange={setP1Minute}
+                  className={`${FIELD_CONTROL} font-mono focus:border-gold`}
+                />
+              </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-hour`} className="label text-muted block mb-1 text-[11px]">SAAT</label>
-              <NumericInput
-                id={`${fid}-p1-hour`}
-                min={0}
-                max={23}
-                value={p1Hour}
-                onValueChange={setP1Hour}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
-            </div>
-
-            <div className="bg-ink p-2.5 col-span-2 sm:col-span-1">
-              <label htmlFor={`${fid}-p1-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
-              <NumericInput
-                id={`${fid}-p1-minute`}
-                min={0}
-                max={59}
-                value={p1Minute}
-                onValueChange={setP1Minute}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
+              <div className="min-w-0">
+                <label htmlFor={`${fid}-p1-city`} className={`${FIELD_LABEL} flex items-center gap-1`}>
+                  <MapPin size={12} className="text-gold shrink-0" />
+                  Şehir
+                </label>
+                <select
+                  id={`${fid}-p1-city`}
+                  value={p1City}
+                  onChange={(e) => setP1City(e.target.value)}
+                  className={`${FIELD_CONTROL} cursor-pointer focus:border-gold`}
+                >
+                  {POPULAR_LOCATIONS.map((loc) => (
+                    <option key={loc.city} value={loc.city} className="bg-ink-2 text-paper">{loc.city}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* City Selection */}
-          <div className="flex items-center gap-2 border border-line bg-ink p-2 text-xs font-mono">
-            <MapPin size={13} className="text-gold shrink-0" />
-            <label htmlFor={`${fid}-p1-city`} className="label text-muted shrink-0 text-[11px]">ŞEHİR:</label>
-            <select
-              id={`${fid}-p1-city`}
-              value={p1City}
-              onChange={(e) => setP1City(e.target.value)}
-              className="w-full bg-transparent font-mono text-paper outline-none cursor-pointer text-xs"
-            >
-              {POPULAR_LOCATIONS.map((loc) => (
-                <option key={loc.city} value={loc.city} className="bg-ink-2 text-paper">{loc.city}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Partner 1 Ephemeris Placements Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-line bg-line text-[11px] font-mono">
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="sun" size={11} className="text-gold" />
+          {/* Partner 1 Ephemeris Placements */}
+          <dl className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-3 border-t border-line pt-4">
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="sun" size={12} className="text-gold" />
                 Güneş
-              </span>
-              <span className="font-bold text-gold flex items-center gap-1">
-                <ZodiacGlyph sign={p1Chart.sun.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-gold">
+                <ZodiacGlyph sign={p1Chart.sun.signId} size={13} className="shrink-0" />
                 {p1Chart.sun.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="moon" size={11} className="text-violet" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="moon" size={12} className="text-violet" />
                 Ay
-              </span>
-              <span className="font-bold text-violet flex items-center gap-1">
-                <ZodiacGlyph sign={p1Chart.moon.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-violet">
+                <ZodiacGlyph sign={p1Chart.moon.signId} size={13} className="shrink-0" />
                 {p1Chart.moon.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <AscendantGlyph size={11} className="text-paper" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <AscendantGlyph size={12} className="text-paper" />
                 Yükselen
-              </span>
-              <span className="font-bold text-paper flex items-center gap-1">
-                <ZodiacGlyph sign={p1Chart.ascendant.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-paper">
+                <ZodiacGlyph sign={p1Chart.ascendant.signId} size={13} className="shrink-0" />
                 {p1Chart.ascendant.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="venus" size={11} className="text-rose-signal" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="venus" size={12} className="text-rose-signal" />
                 Venüs
-              </span>
-              <span className="font-bold text-rose-signal flex items-center gap-1">
-                <ZodiacGlyph sign={p1Chart.venus.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-rose-signal">
+                <ZodiacGlyph sign={p1Chart.venus.signId} size={13} className="shrink-0" />
                 {p1Chart.venus.formatted}
-              </span>
+              </dd>
             </div>
-          </div>
+          </dl>
         </div>
 
         {/* Partner 2 Inputs */}
-        <div className="border border-line bg-ink-2 p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <div className="flex min-w-0 flex-1 basis-32 items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-rose-signal shrink-0" />
               <input
                 aria-label="İkinci partnerin adı"
@@ -319,330 +313,320 @@ export function SynastryChartCalculator() {
                 value={p2Name}
                 onChange={(e) => setP2Name(e.target.value)}
                 placeholder="2. Partner"
-                className="min-w-0 w-full bg-transparent font-bold text-paper text-base outline-none border-b border-dashed border-line focus:border-rose-signal"
+                className="h-10 min-w-0 w-full bg-transparent text-base font-semibold text-paper outline-none border-b border-dashed border-line focus:border-rose-signal"
               />
             </div>
-            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap label text-rose-signal font-bold">
+            <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-medium text-rose-signal">
               <ZodiacGlyph sign={p2Chart.sun.signId} size={16} className="text-rose-signal" />
-              <span>{p2Chart.sun.signName} Burcu</span>
+              <span>{p2Chart.sun.signName} burcu</span>
             </div>
           </div>
 
-          {/* Date & Time Inputs */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-line bg-line text-xs font-mono">
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
-              <NumericInput
-                id={`${fid}-p2-day`}
-                min={1}
-                max={p2MaxDay}
-                value={p2Day}
-                onValueChange={setP2Day}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
+          {/* Date, Time & City Inputs */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_5.5rem] gap-2">
+              <div>
+                <label htmlFor={`${fid}-p2-day`} className={FIELD_LABEL}>Gün</label>
+                <NumericInput
+                  id={`${fid}-p2-day`}
+                  min={1}
+                  max={p2MaxDay}
+                  value={p2Day}
+                  onValueChange={setP2Day}
+                  className={`${FIELD_CONTROL} font-mono focus:border-rose-signal`}
+                />
+              </div>
+
+              <div>
+                <label htmlFor={`${fid}-p2-month`} className={FIELD_LABEL}>Ay</label>
+                <select
+                  id={`${fid}-p2-month`}
+                  value={p2Month}
+                  onChange={(e) => changeP2Month(parseInt(e.target.value, 10))}
+                  className={`${FIELD_CONTROL} cursor-pointer focus:border-rose-signal`}
+                >
+                  {months.map((m, idx) => (
+                    <option key={m} value={idx + 1} className="bg-ink-2 text-paper">{m}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor={`${fid}-p2-year`} className={FIELD_LABEL}>Yıl</label>
+                <NumericInput
+                  id={`${fid}-p2-year`}
+                  min={1920}
+                  max={2030}
+                  value={p2Year}
+                  onValueChange={changeP2Year}
+                  className={`${FIELD_CONTROL} font-mono focus:border-rose-signal`}
+                />
+              </div>
             </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
-              <select
-                id={`${fid}-p2-month`}
-                value={p2Month}
-                onChange={(e) => changeP2Month(parseInt(e.target.value, 10))}
-                className="w-full bg-transparent font-bold text-paper outline-none cursor-pointer"
-              >
-                {months.map((m, idx) => (
-                  <option key={m} value={idx + 1} className="bg-ink-2 text-paper">{m}</option>
-                ))}
-              </select>
-            </div>
+            <div className="grid grid-cols-[4.5rem_4.5rem_minmax(0,1fr)] gap-2">
+              <div>
+                <label htmlFor={`${fid}-p2-hour`} className={FIELD_LABEL}>Saat</label>
+                <NumericInput
+                  id={`${fid}-p2-hour`}
+                  min={0}
+                  max={23}
+                  value={p2Hour}
+                  onValueChange={setP2Hour}
+                  className={`${FIELD_CONTROL} font-mono focus:border-rose-signal`}
+                />
+              </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
-              <NumericInput
-                id={`${fid}-p2-year`}
-                min={1920}
-                max={2030}
-                value={p2Year}
-                onValueChange={changeP2Year}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
-            </div>
+              <div>
+                <label htmlFor={`${fid}-p2-minute`} className={FIELD_LABEL}>Dakika</label>
+                <NumericInput
+                  id={`${fid}-p2-minute`}
+                  min={0}
+                  max={59}
+                  value={p2Minute}
+                  onValueChange={setP2Minute}
+                  className={`${FIELD_CONTROL} font-mono focus:border-rose-signal`}
+                />
+              </div>
 
-            <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-hour`} className="label text-muted block mb-1 text-[11px]">SAAT</label>
-              <NumericInput
-                id={`${fid}-p2-hour`}
-                min={0}
-                max={23}
-                value={p2Hour}
-                onValueChange={setP2Hour}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
-            </div>
-
-            <div className="bg-ink p-2.5 col-span-2 sm:col-span-1">
-              <label htmlFor={`${fid}-p2-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
-              <NumericInput
-                id={`${fid}-p2-minute`}
-                min={0}
-                max={59}
-                value={p2Minute}
-                onValueChange={setP2Minute}
-                className="w-full bg-transparent font-bold text-paper outline-none"
-              />
+              <div className="min-w-0">
+                <label htmlFor={`${fid}-p2-city`} className={`${FIELD_LABEL} flex items-center gap-1`}>
+                  <MapPin size={12} className="text-rose-signal shrink-0" />
+                  Şehir
+                </label>
+                <select
+                  id={`${fid}-p2-city`}
+                  value={p2City}
+                  onChange={(e) => setP2City(e.target.value)}
+                  className={`${FIELD_CONTROL} cursor-pointer focus:border-rose-signal`}
+                >
+                  {POPULAR_LOCATIONS.map((loc) => (
+                    <option key={loc.city} value={loc.city} className="bg-ink-2 text-paper">{loc.city}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* City Selection */}
-          <div className="flex items-center gap-2 border border-line bg-ink p-2 text-xs font-mono">
-            <MapPin size={13} className="text-rose-signal shrink-0" />
-            <label htmlFor={`${fid}-p2-city`} className="label text-muted shrink-0 text-[11px]">ŞEHİR:</label>
-            <select
-              id={`${fid}-p2-city`}
-              value={p2City}
-              onChange={(e) => setP2City(e.target.value)}
-              className="w-full bg-transparent font-mono text-paper outline-none cursor-pointer text-xs"
-            >
-              {POPULAR_LOCATIONS.map((loc) => (
-                <option key={loc.city} value={loc.city} className="bg-ink-2 text-paper">{loc.city}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Partner 2 Ephemeris Placements Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-line bg-line text-[11px] font-mono">
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="sun" size={11} className="text-rose-signal" />
+          {/* Partner 2 Ephemeris Placements */}
+          <dl className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-3 border-t border-line pt-4">
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="sun" size={12} className="text-rose-signal" />
                 Güneş
-              </span>
-              <span className="font-bold text-rose-signal flex items-center gap-1">
-                <ZodiacGlyph sign={p2Chart.sun.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-rose-signal">
+                <ZodiacGlyph sign={p2Chart.sun.signId} size={13} className="shrink-0" />
                 {p2Chart.sun.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="moon" size={11} className="text-violet" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="moon" size={12} className="text-violet" />
                 Ay
-              </span>
-              <span className="font-bold text-violet flex items-center gap-1">
-                <ZodiacGlyph sign={p2Chart.moon.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-violet">
+                <ZodiacGlyph sign={p2Chart.moon.signId} size={13} className="shrink-0" />
                 {p2Chart.moon.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <AscendantGlyph size={11} className="text-paper" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <AscendantGlyph size={12} className="text-paper" />
                 Yükselen
-              </span>
-              <span className="font-bold text-paper flex items-center gap-1">
-                <ZodiacGlyph sign={p2Chart.ascendant.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-paper">
+                <ZodiacGlyph sign={p2Chart.ascendant.signId} size={13} className="shrink-0" />
                 {p2Chart.ascendant.formatted}
-              </span>
+              </dd>
             </div>
 
-            <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[11px] text-muted flex items-center gap-1">
-                <PlanetGlyph planet="venus" size={11} className="text-pink-400" />
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs text-paper/70">
+                <PlanetGlyph planet="venus" size={12} className="text-pink-400" />
                 Venüs
-              </span>
-              <span className="font-bold text-pink-400 flex items-center gap-1">
-                <ZodiacGlyph sign={p2Chart.venus.signId} size={13} />
+              </dt>
+              <dd className="mt-1 flex items-center gap-1 font-mono text-[13px] font-medium text-pink-400">
+                <ZodiacGlyph sign={p2Chart.venus.signId} size={13} className="shrink-0" />
                 {p2Chart.venus.formatted}
-              </span>
+              </dd>
             </div>
-          </div>
+          </dl>
         </div>
       </div>
 
-      {/* Main Synastry Score & Cosmic Synthesis Hero */}
-      <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-line">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            <div className="relative h-24 w-24 sm:h-28 sm:w-28 bg-rose-signal/10 border-2 border-rose-signal flex flex-col items-center justify-center text-center shrink-0 shadow-[0_0_30px_rgba(255,75,130,0.15)]">
-              <span className="text-3xl sm:text-4xl font-black text-rose-signal font-mono">
+      {/* Synastry Score & Summary */}
+      <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <div className="flex min-w-0 flex-col sm:flex-row sm:items-start gap-3 sm:gap-6">
+            <div className="flex items-baseline gap-2 sm:block shrink-0">
+              <div className="font-mono text-4xl font-bold leading-none text-rose-signal sm:text-5xl">
                 %{analysis.overallScore}
-              </span>
-              <span className="label text-[11px] text-rose-signal uppercase tracking-wide mt-0.5">SİNASTRİ</span>
+              </div>
+              <div className="text-xs text-paper/70 sm:mt-2">Sinastri puanı</div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider bg-rose-signal/15 text-rose-signal border border-rose-signal/30">
-                <Sparkles size={11} />
-                {analysis.compatibilityLevel}
-              </div>
-              <h3 className="display display-tight text-2xl sm:text-3xl font-black text-paper">
+            <div className="min-w-0 space-y-1.5">
+              <p className="text-sm font-medium text-rose-signal">{analysis.compatibilityLevel}</p>
+              <h3 className="font-display text-xl font-semibold leading-tight text-paper break-words sm:text-2xl">
                 {p1Profile.name} & {p2Profile.name}
               </h3>
-              <p className="text-xs sm:text-sm text-paper/80 max-w-2xl leading-relaxed font-sans">
+              <p className="max-w-2xl text-base leading-relaxed text-paper/85">
                 {analysis.summaryText}
               </p>
             </div>
           </div>
 
-          {/* Quick Core Placements Match Tag */}
-          <div className="w-full md:w-auto shrink-0 font-mono text-xs text-muted bg-ink p-4 border border-line space-y-1.5">
-            <div className="flex items-center justify-between gap-4">
-              <span>Güneş Uyumu:</span>
-              <strong className="text-paper">{p1Chart.sun.signName} + {p2Chart.sun.signName}</strong>
+          {/* Quick Core Placements */}
+          <dl className="w-full md:w-64 shrink-0 space-y-2 text-sm">
+            <div className="flex items-baseline justify-between gap-4">
+              <dt className="text-paper/70">Güneş uyumu</dt>
+              <dd className="text-right font-medium text-paper">{p1Chart.sun.signName} + {p2Chart.sun.signName}</dd>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Ay Ahengi:</span>
-              <strong className="text-violet">{p1Chart.moon.signName} + {p2Chart.moon.signName}</strong>
+            <div className="flex items-baseline justify-between gap-4">
+              <dt className="text-paper/70">Ay ahengi</dt>
+              <dd className="text-right font-medium text-violet">{p1Chart.moon.signName} + {p2Chart.moon.signName}</dd>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Venüs - Mars:</span>
-              <strong className="text-rose-signal">{p1Chart.venus.signName} / {p2Chart.mars.signName}</strong>
+            <div className="flex items-baseline justify-between gap-4">
+              <dt className="text-paper/70">Venüs – Mars</dt>
+              <dd className="text-right font-medium text-rose-signal">{p1Chart.venus.signName} / {p2Chart.mars.signName}</dd>
             </div>
-          </div>
+          </dl>
         </div>
 
         {/* 4 Dimension Rating Gauges */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6 border-t border-line pt-6">
           {/* Dimension 1: Soul */}
-          <div className="bg-ink p-4 border border-line space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="label text-violet flex items-center gap-1.5">
-                <PlanetGlyph planet="moon" size={13} className="text-violet" />
-                Ruhsal Güven
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-violet">
+                <PlanetGlyph planet="moon" size={14} className="text-violet" />
+                Ruhsal güven
               </span>
-              <span className="font-bold text-violet font-mono">%{analysis.dimensionScores.soul}</span>
+              <span className="font-mono text-sm font-semibold text-violet">%{analysis.dimensionScores.soul}</span>
             </div>
-            <div className="h-1.5 w-full bg-ink-2 overflow-hidden border border-line">
+            <div className="h-1.5 w-full bg-ink overflow-hidden">
               <div
                 className="h-full bg-violet transition-all duration-500"
                 style={{ width: `${analysis.dimensionScores.soul}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/75 font-sans leading-tight">
+            <p className="text-sm leading-relaxed text-paper/80">
               Ay ve Güneş etkileşimi: İçsel sığınak, derin empati ve savunmasız kalabilme rahatlığı.
             </p>
           </div>
 
           {/* Dimension 2: Passion */}
-          <div className="bg-ink p-4 border border-line space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="label text-rose-signal flex items-center gap-1.5">
-                <Flame size={13} className="text-rose-signal" />
-                Romantik & Tutku
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-rose-signal">
+                <Flame size={14} className="text-rose-signal" />
+                Romantizm ve tutku
               </span>
-              <span className="font-bold text-rose-signal font-mono">%{analysis.dimensionScores.passion}</span>
+              <span className="font-mono text-sm font-semibold text-rose-signal">%{analysis.dimensionScores.passion}</span>
             </div>
-            <div className="h-1.5 w-full bg-ink-2 overflow-hidden border border-line">
+            <div className="h-1.5 w-full bg-ink overflow-hidden">
               <div
                 className="h-full bg-rose-signal transition-all duration-500"
                 style={{ width: `${analysis.dimensionScores.passion}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/75 font-sans leading-tight">
+            <p className="text-sm leading-relaxed text-paper/80">
               Venüs ve Mars kimyası: Fiziksel arzu, flört kıvılcımı ve tensel çekim frekansı.
             </p>
           </div>
 
           {/* Dimension 3: Mind */}
-          <div className="bg-ink p-4 border border-line space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="label text-primary flex items-center gap-1.5">
-                <Brain size={13} className="text-primary" />
-                Zihinsel Uyum
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <Brain size={14} className="text-primary" />
+                Zihinsel uyum
               </span>
-              <span className="font-bold text-primary font-mono">%{analysis.dimensionScores.mind}</span>
+              <span className="font-mono text-sm font-semibold text-primary">%{analysis.dimensionScores.mind}</span>
             </div>
-            <div className="h-1.5 w-full bg-ink-2 overflow-hidden border border-line">
+            <div className="h-1.5 w-full bg-ink overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-500"
                 style={{ width: `${analysis.dimensionScores.mind}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/75 font-sans leading-tight">
+            <p className="text-sm leading-relaxed text-paper/80">
               Merkür ekseni: Saatlerce sohbet edebilme, ortak espri anlayışı ve kriz çözme.
             </p>
           </div>
 
           {/* Dimension 4: Karma & Longevity */}
-          <div className="bg-ink p-4 border border-line space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="label text-gold flex items-center gap-1.5">
-                <Shield size={13} className="text-gold" />
-                Karmik Sadakat
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-gold">
+                <Shield size={14} className="text-gold" />
+                Karmik sadakat
               </span>
-              <span className="font-bold text-gold font-mono">%{analysis.dimensionScores.karma}</span>
+              <span className="font-mono text-sm font-semibold text-gold">%{analysis.dimensionScores.karma}</span>
             </div>
-            <div className="h-1.5 w-full bg-ink-2 overflow-hidden border border-line">
+            <div className="h-1.5 w-full bg-ink overflow-hidden">
               <div
                 className="h-full bg-gold transition-all duration-500"
                 style={{ width: `${analysis.dimensionScores.karma}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/75 font-sans leading-tight">
+            <p className="text-sm leading-relaxed text-paper/80">
               Satürn ve Jüpiter bağları: Sorumluluk, sadakat, birlikte büyüme ve gelecek ortaklığı.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Chamber Nav Tabs */}
+      {/* View Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-line pb-3">
         <button
           onClick={() => setActiveTab('aspects')}
-          className={`px-4 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all ${
-            activeTab === 'aspects'
-              ? 'bg-rose-signal text-ink font-bold shadow-sm'
-              : 'bg-ink-2 text-paper/70 hover:text-paper hover:bg-ink border border-line'
-          }`}
+          className={`${TAB_BASE} ${activeTab === 'aspects' ? TAB_ACTIVE : TAB_IDLE}`}
         >
-          <ArrowRightLeft size={13} />
-          <span>Çapraz Açı Matrisi ({analysis.aspects.length})</span>
+          <ArrowRightLeft size={14} />
+          <span>Çapraz açılar ({analysis.aspects.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('placements')}
-          className={`px-4 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all ${
-            activeTab === 'placements'
-              ? 'bg-rose-signal text-ink font-bold shadow-sm'
-              : 'bg-ink-2 text-paper/70 hover:text-paper hover:bg-ink border border-line'
-          }`}
+          className={`${TAB_BASE} ${activeTab === 'placements' ? TAB_ACTIVE : TAB_IDLE}`}
         >
-          <Layers size={13} />
-          <span>8 Faset Gezegen Karşılaştırması</span>
+          <Layers size={14} />
+          <span>Gezegen karşılaştırması</span>
         </button>
 
         <button
           onClick={() => setActiveTab('dynamics')}
-          className={`px-4 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all ${
-            activeTab === 'dynamics'
-              ? 'bg-rose-signal text-ink font-bold shadow-sm'
-              : 'bg-ink-2 text-paper/70 hover:text-paper hover:bg-ink border border-line'
-          }`}
+          className={`${TAB_BASE} ${activeTab === 'dynamics' ? TAB_ACTIVE : TAB_IDLE}`}
         >
-          <Compass size={13} />
-          <span>Kozmik İlişki Dinamikleri</span>
+          <Compass size={14} />
+          <span>İlişki dinamikleri</span>
         </button>
       </div>
 
-      {/* Tab 1: Çapraz Açı Matrisi */}
+      {/* Tab 1: Çapraz açılar */}
       {activeTab === 'aspects' && (
         <div className="space-y-6">
           {/* Category Filter Chips */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="label text-muted text-[11px] mr-1">FİLTRE:</span>
+            <span className="mr-1 text-sm text-paper/70">Filtre</span>
             {[
-              { id: 'all', label: 'Tüm Açılar' },
-              { id: 'soul', label: 'Ruh & Duygu (Güneş/Ay)' },
-              { id: 'passion', label: 'Tutku & Romantizm (Venüs/Mars)' },
-              { id: 'mind', label: 'Zihin & İletişim (Merkür)' },
-              { id: 'karma', label: 'Karmik Bağ (Satürn/Jüpiter)' },
+              { id: 'all', label: 'Tüm açılar' },
+              { id: 'soul', label: 'Ruh ve duygu (Güneş/Ay)' },
+              { id: 'passion', label: 'Tutku ve romantizm (Venüs/Mars)' },
+              { id: 'mind', label: 'Zihin ve iletişim (Merkür)' },
+              { id: 'karma', label: 'Karmik bağ (Satürn/Jüpiter)' },
             ].map((chip) => (
               <button
                 key={chip.id}
                 onClick={() => setAspectFilter(chip.id as 'all' | AspectCategory)}
-                className={`px-3 py-1 text-[11px] font-mono transition-colors ${
+                className={`min-h-9 border px-3 py-1.5 text-sm transition-colors ${
                   aspectFilter === chip.id
-                    ? 'bg-line text-rose-signal font-bold border border-rose-signal/40'
-                    : 'bg-ink text-paper/75 hover:text-paper border border-line'
+                    ? 'border-rose-signal/50 bg-line font-medium text-rose-signal'
+                    : 'border-line text-paper/75 hover:text-paper'
                 }`}
               >
                 {chip.label}
@@ -652,7 +636,7 @@ export function SynastryChartCalculator() {
 
           {/* Aspect Cards Grid */}
           {filteredAspects.length === 0 ? (
-            <div className="border border-line bg-ink-2 p-8 text-center text-muted font-mono text-xs">
+            <div className="border border-line bg-ink-2 p-6 text-center text-sm text-paper/70">
               Bu kategoride tespit edilen majör Ptolemaic açı bulunmamaktadır.
             </div>
           ) : (
@@ -660,35 +644,35 @@ export function SynastryChartCalculator() {
               {filteredAspects.map((asp) => (
                 <div
                   key={asp.id}
-                  className="border border-line bg-ink-2 p-5 space-y-3 relative group hover:border-rose-signal/40 transition-colors"
+                  className="border border-line bg-ink-2 p-4 sm:p-5 space-y-3 transition-colors hover:border-rose-signal/40"
                 >
-                  {/* Top Bar: Planets Involved & Aspect Badge */}
-                  <div className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
-                    <div className="flex items-center gap-2 font-mono text-xs text-paper font-bold min-w-0">
-                      <span className="flex items-center gap-1 shrink-0 text-gold">
+                  {/* Planets Involved & Aspect */}
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <span className="flex items-center gap-1 text-gold">
                         <PlanetGlyph planet={asp.p1Planet.id} size={14} />
-                        <span className="truncate">{asp.p1Planet.name}</span>
+                        {asp.p1Planet.name}
                       </span>
-                      <span className="text-muted shrink-0">⟷</span>
-                      <span className="flex items-center gap-1 shrink-0 text-rose-signal">
+                      <span className="text-paper/50">⟷</span>
+                      <span className="flex items-center gap-1 text-rose-signal">
                         <PlanetGlyph planet={asp.p2Planet.id} size={14} />
-                        <span className="truncate">{asp.p2Planet.name}</span>
+                        {asp.p2Planet.name}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-baseline gap-2 text-sm">
                       <span
-                        className={`px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider border ${
+                        className={`font-medium ${
                           asp.nature === 'harmonious'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                            ? 'text-emerald-400'
                             : asp.nature === 'challenging'
-                            ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                            : 'bg-primary/10 text-primary border-primary/30'
+                            ? 'text-rose-400'
+                            : 'text-primary'
                         }`}
                       >
                         {asp.aspectSymbol} {asp.aspectName} ({asp.angle}°)
                       </span>
-                      <span className="px-1.5 py-0.5 text-[11px] font-mono bg-ink text-muted border border-line">
+                      <span className="font-mono text-xs text-paper/70">
                         {asp.orb}° orb
                       </span>
                     </div>
@@ -696,18 +680,18 @@ export function SynastryChartCalculator() {
 
                   {/* Title & Summary */}
                   <div>
-                    <h4 className="display display-tight text-sm font-bold text-paper">
+                    <h4 className="font-display text-lg font-semibold leading-snug text-paper">
                       {asp.title}
                     </h4>
-                    <p className="text-xs text-paper/70 font-sans mt-1 leading-relaxed">
+                    <p className="mt-1 text-sm leading-relaxed text-paper/80">
                       {asp.summary}
                     </p>
                   </div>
 
                   {/* Detailed Astrological Interpretation */}
-                  <div className="p-3 bg-ink border border-line text-xs font-sans text-paper/85 leading-relaxed">
+                  <p className="border-t border-line pt-3 text-base leading-relaxed text-paper/85">
                     {asp.detailedInterpretation}
-                  </div>
+                  </p>
                 </div>
               ))}
             </div>
@@ -715,16 +699,16 @@ export function SynastryChartCalculator() {
         </div>
       )}
 
-      {/* Tab 2: 8 Faset Gezegen Karşılaştırması */}
+      {/* Tab 2: Gezegen karşılaştırması */}
       {activeTab === 'placements' && (
         <div className="border border-line bg-ink-2 overflow-x-auto">
-          <table className="w-full text-left font-mono text-xs border-collapse min-w-[620px]">
+          <table className="w-full min-w-[620px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-line bg-ink text-[11px] text-muted">
-                <th className="p-3.5">KOZMİK FASET</th>
-                <th className="p-3.5 text-gold">{p1Profile.name.toUpperCase()}</th>
-                <th className="p-3.5 text-center">ELEMENT ETKİSİ</th>
-                <th className="p-3.5 text-rose-signal">{p2Profile.name.toUpperCase()}</th>
+              <tr className="border-b border-line text-xs text-paper/70">
+                <th className="px-3 py-3 font-medium">Yerleşim</th>
+                <th className="px-3 py-3 font-medium text-gold">{p1Profile.name}</th>
+                <th className="px-3 py-3 text-center font-medium">Element etkisi</th>
+                <th className="px-3 py-3 font-medium text-rose-signal">{p2Profile.name}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -740,45 +724,43 @@ export function SynastryChartCalculator() {
 
                 return (
                   <tr key={p1Body.id} className="hover:bg-ink/50 transition-colors">
-                    <td className="p-3.5 font-bold text-paper">
-                      <div className="flex items-center gap-2">
-                        <PlanetGlyph planet={p1Body.id} size={15} className="text-muted" />
+                    <td className="px-3 py-3">
+                      <div className="flex items-start gap-2">
+                        <PlanetGlyph planet={p1Body.id} size={15} className="mt-0.5 shrink-0 text-paper/70" />
                         <div>
-                          <div>{p1Body.name}</div>
-                          <div className="text-[11px] text-muted font-sans font-normal">{p1Body.meaning}</div>
+                          <div className="font-medium text-paper">{p1Body.name}</div>
+                          <div className="text-[13px] leading-snug text-paper/70">{p1Body.meaning}</div>
                         </div>
                       </div>
                     </td>
 
-                    <td className="p-3.5">
-                      <div className="flex items-center gap-1.5 font-bold text-gold">
-                        <ZodiacGlyph sign={p1Body.signId} size={14} />
-                        <span>{p1Body.formatted}</span>
-                        <span className="text-[11px] text-muted font-normal">({p1Body.element})</span>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-1.5 text-gold">
+                        <ZodiacGlyph sign={p1Body.signId} size={14} className="shrink-0" />
+                        <span className="font-mono font-medium">{p1Body.formatted}</span>
+                        <span className="text-xs text-paper/70">({p1Body.element})</span>
                       </div>
                     </td>
 
-                    <td className="p-3.5 text-center">
+                    <td className="px-3 py-3 text-center">
                       <span
-                        className={`inline-block px-2 py-0.5 text-[11px] font-mono border ${
-                          isHarmonious
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                        className={`text-sm font-medium ${
+                          isHarmonious ? 'text-emerald-400' : 'text-amber-400'
                         }`}
                       >
                         {isSameElement
-                          ? 'Aynı Element'
+                          ? 'Aynı element'
                           : isHarmonious
-                          ? 'Uyumlu Akış'
-                          : 'Dinamik Gerilim'}
+                          ? 'Uyumlu akış'
+                          : 'Dinamik gerilim'}
                       </span>
                     </td>
 
-                    <td className="p-3.5">
-                      <div className="flex items-center gap-1.5 font-bold text-rose-signal">
-                        <ZodiacGlyph sign={p2Body.signId} size={14} />
-                        <span>{p2Body.formatted}</span>
-                        <span className="text-[11px] text-muted font-normal">({p2Body.element})</span>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-1.5 text-rose-signal">
+                        <ZodiacGlyph sign={p2Body.signId} size={14} className="shrink-0" />
+                        <span className="font-mono font-medium">{p2Body.formatted}</span>
+                        <span className="text-xs text-paper/70">({p2Body.element})</span>
                       </div>
                     </td>
                   </tr>
@@ -789,52 +771,50 @@ export function SynastryChartCalculator() {
         </div>
       )}
 
-      {/* Tab 3: Kozmik İlişki Dinamikleri */}
+      {/* Tab 3: İlişki dinamikleri */}
       {activeTab === 'dynamics' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column: Strengths */}
-          <div className="border border-line bg-ink-2 p-6 space-y-4">
-            <div className="flex items-center gap-2 label text-emerald-400 border-b border-line pb-3">
-              <CheckCircle2 size={16} />
-              <span>İLİŞKİNİN DOĞAL GÜÇLÜ YÖNLERİ</span>
+          <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-4">
+            <div className="flex items-center gap-2 text-base font-semibold text-emerald-400">
+              <CheckCircle2 size={18} className="shrink-0" />
+              <span>İlişkinin güçlü yönleri</span>
             </div>
-            <div className="space-y-3">
+            <ol className="space-y-3">
               {analysis.strengths.map((str, idx) => (
-                <div key={idx} className="p-3 bg-ink border border-line text-xs font-sans text-paper/85 leading-relaxed flex items-start gap-2.5">
-                  <span className="text-emerald-400 font-mono font-bold mt-0.5 shrink-0">#{idx + 1}</span>
-                  <div>{str}</div>
-                </div>
+                <li key={idx} className="flex items-start gap-3 text-base leading-relaxed text-paper/85">
+                  <span className="mt-0.5 shrink-0 font-mono text-sm font-semibold text-emerald-400">{idx + 1}.</span>
+                  <div className="min-w-0">{str}</div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
 
           {/* Right Column: Growth Areas */}
-          <div className="border border-line bg-ink-2 p-6 space-y-4">
-            <div className="flex items-center gap-2 label text-rose-signal border-b border-line pb-3">
-              <AlertTriangle size={16} />
-              <span>DİKKAT EDİLMESİ GEREKEN ALANLAR & BÜYÜME SINAVLARI</span>
+          <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-4">
+            <div className="flex items-center gap-2 text-base font-semibold text-rose-signal">
+              <AlertTriangle size={18} className="shrink-0" />
+              <span>Dikkat edilmesi gereken alanlar</span>
             </div>
-            <div className="space-y-3">
+            <ol className="space-y-3">
               {analysis.growthAreas.map((grow, idx) => (
-                <div key={idx} className="p-3 bg-ink border border-line text-xs font-sans text-paper/85 leading-relaxed flex items-start gap-2.5">
-                  <span className="text-rose-signal font-mono font-bold mt-0.5 shrink-0">#{idx + 1}</span>
-                  <div>{grow}</div>
-                </div>
+                <li key={idx} className="flex items-start gap-3 text-base leading-relaxed text-paper/85">
+                  <span className="mt-0.5 shrink-0 font-mono text-sm font-semibold text-rose-signal">{idx + 1}.</span>
+                  <div className="min-w-0">{grow}</div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
 
-          {/* Bottom Advice Banner */}
-          <div className="col-span-1 lg:col-span-2 border border-line bg-ink p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-gold/15 border border-gold flex items-center justify-center shrink-0">
-              <Lightbulb size={20} className="text-gold" />
+          {/* Advice */}
+          <div className="lg:col-span-2 border border-line bg-ink-2 p-4 sm:p-6 space-y-2">
+            <div className="flex items-center gap-2 text-base font-semibold text-gold">
+              <Lightbulb size={18} className="shrink-0" />
+              <span>İlişki tavsiyesi</span>
             </div>
-            <div className="space-y-1">
-              <div className="label text-gold">KOZMİK REHBERLİK & İLİŞKİ TAVSİYESİ</div>
-              <p className="text-xs sm:text-sm text-paper/85 font-sans leading-relaxed">
-                {analysis.advice}
-              </p>
-            </div>
+            <p className="text-base leading-relaxed text-paper/85">
+              {analysis.advice}
+            </p>
           </div>
         </div>
       )}

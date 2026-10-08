@@ -729,3 +729,11 @@ main:not(:has(> [data-home])) .label {
 }
 /* Köşe nişangâh işaretleri iç sayfalarda süs kalabalığı yaratıyor */
 main:not(:has(> [data-home])) .ticks > .tick { display: none; }
+/* Araç bölümlerindeki h2'ler (.module h2) de iç sayfalarda normal yazımla */
+main:not(:has(> [data-home])) .module h2 {
+  font-stretch: 100%;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
