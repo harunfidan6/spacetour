@@ -2,8 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowRight, ArrowUpRight, MoonStar, Satellite, Sunset } from 'lucide-react';
+import { HomeHero } from '@/components/home/HomeHero';
 import { MoonDial } from '@/components/home/MoonDial';
-import { SolarSystemBand } from '@/components/home/SolarSystemBand';
 import { OrbCanvas } from '@/components/space/PlanetOrb';
 import { AstronomicalEventGlyph, ZodiacGlyph } from '@/components/ui/CosmicGlyphs';
 import { events } from '@/data/events';
@@ -109,17 +109,22 @@ export default async function Home() {
   return (
     // data-home: iç sayfalara özel sakin tipografi (globals.css "İç sayfalar") ana sayfaya uygulanmasın
     <div data-home data-generated={now.toISOString()} className="relative bg-ink text-paper" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
+      <HomeHero
+        moon={{ fraction: moon.fraction, illumination: moon.illumination, name: moon.name }}
+        next={next ? { days: next.days, title: next.title, type: next.type, href: `/takvim/${eventSlug(next)}` } : null}
+      />
+
       {/* Bu gece: bugünün Ay'ı ve gökyüzünün kısa özeti */}
-      <section aria-labelledby="bu-gece" className="relative isolate overflow-hidden px-[var(--gutter)] pb-16 pt-28 sm:pt-32 lg:flex lg:min-h-[92svh] lg:items-center">
+      <section aria-labelledby="bu-gece" className="relative isolate overflow-hidden px-[var(--gutter)] py-20 sm:py-24">
         <div aria-hidden className="absolute -right-[10%] top-[6%] -z-10 h-[80vmin] w-[80vmin] rounded-full bg-[radial-gradient(circle,rgb(233_196_106/0.07),transparent_65%)]" />
         <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <p className="text-sm text-paper/70">
               <span className="font-medium capitalize text-gold">{dateLine}</span> · İstanbul gökyüzü
             </p>
-            <h1 id="bu-gece" className="mt-5 text-[clamp(2.6rem,6.2vw,5.4rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-paper">
+            <h2 id="bu-gece" className="mt-5 text-[clamp(2.4rem,5.4vw,4.6rem)] font-semibold leading-[1.04] tracking-[-0.03em] text-paper">
               Bu gece gökyüzünde <span className="doc-serif text-gold">neler var?</span>
-            </h1>
+            </h2>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-paper/80">{summary}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/canli/bu-gece" className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink transition-opacity hover:opacity-90">
@@ -252,8 +257,6 @@ export default async function Home() {
           </aside>
         </div>
       </section>
-
-      <SolarSystemBand />
 
       {/* Yedi bölüm */}
       <section id="bolumler" aria-labelledby="bolumler-baslik" className="scroll-mt-16 px-[var(--gutter)] py-20 sm:py-24">

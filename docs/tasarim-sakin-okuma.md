@@ -73,8 +73,8 @@ CosmicNumerologyMatrix), sonra harita, ansiklopedi laboratuvarı, gözlemevi ve 
 Hesaplama mantığına, durum yönetimine ve film modu (`?film=1`, `window.__film`) seçicilerine dokunulmaz; yalnızca görünüm.
 
 ## Ana sayfa (Ekim 2026 yenilemesi)
-Ana sayfa "belgesel fragmanı" düzeninden "bugünün gökyüzü" ön sayfasına geçti (`src/app/page.tsx`, yarım saatte bir ISR):
-bugünün Ay'ı ve evre kadranı (`home/MoonDial.tsx`), günün dört bilgisi (Ay burcu, gün doğumu/batımı, ISS İstanbul,
-sıradaki ana evre), 12 burcun günlük başlığı, yaklaşan gök olayları ve kısayollar, 3D Güneş Sistemi bandı
-(`home/SolarSystemBand.tsx`) ve yedi bölüm kartı (`#bolumler`, tanıtım filmi buraya kaydırır). Kök `data-home`
-özniteliği korunur.
+Ana sayfa yarım saatte bir yenilenen bir ön sayfa (`src/app/page.tsx`, ISR). En üstte grafik olarak en yoğun bölüm:
+`home/HomeHero.tsx` ("EVREN hiç durmaz.", Ay evresi, sıradaki olay) ve arkasında `home/HeroCosmos3D.tsx` (NASA dokulu
+Güneş Sistemi, asteroit kuşağı, köşede dev gezegen; yerleşimler yatay ve dikey ekran için ayrı). Altında bugünün Ay'ı ve
+evre kadranı (`home/MoonDial.tsx`), günün dört bilgisi, 12 burcun günlük başlığı, yaklaşan gök olayları, kısayollar ve
+yedi bölüm kartı (`#bolumler`; "Belgeseli başlat" ve tanıtım filmi buraya kaydırır). Kök `data-home` özniteliği korunur.

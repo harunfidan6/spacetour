@@ -7,7 +7,7 @@ import { loadNasaTexture } from './nasaTextures';
 import { planetVisual } from './planetVisuals';
 
 /** Cached NASA texture plus a flag that flips once its image has arrived. */
-function useNasaTexture(url?: string) {
+export function useNasaTexture(url?: string) {
   const tex = useMemo(() => (url ? loadNasaTexture(url) : null), [url]);
   const [ready, setReady] = useState(() => Boolean(tex?.image));
   useFrame(() => {
