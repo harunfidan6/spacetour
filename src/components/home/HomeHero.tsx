@@ -20,8 +20,7 @@ export function HomeHero() {
   const root = useRef<HTMLElement>(null);
   const labels = useRef<(HTMLElement | null)[]>([]);
   const [inView, setInView] = useState(true);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const scene3d = useIdleReady();
   const now = useNow(60_000);
   const moon = now ? moonPhase(now) : null;
   const next = now ? upcomingEvents(now, 1)[0] : undefined;
@@ -67,12 +66,10 @@ export function HomeHero() {
       // Entrance: the Sun pops, planets and orbits follow, copy fades up.
       gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 30 });
       const intro = gsap
-        .timeline({ paused: false })
-        .to(state, { intro: 1, duration: 1.8, ease: 'power3.out' })
-        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.3);
-      const cancelIntro = whenIntroDone(() => {
-        if (intro.progress() < 1) intro.play();
-      });
+        .timeline({ paused: true })
+        .to(state, { intro: 1, duration: 2.4, ease: 'power3.out' })
+        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.6);
+      const cancelIntro = whenIntroDone(() => intro.play());
 
       // Natural unpinned scroll parallax — no freezing or hijacking
       gsap
@@ -101,8 +98,8 @@ export function HomeHero() {
     <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-ink" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
       {/* Live 3D solar system as the opening shot */}
       <div className="pointer-events-none absolute inset-0">
-        {mounted && (
-          <div className="absolute inset-0">
+        {scene3d && (
+          <div className="absolute inset-0 animate-[fade-in_1.2s_ease-out_both]">
             <HeroSolarSystem3D project={placeLabel} active={inView} />
           </div>
         )}
@@ -121,8 +118,8 @@ export function HomeHero() {
           </span>
         ))}
       </div>
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgb(5_5_8/0.55)_100%)]" />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgb(5_5_8/0.85)_100%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink to-transparent" />
 
       {/* Title card */}
       <div className="relative flex h-full flex-col justify-between px-[var(--gutter)] pb-8 pt-24 sm:pt-28">

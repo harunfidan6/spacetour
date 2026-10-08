@@ -14,10 +14,10 @@ export interface HeroSceneState {
 }
 
 /** Only one hero is mounted at a time, so a module-level store is enough. */
-export const heroScene: HeroSceneState = { intro: 1, scroll: 0, px: 0, py: 0, frozen: false };
+export const heroScene: HeroSceneState = { intro: 0, scroll: 0, px: 0, py: 0, frozen: false };
 
 export function resetHeroScene() {
-  Object.assign(heroScene, { intro: 1, scroll: 0, px: 0, py: 0, frozen: false });
+  Object.assign(heroScene, { intro: 0, scroll: 0, px: 0, py: 0, frozen: false });
 }
 
 /** Receives each planet's screen position so the DOM can pin its label. */

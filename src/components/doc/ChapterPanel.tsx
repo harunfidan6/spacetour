@@ -5,13 +5,12 @@ import { ArrowUpRight } from 'lucide-react';
 import { moduleHref, type DocSection } from '@/data/sections';
 
 /** Home-page chapter: a full-bleed still with the chapter slate, synopsis and its first parts. */
-export function ChapterPanel({ section, flip = false, id }: { section: DocSection; flip?: boolean; id?: string }) {
+export function ChapterPanel({ section, flip = false }: { section: DocSection; flip?: boolean }) {
   const parts = section.modules.slice(0, 4);
   const count = section.modules.length + (section.collections?.length ?? 0);
 
   return (
     <section
-      id={id}
       className="relative isolate flex min-h-[92svh] items-end overflow-hidden border-t border-white/10"
       style={{ '--page-accent': section.accent } as CSSProperties}
       aria-labelledby={`chapter-${section.id}`}
