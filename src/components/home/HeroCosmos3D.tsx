@@ -8,7 +8,9 @@ import * as THREE from 'three';
 import { PlanetBody, SunGlow } from '@/components/space/PlanetBody';
 import { NASA_TEXTURES, SolarGranulationShader, loadNasaTexture } from '@/components/space/nasaTextures';
 import { heroScene } from './heroScene';
-import { Comet, ForegroundDust, MeteorImpacts, ShootingStars, SunCorona, type PlanetRegistry } from './heroEffects';
+import { ForegroundDust, MeteorImpacts, ShootingStars, SunCorona, type PlanetRegistry } from './heroEffects';
+import { Comet, SolarActivity, type CometOrbit } from './heroParticles';
+import { HeroPlanetBody } from './heroPlanets';
 
 type PlanetId = 'merkur' | 'venus' | 'dunya' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptun';
 
@@ -23,8 +25,8 @@ interface Layout {
   sun: number;
   belt: [number, number];
   planets: Record<PlanetId, Placement>;
-  /** Kuyruklu yıldızın yörüngesi: büyük yarı eksen, basıklık, günberi yönü, başlangıç açısı */
-  comet: { a: number; e: number; omega: number; start: number };
+  /** Kuyruklu yıldızlar: biri Güneş'in yakınından geçen büyük, diğeri eğik yörüngeli uzak ve küçük */
+  comets: CometOrbit[];
 }
 
 // Yerleşimler, hedef ekran noktalarından ışın–düzlem kesişimiyle çözüldü (1440×900 ve 390×844 için)
@@ -45,7 +47,10 @@ const WIDE: Layout = {
     uranus: [-1.13, 24.45, 0.72],
     neptun: [-1.95, 30, 0.7],
   },
-  comet: { a: 16, e: 0.72, omega: 2.35, start: -2.25 },
+  comets: [
+    { a: 16, e: 0.72, omega: 2.35, start: -2.3, tilt: [0.2, 0, 0.13], scale: 1, pace: 26 },
+    { a: 26, e: 0.82, omega: -0.7, start: -2.55, tilt: [0.75, 0.3, -0.35], scale: 0.75, pace: 34 },
+  ],
 };
 
 /** Dikey ekran: metin üstte, sistem ortada, düğmeler altta. */
@@ -65,12 +70,15 @@ const TALL: Layout = {
     uranus: [-0.93, 20.73, 0.9],
     neptun: [-1.93, 24.14, 0.8],
   },
-  comet: { a: 12, e: 0.72, omega: 2.5, start: -2.25 },
+  comets: [
+    { a: 12, e: 0.72, omega: 2.5, start: -2.3, tilt: [0.2, 0, 0.13], scale: 0.8, pace: 20 },
+    { a: 19, e: 0.82, omega: -0.7, start: -2.55, tilt: [0.75, 0.3, -0.35], scale: 0.6, pace: 26 },
+  ],
 };
 
 const ORDER: PlanetId[] = ['merkur', 'venus', 'dunya', 'mars', 'jupiter', 'saturn', 'uranus', 'neptun'];
-/** Açısal hız (rad/s): iç gezegenler belirgin, dış gezegenler neredeyse durağan döner */
-const SPEED: Record<PlanetId, number> = { merkur: 0.05, venus: 0.032, dunya: 0.022, mars: 0.016, jupiter: 0.006, saturn: 0.004, uranus: 0.0025, neptun: 0.002 };
+/** Açısal hız (rad/s): Merkür ~24 saniyede, Dünya ~1 dakikada, Satürn ~6,5 dakikada bir tur atar */
+const SPEED: Record<PlanetId, number> = { merkur: 0.26, venus: 0.16, dunya: 0.11, mars: 0.07, jupiter: 0.03, saturn: 0.016, uranus: 0.01, neptun: 0.007 };
 /** Yörünge düzleminin eğimi: yakın taraf aşağı, sağ taraf yukarı */
 const TILT = new THREE.Euler(0.2, 0, 0.13);
 
@@ -181,7 +189,8 @@ function Planet({ id, place, index, registry }: { id: PlanetId; place: Placement
   useFrame((_, delta) => {
     const g = group.current;
     if (!g) return;
-    if (!heroScene.frozen) angle.current += delta * SPEED[id] * 0.6;
+    // Kuzeyden bakınca saat yönünün tersine, gerçek dolanma yönünde
+    if (!heroScene.frozen) angle.current -= Math.min(delta, 0.05) * SPEED[id];
     g.position.set(Math.cos(angle.current) * orbit, 0, Math.sin(angle.current) * orbit);
     const appear = THREE.MathUtils.clamp((heroScene.intro - 0.2 - index * 0.05) / 0.45, 0, 1);
     g.scale.setScalar(Math.max(THREE.MathUtils.smootherstep(appear, 0, 1), 0.0001));
@@ -196,7 +205,7 @@ function Planet({ id, place, index, registry }: { id: PlanetId; place: Placement
         else registry.current.delete(id);
       }}
     >
-      <PlanetBody id={id} radius={radius} detail={radius > 1 ? 72 : 40} spin={1.5} />
+      <HeroPlanetBody id={id} radius={radius} />
       {id === 'jupiter' && <GalileanMoons radius={radius} />}
       {id === 'dunya' && (
         <group ref={moon}>
@@ -320,11 +329,12 @@ function Scene() {
       <ambientLight intensity={0.18} />
       <pointLight position={[0, 0, 0]} intensity={4.4} decay={0} color="#fff0d6" />
       {/* Kamera tarafından sıcak dolgu: kameraya bakan gece yüzleri delik gibi görünmesin */}
-      <directionalLight position={[-6, 10, 40]} intensity={1.35} color="#ffe2bf" />
+      <directionalLight position={[-6, 10, 40]} intensity={1.05} color="#ffe2bf" />
       <group rotation={TILT}>
         <group ref={sun}>
           <SunCorona radius={layout.sun} />
           <HeroSun radius={layout.sun} />
+          <SolarActivity radius={layout.sun} />
         </group>
         {ORDER.map((id, i) => (
           <Orbit key={`o-${id}`} radius={layout.planets[id][1]} opacity={i > 5 ? 0.2 : 0.32} />
@@ -336,7 +346,9 @@ function Scene() {
           <Planet key={id} id={id} place={layout.planets[id]} index={i} registry={registry} />
         ))}
       </group>
-      <Comet tilt={TILT} a={layout.comet.a} e={layout.comet.e} omega={layout.comet.omega} start={layout.comet.start} />
+      {layout.comets.map((c, i) => (
+        <Comet key={i} orbit={c} />
+      ))}
       <MeteorImpacts planets={registry} />
       <ForegroundDust />
       <Rig layout={layout} />

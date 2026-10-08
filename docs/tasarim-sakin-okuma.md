@@ -76,6 +76,9 @@ Hesaplama mantığına, durum yönetimine ve film modu (`?film=1`, `window.__fil
 Ana sayfa yarım saatte bir yenilenen bir ön sayfa (`src/app/page.tsx`, ISR). En üstte grafik olarak en yoğun bölüm:
 `home/HomeHero.tsx` ("EVREN hiç durmaz.", Ay evresi, sıradaki olay) ve arkasında `home/HeroCosmos3D.tsx` (NASA dokulu
 Güneş Sistemi, asteroit kuşağı, Jüpiter'in uyduları; yerleşimler yatay ve dikey ekran için ayrı) ile
-`home/heroEffects.tsx` (kayan yıldızlar, gezegenlere düşen meteorlar, kuyruklu yıldız, Güneş tacı, ön plan tozu). Altında bugünün Ay'ı ve
+`home/heroEffects.tsx` (kayan yıldızlar, gezegenlere düşen meteorlar, Güneş tacı, ön plan tozu),
+`home/heroParticles.tsx` (parçacıklı iki kuyruklu yıldız; Güneş ilmekleri, parlamalar ve taç kütle atımları) ve
+`home/heroPlanets.tsx` (gece-gündüz ve bulutlu Dünya, halka gölgeli Satürn, Güneş'e bakan atmosferler).
+Gezegenler gerçek yönde, görünür hızda dolanır (Merkür ~24 sn, Dünya ~1 dk). Altında bugünün Ay'ı ve
 evre kadranı (`home/MoonDial.tsx`), günün dört bilgisi, 12 burcun günlük başlığı, yaklaşan gök olayları, kısayollar ve
 yedi bölüm kartı (`#bolumler`; "Belgeseli başlat" ve tanıtım filmi buraya kaydırır). Kök `data-home` özniteliği korunur.
