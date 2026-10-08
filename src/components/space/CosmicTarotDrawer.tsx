@@ -136,7 +136,7 @@ export function CosmicTarotDrawer() {
                 className={`px-3 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer border ${
                   isActive
                     ? 'border-gold bg-gold text-ink font-semibold shadow-xs'
-                    : 'border-transparent text-paper/60 hover:text-paper hover:border-line'
+                    : 'border-transparent text-paper/75 hover:text-paper hover:border-line'
                 }`}
               >
                 {SPREAD_CONFIGS[type].name}
@@ -192,7 +192,7 @@ export function CosmicTarotDrawer() {
                   {positionLabel}
                 </span>
                 <span
-                  className={`font-mono text-[9px] px-1.5 py-0.5 border uppercase font-bold tracking-wider ${
+                  className={`font-mono text-[11px] px-1.5 py-0.5 border uppercase font-bold tracking-wider ${
                     isReversed
                       ? 'border-rose/50 bg-rose/10 text-rose'
                       : 'border-lime/50 bg-lime/10 text-lime'
@@ -205,10 +205,10 @@ export function CosmicTarotDrawer() {
               {/* Tarot Card Frame */}
               <div className="relative aspect-[2/3] w-full border-2 border-gold/30 bg-gradient-to-b from-ink via-ink-2 to-ink p-4 flex flex-col justify-between items-center overflow-hidden group-hover:border-gold/70 transition-all shadow-[0_8px_25px_rgba(0,0,0,0.6)]">
                 {/* Gilded ornamental corner brackets */}
-                <span className="absolute top-1.5 left-1.5 text-gold/40 font-mono text-[10px] select-none leading-none">┌</span>
-                <span className="absolute top-1.5 right-1.5 text-gold/40 font-mono text-[10px] select-none leading-none">┐</span>
-                <span className="absolute bottom-1.5 left-1.5 text-gold/40 font-mono text-[10px] select-none leading-none">└</span>
-                <span className="absolute bottom-1.5 right-1.5 text-gold/40 font-mono text-[10px] select-none leading-none">┘</span>
+                <span className="absolute top-1.5 left-1.5 text-gold/40 font-mono text-[11px] select-none leading-none">┌</span>
+                <span className="absolute top-1.5 right-1.5 text-gold/40 font-mono text-[11px] select-none leading-none">┐</span>
+                <span className="absolute bottom-1.5 left-1.5 text-gold/40 font-mono text-[11px] select-none leading-none">└</span>
+                <span className="absolute bottom-1.5 right-1.5 text-gold/40 font-mono text-[11px] select-none leading-none">┘</span>
 
                 {/* Concentric hairline filigree */}
                 <div className="absolute inset-2 border border-white/10 pointer-events-none" />
@@ -220,14 +220,14 @@ export function CosmicTarotDrawer() {
                     <div className="h-16 w-16 rounded-full border border-gold/40 grid place-items-center bg-gold/5 animate-spin">
                       <AstrolabeGlyph size={28} className="text-gold/70" />
                     </div>
-                    <span className="font-mono text-[10px] text-gold/60 uppercase tracking-widest mt-3">KADER ÇARKI</span>
+                    <span className="font-mono text-[11px] text-gold/60 uppercase tracking-wide mt-3">KADER ÇARKI</span>
                   </div>
                 ) : (
                   <>
                     {/* Top Number & Element */}
                     <div className="w-full flex items-center justify-between text-xs font-mono text-muted z-10">
                       <span className="font-bold text-paper font-mono">{card.number}</span>
-                      <span className="text-[10px] text-gold border border-gold/30 px-1 py-0.2">
+                      <span className="text-[11px] text-gold border border-gold/30 px-1 py-0.2">
                         {card.element}
                       </span>
                     </div>
@@ -246,14 +246,14 @@ export function CosmicTarotDrawer() {
                       <h4 className="doc-title text-base sm:text-lg text-paper tracking-wide">
                         {card.name}
                       </h4>
-                      <span className="font-mono text-[10px] text-muted mt-0.5 italic">
+                      <span className="font-mono text-[11px] text-muted mt-0.5 italic">
                         {card.nameEn}
                       </span>
                     </div>
 
                     {/* Bottom Archetype */}
                     <div className="w-full text-center border-t border-line/60 pt-2 z-10">
-                      <span className="doc-caption text-[10px] text-paper/80 line-clamp-1">
+                      <span className="doc-caption text-[11px] text-paper/80 line-clamp-1">
                         {card.archetype}
                       </span>
                     </div>
@@ -280,11 +280,11 @@ export function CosmicTarotDrawer() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-line pb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="doc-kicker text-gold uppercase tracking-widest">
+                <span className="doc-kicker text-gold uppercase tracking-wide">
                   SEÇİLİ KART · {activeDrawnCard.positionLabel}
                 </span>
                 <span className="text-muted">·</span>
-                <span className={`font-mono text-[10px] font-bold px-2 py-0.5 border ${
+                <span className={`font-mono text-[11px] font-bold px-2 py-0.5 border ${
                   activeDrawnCard.isReversed ? 'border-rose/50 bg-rose/10 text-rose' : 'border-lime/50 bg-lime/10 text-lime'
                 }`}>
                   {activeDrawnCard.isReversed ? 'TERS KONUM' : 'DÜZ KONUM'}
@@ -303,7 +303,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('genel')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                  activeTab === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
                 }`}
               >
                 Genel Rehberlik
@@ -311,7 +311,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('ask')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                  activeTab === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
                 }`}
               >
                 Aşk & Kalp
@@ -319,7 +319,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('kariyer')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                  activeTab === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
                 }`}
               >
                 Kariyer & Para
@@ -327,7 +327,7 @@ export function CosmicTarotDrawer() {
               <button
                 onClick={() => setActiveTab('ruhsal')}
                 className={`px-3 py-1 cursor-pointer transition-colors border uppercase ${
-                  activeTab === 'ruhsal' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                  activeTab === 'ruhsal' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
                 }`}
               >
                 Ruhsal Simya
@@ -368,7 +368,7 @@ export function CosmicTarotDrawer() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div className="p-3 border border-line bg-ink">
-                      <span className="doc-caption text-paper/60 block uppercase text-[10px]">Aydınlık Anahtarları</span>
+                      <span className="doc-caption text-paper/75 block uppercase text-[11px]">Aydınlık Anahtarları</span>
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {activeDrawnCard.card.upright.keywords.map((kw) => (
                           <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-paper">
@@ -379,7 +379,7 @@ export function CosmicTarotDrawer() {
                     </div>
 
                     <div className="p-3 border border-line bg-ink">
-                      <span className="doc-caption text-paper/60 block uppercase text-[10px]">Gölge Anahtarları</span>
+                      <span className="doc-caption text-paper/75 block uppercase text-[11px]">Gölge Anahtarları</span>
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {activeDrawnCard.card.reversed.keywords.map((kw) => (
                           <span key={kw} className="px-2 py-0.5 bg-ink-2 border border-line text-rose">
@@ -400,7 +400,7 @@ export function CosmicTarotDrawer() {
                   </div>
                   <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.loveGuidance}
-                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/60">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
+                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/75">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
                   </p>
                 </div>
               )}
@@ -413,7 +413,7 @@ export function CosmicTarotDrawer() {
                   </div>
                   <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.careerGuidance}
-                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/60">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
+                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/75">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
                   </p>
                 </div>
               )}
@@ -426,7 +426,7 @@ export function CosmicTarotDrawer() {
                   </div>
                   <p className="text-sm text-paper/90 leading-relaxed font-sans">
                     {activeDrawnCard.card.upright.spiritualGuidance}
-                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/60">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
+                    {activeDrawnCard.isReversed && <span className="block mt-2 text-paper/75">Kart ters geldiği için bu enerji şu an tıkalı olabilir: önce {activeDrawnCard.card.reversed.keywords.slice(0, 2).join(' ve ').toLocaleLowerCase('tr-TR')} konusunu fark et.</span>}
                   </p>
                 </div>
               )}
@@ -435,7 +435,7 @@ export function CosmicTarotDrawer() {
               <div className="p-4 border border-line bg-ink flex items-start gap-3">
                 <Sparkles size={16} className="text-gold shrink-0 mt-0.5" />
                 <div className="font-mono text-xs">
-                  <span className="doc-caption text-paper/60 uppercase block text-[10px]">Günün Kutsal Olumlaması</span>
+                  <span className="doc-caption text-paper/75 uppercase block text-[11px]">Günün Kutsal Olumlaması</span>
                   <p className="text-paper italic doc-serif text-sm mt-0.5">
                     &quot;{activeDrawnCard.card.affirmation}&quot;
                   </p>
@@ -445,7 +445,7 @@ export function CosmicTarotDrawer() {
 
             {/* Right Astrological Correspondences */}
             <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4 font-mono text-xs">
-              <span className="doc-kicker text-gold tracking-widest block border-b border-line pb-2">
+              <span className="doc-kicker text-gold tracking-wide block border-b border-line pb-2">
                 ASTROLOJİK HİZALANMA
               </span>
 

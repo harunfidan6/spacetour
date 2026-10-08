@@ -70,7 +70,7 @@ export function CosmicNumerologyMatrix() {
       {/* Interactive Input Form */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 border border-line bg-ink-2 p-6">
         <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Adınız</label>
+          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Adınız</label>
           <input
             type="text"
             value={firstName}
@@ -81,7 +81,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Soyadınız</label>
+          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Soyadınız</label>
           <input
             type="text"
             value={lastName}
@@ -92,7 +92,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Günü</label>
+          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Günü</label>
           <NumericInput
             value={day}
             min={1}
@@ -103,7 +103,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Ayı</label>
+          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Ayı</label>
           <NumericInput
             value={month}
             min={1}
@@ -117,7 +117,7 @@ export function CosmicNumerologyMatrix() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/60 text-[10px] uppercase">Doğum Yılı</label>
+          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Yılı</label>
           <NumericInput
             value={year}
             min={1920}
@@ -188,10 +188,10 @@ export function CosmicNumerologyMatrix() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`doc-caption text-[10px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                <span className={`doc-caption text-[11px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
                   {pillar.label}
                 </span>
-                <span className={`doc-caption text-[10px] px-1.5 py-0.5 border ${
+                <span className={`doc-caption text-[11px] px-1.5 py-0.5 border ${
                   isSelected ? 'border-ink/30 text-ink' : 'border-line text-gold'
                 }`}>
                   {pillar.badge}
@@ -224,7 +224,7 @@ export function CosmicNumerologyMatrix() {
                 <h4 className="doc-title text-2xl sm:text-3xl text-paper">
                   {activeAnalysis.title}
                 </h4>
-                <div className="doc-caption text-paper/60 text-xs mt-1">
+                <div className="doc-caption text-paper/75 text-xs mt-1">
                   Yönetici Gezegen: {activeAnalysis.rulingCosmicBody} · Zodyak Rezonansı: {activeAnalysis.zodiacAffinity}
                 </div>
               </div>
@@ -232,7 +232,7 @@ export function CosmicNumerologyMatrix() {
 
             <div className="flex flex-wrap gap-2">
               {activeAnalysis.sacredKeywords.map((kw, i) => (
-                <span key={i} className="doc-caption px-3 py-1 rounded-full border border-line bg-ink text-paper/85 text-[10px]">
+                <span key={i} className="doc-caption px-3 py-1 rounded-full border border-line bg-ink text-paper/85 text-[11px]">
                   # {kw}
                 </span>
               ))}
@@ -310,8 +310,8 @@ export function CosmicNumerologyMatrix() {
       {/* Pythagorean Letters Reference Table */}
       <div className="border-t border-line pt-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="doc-caption text-paper/60 text-[10px]">PİSAGOR HARF - SAYI FREKANS TABLOSU</span>
-          <span className="doc-caption text-paper/60 text-[10px]">1’DEN 9’A KADAR KOZMİK AKORLAR</span>
+          <span className="doc-caption text-paper/75 text-[11px]">PİSAGOR HARF - SAYI FREKANS TABLOSU</span>
+          <span className="doc-caption text-paper/75 text-[11px]">1’DEN 9’A KADAR KOZMİK AKORLAR</span>
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-9 gap-px border border-line bg-line text-center text-xs">
           {[
@@ -327,7 +327,7 @@ export function CosmicNumerologyMatrix() {
           ].map((col) => (
             <div key={col.num} className="bg-ink p-2.5">
               <div className="doc-caption text-gold font-bold">{col.num}</div>
-              <div className="font-mono text-[10px] text-paper/70 mt-1">{col.letters}</div>
+              <div className="font-mono text-[11px] text-paper/70 mt-1">{col.letters}</div>
             </div>
           ))}
         </div>

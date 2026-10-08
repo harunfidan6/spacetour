@@ -158,7 +158,7 @@ export function DailyCosmicTransitWidget() {
             <PlanetGlyph planet="sun" size={14} className="text-gold" />
             Burcunuzu Seçin & Günlük Yorumu Okuyun
           </h3>
-          <span className="doc-caption text-paper/60">
+          <span className="doc-caption text-paper/75">
             Seçili: <strong className="text-paper">{selectedSign.name}</strong>
           </span>
         </div>
@@ -174,7 +174,7 @@ export function DailyCosmicTransitWidget() {
                 className={`flex flex-col items-center justify-center p-3 transition-colors cursor-pointer ${
                   isSelected
                     ? 'bg-gold text-ink font-semibold'
-                    : 'bg-ink-2 text-paper/60 hover:text-paper hover:bg-ink-3'
+                    : 'bg-ink-2 text-paper/75 hover:text-paper hover:bg-ink-3'
                 }`}
               >
                 <ZodiacGlyph
@@ -183,7 +183,7 @@ export function DailyCosmicTransitWidget() {
                   className={`mb-1.5 ${isSelected ? 'text-ink' : 'text-paper/70'}`}
                 />
                 <span className="text-xs font-bold font-sans">{s.name}</span>
-                <span className="doc-caption text-[10px] mt-0.5 opacity-70">{s.element}</span>
+                <span className="doc-caption text-[11px] mt-0.5 opacity-70">{s.element}</span>
               </button>
             );
           })}
@@ -203,7 +203,7 @@ export function DailyCosmicTransitWidget() {
                     {selectedSign.dates}
                   </span>
                 </div>
-                <div className="doc-caption text-paper/60 mt-1">
+                <div className="doc-caption text-paper/75 mt-1">
                   Element: {selectedSign.element} ({selectedSign.modality}) • Yönetici: {selectedSign.rulingPlanet}
                 </div>
                 {reading && (
@@ -217,7 +217,7 @@ export function DailyCosmicTransitWidget() {
             <div className="flex items-center gap-3 bg-ink border border-line px-4 py-2.5 shrink-0 font-mono text-xs">
               <Hourglass size={16} className="text-gold" />
               <div>
-                <span className="doc-caption text-[10px] text-paper/60 block">Günün Şanslı Saatleri</span>
+                <span className="doc-caption text-[11px] text-paper/75 block">Günün Şanslı Saatleri</span>
                 <span className="text-paper font-bold">{reading ? reading.luckyHours : '—'}</span>
               </div>
             </div>
@@ -264,7 +264,7 @@ export function DailyCosmicTransitWidget() {
               <div className="bg-ink p-4">
                 <span className="doc-caption text-gold">Ay {reading.moonIn}</span>
                 <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.moonMood}</p>
-                <p className="mt-1 text-xs leading-relaxed text-paper/60">{reading.moonFocus}</p>
+                <p className="mt-1 text-xs leading-relaxed text-paper/75">{reading.moonFocus}</p>
               </div>
               <div className="bg-ink p-4">
                 <span className="doc-caption text-gold">Sağlık & enerji</span>
@@ -276,7 +276,7 @@ export function DailyCosmicTransitWidget() {
               </div>
             </div>
           )}
-          {reading?.moonChange && <p className="mt-3 text-xs text-paper/60">{reading.moonChange}</p>}
+          {reading?.moonChange && <p className="mt-3 text-xs text-paper/75">{reading.moonChange}</p>}
 
           {/* Cosmic Tip Footer */}
           <div className="mt-6 pt-4 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
@@ -285,7 +285,7 @@ export function DailyCosmicTransitWidget() {
               <span>{reading ? reading.tip : pending}</span>
             </div>
 
-            <div className="doc-caption text-paper/60 italic">
+            <div className="doc-caption text-paper/75 italic">
               Motto: &quot;{selectedSign.traits.motto}&quot;
             </div>
           </div>

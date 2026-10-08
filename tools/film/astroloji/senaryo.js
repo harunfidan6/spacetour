@@ -73,7 +73,7 @@
       ready: (d) => !!$('main input[placeholder="Adınız"]', d),
       y: (d) => topY(d, byText(d, 'Numeroloji & Yaşam Yolu Analizi')) - (H ? 70 : 200),
     },
-    burc: { url: '/astroloji/burclar/basak', acc: '#f5c542', ready: (d) => !!byText(d, 'Kısım I · Karakter'), y: () => 0 },
+    burc: { url: '/astroloji/burclar/basak', acc: '#f5c542', ready: (d) => !!byText(d, 'Karakter'), y: () => 0 },
   };
   const frames = $('#frames');
   for (const [id, s] of Object.entries(SC)) {
@@ -225,7 +225,7 @@
   /* ---------- 6. Burç dosyası: gravür, sonra karakter ---------- */
   dip(23.0);
   show('burc', 23.0);
-  tl.add(() => { const s = SC.burc; F(s).kaydir(Math.round(topY(doc(s), byText(doc(s), 'Kısım I · Karakter'))) - (H ? 60 : 70), 1.4); }, 24.0);
+  tl.add(() => { const s = SC.burc; F(s).kaydir(Math.round(topY(doc(s), byText(doc(s), 'Karakter'))) - (H ? 60 : 70), 1.4); }, 24.0);
   caption('06-burc');
 
   /* ---------- 7. Kapanış ---------- */

@@ -89,7 +89,7 @@ export function DailyHoroscopeDeck() {
                 <ZodiacGlyph sign={sign.id} size={22} className={isSelected ? 'text-ink' : 'text-gold'} />
               </div>
               <span className="text-xs font-bold">{sign.name}</span>
-              <span className="text-[10px] opacity-75 mt-0.5 truncate w-full">{sign.element}</span>
+              <span className="text-[11px] opacity-75 mt-0.5 truncate w-full">{sign.element}</span>
             </button>
           );
         })}
@@ -109,12 +109,12 @@ export function DailyHoroscopeDeck() {
                   {selectedSign.element} Elementi · {selectedSign.modality} Nitelik
                 </span>
                 <span className="text-muted">·</span>
-                <span className="doc-caption text-paper/60">{selectedSign.dates}</span>
+                <span className="doc-caption text-paper/75">{selectedSign.dates}</span>
               </div>
               <h4 className="doc-title text-2xl sm:text-3xl text-paper">
                 {selectedSign.name} Burcu <span className="doc-serif italic text-xl sm:text-2xl text-gold/90">({selectedSign.latinName})</span>
               </h4>
-              <p className="doc-caption text-xs text-paper/60 mt-1">
+              <p className="doc-caption text-xs text-paper/75 mt-1">
                 Yönetici Gezegen: <strong className="text-paper">{selectedSign.rulingPlanet}</strong> · Arketip: <strong className="text-paper">{selectedSign.traits.archetype}</strong>
               </p>
               <Link href={`/astroloji/gunluk-burc/${selectedSign.id}`} className="mt-2 inline-block font-mono text-xs text-gold hover:underline">
@@ -128,7 +128,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('genel')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                activeCategory === 'genel' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
               }`}
             >
               Günün Genel Falı
@@ -136,7 +136,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('ask')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                activeCategory === 'ask' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
               }`}
             >
               Aşk & Kalp
@@ -144,7 +144,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('kariyer')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                activeCategory === 'kariyer' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
               }`}
             >
               Kariyer & Para
@@ -152,7 +152,7 @@ export function DailyHoroscopeDeck() {
             <button
               onClick={() => setActiveCategory('tilsim')}
               className={`px-3 py-1.5 cursor-pointer uppercase transition-colors border ${
-                activeCategory === 'tilsim' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/60 hover:text-paper'
+                activeCategory === 'tilsim' ? 'border-gold bg-gold text-ink font-semibold' : 'border-transparent text-paper/75 hover:text-paper'
               }`}
             >
               Burç Tılsımları
@@ -172,7 +172,7 @@ export function DailyHoroscopeDeck() {
             <div className="h-1.5 w-full bg-ink-2 border border-line overflow-hidden">
               <div className="h-full bg-rose transition-all duration-700" style={{ width: `${dailyScores.love}%` }} />
             </div>
-            <span className="text-[10px] text-muted block">Manyetik çekim ve duygusal uyum</span>
+            <span className="text-[11px] text-muted block">Manyetik çekim ve duygusal uyum</span>
           </div>
 
           <div className="p-4 border border-line bg-ink space-y-2">
@@ -185,7 +185,7 @@ export function DailyHoroscopeDeck() {
             <div className="h-1.5 w-full bg-ink-2 border border-line overflow-hidden">
               <div className="h-full bg-gold transition-all duration-700" style={{ width: `${dailyScores.career}%` }} />
             </div>
-            <span className="text-[10px] text-muted block">Verimlilik ve stratejik fırsatlar</span>
+            <span className="text-[11px] text-muted block">Verimlilik ve stratejik fırsatlar</span>
           </div>
 
           <div className="p-4 border border-line bg-ink space-y-2">
@@ -198,7 +198,7 @@ export function DailyHoroscopeDeck() {
             <div className="h-1.5 w-full bg-ink-2 border border-line overflow-hidden">
               <div className="h-full bg-lime transition-all duration-700" style={{ width: `${dailyScores.vitality}%` }} />
             </div>
-            <span className="text-[10px] text-muted block">Zihinsel motivasyon ve dayanıklılık</span>
+            <span className="text-[11px] text-muted block">Zihinsel motivasyon ve dayanıklılık</span>
           </div>
 
           <div className="p-4 border border-line bg-ink space-y-2">
@@ -211,7 +211,7 @@ export function DailyHoroscopeDeck() {
             <div className="h-1.5 w-full bg-ink-2 border border-line overflow-hidden">
               <div className="h-full bg-gold transition-all duration-700" style={{ width: `${dailyScores.luck}%` }} />
             </div>
-            <span className="text-[10px] text-muted block">Eşzamanlılık ve fırsat kapıları</span>
+            <span className="text-[11px] text-muted block">Eşzamanlılık ve fırsat kapıları</span>
           </div>
         </div>
 
@@ -247,7 +247,7 @@ export function DailyHoroscopeDeck() {
                     <div className="bg-ink p-4">
                       <span className="doc-kicker text-gold block">Ay {reading.moonIn}: günün duygusal iklimi</span>
                       <p className="text-paper/85 text-xs leading-relaxed mt-2">{reading.moonMood}</p>
-                      <p className="text-paper/60 text-xs leading-relaxed mt-1">{reading.moonFocus}</p>
+                      <p className="text-paper/75 text-xs leading-relaxed mt-1">{reading.moonFocus}</p>
                     </div>
                     <div className="bg-ink p-4">
                       <span className="doc-kicker text-gold block">Sağlık & enerji</span>
@@ -307,35 +307,35 @@ export function DailyHoroscopeDeck() {
             {activeCategory === 'tilsim' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Uğurlu Taş</span>
+                  <span className="text-muted block text-[11px] uppercase">Uğurlu Taş</span>
                   <div className="flex items-center gap-2">
                     <Gem size={15} className="text-lime" />
                     <span className="text-paper font-bold text-sm">{selectedSign.details.stone}</span>
                   </div>
-                  <span className="text-[10px] text-muted">Toprak ve beden rezonansını güçlendirir.</span>
+                  <span className="text-[11px] text-muted">Toprak ve beden rezonansını güçlendirir.</span>
                 </div>
 
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Uğurlu Sayılar</span>
+                  <span className="text-muted block text-[11px] uppercase">Uğurlu Sayılar</span>
                   <div className="flex items-center gap-2">
                     <Award size={15} className="text-gold" />
                     <span className="text-paper font-bold text-sm">
                       {selectedSign.details.luckyNumbers.join(', ')}
                     </span>
                   </div>
-                  <span className="text-[10px] text-muted">Kozmik numerolojik uyum frekansları.</span>
+                  <span className="text-[11px] text-muted">Kozmik numerolojik uyum frekansları.</span>
                 </div>
 
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Uğurlu Renkler</span>
+                  <span className="text-muted block text-[11px] uppercase">Uğurlu Renkler</span>
                   <span className="text-paper font-bold text-sm">
                     {selectedSign.details.colors.join(', ')}
                   </span>
-                  <span className="text-[10px] text-muted">Aura katmanını besleyen tonlar.</span>
+                  <span className="text-[11px] text-muted">Aura katmanını besleyen tonlar.</span>
                 </div>
 
                 <div className="p-4 border border-line bg-ink space-y-1">
-                  <span className="text-muted block text-[10px] uppercase">Motto & Olumlama</span>
+                  <span className="text-muted block text-[11px] uppercase">Motto & Olumlama</span>
                   <span className="text-paper italic font-serif text-sm">
                     &quot;{selectedSign.traits.motto}&quot;
                   </span>
@@ -346,7 +346,7 @@ export function DailyHoroscopeDeck() {
 
           {/* Right Summary Dossier */}
           <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4">
-            <span className="doc-kicker text-gold tracking-widest block border-b border-line pb-2">
+            <span className="doc-kicker text-gold tracking-wide block border-b border-line pb-2">
               BURÇ KİMLİK KARTI
             </span>
 
@@ -373,10 +373,10 @@ export function DailyHoroscopeDeck() {
               </div>
 
               <div className="pt-2 border-t border-line">
-                <span className="text-muted block text-[10px] uppercase mb-1">Güçlü Yönler:</span>
+                <span className="text-muted block text-[11px] uppercase mb-1">Güçlü Yönler:</span>
                 <div className="flex flex-wrap gap-1">
                   {selectedSign.traits.strengths.slice(0, 3).map((st) => (
-                    <span key={st} className="px-2 py-0.5 bg-ink-2 border border-line text-lime text-[10px]">
+                    <span key={st} className="px-2 py-0.5 bg-ink-2 border border-line text-lime text-[11px]">
                       {st}
                     </span>
                   ))}
@@ -384,10 +384,10 @@ export function DailyHoroscopeDeck() {
               </div>
 
               <div className="pt-2 border-t border-line">
-                <span className="text-muted block text-[10px] uppercase mb-1">Gölge Yönler:</span>
+                <span className="text-muted block text-[11px] uppercase mb-1">Gölge Yönler:</span>
                 <div className="flex flex-wrap gap-1">
                   {selectedSign.traits.shadows.slice(0, 2).map((sh) => (
-                    <span key={sh} className="px-2 py-0.5 bg-ink-2 border border-line text-rose text-[10px]">
+                    <span key={sh} className="px-2 py-0.5 bg-ink-2 border border-line text-rose text-[11px]">
                       {sh}
                     </span>
                   ))}

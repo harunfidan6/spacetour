@@ -182,7 +182,7 @@ export function SynastryChartCalculator() {
           {/* Date & Time Inputs */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-line bg-line text-xs font-mono">
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+              <label htmlFor={`${fid}-p1-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
               <NumericInput
                 id={`${fid}-p1-day`}
                 min={1}
@@ -194,7 +194,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
+              <label htmlFor={`${fid}-p1-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
               <select
                 id={`${fid}-p1-month`}
                 value={p1Month}
@@ -208,7 +208,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+              <label htmlFor={`${fid}-p1-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
               <NumericInput
                 id={`${fid}-p1-year`}
                 min={1920}
@@ -220,7 +220,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p1-hour`} className="label text-muted block mb-1 text-[10px]">SAAT</label>
+              <label htmlFor={`${fid}-p1-hour`} className="label text-muted block mb-1 text-[11px]">SAAT</label>
               <NumericInput
                 id={`${fid}-p1-hour`}
                 min={0}
@@ -232,7 +232,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5 col-span-2 sm:col-span-1">
-              <label htmlFor={`${fid}-p1-minute`} className="label text-muted block mb-1 text-[10px]">DAKİKA</label>
+              <label htmlFor={`${fid}-p1-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
               <NumericInput
                 id={`${fid}-p1-minute`}
                 min={0}
@@ -247,7 +247,7 @@ export function SynastryChartCalculator() {
           {/* City Selection */}
           <div className="flex items-center gap-2 border border-line bg-ink p-2 text-xs font-mono">
             <MapPin size={13} className="text-gold shrink-0" />
-            <label htmlFor={`${fid}-p1-city`} className="label text-muted shrink-0 text-[10px]">ŞEHİR:</label>
+            <label htmlFor={`${fid}-p1-city`} className="label text-muted shrink-0 text-[11px]">ŞEHİR:</label>
             <select
               id={`${fid}-p1-city`}
               value={p1City}
@@ -263,7 +263,7 @@ export function SynastryChartCalculator() {
           {/* Partner 1 Ephemeris Placements Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-line bg-line text-[11px] font-mono">
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="sun" size={11} className="text-gold" />
                 Güneş
               </span>
@@ -274,7 +274,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="moon" size={11} className="text-violet" />
                 Ay
               </span>
@@ -285,7 +285,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <AscendantGlyph size={11} className="text-paper" />
                 Yükselen
               </span>
@@ -296,7 +296,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="venus" size={11} className="text-rose-signal" />
                 Venüs
               </span>
@@ -331,7 +331,7 @@ export function SynastryChartCalculator() {
           {/* Date & Time Inputs */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-px border border-line bg-line text-xs font-mono">
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+              <label htmlFor={`${fid}-p2-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
               <NumericInput
                 id={`${fid}-p2-day`}
                 min={1}
@@ -343,7 +343,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
+              <label htmlFor={`${fid}-p2-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
               <select
                 id={`${fid}-p2-month`}
                 value={p2Month}
@@ -357,7 +357,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+              <label htmlFor={`${fid}-p2-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
               <NumericInput
                 id={`${fid}-p2-year`}
                 min={1920}
@@ -369,7 +369,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5">
-              <label htmlFor={`${fid}-p2-hour`} className="label text-muted block mb-1 text-[10px]">SAAT</label>
+              <label htmlFor={`${fid}-p2-hour`} className="label text-muted block mb-1 text-[11px]">SAAT</label>
               <NumericInput
                 id={`${fid}-p2-hour`}
                 min={0}
@@ -381,7 +381,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="bg-ink p-2.5 col-span-2 sm:col-span-1">
-              <label htmlFor={`${fid}-p2-minute`} className="label text-muted block mb-1 text-[10px]">DAKİKA</label>
+              <label htmlFor={`${fid}-p2-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
               <NumericInput
                 id={`${fid}-p2-minute`}
                 min={0}
@@ -396,7 +396,7 @@ export function SynastryChartCalculator() {
           {/* City Selection */}
           <div className="flex items-center gap-2 border border-line bg-ink p-2 text-xs font-mono">
             <MapPin size={13} className="text-rose-signal shrink-0" />
-            <label htmlFor={`${fid}-p2-city`} className="label text-muted shrink-0 text-[10px]">ŞEHİR:</label>
+            <label htmlFor={`${fid}-p2-city`} className="label text-muted shrink-0 text-[11px]">ŞEHİR:</label>
             <select
               id={`${fid}-p2-city`}
               value={p2City}
@@ -412,7 +412,7 @@ export function SynastryChartCalculator() {
           {/* Partner 2 Ephemeris Placements Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-px border border-line bg-line text-[11px] font-mono">
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="sun" size={11} className="text-rose-signal" />
                 Güneş
               </span>
@@ -423,7 +423,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="moon" size={11} className="text-violet" />
                 Ay
               </span>
@@ -434,7 +434,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <AscendantGlyph size={11} className="text-paper" />
                 Yükselen
               </span>
@@ -445,7 +445,7 @@ export function SynastryChartCalculator() {
             </div>
 
             <div className="p-2.5 bg-ink text-center flex flex-col items-center gap-1">
-              <span className="label text-[10px] text-muted flex items-center gap-1">
+              <span className="label text-[11px] text-muted flex items-center gap-1">
                 <PlanetGlyph planet="venus" size={11} className="text-pink-400" />
                 Venüs
               </span>
@@ -466,11 +466,11 @@ export function SynastryChartCalculator() {
               <span className="text-3xl sm:text-4xl font-black text-rose-signal font-mono">
                 %{analysis.overallScore}
               </span>
-              <span className="label text-[9px] text-rose-signal uppercase tracking-widest mt-0.5">SİNASTRİ</span>
+              <span className="label text-[11px] text-rose-signal uppercase tracking-wide mt-0.5">SİNASTRİ</span>
             </div>
 
             <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider bg-rose-signal/15 text-rose-signal border border-rose-signal/30">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider bg-rose-signal/15 text-rose-signal border border-rose-signal/30">
                 <Sparkles size={11} />
                 {analysis.compatibilityLevel}
               </div>
@@ -517,7 +517,7 @@ export function SynastryChartCalculator() {
                 style={{ width: `${analysis.dimensionScores.soul}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/60 font-sans leading-tight">
+            <p className="text-[11px] text-paper/75 font-sans leading-tight">
               Ay ve Güneş etkileşimi: İçsel sığınak, derin empati ve savunmasız kalabilme rahatlığı.
             </p>
           </div>
@@ -537,7 +537,7 @@ export function SynastryChartCalculator() {
                 style={{ width: `${analysis.dimensionScores.passion}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/60 font-sans leading-tight">
+            <p className="text-[11px] text-paper/75 font-sans leading-tight">
               Venüs ve Mars kimyası: Fiziksel arzu, flört kıvılcımı ve tensel çekim frekansı.
             </p>
           </div>
@@ -557,7 +557,7 @@ export function SynastryChartCalculator() {
                 style={{ width: `${analysis.dimensionScores.mind}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/60 font-sans leading-tight">
+            <p className="text-[11px] text-paper/75 font-sans leading-tight">
               Merkür ekseni: Saatlerce sohbet edebilme, ortak espri anlayışı ve kriz çözme.
             </p>
           </div>
@@ -577,7 +577,7 @@ export function SynastryChartCalculator() {
                 style={{ width: `${analysis.dimensionScores.karma}%` }}
               />
             </div>
-            <p className="text-[11px] text-paper/60 font-sans leading-tight">
+            <p className="text-[11px] text-paper/75 font-sans leading-tight">
               Satürn ve Jüpiter bağları: Sorumluluk, sadakat, birlikte büyüme ve gelecek ortaklığı.
             </p>
           </div>
@@ -628,7 +628,7 @@ export function SynastryChartCalculator() {
         <div className="space-y-6">
           {/* Category Filter Chips */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="label text-muted text-[10px] mr-1">FİLTRE:</span>
+            <span className="label text-muted text-[11px] mr-1">FİLTRE:</span>
             {[
               { id: 'all', label: 'Tüm Açılar' },
               { id: 'soul', label: 'Ruh & Duygu (Güneş/Ay)' },
@@ -638,11 +638,11 @@ export function SynastryChartCalculator() {
             ].map((chip) => (
               <button
                 key={chip.id}
-                onClick={() => setAspectFilter(chip.id as any)}
+                onClick={() => setAspectFilter(chip.id as 'all' | AspectCategory)}
                 className={`px-3 py-1 text-[11px] font-mono transition-colors ${
                   aspectFilter === chip.id
                     ? 'bg-line text-rose-signal font-bold border border-rose-signal/40'
-                    : 'bg-ink text-paper/60 hover:text-paper border border-line'
+                    : 'bg-ink text-paper/75 hover:text-paper border border-line'
                 }`}
               >
                 {chip.label}
@@ -678,7 +678,7 @@ export function SynastryChartCalculator() {
 
                     <div className="flex items-center gap-1.5 shrink-0">
                       <span
-                        className={`px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border ${
+                        className={`px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider border ${
                           asp.nature === 'harmonious'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                             : asp.nature === 'challenging'
@@ -688,7 +688,7 @@ export function SynastryChartCalculator() {
                       >
                         {asp.aspectSymbol} {asp.aspectName} ({asp.angle}°)
                       </span>
-                      <span className="px-1.5 py-0.5 text-[10px] font-mono bg-ink text-muted border border-line">
+                      <span className="px-1.5 py-0.5 text-[11px] font-mono bg-ink text-muted border border-line">
                         {asp.orb}° orb
                       </span>
                     </div>
@@ -745,7 +745,7 @@ export function SynastryChartCalculator() {
                         <PlanetGlyph planet={p1Body.id} size={15} className="text-muted" />
                         <div>
                           <div>{p1Body.name}</div>
-                          <div className="text-[10px] text-muted font-sans font-normal">{p1Body.meaning}</div>
+                          <div className="text-[11px] text-muted font-sans font-normal">{p1Body.meaning}</div>
                         </div>
                       </div>
                     </td>
@@ -754,13 +754,13 @@ export function SynastryChartCalculator() {
                       <div className="flex items-center gap-1.5 font-bold text-gold">
                         <ZodiacGlyph sign={p1Body.signId} size={14} />
                         <span>{p1Body.formatted}</span>
-                        <span className="text-[10px] text-muted font-normal">({p1Body.element})</span>
+                        <span className="text-[11px] text-muted font-normal">({p1Body.element})</span>
                       </div>
                     </td>
 
                     <td className="p-3.5 text-center">
                       <span
-                        className={`inline-block px-2 py-0.5 text-[10px] font-mono border ${
+                        className={`inline-block px-2 py-0.5 text-[11px] font-mono border ${
                           isHarmonious
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -778,7 +778,7 @@ export function SynastryChartCalculator() {
                       <div className="flex items-center gap-1.5 font-bold text-rose-signal">
                         <ZodiacGlyph sign={p2Body.signId} size={14} />
                         <span>{p2Body.formatted}</span>
-                        <span className="text-[10px] text-muted font-normal">({p2Body.element})</span>
+                        <span className="text-[11px] text-muted font-normal">({p2Body.element})</span>
                       </div>
                     </td>
                   </tr>
