@@ -128,11 +128,11 @@ export function StarOracleWidget() {
           <p className="text-xs leading-relaxed text-paper/70">Doğum tarihini gir: doğum anındaki Güneş’e göre yıldızın ve gün içindeki saatlerin hesaplanır.</p>
           <div className="grid grid-cols-3 gap-3">
             <label className="space-y-1.5">
-              <span className="doc-kicker text-paper/60 text-[10px] uppercase block">Gün</span>
+              <span className="doc-kicker text-paper/75 text-[11px] uppercase block">Gün</span>
               <NumericInput value={day} min={1} max={maxDay} onValueChange={setDay} className={FIELD} />
             </label>
             <label className="space-y-1.5">
-              <span className="doc-kicker text-paper/60 text-[10px] uppercase block">Ay</span>
+              <span className="doc-kicker text-paper/75 text-[11px] uppercase block">Ay</span>
               <NumericInput
                 value={month}
                 min={1}
@@ -142,7 +142,7 @@ export function StarOracleWidget() {
               />
             </label>
             <label className="space-y-1.5">
-              <span className="doc-kicker text-paper/60 text-[10px] uppercase block">Yıl</span>
+              <span className="doc-kicker text-paper/75 text-[11px] uppercase block">Yıl</span>
               <NumericInput
                 value={year}
                 min={1920}
@@ -156,7 +156,7 @@ export function StarOracleWidget() {
 
         <div className="lg:col-span-7 grid gap-3 sm:grid-cols-2 font-mono text-xs" aria-live="polite">
           <div className="border border-line bg-ink p-4 space-y-1.5">
-            <span className="text-[10px] uppercase tracking-wider text-muted">Doğum Güneşin</span>
+            <span className="text-[11px] uppercase tracking-wider text-muted">Doğum Güneşin</span>
             <div className="text-base font-bold text-paper">{SIGN_NAMES[natalSign]} {formatDegrees(natalSun % 30)}</div>
             <p className="text-[11px] leading-relaxed text-paper/70">
               Burcunun geleneksel yöneticisi {BODY_NAMES[myRuler]}; onun yönettiği gezegen saatleri senin saatlerin (çizelgede ★).
@@ -168,7 +168,7 @@ export function StarOracleWidget() {
             onClick={() => setPickedStarId(myStar.star.id)}
             className="border border-line bg-ink p-4 space-y-1.5 text-left hover:border-gold transition-colors cursor-pointer"
           >
-            <span className="text-[10px] uppercase tracking-wider text-muted block">Senin yıldızın</span>
+            <span className="text-[11px] uppercase tracking-wider text-muted block">Senin yıldızın</span>
             <span className="text-base font-bold text-paper block">{myStar.star.name}</span>
             <span className="text-[11px] leading-relaxed text-paper/70 block">
               {Math.abs(myStar.gap) <= 5
@@ -185,7 +185,7 @@ export function StarOracleWidget() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-line pb-4">
           <div className="flex items-center gap-2.5">
             <Clock size={16} className="text-gold" />
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-paper">
+            <h4 className="font-mono text-xs font-bold tracking-wider text-paper">
               Gezegen Saati Çizelgesi
             </h4>
             {currentSlotIndex !== null && (
@@ -204,7 +204,7 @@ export function StarOracleWidget() {
             <div className="w-16 h-16 rounded-full border border-line bg-ink-2 flex items-center justify-center p-3 mb-3 shadow-inner">
               <PlanetGlyph planet={activeHourDetails.rulerId} size={36} className="text-gold" />
             </div>
-            <span className="font-mono text-[10px] text-muted uppercase tracking-wider">
+            <span className="font-mono text-[11px] text-muted uppercase tracking-wider">
               {activeSlot.isDay ? 'Gündüz Saati' : 'Gece Saati'} ({activeSlot.isDay ? activeSlot.index + 1 : activeSlot.index - 11} / 12)
             </span>
             <h4 className="font-mono text-lg font-bold text-paper mt-1">
@@ -217,14 +217,14 @@ export function StarOracleWidget() {
               {activeHourDetails.title}
             </p>
             {activeSlot.ruler === myRuler && (
-              <span className="mt-2 font-mono text-[10px] font-bold uppercase tracking-wider text-gold">★ Senin saatin</span>
+              <span className="mt-2 font-mono text-[11px] font-bold uppercase tracking-wider text-gold">★ Senin saatin</span>
             )}
           </div>
 
           {/* Right: Favorability Recommendations */}
           <div className="lg:col-span-8 space-y-3 font-mono text-xs">
             <p className="text-paper/85 leading-relaxed bg-ink p-3.5 border border-line">
-              <strong className="text-gold uppercase block text-[10px] mb-1">Kozmik Tema:</strong>
+              <strong className="text-gold uppercase block text-[11px] mb-1">Kozmik Tema:</strong>
               {activeHourDetails.theme}
             </p>
 
@@ -269,7 +269,7 @@ export function StarOracleWidget() {
                 <Sun size={13} />
                 <span>GÜNDÜZ SAATLERİ (Gündoğumu — Günbatımı)</span>
               </span>
-              <span className="text-[10px]">12 Eşit Olmayan Saat</span>
+              <span className="text-[11px]">12 Eşit Olmayan Saat</span>
             </div>
 
             <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-1.5">
@@ -282,7 +282,7 @@ export function StarOracleWidget() {
                   <button
                     key={s.index}
                     onClick={() => setPickedSlotIndex(s.index)}
-                    className={`relative p-1.5 text-center border transition-all cursor-pointer text-[10px] flex flex-col items-center justify-center ${
+                    className={`relative p-1.5 text-center border transition-all cursor-pointer text-[11px] flex flex-col items-center justify-center ${
                       isSelected
                         ? 'border-gold bg-gold text-ink font-bold shadow-md scale-102 z-10'
                         : isCurrent
@@ -291,13 +291,13 @@ export function StarOracleWidget() {
                     }`}
                     title={`Gündüz ${s.index + 1}. Saat (${formatTime(s.start)} - ${formatTime(s.end)}) · ${details.ruler}${s.ruler === myRuler ? ' · senin saatin' : ''}`}
                   >
-                    <div className="flex items-center justify-between gap-1 w-full text-[10px] px-0.5 opacity-75">
+                    <div className="flex items-center justify-between gap-1 w-full text-[11px] px-0.5 opacity-75">
                       <span>G{s.index + 1}</span>
                       <span>{formatTime(s.start)}</span>
                     </div>
                     {s.ruler === myRuler && <span aria-hidden className="absolute -top-1.5 -right-1 text-[11px] leading-none text-gold">★</span>}
                     <PlanetGlyph planet={details.rulerId} size={13} className="my-1" />
-                    <span className="text-[10px] truncate w-full">{details.ruler.split(' ')[0]}</span>
+                    <span className="text-[11px] truncate w-full">{details.ruler.split(' ')[0]}</span>
                   </button>
                 );
               })}
@@ -311,7 +311,7 @@ export function StarOracleWidget() {
                 <Moon size={13} />
                 <span>GECE SAATLERİ (Günbatımı — Gündoğumu)</span>
               </span>
-              <span className="text-[10px]">12 Eşit Olmayan Saat</span>
+              <span className="text-[11px]">12 Eşit Olmayan Saat</span>
             </div>
 
             <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-1.5">
@@ -324,7 +324,7 @@ export function StarOracleWidget() {
                   <button
                     key={s.index}
                     onClick={() => setPickedSlotIndex(s.index)}
-                    className={`relative p-1.5 text-center border transition-all cursor-pointer text-[10px] flex flex-col items-center justify-center ${
+                    className={`relative p-1.5 text-center border transition-all cursor-pointer text-[11px] flex flex-col items-center justify-center ${
                       isSelected
                         ? 'border-gold bg-gold text-ink font-bold shadow-md scale-102 z-10'
                         : isCurrent
@@ -333,13 +333,13 @@ export function StarOracleWidget() {
                     }`}
                     title={`Gece ${s.index - 11}. Saat (${formatTime(s.start)} - ${formatTime(s.end)}) · ${details.ruler}${s.ruler === myRuler ? ' · senin saatin' : ''}`}
                   >
-                    <div className="flex items-center justify-between gap-1 w-full text-[10px] px-0.5 opacity-75">
+                    <div className="flex items-center justify-between gap-1 w-full text-[11px] px-0.5 opacity-75">
                       <span>N{s.index - 11}</span>
                       <span>{formatTime(s.start)}</span>
                     </div>
                     {s.ruler === myRuler && <span aria-hidden className="absolute -top-1.5 -right-1 text-[11px] leading-none text-gold">★</span>}
                     <PlanetGlyph planet={details.rulerId} size={13} className="my-1" />
-                    <span className="text-[10px] truncate w-full">{details.ruler.split(' ')[0]}</span>
+                    <span className="text-[11px] truncate w-full">{details.ruler.split(' ')[0]}</span>
                   </button>
                 );
               })}
@@ -353,7 +353,7 @@ export function StarOracleWidget() {
         <div className="flex items-center justify-between border-b border-line pb-3">
           <div className="flex items-center gap-2">
             <Star size={16} className="text-gold" />
-            <h4 className="font-mono text-sm font-bold text-paper uppercase tracking-wider">
+            <h4 className="font-mono text-sm font-bold text-paper tracking-wider">
               Sabit Yıldızlar ve Kraliyet Muhafızları
             </h4>
           </div>
@@ -377,13 +377,13 @@ export function StarOracleWidget() {
                 }`}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-[10px] uppercase tracking-widest opacity-80">
+                  <span className="text-[11px] uppercase tracking-wide opacity-80">
                     {star.id === todayStar?.star.id ? 'Bugün' : star.id === myStar.star.id ? 'Senin' : star.royalStar ?? 'Yıldız'}
                   </span>
-                  <span className="text-[10px]">{star.magnitude}m</span>
+                  <span className="text-[11px]">{star.magnitude}m</span>
                 </div>
                 <div className="text-xs font-bold truncate">{star.name}</div>
-                <div className="text-[10px] opacity-75 truncate">{star.constellation}</div>
+                <div className="text-[11px] opacity-75 truncate">{star.constellation}</div>
               </button>
             );
           })}
@@ -395,13 +395,13 @@ export function StarOracleWidget() {
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 {isToday && (
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 border border-lime/50 bg-lime/10 text-lime uppercase tracking-widest">Günün yıldızı</span>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 border border-lime/50 bg-lime/10 text-lime uppercase tracking-wide">Günün yıldızı</span>
                 )}
                 {isMine && (
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 border border-rose/50 bg-rose/10 text-rose uppercase tracking-widest">Senin yıldızın</span>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 border border-rose/50 bg-rose/10 text-rose uppercase tracking-wide">Senin yıldızın</span>
                 )}
                 {selectedStar.royalStar && (
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 border border-gold/50 bg-gold/10 text-gold uppercase tracking-widest">
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 border border-gold/50 bg-gold/10 text-gold uppercase tracking-wide">
                     4 Kraliyet Yıldızı · {selectedStar.royalStar}
                   </span>
                 )}
@@ -428,12 +428,12 @@ export function StarOracleWidget() {
 
             <div className="flex items-center gap-4 bg-ink p-3 border border-line font-mono text-xs shrink-0">
               <div className="text-right">
-                <span className="text-muted block text-[10px] uppercase">Ay’a uzaklık</span>
+                <span className="text-muted block text-[11px] uppercase">Ay’a uzaklık</span>
                 <span className="font-bold text-lime text-base">{moonGap === null ? '—' : formatDegrees(moonGap)}</span>
               </div>
               <div className="h-8 w-px bg-line" />
               <div>
-                <span className="text-muted block text-[10px] uppercase">Takımyıldız</span>
+                <span className="text-muted block text-[11px] uppercase">Takımyıldız</span>
                 <span className="font-bold text-paper">{selectedStar.constellation}</span>
               </div>
             </div>
@@ -444,7 +444,7 @@ export function StarOracleWidget() {
             {/* Left: Oracle Message & Gift */}
             <div className="lg:col-span-8 space-y-4">
               <div className="p-4 border border-line bg-ink space-y-2">
-                <span className="text-gold uppercase font-bold text-[10px] flex items-center gap-1.5">
+                <span className="text-gold uppercase font-bold text-[11px] flex items-center gap-1.5">
                   <Sparkles size={13} />
                   Günün Yıldız Mesajı & Kehaneti
                 </span>
@@ -455,14 +455,14 @@ export function StarOracleWidget() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3.5 border border-line bg-ink space-y-1.5">
-                  <span className="text-lime uppercase font-bold text-[10px] block">İlahi Hediye & Kudret</span>
+                  <span className="text-lime uppercase font-bold text-[11px] block">İlahi Hediye & Kudret</span>
                   <p className="text-paper/80 leading-relaxed text-[11px]">
                     {selectedStar.guidance.gift}
                   </p>
                 </div>
 
                 <div className="p-3.5 border border-line bg-ink space-y-1.5">
-                  <span className="text-rose uppercase font-bold text-[10px] flex items-center gap-1">
+                  <span className="text-rose uppercase font-bold text-[11px] flex items-center gap-1">
                     <ShieldAlert size={12} />
                     Kozmik Sınav & Uyarı
                   </span>
@@ -475,23 +475,23 @@ export function StarOracleWidget() {
 
             {/* Right: Practical Action & Favorable Fields */}
             <div className="lg:col-span-4 border border-line bg-ink p-5 space-y-4">
-              <span className="text-[10px] text-muted uppercase tracking-widest block border-b border-line pb-2">
+              <span className="text-[11px] text-muted uppercase tracking-wide block border-b border-line pb-2">
                 UYGULAMALI REHBERLİK
               </span>
 
               <div className="space-y-3">
                 <div>
-                  <span className="text-muted block text-[10px] uppercase">Eylem Tavsiyesi:</span>
+                  <span className="text-muted block text-[11px] uppercase">Eylem Tavsiyesi:</span>
                   <p className="text-paper/85 text-xs leading-relaxed mt-1">
                     {selectedStar.guidance.actionAdvice}
                   </p>
                 </div>
 
                 <div className="pt-2 border-t border-line">
-                  <span className="text-muted block text-[10px] uppercase mb-1.5">Desteklenen Eylemler:</span>
+                  <span className="text-muted block text-[11px] uppercase mb-1.5">Desteklenen Eylemler:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedStar.favorableActivities.map((act) => (
-                      <span key={act} className="px-2 py-0.5 bg-ink-2 border border-line text-gold text-[10px]">
+                      <span key={act} className="px-2 py-0.5 bg-ink-2 border border-line text-gold text-[11px]">
                         {act}
                       </span>
                     ))}

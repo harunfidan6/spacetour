@@ -103,7 +103,7 @@ export function ZodiacCompatibility() {
 
           {/* Quick Glyph Strip for Sign A */}
           <div className="w-full max-w-xs pt-2">
-            <span className="doc-caption text-[10px] text-muted block mb-1.5">HIZLI SEÇ:</span>
+            <span className="doc-caption text-[11px] text-muted block mb-1.5">HIZLI SEÇ:</span>
             <div className="grid grid-cols-6 gap-1 border border-line bg-ink p-1.5">
               {ZODIAC_SIGNS.map((s) => {
                 const isSelected = s.id === signA;
@@ -116,7 +116,7 @@ export function ZodiacCompatibility() {
                     className={`h-7 grid place-items-center rounded transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-gold text-ink font-bold shadow-xs'
-                        : 'text-paper/60 hover:text-gold hover:bg-ink-2'
+                        : 'text-paper/75 hover:text-gold hover:bg-ink-2'
                     }`}
                   >
                     <ZodiacGlyph sign={s.id} size={15} />
@@ -154,7 +154,7 @@ export function ZodiacCompatibility() {
             </svg>
 
             <div className="text-center z-10" aria-live="polite">
-              <div className="label text-muted text-[10px] tracking-widest uppercase">UYUM</div>
+              <div className="label text-muted text-[11px] tracking-wide uppercase">UYUM</div>
               <div className="display display-tight mt-1 text-5xl font-black text-paper font-mono">
                 %{score}
               </div>
@@ -173,11 +173,11 @@ export function ZodiacCompatibility() {
 
           {/* Puanın hesabı: açının taban puanı + geleneksel eşleşme */}
           <div className="w-full max-w-xs mt-5 bg-ink p-3.5 border border-line font-mono text-[11px] text-muted">
-            <div className="doc-caption text-[10px] text-muted mb-2">PUAN NASIL HESAPLANDI</div>
+            <div className="doc-caption text-[11px] text-muted mb-2">PUAN NASIL HESAPLANDI</div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-paper/85">{result.relation}</div>
-                <div className="text-[10px] text-muted">
+                <div className="text-[11px] text-muted">
                   {result.separation === 0 ? 'Aynı burç · 0°' : `${result.separation} burç arası · ${result.separation * 30}°`}
                 </div>
               </div>
@@ -228,7 +228,7 @@ export function ZodiacCompatibility() {
 
           {/* Quick Glyph Strip for Sign B */}
           <div className="w-full max-w-xs pt-2">
-            <span className="doc-caption text-[10px] text-muted block mb-1.5">HIZLI SEÇ:</span>
+            <span className="doc-caption text-[11px] text-muted block mb-1.5">HIZLI SEÇ:</span>
             <div className="grid grid-cols-6 gap-1 border border-line bg-ink p-1.5">
               {ZODIAC_SIGNS.map((s) => {
                 const isSelected = s.id === signB;
@@ -241,7 +241,7 @@ export function ZodiacCompatibility() {
                     className={`h-7 grid place-items-center rounded transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-gold text-ink font-bold shadow-xs'
-                        : 'text-paper/60 hover:text-gold hover:bg-ink-2'
+                        : 'text-paper/75 hover:text-gold hover:bg-ink-2'
                     }`}
                   >
                     <ZodiacGlyph sign={s.id} size={15} />
@@ -263,7 +263,7 @@ export function ZodiacCompatibility() {
           <div key={r.k} className="bg-ink p-5 sm:p-6 space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="doc-caption text-gold">{r.k}</span>
-              <span className="text-[10px] px-1.5 py-0.5 border border-line bg-ink-2 text-muted">{r.badge}</span>
+              <span className="text-[11px] px-1.5 py-0.5 border border-line bg-ink-2 text-muted">{r.badge}</span>
             </div>
             <div className="doc-title text-base sm:text-lg text-paper font-bold">{r.title}</div>
             <p className="text-xs sm:text-sm leading-relaxed text-paper/75 font-sans">{r.text}</p>
@@ -310,7 +310,7 @@ export function ZodiacCompatibility() {
 
       {/* Deep Link Advisory Note */}
       <div className="border border-line bg-ink p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
-        <p className="text-paper/60 font-sans">
+        <p className="text-paper/75 font-sans">
           {result.traditional ? '★ Geleneksel astroloji kaynaklarında bu ikili öne çıkan eşleşmeler arasındadır. ' : ''}
           Bu hesaplama yalnızca Güneş burçlarını kıyaslar. Gerçek bir ilişki dinamiği için Güneş, Ay, Yükselen ve Venüs-Mars konumlarını sinastri modülünde karşılaştırın.
         </p>

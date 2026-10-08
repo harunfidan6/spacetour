@@ -467,7 +467,7 @@ export function NatalChartCalculator() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line font-mono text-xs">
         {/* Day */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-day`} className="label text-muted block mb-1 text-[10px]">GÜN</label>
+          <label htmlFor={`${fid}-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
           <NumericInput
             id={`${fid}-day`}
             min={1}
@@ -480,7 +480,7 @@ export function NatalChartCalculator() {
 
         {/* Month */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-month`} className="label text-muted block mb-1 text-[10px]">AY</label>
+          <label htmlFor={`${fid}-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
           <select
             id={`${fid}-month`}
             value={month}
@@ -500,7 +500,7 @@ export function NatalChartCalculator() {
 
         {/* Year */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-year`} className="label text-muted block mb-1 text-[10px]">YIL</label>
+          <label htmlFor={`${fid}-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
           <NumericInput
             id={`${fid}-year`}
             min={1920}
@@ -513,7 +513,7 @@ export function NatalChartCalculator() {
 
         {/* Hour */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-hour`} className="label text-muted block mb-1 text-[10px]">SAAT (0-23)</label>
+          <label htmlFor={`${fid}-hour`} className="label text-muted block mb-1 text-[11px]">SAAT (0-23)</label>
           <NumericInput
             id={`${fid}-hour`}
             min={0}
@@ -526,7 +526,7 @@ export function NatalChartCalculator() {
 
         {/* Minute */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-minute`} className="label text-muted block mb-1 text-[10px]">DAKİKA</label>
+          <label htmlFor={`${fid}-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
           <NumericInput
             id={`${fid}-minute`}
             min={0}
@@ -539,7 +539,7 @@ export function NatalChartCalculator() {
 
         {/* City */}
         <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-city`} className="label text-muted block mb-1 text-[10px]">DOĞUM ŞEHRİ</label>
+          <label htmlFor={`${fid}-city`} className="label text-muted block mb-1 text-[11px]">DOĞUM ŞEHRİ</label>
           <select
             id={`${fid}-city`}
             value={city}
@@ -563,10 +563,10 @@ export function NatalChartCalculator() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="label text-[10px] text-violet font-bold">
+              <span className="label text-[11px] text-violet font-bold">
                 PİSAGOR YAŞAM YOLU SAYISI (NUMEROLOJİ)
               </span>
-              <span className="label text-[10px] bg-violet/20 text-violet px-2 py-0.5 border border-violet/30 font-mono font-bold">
+              <span className="label text-[11px] bg-violet/20 text-violet px-2 py-0.5 border border-violet/30 font-mono font-bold">
                 No: {lifePath.number}
               </span>
             </div>
@@ -696,13 +696,13 @@ export function NatalChartCalculator() {
 
               {/* Center Info Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="label text-[10px] text-muted font-bold">
+                <span className="label text-[11px] text-muted font-bold">
                   {sunSign.name} ☉
                 </span>
                 <span className="font-mono text-xs font-black text-gold">
                   {risingSign.name} ↑
                 </span>
-                <span className="label text-[10px] text-paper/50">
+                <span className="label text-[11px] text-paper/70">
                   {aspects.length} Açı
                 </span>
               </div>
@@ -723,12 +723,12 @@ export function NatalChartCalculator() {
                 <div className="border border-gold bg-gold/10 p-3 text-paper transition-all">
                   <div className="flex items-center justify-between text-[11px] font-bold">
                     <span className="text-gold">{hoveredAspect.p1} & {hoveredAspect.p2}</span>
-                    <span className="px-1.5 py-0.5 bg-gold text-ink text-[10px]">{hoveredAspect.name}</span>
+                    <span className="px-1.5 py-0.5 bg-gold text-ink text-[11px]">{hoveredAspect.name}</span>
                   </div>
                   <p className="mt-1 text-[11px] text-paper/85 leading-relaxed font-sans">
                     {hoveredAspect.interpretation}
                   </p>
-                  <div className="mt-2 flex items-center gap-4 text-[10px] text-muted">
+                  <div className="mt-2 flex items-center gap-4 text-[11px] text-muted">
                     <span>Açısal Fark: <strong className="text-paper">{hoveredAspect.exactAngle}°</strong></span>
                     <span>Tolerans (Orb): <strong className="text-paper">{hoveredAspect.orb}°</strong></span>
                   </div>
@@ -740,7 +740,7 @@ export function NatalChartCalculator() {
               )}
 
               {/* Aspect Legend Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px]">
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
                 <span className="flex items-center gap-1 text-gold"><span className="h-2 w-2 rounded-full bg-gold" /> Üçgen (120°)</span>
                 <span className="flex items-center gap-1 text-primary"><span className="h-2 w-2 rounded-full bg-primary" /> Kavuşum (0°)</span>
                 <span className="flex items-center gap-1 text-lime"><span className="h-2 w-2 rounded-full bg-lime" /> Sekstil (60°)</span>
@@ -755,11 +755,11 @@ export function NatalChartCalculator() {
                 </p>
                 <div className="grid grid-cols-2 gap-2 pt-2 font-mono text-[11px] border-t border-line">
                   <div>
-                    <span className="text-muted block text-[10px]">Şanslı Sayılar</span>
+                    <span className="text-muted block text-[11px]">Şanslı Sayılar</span>
                     <span className="text-gold font-bold">{sunSign.details.luckyNumbers.join(', ')}</span>
                   </div>
                   <div>
-                    <span className="text-muted block text-[10px]">Kozmik Taş</span>
+                    <span className="text-muted block text-[11px]">Kozmik Taş</span>
                     <span className="text-paper font-bold">{sunSign.details.stone}</span>
                   </div>
                 </div>
@@ -811,7 +811,7 @@ export function NatalChartCalculator() {
                       </span>
                       <div>
                         <h4 className="display display-tight text-sm font-bold text-paper">{p.planet}</h4>
-                        <div className="flex items-center gap-1.5 label text-[10px] text-muted">
+                        <div className="flex items-center gap-1.5 label text-[11px] text-muted">
                           {signData && <ZodiacGlyph sign={signData.id} size={12} className="text-paper/70" />}
                           <span>{p.degree}° {p.sign}</span>
                         </div>
@@ -869,7 +869,7 @@ export function NatalChartCalculator() {
                     <span className="label text-xs font-bold text-violet">
                       {h.title}
                     </span>
-                    <span className="label text-[10px] text-muted">
+                    <span className="label text-[11px] text-muted">
                       {h.traditionalName}
                     </span>
                   </span>
@@ -882,7 +882,7 @@ export function NatalChartCalculator() {
                     {h.description}
                   </span>
 
-                  <span className="pt-2 flex items-center justify-between label text-[10px] text-muted border-t border-line">
+                  <span className="pt-2 flex items-center justify-between label text-[11px] text-muted border-t border-line">
                     <span className="flex items-center gap-1.5">
                       {govSign && <ZodiacGlyph sign={govSign.id} size={11} className="text-violet" />}
                       Doğal Yöneticisi: <strong className="text-paper">{h.governingSign}</strong>
@@ -931,7 +931,7 @@ export function NatalChartCalculator() {
             {/* Poster Header */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
               <div>
-                <div className="label text-gold text-xs tracking-widest uppercase">
+                <div className="label text-gold text-xs tracking-wide uppercase">
                   ARŞİV BELGESİ № ASTRO-NATALIS-{year}{String(month).padStart(2, '0')}{String(day).padStart(2, '0')}
                 </div>
                 <h3 className="display display-tight text-3xl sm:text-5xl text-paper mt-1">
@@ -952,7 +952,7 @@ export function NatalChartCalculator() {
                 <div className="relative w-full max-w-[340px] aspect-square border border-line rounded-full p-2 bg-ink/60 shadow-[0_0_30px_rgba(255,215,0,0.06)]">
                   {wheelSvg}
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="label text-[9px] text-muted">{sunSign.name} ☉</span>
+                    <span className="label text-[11px] text-muted">{sunSign.name} ☉</span>
                     <span className="font-mono text-[11px] font-black text-gold">{risingSign.name} ↑</span>
                   </div>
                 </div>
@@ -962,44 +962,44 @@ export function NatalChartCalculator() {
               <div className="lg:col-span-6 space-y-6">
                 <div className="grid grid-cols-2 gap-px border border-line bg-line">
                   <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-gold text-[10px]">GÜNEŞ (ÖZ KİMLİK)</span>
+                    <span className="label text-gold text-[11px]">GÜNEŞ (ÖZ KİMLİK)</span>
                     <div className="flex items-center gap-2 mt-1">
                       <ZodiacGlyph sign={sunSign.id} size={22} className="text-gold" />
                       <div className="text-sm font-bold text-paper">{sunSign.name}</div>
                     </div>
-                    <div className="text-[10px] text-muted">{sunSign.element} · {sunSign.modality}</div>
+                    <div className="text-[11px] text-muted">{sunSign.element} · {sunSign.modality}</div>
                   </div>
 
                   <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-paper text-[10px]">AY (DUYGU & BİLİNÇDIŞI)</span>
+                    <span className="label text-paper text-[11px]">AY (DUYGU & BİLİNÇDIŞI)</span>
                     <div className="flex items-center gap-2 mt-1">
                       <ZodiacGlyph sign={moonSign.id} size={22} className="text-paper" />
                       <div className="text-sm font-bold text-paper">{moonSign.name}</div>
                     </div>
-                    <div className="text-[10px] text-muted">{moonSign.element} · {moonSign.modality}</div>
+                    <div className="text-[11px] text-muted">{moonSign.element} · {moonSign.modality}</div>
                   </div>
 
                   <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-violet text-[10px]">YÜKSELEN (ASC / MASKE)</span>
+                    <span className="label text-violet text-[11px]">YÜKSELEN (ASC / MASKE)</span>
                     <div className="flex items-center gap-2 mt-1">
                       <ZodiacGlyph sign={risingSign.id} size={22} className="text-violet" />
                       <div className="text-sm font-bold text-paper">{risingSign.name}</div>
                     </div>
-                    <div className="text-[10px] text-muted">{risingSign.element} · {risingSign.modality}</div>
+                    <div className="text-[11px] text-muted">{risingSign.element} · {risingSign.modality}</div>
                   </div>
 
                   <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-gold text-[10px]">YAŞAM YOLU SAYISI</span>
+                    <span className="label text-gold text-[11px]">YAŞAM YOLU SAYISI</span>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="display display-tight text-2xl text-gold">{lifePath.number}</span>
                       <span className="text-xs font-semibold text-paper truncate">{lifePath.title}</span>
                     </div>
-                    <div className="text-[10px] text-muted">Pisagor Kutsal Sayısı</div>
+                    <div className="text-[11px] text-muted">Pisagor Kutsal Sayısı</div>
                   </div>
                 </div>
 
                 <div className="border-l-2 border-gold pl-4 py-2 bg-ink/40">
-                  <div className="label text-gold text-[10px]">KOZMİK YAŞAM REHBERİ</div>
+                  <div className="label text-gold text-[11px]">KOZMİK YAŞAM REHBERİ</div>
                   <p className="text-xs leading-relaxed text-paper/85 mt-1">
                     {sunSign.name} Güneşi’nin iradesi, {risingSign.name} Yükseleni’nin dış dünyayla kurduğu temas ve {moonSign.name} Ayı’nın sezgisel derinliğiyle birleşiyor. Yaşam yolunuzdaki {lifePath.title} misyonu sizi daima hakikate taşır.
                   </p>

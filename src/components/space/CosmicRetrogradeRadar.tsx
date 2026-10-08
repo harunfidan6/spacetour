@@ -65,7 +65,7 @@ export function CosmicRetrogradeRadar() {
               <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isMounted && activeRetros.length > 0 ? 'bg-rose-signal' : 'bg-lime'}`} />
             </span>
             <div>
-              <div className="font-mono text-muted text-[10px] uppercase">GÜNCEL AKTİF RETROLAR</div>
+              <div className="font-mono text-muted text-[11px] uppercase">GÜNCEL AKTİF RETROLAR</div>
               <div className="text-xs font-bold text-paper font-mono">
                 {isMounted ? `${activeRetros.length} Gezegen Retro Harekette` : 'Hesaplanıyor…'}
               </div>
@@ -99,28 +99,28 @@ export function CosmicRetrogradeRadar() {
                       <span>{retro.planet}</span>
                       <RetrogradeGlyph size={12} className="text-rose-signal" />
                     </div>
-                    <div className="font-mono text-muted text-[10px]">{retro.signRange}</div>
+                    <div className="font-mono text-muted text-[11px]">{retro.signRange}</div>
                   </div>
                 </div>
 
                 {isMounted ? (
                   retro.isCurrentlyRetrograde ? (
-                    <span className="px-2 py-0.5 border border-rose-signal/50 bg-rose-signal/15 text-rose-signal text-[10px] font-bold font-mono">
+                    <span className="px-2 py-0.5 border border-rose-signal/50 bg-rose-signal/15 text-rose-signal text-[11px] font-bold font-mono">
                       AKTİF
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 border border-line bg-ink text-muted text-[10px] font-mono">
+                    <span className="px-2 py-0.5 border border-line bg-ink text-muted text-[11px] font-mono">
                       PLANLI
                     </span>
                   )
                 ) : (
-                  <span className="text-[10px] font-mono text-muted">—</span>
+                  <span className="text-[11px] font-mono text-muted">—</span>
                 )}
               </div>
 
               <div className="mt-4 pt-3 border-t border-line/60 flex items-center justify-between text-[11px] font-mono text-muted">
                 <span>{retro.startDate}</span>
-                <span className="text-paper/60">→</span>
+                <span className="text-paper/75">→</span>
                 <span>{retro.endDate}</span>
               </div>
             </button>
@@ -151,7 +151,7 @@ export function CosmicRetrogradeRadar() {
 
           <div className="flex flex-wrap gap-2">
             {selectedRetro.coreThemes.map((theme, i) => (
-              <span key={i} className="px-3 py-1 rounded-full border border-line bg-ink text-paper/85 font-mono text-[10px]">
+              <span key={i} className="px-3 py-1 rounded-full border border-line bg-ink text-paper/85 font-mono text-[11px]">
                 {theme}
               </span>
             ))}
@@ -167,9 +167,9 @@ export function CosmicRetrogradeRadar() {
             { label: 'Gölge Çıkışı (Post-Shadow)', value: selectedRetro.postShadowEnd, desc: 'Konuların tamamen netleştiği kapanış' }
           ].map((item, idx) => (
             <div key={idx} className="bg-ink p-4 space-y-1">
-              <dt className="doc-caption text-muted text-[10px] font-mono">{item.label}</dt>
+              <dt className="doc-caption text-muted text-[11px] font-mono">{item.label}</dt>
               <dd className="text-sm font-bold text-paper font-mono">{item.value}</dd>
-              <div className="text-[10px] text-muted leading-tight font-mono">{item.desc}</div>
+              <div className="text-[11px] text-muted leading-tight font-mono">{item.desc}</div>
             </div>
           ))}
         </dl>
@@ -221,7 +221,7 @@ export function CosmicRetrogradeRadar() {
 
         {/* Cosmic Lesson Quote */}
         <div className="border-l-2 border-gold pl-5 py-2 bg-ink/60">
-          <span className="doc-caption text-gold text-[10px] uppercase font-mono">Kozmik Öğreti</span>
+          <span className="doc-caption text-gold text-[11px] uppercase font-mono">Kozmik Öğreti</span>
           <p className="doc-serif text-lg sm:text-xl text-paper mt-1">
             “{selectedRetro.guidance.cosmicLesson}”
           </p>
