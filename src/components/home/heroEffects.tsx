@@ -13,7 +13,7 @@ export type PlanetRegistry = Map<string, { group: THREE.Group; radius: number }>
 
 const radialCache = new Map<string, THREE.CanvasTexture>();
 /** Yumuşak, yuvarlak ışık lekesi (parıltı, kıvılcım, toz). */
-function radialTexture(stops: [number, string][]) {
+export function radialTexture(stops: [number, string][]) {
   const key = JSON.stringify(stops);
   const hit = radialCache.get(key);
   if (hit) return hit;
@@ -31,13 +31,13 @@ function radialTexture(stops: [number, string][]) {
   return tex;
 }
 
-const HOT = [
+export const HOT = [
   [0, 'rgba(255,255,255,1)'],
   [0.2, 'rgba(255,236,200,0.9)'],
   [0.5, 'rgba(255,150,70,0.35)'],
   [1, 'rgba(255,110,40,0)'],
 ] as [number, string][];
-const SOFT = [
+export const SOFT = [
   [0, 'rgba(255,255,255,0.9)'],
   [0.45, 'rgba(255,255,255,0.25)'],
   [1, 'rgba(255,255,255,0)'],
@@ -66,7 +66,7 @@ const STREAK_FRAGMENT = /* glsl */ `
   }
 `;
 
-function streakMaterial(head: string, tail: string, sharp = 2.2, hot = 0.8) {
+export function streakMaterial(head: string, tail: string, sharp = 2.2, hot = 0.8) {
   return new THREE.ShaderMaterial({
     vertexShader: STREAK_VERTEX,
     fragmentShader: STREAK_FRAGMENT,
@@ -89,7 +89,7 @@ const _y = new THREE.Vector3();
 const _z = new THREE.Vector3();
 const _m = new THREE.Matrix4();
 /** Kuyruktan başa uzanan, kameraya dönük ince şerit. */
-function placeStreak(mesh: THREE.Mesh, tail: THREE.Vector3, head: THREE.Vector3, width: number, camera: THREE.Camera) {
+export function placeStreak(mesh: THREE.Mesh, tail: THREE.Vector3, head: THREE.Vector3, width: number, camera: THREE.Camera) {
   _x.subVectors(head, tail);
   const len = _x.length();
   if (len < 1e-4) {
@@ -358,94 +358,6 @@ export function MeteorImpacts({ planets }: { planets: React.RefObject<PlanetRegi
       <points ref={sparks} geometry={sparkGeo} visible={false} frustumCulled={false}>
         <pointsMaterial map={soft} color="#ffc27a" size={0.28} sizeAttenuation transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
-    </>
-  );
-}
-
-/* ---------- Kuyruklu yıldız ---------- */
-
-/**
- * Basık bir elips üzerinde Güneş'in yanından geçen kuyruklu yıldız. Hız Kepler'in ikinci yasası gibi
- * Güneş'e yaklaştıkça artar; iyon kuyruğu Güneş'in tersine, toz kuyruğu biraz geriye kıvrık uzanır.
- */
-export function Comet({ tilt, a, e, omega, start }: { tilt: THREE.Euler; a: number; e: number; omega: number; start: number }) {
-  const { camera } = useThree();
-  const ion = useRef<THREE.Mesh>(null);
-  const dust = useRef<THREE.Mesh>(null);
-  const nucleus = useRef<THREE.Sprite>(null);
-  const ionMat = useMemo(() => streakMaterial('#e8f3ff', '#5b8cff', 1.4, 0), []);
-  const dustMat = useMemo(() => streakMaterial('#fff1cf', '#c98a3a', 1.2, 0), []);
-  const glow = useMemo(() => radialTexture(SOFT), []);
-  const hot = useMemo(() => radialTexture(HOT), []);
-  const core = useRef<THREE.Sprite>(null);
-  const nu = useRef(start);
-  const pos = useMemo(() => new THREE.Vector3(), []);
-  const prev = useMemo(() => new THREE.Vector3(), []);
-  const away = useMemo(() => new THREE.Vector3(), []);
-  const vel = useMemo(() => new THREE.Vector3(), []);
-  const tailEnd = useMemo(() => new THREE.Vector3(), []);
-  const p = a * (1 - e * e);
-
-  useEffect(
-    () => () => {
-      ionMat.dispose();
-      dustMat.dispose();
-    },
-    [ionMat, dustMat]
-  );
-
-  const at = (angle: number, out: THREE.Vector3) => {
-    const r = p / (1 + e * Math.cos(angle));
-    return out.set(Math.cos(angle + omega) * r, 0, Math.sin(angle + omega) * r).applyEuler(tilt);
-  };
-
-  useFrame((_, dt) => {
-    const delta = Math.min(dt, 0.05);
-    const r = p / (1 + e * Math.cos(nu.current));
-    at(nu.current, prev);
-    if (!heroScene.frozen) nu.current += (delta * 16) / (r * r);
-    if (nu.current > Math.PI) nu.current -= Math.PI * 2;
-    at(nu.current, pos);
-    vel.subVectors(pos, prev);
-
-    const show = THREE.MathUtils.clamp(heroScene.intro * 1.5 - 0.5, 0, 1);
-    const closeness = THREE.MathUtils.clamp(9 / r, 0.25, 1.6);
-    away.copy(pos).normalize();
-
-    if (nucleus.current) {
-      nucleus.current.position.copy(pos);
-      nucleus.current.scale.setScalar(1.3 + 0.9 * closeness);
-      (nucleus.current.material as THREE.SpriteMaterial).opacity = 0.8 * show;
-    }
-    if (core.current) {
-      core.current.position.copy(pos);
-      core.current.scale.setScalar(0.45 + 0.25 * closeness);
-      (core.current.material as THREE.SpriteMaterial).opacity = show;
-    }
-    if (ion.current) {
-      tailEnd.copy(pos).addScaledVector(away, 10 * closeness + 3);
-      placeStreak(ion.current, tailEnd, pos, 0.4 + 0.35 * closeness, camera);
-      ionMat.uniforms.uOpacity.value = 0.85 * show;
-    }
-    if (dust.current && vel.lengthSq() > 1e-10) {
-      vel.normalize();
-      tailEnd.copy(away).multiplyScalar(0.85).addScaledVector(vel, -0.45).normalize();
-      tailEnd.multiplyScalar(7 * closeness + 2).add(pos);
-      placeStreak(dust.current, tailEnd, pos, 1 + 0.8 * closeness, camera);
-      dustMat.uniforms.uOpacity.value = 0.55 * show;
-    }
-  });
-
-  return (
-    <>
-      <mesh ref={dust} geometry={unit} material={dustMat} frustumCulled={false} />
-      <mesh ref={ion} geometry={unit} material={ionMat} frustumCulled={false} />
-      <sprite ref={nucleus}>
-        <spriteMaterial map={glow} color="#cfe2ff" transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-      </sprite>
-      <sprite ref={core}>
-        <spriteMaterial map={hot} color="#f4f9ff" transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-      </sprite>
     </>
   );
 }
