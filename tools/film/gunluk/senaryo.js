@@ -130,8 +130,8 @@
   caption('2-gun');
 
   /* ---------- 3. Günlük burç: 12 burç aşağı doğru akar ---------- */
-  go(11.95, '#burclar', 1.0, 190);
-  tl.add(() => { const g = $('#burclar', doc()); if (g) F().kaydir(Math.round(g.getBoundingClientRect().top + win().scrollY - 190 + 880), 2.6); }, 13.15);
+  go(11.95, '#burclar', 1.0, 110); // sayfanın kendi başlığı üst gölgenin altında kalsın: tek başlık
+  tl.add(() => { const g = $('#burclar', doc()); if (g) F().kaydir(Math.round(g.getBoundingClientRect().top + win().scrollY - 110 + 880), 2.6); }, 13.15);
   caption('3-burc');
 
   /* ---------- 4. Yaklaşan gök olayları ---------- */
