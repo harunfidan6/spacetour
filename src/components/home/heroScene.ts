@@ -1,4 +1,4 @@
-// Ana sayfa 3D güneş sisteminin three.js'e bağlı olmayan verileri: HomeHero bunları sahne yüklenmeden de kullanır
+// Ana sayfa 3D güneş sisteminin three.js'e bağlı olmayan verileri: SolarSystemBand bunları sahne yüklenmeden de kullanır
 
 /** Mutable state shared with the DOM hero (GSAP writes, the render loop reads). */
 export interface HeroSceneState {

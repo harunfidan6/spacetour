@@ -49,7 +49,7 @@ R8 Kırılma: başlıklarda kelime ortasından kırılmayı engelle (`break-word
    küçült). 390px genişlikte taşma olmamalı.
 
 ## Yasaklar
-- ANA SAYFAYA ETKİ YOK: `src/app/page.tsx`, `src/components/home/*`, `src/components/doc/ChapterPanel.tsx`,
+- ANA SAYFAYA ETKİ YOK: `src/app/page.tsx`, `src/components/home/*`,
   `src/components/space/PlanetOrb.tsx`, `src/components/motion/*`, `src/components/ui/CosmicGlyphs.tsx`,
   `src/components/layout/*` (üst/alt bilgi), `src/app/layout.tsx` dosyalarına DOKUNMA. globals.css'te mevcut kuralları
   değiştirme; ekleme gerekiyorsa yalnızca "İç sayfalar" bloğuna ve aynı `main:not(:has(> [data-home]))` kapsamıyla.
@@ -71,3 +71,10 @@ PR #4 sayfa kabuklarını, hub'ları ve içerik sayfalarını sadeleştirdi; ara
 DailyHoroscopeDeck, StarOracleWidget, DailyCosmicTransitWidget, LunarPhaseTracker, CosmicRetrogradeRadar,
 CosmicNumerologyMatrix), sonra harita, ansiklopedi laboratuvarı, gözlemevi ve canlı bölümlerinin araçları.
 Hesaplama mantığına, durum yönetimine ve film modu (`?film=1`, `window.__film`) seçicilerine dokunulmaz; yalnızca görünüm.
+
+## Ana sayfa (Ekim 2026 yenilemesi)
+Ana sayfa "belgesel fragmanı" düzeninden "bugünün gökyüzü" ön sayfasına geçti (`src/app/page.tsx`, yarım saatte bir ISR):
+bugünün Ay'ı ve evre kadranı (`home/MoonDial.tsx`), günün dört bilgisi (Ay burcu, gün doğumu/batımı, ISS İstanbul,
+sıradaki ana evre), 12 burcun günlük başlığı, yaklaşan gök olayları ve kısayollar, 3D Güneş Sistemi bandı
+(`home/SolarSystemBand.tsx`) ve yedi bölüm kartı (`#bolumler`, tanıtım filmi buraya kaydırır). Kök `data-home`
+özniteliği korunur.

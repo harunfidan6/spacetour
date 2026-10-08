@@ -54,7 +54,8 @@ export function MoonOrbView({ fraction, distance }: { fraction: number; distance
   const theta = fraction * Math.PI * 2;
   return (
     <OrbView distance={distance} className="absolute inset-0">
-      <ambientLight intensity={0.03} />
+      {/* Ay ışıltısı: hilal günlerinde karanlık yüz de seçilsin */}
+      <ambientLight intensity={0.14} />
       <directionalLight position={[Math.sin(theta) * 5, 0.4, -Math.cos(theta) * 5]} intensity={3.2} />
       <PlanetBody id="ay" spin={0.4} glow={false} />
     </OrbView>
