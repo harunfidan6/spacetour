@@ -305,6 +305,9 @@ body {
 
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 @keyframes fade-in { from { opacity: 0; } }
+/* Ana sayfa açılışı: Samanyolu'nun yavaş kayması ve altın yazıdaki parıltı */
+@keyframes hero-drift { from { transform: scale(1.06) translate3d(-1.2%, 0.6%, 0); } to { transform: scale(1.12) translate3d(1.2%, -0.8%, 0); } }
+@keyframes hero-sheen { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
 .spin-slow { animation: spin-slow 24s linear infinite; }
 .spin-slower { animation: spin-slow 60s linear infinite; }
 .spin-rev { animation: spin-slow 40s linear infinite reverse; }

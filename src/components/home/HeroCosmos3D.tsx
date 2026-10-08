@@ -5,9 +5,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Line, Stars } from '@react-three/drei';
 import * as THREE from 'three';
-import { PlanetBody, SunGlow, useNasaTexture } from '@/components/space/PlanetBody';
+import { PlanetBody, SunGlow } from '@/components/space/PlanetBody';
 import { NASA_TEXTURES, SolarGranulationShader, loadNasaTexture } from '@/components/space/nasaTextures';
 import { heroScene } from './heroScene';
+import { Comet, ForegroundDust, MeteorImpacts, ShootingStars, SunCorona, type PlanetRegistry } from './heroEffects';
 
 type PlanetId = 'merkur' | 'venus' | 'dunya' | 'mars' | 'jupiter' | 'saturn' | 'uranus' | 'neptun';
 
@@ -22,8 +23,8 @@ interface Layout {
   sun: number;
   belt: [number, number];
   planets: Record<PlanetId, Placement>;
-  /** Köşedeki dev gezegen: ekran konumu (NDC), uzaklık, yarıçap */
-  giant: { ndc: [number, number]; distance: number; radius: number };
+  /** Kuyruklu yıldızın yörüngesi: büyük yarı eksen, basıklık, günberi yönü, başlangıç açısı */
+  comet: { a: number; e: number; omega: number; start: number };
 }
 
 // Yerleşimler, hedef ekran noktalarından ışın–düzlem kesişimiyle çözüldü (1440×900 ve 390×844 için)
@@ -44,7 +45,7 @@ const WIDE: Layout = {
     uranus: [-1.13, 24.45, 0.72],
     neptun: [-1.95, 30, 0.7],
   },
-  giant: { ndc: [1.06, 1.16], distance: 110, radius: 15 },
+  comet: { a: 16, e: 0.72, omega: 2.35, start: -2.25 },
 };
 
 /** Dikey ekran: metin üstte, sistem ortada, düğmeler altta. */
@@ -64,7 +65,7 @@ const TALL: Layout = {
     uranus: [-0.93, 20.73, 0.9],
     neptun: [-1.93, 24.14, 0.8],
   },
-  giant: { ndc: [1.2, 1.04], distance: 90, radius: 24 },
+  comet: { a: 12, e: 0.72, omega: 2.5, start: -2.25 },
 };
 
 const ORDER: PlanetId[] = ['merkur', 'venus', 'dunya', 'mars', 'jupiter', 'saturn', 'uranus', 'neptun'];
@@ -135,9 +136,45 @@ function AsteroidBelt({ inner, outer }: { inner: number; outer: number }) {
   );
 }
 
-function Planet({ id, place, index }: { id: PlanetId; place: Placement; index: number }) {
+/** Jüpiter'in dört Galile uydusu: uzaklık ve boyut gezegen yarıçapına göre, hız rad/s */
+const GALILEAN = [
+  { d: 1.55, r: 0.075, speed: 0.95, phase: 0.4, color: '#e9d27c' },
+  { d: 1.95, r: 0.065, speed: 0.66, phase: 2.1, color: '#ddd2bf' },
+  { d: 2.45, r: 0.095, speed: 0.45, phase: 3.9, color: '#a99c8b' },
+  { d: 3.1, r: 0.088, speed: 0.28, phase: 5.2, color: '#7f7467' },
+];
+
+function GalileanMoons({ radius }: { radius: number }) {
+  const refs = useRef<(THREE.Group | null)[]>([]);
+  useFrame((_, delta) => {
+    if (heroScene.frozen) return;
+    refs.current.forEach((g, i) => {
+      if (g) g.rotation.y += delta * GALILEAN[i].speed;
+    });
+  });
+  return (
+    <>
+      {GALILEAN.map((m, i) => (
+        <group
+          key={m.d}
+          rotation={[0, m.phase, 0]}
+          ref={(node) => {
+            refs.current[i] = node;
+          }}
+        >
+          <mesh position={[radius * m.d, 0, 0]}>
+            <sphereGeometry args={[radius * m.r, 16, 16]} />
+            <meshStandardMaterial color={m.color} roughness={1} />
+          </mesh>
+        </group>
+      ))}
+    </>
+  );
+}
+
+function Planet({ id, place, index, registry }: { id: PlanetId; place: Placement; index: number; registry: React.RefObject<PlanetRegistry> }) {
   const [angle0, orbit, radius] = place;
-  const group = useRef<THREE.Group>(null);
+  const group = useRef<THREE.Group | null>(null);
   const moon = useRef<THREE.Group>(null);
   const angle = useRef(angle0);
 
@@ -152,8 +189,15 @@ function Planet({ id, place, index }: { id: PlanetId; place: Placement; index: n
   });
 
   return (
-    <group ref={group}>
+    <group
+      ref={(node) => {
+        group.current = node;
+        if (node) registry.current.set(id, { group: node, radius });
+        else registry.current.delete(id);
+      }}
+    >
       <PlanetBody id={id} radius={radius} detail={radius > 1 ? 72 : 40} spin={1.5} />
+      {id === 'jupiter' && <GalileanMoons radius={radius} />}
       {id === 'dunya' && (
         <group ref={moon}>
           <group position={[radius * 1.9, 0.12, 0]}>
@@ -196,38 +240,6 @@ function rimMaterial(color: string, power: number) {
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
-}
-
-/** Köşeden taşan dev gezegen: karanlık yüz ve mavi atmosfer halkası. Kameraya bağlı durur. */
-function Giant({ layout }: { layout: Layout }) {
-  const group = useRef<THREE.Group>(null);
-  const body = useRef<THREE.Mesh>(null);
-  const { camera } = useThree();
-  const map = useNasaTexture(NASA_TEXTURES.neptune);
-  const rim = useMemo(() => rimMaterial('#9cc4ff', 3.4), []);
-  const tmp = useMemo(() => new THREE.Vector3(), []);
-
-  useFrame((_, delta) => {
-    const g = group.current;
-    if (!g) return;
-    const { ndc, distance } = layout.giant;
-    tmp.set(ndc[0], ndc[1], 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(distance).add(camera.position);
-    g.position.copy(tmp);
-    if (body.current && !heroScene.frozen) body.current.rotation.y += delta * 0.01;
-    rim.uniforms.uOpacity.value = THREE.MathUtils.clamp(heroScene.intro * 1.4 - 0.3, 0, 1);
-  });
-
-  return (
-    <group ref={group}>
-      <mesh ref={body} rotation={[0.3, 0, 0.25]}>
-        <sphereGeometry args={[layout.giant.radius, 96, 96]} />
-        <meshStandardMaterial key={map ? 't' : 'p'} map={map} color={map ? '#2c3a5c' : '#10162a'} roughness={1} metalness={0} />
-      </mesh>
-      <mesh scale={1.025} material={rim}>
-        <sphereGeometry args={[layout.giant.radius, 96, 96]} />
-      </mesh>
-    </group>
-  );
 }
 
 /** Kaynayan granüllü Güneş, sıcak taç halkası ve iki katlı ışıma. */
@@ -295,6 +307,7 @@ function Rig({ layout }: { layout: Layout }) {
 function Scene() {
   const layout = useLayout();
   const sun = useRef<THREE.Group>(null);
+  const registry = useRef<PlanetRegistry>(new Map());
 
   useFrame(() => {
     if (sun.current) sun.current.scale.setScalar(Math.max(THREE.MathUtils.smootherstep(heroScene.intro, 0, 0.7), 0.0001));
@@ -302,14 +315,15 @@ function Scene() {
 
   return (
     <>
-      <Stars radius={140} depth={80} count={5000} factor={4.2} saturation={0} fade speed={0.4} />
+      <Stars radius={140} depth={80} count={5000} factor={4.2} saturation={0} fade speed={1} />
+      <ShootingStars />
       <ambientLight intensity={0.18} />
       <pointLight position={[0, 0, 0]} intensity={4.4} decay={0} color="#fff0d6" />
       {/* Kamera tarafından sıcak dolgu: kameraya bakan gece yüzleri delik gibi görünmesin */}
       <directionalLight position={[-6, 10, 40]} intensity={1.35} color="#ffe2bf" />
-      <Giant layout={layout} />
       <group rotation={TILT}>
         <group ref={sun}>
+          <SunCorona radius={layout.sun} />
           <HeroSun radius={layout.sun} />
         </group>
         {ORDER.map((id, i) => (
@@ -319,9 +333,12 @@ function Scene() {
         <Orbit radius={layout.belt[1]} opacity={0.12} />
         <AsteroidBelt inner={layout.belt[0]} outer={layout.belt[1]} />
         {ORDER.map((id, i) => (
-          <Planet key={id} id={id} place={layout.planets[id]} index={i} />
+          <Planet key={id} id={id} place={layout.planets[id]} index={i} registry={registry} />
         ))}
       </group>
+      <Comet tilt={TILT} a={layout.comet.a} e={layout.comet.e} omega={layout.comet.omega} start={layout.comet.start} />
+      <MeteorImpacts planets={registry} />
+      <ForegroundDust />
       <Rig layout={layout} />
     </>
   );
