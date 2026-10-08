@@ -1,0 +1,55 @@
+{
+ "_aciklama": "Günlük Reels (21 sn, dikey) ekran yazıları. {ay}, {evre}, {ayburc}, {olay}, {gun} çekim anında ana sayfadan okunur; böylece video o günün gökyüzünü anlatır. t: saniye, sure: ekranda kalma.",
+ "seslendirme": false,
+ "satirlar": [
+  {
+   "id": "1-bugece",
+   "t": 5.85,
+   "sure": 3.5,
+   "kunye": "Bu gece",
+   "kunye2": "{tarih}",
+   "metin": "Ay %{ay}",
+   "serif": "{evre}.",
+   "renk": "#f5c542"
+  },
+  {
+   "id": "2-gun",
+   "t": 9.85,
+   "sure": 2.0,
+   "kunye": "Günün bilgisi",
+   "kunye2": "İstanbul",
+   "metin": "{ayburc}",
+   "serif": "bugün.",
+   "renk": "#38bdf8"
+  },
+  {
+   "id": "3-burc",
+   "t": 12.25,
+   "sure": 3.6,
+   "kunye": "Günlük burç",
+   "kunye2": "12 burç",
+   "metin": "Burcun",
+   "serif": "ne diyor?",
+   "renk": "#f5c542"
+  },
+  {
+   "id": "4-olay",
+   "t": 16.2,
+   "sure": 1.9,
+   "kunye": "Sıradaki olay",
+   "kunye2": "{olay}",
+   "metin": "{gun}",
+   "serif": "kaldı.",
+   "renk": "#a5b4fc"
+  },
+  {
+   "id": "5-son",
+   "t": 18.5,
+   "sure": 2.5,
+   "metin": "Evren",
+   "serif": "hiç durmaz.",
+   "adres": "spacetour.com.tr",
+   "kunye": "Görseller: NASA, ESA, JPL ve Wikimedia Commons. Gezegen dokuları: NASA / Solar System Scope (CC BY 4.0)."
+  }
+ ]
+}

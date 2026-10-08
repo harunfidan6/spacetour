@@ -34,6 +34,8 @@ const SCENES = {
   },
   // Yalnızca astroloji bölümü
   astroloji: { dur: 30, out: 'spacetour-astroloji', veri: {} },
+  // Günlük Reels: yeni ana sayfa ve o günün gökyüzü (21 sn)
+  gunluk: { dur: 21, out: 'spacetour-gunluk', veri: {} },
 };
 const SCENE = process.argv[3] || 'tanitim', SC = SCENES[SCENE];
 if (!SC) throw new Error(`Bilinmeyen senaryo: ${SCENE} (${Object.keys(SCENES).join(', ')})`);
@@ -88,7 +90,8 @@ try {
     console.log(`\n▶ ${F.name}: ${F.w * 2}x${F.h * 2}, ${FPS} fps, ${DUR} sn`);
     const browser = await puppeteer.launch({
       executablePath: CHROME, headless: true, protocolTimeout: 180000,
-      args: ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist', '--hide-scrollbars', '--mute-audio', '--autoplay-policy=user-gesture-required'],
+      // FILM_GL=swiftshader: GPU'suz Linux/bulut makinelerinde yazılımsal WebGL
+      args: [...(process.env.FILM_GL === 'swiftshader' ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist']), '--hide-scrollbars', '--mute-audio', '--autoplay-policy=user-gesture-required'],
       defaultViewport: { width: F.w, height: F.h, deviceScaleFactor: 2 },
     });
     try {
