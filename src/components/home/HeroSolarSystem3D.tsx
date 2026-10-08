@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import type { Line2 } from 'three-stdlib';
 import { PlanetBody } from '@/components/space/PlanetBody';
 import { CosmicHeroBackdrop } from './CosmicHeroBackdrop';
+import { RealisticSunEngine } from './RealisticSunEngine';
 
 import { heroScene, HERO_BODIES, type LabelProjector } from './heroScene';
 
@@ -146,7 +147,7 @@ function Scene({ project }: { project: LabelProjector }) {
 
       <group rotation={[0, 0, -0.06]}>
         <group ref={sun}>
-          <PlanetBody id="gunes" radius={SUN_R} detail={96} spin={0.6} />
+          <RealisticSunEngine radius={SUN_R} />
         </group>
         <SunDial />
         {HERO_BODIES.map((b, i) => (

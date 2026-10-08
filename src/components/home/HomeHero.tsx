@@ -20,7 +20,8 @@ export function HomeHero() {
   const root = useRef<HTMLElement>(null);
   const labels = useRef<(HTMLElement | null)[]>([]);
   const [inView, setInView] = useState(true);
-  const scene3d = useIdleReady(250);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const now = useNow(60_000);
   const moon = now ? moonPhase(now) : null;
   const next = now ? upcomingEvents(now, 1)[0] : undefined;
@@ -66,10 +67,12 @@ export function HomeHero() {
       // Entrance: the Sun pops, planets and orbits follow, copy fades up.
       gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 30 });
       const intro = gsap
-        .timeline({ paused: true })
-        .to(state, { intro: 1, duration: 2.4, ease: 'power3.out' })
-        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.6);
-      const cancelIntro = whenIntroDone(() => intro.play());
+        .timeline({ paused: false })
+        .to(state, { intro: 1, duration: 1.8, ease: 'power3.out' })
+        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.3);
+      const cancelIntro = whenIntroDone(() => {
+        if (intro.progress() < 1) intro.play();
+      });
 
       // Natural unpinned scroll parallax — no freezing or hijacking
       gsap
@@ -98,8 +101,8 @@ export function HomeHero() {
     <section ref={root} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-ink" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
       {/* Live 3D solar system as the opening shot */}
       <div className="pointer-events-none absolute inset-0">
-        {scene3d && (
-          <div className="absolute inset-0 animate-[fade-in_1.2s_ease-out_both]">
+        {mounted && (
+          <div className="absolute inset-0">
             <HeroSolarSystem3D project={placeLabel} active={inView} />
           </div>
         )}

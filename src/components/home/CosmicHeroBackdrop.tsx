@@ -300,6 +300,43 @@ function DeepSpaceShootingStars() {
 
         const line = new THREE.Line(geom, mat);
         grp.add(line);
+
+        // Blinding incandescent bolide head
+        const headGeom = new THREE.SphereGeometry(0.24, 8, 8);
+        const headMat = new THREE.MeshBasicMaterial({
+          color: '#ffffff',
+          transparent: true,
+          opacity: Math.min(1.0, opacity * 1.6),
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const headMesh = new THREE.Mesh(headGeom, headMat);
+        headMesh.position.copy(head);
+        grp.add(headMesh);
+
+        // Trailing disintegration spark droplets
+        const spkPts: number[] = [];
+        for (let s = 1; s <= 5; s++) {
+          const spkDist = currentDist - (star.length * 0.18 * s);
+          if (spkDist > 0) {
+            const jitter = (Math.sin(s * 8.4 + time * 14.0) - 0.5) * 0.35;
+            const p = star.start.clone().addScaledVector(star.dir, spkDist);
+            spkPts.push(p.x + jitter, p.y + jitter, p.z + jitter);
+          }
+        }
+        if (spkPts.length > 0) {
+          const spkGeo = new THREE.BufferGeometry();
+          spkGeo.setAttribute('position', new THREE.Float32BufferAttribute(spkPts, 3));
+          const spkMat = new THREE.PointsMaterial({
+            size: 0.16,
+            color: star.color,
+            transparent: true,
+            opacity: opacity * 0.75,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          grp.add(new THREE.Points(spkGeo, spkMat));
+        }
       }
     }
     activeStars.current = alive;
@@ -479,12 +516,12 @@ export function PlanetaryMeteorStrikes() {
           const intensity = Math.max(0, 1.0 - impactProgress);
 
           // 1. Thermal fireball flash (scales up rapidly then dissipates)
-          const flashScale = strike.radius * (0.35 + impactProgress * 0.85);
+          const flashScale = strike.radius * (0.42 + impactProgress * 0.95);
           const flashGeom = new THREE.SphereGeometry(flashScale, 16, 16);
           const flashMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color(strike.colorHex),
             transparent: true,
-            opacity: intensity * 0.9,
+            opacity: intensity * 0.95,
             depthWrite: false,
             blending: THREE.AdditiveBlending
           });
@@ -493,11 +530,11 @@ export function PlanetaryMeteorStrikes() {
           container.add(flashMesh);
 
           // Brilliant white nuclear core at impact point
-          const innerCoreGeom = new THREE.SphereGeometry(flashScale * 0.45, 12, 12);
+          const innerCoreGeom = new THREE.SphereGeometry(flashScale * 0.48, 12, 12);
           const innerCoreMat = new THREE.MeshBasicMaterial({
             color: '#ffffff',
             transparent: true,
-            opacity: Math.max(0, 1.0 - impactProgress * 1.8),
+            opacity: Math.max(0, 1.0 - impactProgress * 2.2),
             depthWrite: false,
             blending: THREE.AdditiveBlending
           });
@@ -505,12 +542,12 @@ export function PlanetaryMeteorStrikes() {
           innerCoreMesh.position.copy(impactPoint);
           container.add(innerCoreMesh);
 
-          // 2. Expanding plasma shockwave ring
-          const ringGeom = new THREE.RingGeometry(flashScale * 0.8, flashScale * 1.05, 32);
+          // 2. Primary expanding plasma shockwave ring
+          const ringGeom = new THREE.RingGeometry(flashScale * 0.85, flashScale * 1.15, 32);
           const ringMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color(strike.colorHex),
             transparent: true,
-            opacity: intensity * 0.6,
+            opacity: intensity * 0.75,
             side: THREE.DoubleSide,
             depthWrite: false,
             blending: THREE.AdditiveBlending
@@ -520,7 +557,39 @@ export function PlanetaryMeteorStrikes() {
           ringMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), strike.localNormal);
           container.add(ringMesh);
 
-          // 3. Glowing debris sparks (flying outward)
+          // Secondary wider rarefaction wave ring
+          const ring2Geom = new THREE.RingGeometry(flashScale * 1.25, flashScale * 1.45, 32);
+          const ring2Mat = new THREE.MeshBasicMaterial({
+            color: '#ffffff',
+            transparent: true,
+            opacity: intensity * 0.35,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          });
+          const ring2Mesh = new THREE.Mesh(ring2Geom, ring2Mat);
+          ring2Mesh.position.copy(impactPoint);
+          ring2Mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), strike.localNormal);
+          container.add(ring2Mesh);
+
+          // 3. Cooling Thermal Crater Scar (Termal Kor): glowing crater cooling from white to gold to dark ember
+          const craterScale = strike.radius * 0.32;
+          const craterGeom = new THREE.SphereGeometry(craterScale, 12, 12);
+          const craterColor = new THREE.Color('#ffffff')
+            .lerp(new THREE.Color('#f59e0b'), Math.min(1.0, impactProgress * 1.5))
+            .lerp(new THREE.Color('#b91c1c'), Math.min(1.0, Math.max(0.0, (impactProgress - 0.4) * 2.0)));
+          const craterMat = new THREE.MeshBasicMaterial({
+            color: craterColor,
+            transparent: true,
+            opacity: Math.max(0, 1.0 - impactProgress * 1.1) * 0.9,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          });
+          const craterMesh = new THREE.Mesh(craterGeom, craterMat);
+          craterMesh.position.copy(impactPoint);
+          container.add(craterMesh);
+
+          // 4. Glowing debris sparks (flying outward in conical spray)
           for (const spk of strike.sparks) {
             const spkDist = spk.speed * impactAge;
             const spkPos = impactPoint.clone().addScaledVector(spk.dir, spkDist);
@@ -528,7 +597,7 @@ export function PlanetaryMeteorStrikes() {
             const sparkMat = new THREE.MeshBasicMaterial({
               color: new THREE.Color(strike.colorHex),
               transparent: true,
-              opacity: intensity * 0.85,
+              opacity: intensity * 0.9,
               depthWrite: false,
               blending: THREE.AdditiveBlending
             });
