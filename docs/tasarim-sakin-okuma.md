@@ -49,7 +49,7 @@ R8 Kırılma: başlıklarda kelime ortasından kırılmayı engelle (`break-word
    küçült). 390px genişlikte taşma olmamalı.
 
 ## Yasaklar
-- ANA SAYFAYA ETKİ YOK: `src/app/page.tsx`, `src/components/home/*`, `src/components/doc/ChapterPanel.tsx`,
+- ANA SAYFAYA ETKİ YOK: `src/app/page.tsx`, `src/components/home/*`,
   `src/components/space/PlanetOrb.tsx`, `src/components/motion/*`, `src/components/ui/CosmicGlyphs.tsx`,
   `src/components/layout/*` (üst/alt bilgi), `src/app/layout.tsx` dosyalarına DOKUNMA. globals.css'te mevcut kuralları
   değiştirme; ekleme gerekiyorsa yalnızca "İç sayfalar" bloğuna ve aynı `main:not(:has(> [data-home]))` kapsamıyla.
@@ -71,3 +71,11 @@ PR #4 sayfa kabuklarını, hub'ları ve içerik sayfalarını sadeleştirdi; ara
 DailyHoroscopeDeck, StarOracleWidget, DailyCosmicTransitWidget, LunarPhaseTracker, CosmicRetrogradeRadar,
 CosmicNumerologyMatrix), sonra harita, ansiklopedi laboratuvarı, gözlemevi ve canlı bölümlerinin araçları.
 Hesaplama mantığına, durum yönetimine ve film modu (`?film=1`, `window.__film`) seçicilerine dokunulmaz; yalnızca görünüm.
+
+## Ana sayfa (Ekim 2026 yenilemesi)
+Ana sayfa yarım saatte bir yenilenen bir ön sayfa (`src/app/page.tsx`, ISR). En üstte grafik olarak en yoğun bölüm:
+`home/HomeHero.tsx` ("EVREN hiç durmaz.", Ay evresi, sıradaki olay) ve arkasında `home/HeroCosmos3D.tsx` (NASA dokulu
+Güneş Sistemi, asteroit kuşağı, Jüpiter'in uyduları; yerleşimler yatay ve dikey ekran için ayrı) ile
+`home/heroEffects.tsx` (kayan yıldızlar, gezegenlere düşen meteorlar, kuyruklu yıldız, Güneş tacı, ön plan tozu). Altında bugünün Ay'ı ve
+evre kadranı (`home/MoonDial.tsx`), günün dört bilgisi, 12 burcun günlük başlığı, yaklaşan gök olayları, kısayollar ve
+yedi bölüm kartı (`#bolumler`; "Belgeseli başlat" ve tanıtım filmi buraya kaydırır). Kök `data-home` özniteliği korunur.
