@@ -10,7 +10,11 @@ import {
   RotateCcw,
   Compass
 } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+
+// Ortak görünüm sınıfları
+const DATA_LABEL = 'block text-sm text-paper/70';
+const DATA_VALUE = 'mt-2 font-mono text-xl font-semibold tabular-nums leading-none sm:text-2xl';
+const DATA_UNIT = 'text-sm font-normal text-paper/70';
 
 interface TargetDestination {
   id: string;
@@ -292,127 +296,127 @@ export function HohmannTransferSimulator() {
   }, [selectedDest, flightProgress, visible]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 border-b border-line pb-6">
-        <div>
-          <div className="label flex items-center gap-2 text-violet">
-            <span className="live-dot" /> Orbital Mekanik & Rota Optimizasyonu
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Hohmann transfer <span className="serif-i text-violet">& gezegenlerarası rota</span>
+      <div className="flex flex-col gap-5 border-b border-line pb-6 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Hohmann transferi ve gezegenlerarası rota
           </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
+          <p className="mt-1.5 text-sm text-paper/70">Yörünge mekaniği ve rota optimizasyonu</p>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-paper/80">
             Walter Hohmann tarafından formüle edilen iki dairesel yörünge arasındaki minimum yakıt tüketimli eliptik transfer manevrası ve delta-V hesabı.
           </p>
         </div>
 
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-violet">
-          Vis-Viva Denklemi · v² = μ(2/r - 1/a)
-        </div>
+        <p className="shrink-0 text-sm text-paper/70">
+          Vis-viva denklemi:{' '}
+          <span className="whitespace-nowrap font-mono text-paper/90">v² = μ(2/r - 1/a)</span>
+        </p>
       </div>
 
       {/* Destination Selector Tabs */}
       <div className="choice-rail grid grid-cols-2 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-5 lg:fill-row-5 gap-px border border-line bg-line">
-        {DESTINATIONS.map((d, idx) => {
+        {DESTINATIONS.map((d) => {
           const isSelected = d.id === selectedDest.id;
           return (
             <button
               key={d.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => {
                 setSelectedDest(d);
                 setFlightProgress(0);
               }}
-              className={`p-4 text-left transition-colors cursor-pointer flex flex-col justify-between ${
+              className={`flex min-w-0 flex-col gap-1 p-4 text-left transition-colors cursor-pointer ${
                 isSelected
                   ? 'bg-violet text-paper'
                   : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className={`label ${isSelected ? 'text-paper/70' : 'text-muted'}`}>
-                  Rota 0{idx + 1}
+              <span className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                <span className="font-display text-base font-semibold leading-tight sm:text-lg">
+                  {d.name.split(' (')[0]}
                 </span>
-                <span className="label font-mono text-[10px]">
+                <span className={`font-mono text-xs tabular-nums ${isSelected ? 'text-paper/85' : 'text-paper/70'}`}>
                   {d.distanceAU} AU
                 </span>
-              </div>
-              <div className="display display-tight mt-3 text-base font-bold">
-                {d.name.split(' (')[0]}
-              </div>
-              <div className={`label mt-1 text-[10px] ${isSelected ? 'text-paper/80' : 'text-muted'}`}>
-                {d.transferDays} Gün Uçuş
-              </div>
+              </span>
+              <span className={`text-sm ${isSelected ? 'text-paper/85' : 'text-paper/70'}`}>
+                <span className="font-mono tabular-nums">{d.transferDays}</span> gün uçuş
+              </span>
             </button>
           );
         })}
       </div>
 
       {/* Main Simulation Deck (Canvas & Flight Computer) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Trajectory Canvas (7 cols) */}
-        <div className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            width={700}
-            height={460}
-            className="w-full h-full block"
-          />
-
-          {/* Canvas HUD Overlay */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none bg-ink/90 px-3 py-1.5 border border-line backdrop-blur">
-            <Rocket className="h-3.5 w-3.5 text-lime animate-pulse" />
-            <span className="label text-paper">
-              Uçuş İlerlemesi: %{Math.round(flightProgress)} · Gün {Math.round((flightProgress / 100) * selectedDest.transferDays)}
-            </span>
-          </div>
-
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="label px-3 py-1.5 bg-ink/90 border border-line text-paper backdrop-blur hover:bg-ink-3 transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              {isPlaying ? <Pause size={12} /> : <Play size={12} />}
-              <span>{isPlaying ? 'Durdur' : 'Uçur'}</span>
-            </button>
-            <button type="button" aria-label="Uçuşu başa sar"
-              onClick={() => setFlightProgress(0)}
-              className="label px-2.5 py-1.5 bg-ink/90 border border-line text-muted backdrop-blur hover:text-paper transition-colors cursor-pointer"
-              title="Başa Sar"
-            >
-              <RotateCcw size={12} />
-            </button>
-          </div>
-
-          {/* Bottom Trajectory Legend */}
-          <div className="absolute inset-x-4 bottom-4 flex items-center justify-between bg-ink/90 px-4 py-2 border border-line backdrop-blur pointer-events-none">
-            <div className="flex items-center gap-3">
-              <span className="label flex items-center gap-1.5 text-violet">
-                <span className="h-1.5 w-1.5 rounded-full bg-violet" /> Dünya
+        <div className="lg:col-span-7 min-w-0 space-y-3">
+          {/* Flight status & controls */}
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-paper/70">
+              <Rocket className="h-4 w-4 shrink-0 text-lime" />
+              <span>Uçuş ilerlemesi</span>
+              <span className="font-mono tabular-nums text-paper">
+                %{Math.round(flightProgress)} · {Math.round((flightProgress / 100) * selectedDest.transferDays)}. gün
               </span>
-              <span className="label flex items-center gap-1.5 text-lime">
-                <span className="h-1.5 w-1.5 rounded-full bg-lime" /> Transfer Elipsi
-              </span>
-              <span className="label flex items-center gap-1.5 text-rose-signal">
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-signal" /> Hedef
-              </span>
+            </p>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="inline-flex h-9 items-center gap-1.5 border border-line bg-ink-2 px-3 text-sm text-paper hover:bg-ink-3 transition-colors cursor-pointer"
+              >
+                {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+                <span>{isPlaying ? 'Durdur' : 'Uçur'}</span>
+              </button>
+              <button type="button" aria-label="Uçuşu başa sar"
+                onClick={() => setFlightProgress(0)}
+                className="inline-flex h-9 w-9 items-center justify-center border border-line bg-ink-2 text-paper/75 hover:text-paper transition-colors cursor-pointer"
+                title="Başa sar"
+              >
+                <RotateCcw size={14} />
+              </button>
             </div>
-            <span className="label text-muted hidden sm:inline">Minimum Yakıtlı Balistik Yörünge</span>
+          </div>
+
+          <div className="w-full border border-line bg-black overflow-hidden">
+            <canvas
+              ref={canvasRef}
+              width={700}
+              height={460}
+              className="block h-auto w-full"
+            />
+          </div>
+
+          {/* Trajectory Legend */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-paper/75">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-violet" /> Dünya
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-lime" /> Transfer elipsi
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-rose-signal" /> Hedef
+            </span>
+            <span className="text-paper/70 sm:ml-auto">Minimum yakıtlı balistik yörünge</span>
           </div>
         </div>
 
         {/* Flight Telemetry & Delta-V Computer (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 min-w-0 space-y-6">
           {/* Progress Slider */}
-          <div className="border border-line bg-ink-2 p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="label text-muted flex items-center gap-1.5">
-                <Sliders size={13} className="text-violet" />
-                Yörünge Konumunu Kaydır
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-1.5 text-sm text-paper/70">
+                <Sliders size={14} className="shrink-0 text-violet" />
+                Yörünge konumunu kaydır
               </span>
-              <span className="label text-lime font-bold">
+              <span className="font-mono text-sm font-semibold tabular-nums text-lime">
                 %{Math.round(flightProgress)}
               </span>
             </div>
@@ -427,70 +431,65 @@ export function HohmannTransferSimulator() {
                 setFlightProgress(parseFloat(e.target.value));
                 setIsPlaying(false);
               }}
-              className="w-full accent-[var(--lime)] cursor-pointer h-1.5 bg-ink"
+              className="w-full accent-[var(--lime)] cursor-pointer"
             />
 
-            <div className="flex justify-between label text-[10px] text-muted">
-              <span>Δv₁ Kalkış Yanışı</span>
-              <span>Seyir Evresi</span>
-              <span>Δv₂ Frenleme Yanışı</span>
+            <div className="flex justify-between gap-3 text-xs leading-snug text-paper/70">
+              <span>Δv₁ kalkış yanışı</span>
+              <span className="text-center">Seyir evresi</span>
+              <span className="text-right">Δv₂ frenleme yanışı</span>
             </div>
           </div>
 
           {/* Delta-V Budget Grid */}
           <div className="grid grid-cols-2 gap-px border border-line bg-line">
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Δv₁ (Kalkış İtkisi)</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
-                {selectedDest.deltaV1.toFixed(2)} <span className="label text-xs">km/s</span>
+            <div className="min-w-0 bg-ink p-4">
+              <span className={DATA_LABEL}>Δv₁ (kalkış itkisi)</span>
+              <div className={`${DATA_VALUE} text-paper`}>
+                {selectedDest.deltaV1.toFixed(2)} <span className={DATA_UNIT}>km/s</span>
               </div>
             </div>
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Δv₂ (Varış Freni)</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
-                {selectedDest.deltaV2.toFixed(2)} <span className="label text-xs">km/s</span>
+            <div className="min-w-0 bg-ink p-4">
+              <span className={DATA_LABEL}>Δv₂ (varış freni)</span>
+              <div className={`${DATA_VALUE} text-paper`}>
+                {selectedDest.deltaV2.toFixed(2)} <span className={DATA_UNIT}>km/s</span>
               </div>
             </div>
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Toplam Δv Bütçesi</span>
-              <div className="display display-tight mt-2 text-2xl text-lime">
-                {totalDeltaV} <span className="label text-xs">km/s</span>
+            <div className="min-w-0 bg-ink p-4">
+              <span className={DATA_LABEL}>Toplam Δv bütçesi</span>
+              <div className={`${DATA_VALUE} text-lime`}>
+                {totalDeltaV} <span className={DATA_UNIT}>km/s</span>
               </div>
             </div>
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Uçuş Süresi</span>
-              <div className="display display-tight mt-2 text-2xl text-violet">
-                {selectedDest.transferDays} <span className="label text-xs">Gün</span>
+            <div className="min-w-0 bg-ink p-4">
+              <span className={DATA_LABEL}>Uçuş süresi</span>
+              <div className={`${DATA_VALUE} text-violet`}>
+                {selectedDest.transferDays} <span className={DATA_UNIT}>gün</span>
               </div>
             </div>
           </div>
 
-          {/* Synodic Launch Window Card */}
-          <div className="border border-line bg-ink-2 p-5 space-y-2">
-            <div className="flex items-center justify-between border-b border-line pb-2">
-              <span className="label text-paper flex items-center gap-1.5">
-                <Compass size={13} className="text-violet" />
-                Fırlatma Penceresi (Sinodik Periyot)
+          {/* Synodic Launch Window */}
+          <div className="border-t border-line pt-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-paper">
+                <Compass size={14} className="shrink-0 text-violet" />
+                Fırlatma penceresi (sinodik periyot)
               </span>
-              <span className="label text-violet font-bold">
-                {selectedDest.synodicMonths} Ayda Bir
+              <span className="text-sm text-violet">
+                <span className="font-mono tabular-nums">{selectedDest.synodicMonths}</span> ayda bir
               </span>
             </div>
 
-            <p className="text-xs leading-relaxed text-paper/75 pt-1">
+            <p className="mt-2 text-sm leading-relaxed text-paper/80">
               Gezegenlerin Güneş etrafındaki bağıl konumlarının bu transfer elipsine izin verecek hizaya gelmesi her {selectedDest.synodicMonths} ayda bir tekrarlanır. Kaçırılırsa bir sonraki pencere beklenmelidir.
             </p>
           </div>
 
-          {/* Historic Mission Badge */}
-          <div className="border border-line bg-ink-2 p-4 flex items-center justify-between">
-            <div>
-              <span className="label text-muted">Tarihi Referans Görev</span>
-              <div className="text-xs font-bold text-paper mt-0.5">{selectedDest.historicMission}</div>
-            </div>
-            <div className="label text-violet border border-violet/30 bg-ink px-2.5 py-1">
-              Kanıtlanmış Yörünge
-            </div>
+          {/* Historic Mission */}
+          <div className="border-t border-line pt-5">
+            <span className="block text-sm text-paper/70">Tarihi referans görev · kanıtlanmış yörünge</span>
+            <div className="mt-1 text-base font-medium text-paper">{selectedDest.historicMission}</div>
           </div>
         </div>
       </div>

@@ -2,8 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Telescope, ArrowRight, Clock } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { ArrowRight, Clock } from 'lucide-react';
 import { PlanetGlyph, VectorMoonPhase } from '@/components/ui/CosmicGlyphs';
 import { useNow } from '@/lib/useNow';
 import { computeSkyTonight, ISTANBUL_SITE, type PlanetTonight } from '@/lib/astrophysics/skyTonight';
@@ -18,8 +17,8 @@ const hm = (d: Date | null | undefined) => (d ? timeFmt.format(d) : '—');
 const RATING_STYLE: Record<PlanetTonight['rating'], string> = {
   Mükemmel: 'border-lime/40 bg-lime/10 text-lime',
   İyi: 'border-solar/40 bg-solar/10 text-solar',
-  Düşük: 'border-line text-paper/70',
-  Görünmüyor: 'border-line text-muted',
+  Düşük: 'border-line text-paper/85',
+  Görünmüyor: 'border-line text-paper/70',
 };
 
 function brightnessNote(mag: number): string {
@@ -50,32 +49,25 @@ export function SkyTonightWidget() {
   const moonGlare = moon ? moon.illumination * moon.upDuringDarkFraction : 0;
 
   return (
-    <div className="relative ticks border border-line bg-ink p-6 lg:p-8 space-y-6">
-      <Ticks />
-
+    <div className="border border-line bg-ink p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-line pb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Telescope className="h-4 w-4 text-solar" />
-            <span className="font-mono text-[10px] text-solar font-bold uppercase tracking-widest">
-              GÖKYÜZÜ GÖZLEM RADARI · {ISTANBUL_SITE.city.toLocaleUpperCase('tr-TR')} · ANLIK HESAP
-            </span>
-          </div>
-          <h3 className="display display-tight text-2xl text-paper sm:text-3xl">Bu Gece Gökyüzü</h3>
-          <p className="text-xs text-muted mt-1 leading-relaxed">
+      <div className="flex flex-col gap-4 border-b border-line pb-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">Bu gece gökyüzü</h3>
+          <p className="mt-1.5 text-sm text-paper/70">{ISTANBUL_SITE.city} · anlık hesap</p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
             {ISTANBUL_SITE.city}’dan bu gece çıplak gözle ve amatör teleskopla izlenebilecek gök cisimleri; konumlar
             JPL yörünge elemanlarıyla tarayıcında hesaplanır.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div role="group" aria-label="Gökyüzü görünümü" className="flex items-center gap-1.5 border border-line bg-ink-2 p-1 font-mono text-xs">
+        <div role="group" aria-label="Gökyüzü görünümü" className="flex shrink-0 flex-wrap items-center gap-1.5">
           {(
             [
               ['planets', 'Gezegenler'],
-              ['moon', 'Ay Evresi'],
-              ['quality', 'Gözlem Kalitesi'],
+              ['moon', 'Ay evresi'],
+              ['quality', 'Gözlem kalitesi'],
             ] as const
           ).map(([id, label]) => (
             <button
@@ -83,10 +75,10 @@ export function SkyTonightWidget() {
               type="button"
               aria-pressed={selectedTab === id}
               onClick={() => setSelectedTab(id)}
-              className={`px-3 py-1.5 transition-colors cursor-pointer border uppercase tracking-wider ${
+              className={`min-h-9 px-3 py-1.5 text-sm transition-colors cursor-pointer border ${
                 selectedTab === id
-                  ? 'border-solar bg-solar text-ink font-bold'
-                  : 'border-transparent text-muted hover:text-paper'
+                  ? 'border-solar bg-solar text-ink font-semibold'
+                  : 'border-line text-paper/75 hover:border-paper/40 hover:text-paper'
               }`}
             >
               {label}
@@ -98,60 +90,54 @@ export function SkyTonightWidget() {
       {/* Tab: Planets */}
       {selectedTab === 'planets' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {(tonight?.planets ?? []).map((planet) => (
-              <div
-                key={planet.key}
-                className="group border border-line bg-ink-2 p-4 hover:border-solar/50 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-8 h-8 rounded-full border border-line/60 bg-ink flex items-center justify-center p-1.5 shadow-inner">
-                    <PlanetGlyph planet={planet.key} size={18} className="text-solar group-hover:text-paper transition-colors" />
+              <div key={planet.key} className="flex min-w-0 flex-col bg-ink-2 p-4 transition-colors hover:bg-ink-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <PlanetGlyph planet={planet.key} size={20} className="shrink-0 text-solar" />
+                    <div className="min-w-0">
+                      <div className="font-display text-lg font-semibold leading-tight text-paper">{planet.name}</div>
+                      <div className="text-sm text-paper/70">{planet.constellation}</div>
+                    </div>
                   </div>
-                  <span
-                    className={`text-[10px] font-mono font-bold px-2 py-0.5 border uppercase tracking-wider ${RATING_STYLE[planet.rating]}`}
-                  >
+                  <span className={`shrink-0 border px-2 py-0.5 text-xs font-medium ${RATING_STYLE[planet.rating]}`}>
                     {planet.rating}
                   </span>
                 </div>
 
-                <div className="font-mono text-base font-bold text-paper group-hover:text-solar transition-colors">
-                  {planet.name}
-                </div>
-                <div className="text-[11px] font-mono text-muted mt-0.5">{planet.constellation}</div>
-
-                <div className="mt-3 pt-2.5 border-t border-line text-[11px] font-mono space-y-1">
-                  <div className="text-muted flex justify-between gap-2">
-                    <span>Parlaklık:</span>
-                    <span className="text-paper font-bold text-right">
-                      {planet.magnitude >= 0 ? '+' : '−'}
-                      {Math.abs(planet.magnitude).toFixed(1)} kadir · {brightnessNote(planet.magnitude)}
+                <div className="mt-4 space-y-2 border-t border-line pt-3 text-sm">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-paper/70">Parlaklık</span>
+                    <span className="text-right text-paper">
+                      <span className="font-mono font-medium tabular-nums">
+                        {planet.magnitude >= 0 ? '+' : '−'}
+                        {Math.abs(planet.magnitude).toFixed(1)} kadir
+                      </span>
+                      <span className="block text-paper/70">{brightnessNote(planet.magnitude)}</span>
                     </span>
                   </div>
-                  <div className="text-muted leading-snug pt-1 text-[10px] flex items-start gap-1.5">
-                    <Clock size={11} className="text-solar shrink-0 mt-px" />
-                    <span>{planetTiming(planet)}</span>
+                  <div className="flex items-start gap-2 leading-snug text-paper/80">
+                    <Clock size={14} className="mt-0.5 shrink-0 text-paper/60" aria-hidden />
+                    <span className="tabular-nums">{planetTiming(planet)}</span>
                   </div>
                 </div>
               </div>
             ))}
             {!tonight &&
               Array.from({ length: 4 }, (_, i) => (
-                <div key={i} aria-hidden className="h-[168px] border border-line bg-ink-2 animate-pulse" />
+                <div key={i} aria-hidden className="h-[168px] bg-ink-2 animate-pulse" />
               ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <div className="text-xs text-muted font-mono flex items-center gap-2">
-              <Sparkles size={14} className="text-solar" />
-              <span>Gezegenlerin 3D konumlarını canlı haritada görmek için:</span>
-            </div>
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p className="text-sm text-paper/80">Gezegenlerin 3D konumlarını canlı haritada görmek için:</p>
             <Link
               href="/harita"
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-solar hover:underline"
+              className="inline-flex min-h-9 items-center gap-1.5 text-sm font-medium text-solar hover:underline"
             >
-              <span>3D Gök Küresini Aç</span>
-              <ArrowRight size={13} />
+              <span>3D gök küresini aç</span>
+              <ArrowRight size={14} aria-hidden />
             </Link>
           </div>
         </div>
@@ -159,44 +145,40 @@ export function SkyTonightWidget() {
 
       {/* Tab: Moon */}
       {selectedTab === 'moon' && (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-4 flex flex-col items-center justify-center p-6 border border-line bg-ink-2 text-center">
-            <div className="relative mb-3">
-              <div className="w-20 h-20 border border-line bg-ink rounded-full flex items-center justify-center p-3 shadow-inner">
-                <VectorMoonPhase
-                  illumination={moon ? Math.round(moon.illumination * 100) : 0}
-                  waning={moon ? !moon.waxing : false}
-                  size={54}
-                  className="text-paper"
-                />
-              </div>
-            </div>
-            <div className="font-mono text-base font-bold text-paper">{moon?.phaseName ?? 'Hesaplanıyor'}</div>
-            <div className="text-xs font-mono text-solar font-bold mt-1">
-              {moon ? `%${Math.round(moon.illumination * 100)} Aydınlık · ${moon.ageDays.toFixed(1)} günlük` : '—'}
+        <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
+          <div className="flex flex-col items-center justify-center border border-line bg-ink-2 p-6 text-center md:col-span-4">
+            <VectorMoonPhase
+              illumination={moon ? Math.round(moon.illumination * 100) : 0}
+              waning={moon ? !moon.waxing : false}
+              size={64}
+              className="mb-3 text-paper"
+            />
+            <div className="font-display text-lg font-semibold text-paper">{moon?.phaseName ?? 'Hesaplanıyor'}</div>
+            <div className="mt-1 font-mono text-sm tabular-nums text-solar">
+              {moon ? `%${Math.round(moon.illumination * 100)} aydınlık · ${moon.ageDays.toFixed(1)} günlük` : '—'}
             </div>
           </div>
 
-          <div className="md:col-span-8 space-y-3.5 font-mono text-xs">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <div className="p-3 bg-ink-2 border border-line">
-                <span className="text-[10px] text-muted block uppercase">Doğuş Saati</span>
-                <span className="font-bold text-paper text-sm">{hm(moon?.rise)}</span>
+          <div className="space-y-5 md:col-span-8">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Doğuş saati</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold tabular-nums text-paper">{hm(moon?.rise)}</dd>
               </div>
-              <div className="p-3 bg-ink-2 border border-line">
-                <span className="text-[10px] text-muted block uppercase">Batış Saati</span>
-                <span className="font-bold text-paper text-sm">{hm(moon?.set)}</span>
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Batış saati</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold tabular-nums text-paper">{hm(moon?.set)}</dd>
               </div>
-              <div className="p-3 bg-ink-2 border border-line">
-                <span className="text-[10px] text-muted block uppercase">Dünya’ya Mesafe</span>
-                <span className="font-bold text-paper text-sm">
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Dünya’ya mesafe</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold tabular-nums text-paper">
                   {moon ? `${Math.round(moon.distanceKm).toLocaleString('tr-TR')} km` : '—'}
-                </span>
+                </dd>
               </div>
-            </div>
+            </dl>
 
-            <div className="p-4 bg-ink-2 border border-line leading-relaxed text-muted text-xs">
-              <strong className="text-paper">Gözlem İpucu:</strong>{' '}
+            <p className="border-t border-line pt-4 text-base leading-relaxed text-paper/80">
+              <strong className="font-semibold text-paper">Gözlem ipucu:</strong>{' '}
               {!moon
                 ? '—'
                 : moon.illumination > 0.85
@@ -204,53 +186,57 @@ export function SkyTonightWidget() {
                   : moon.illumination < 0.15
                     ? 'Ay neredeyse karanlık: derin uzay bulutsuları ve Samanyolu için ayın en iyi gecelerinden biri.'
                     : 'Terminatör (aydınlık-karanlık sınırı) boyunca Tycho ve Copernicus gibi kraterler dürbünle bile keskin gölgelerle seçilir.'}
-            </div>
+            </p>
           </div>
         </div>
       )}
 
       {/* Tab: Quality */}
       {selectedTab === 'quality' && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
-          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-muted uppercase">Astronomik Karanlık</span>
-              <span className="text-xs font-bold text-lime">{dark ? `${hm(dark.start)}–${hm(dark.end)}` : '—'}</span>
+        <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-3">
+          <div className="min-w-0 space-y-3 bg-ink-2 p-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm font-medium text-paper/85">Astronomik karanlık</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-lime">
+                {dark ? `${hm(dark.start)}–${hm(dark.end)}` : '—'}
+              </span>
             </div>
-            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden bg-paper/10">
               <div className="bg-lime h-full" style={{ width: `${Math.min(100, (darkHours / 12) * 100)}%` }} />
             </div>
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-sm leading-relaxed text-paper/80">
               {dark
                 ? `Güneş ufkun 18° altında: ${darkHours.toFixed(1)} saatlik tam karanlık pencere. Gün batımı ${hm(tonight?.sunset)}, gün doğumu ${hm(tonight?.sunrise)}.`
                 : 'Bu gece Güneş 18° altına inmiyor; gökyüzü tam kararmayacak.'}
             </p>
           </div>
 
-          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-muted uppercase">Ay Işığı Etkisi</span>
-              <span className="text-xs font-bold text-solar">{moon ? `%${Math.round(moonGlare * 100)}` : '—'}</span>
+          <div className="min-w-0 space-y-3 bg-ink-2 p-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm font-medium text-paper/85">Ay ışığı etkisi</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-solar">
+                {moon ? `%${Math.round(moonGlare * 100)}` : '—'}
+              </span>
             </div>
-            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden bg-paper/10">
               <div className="bg-solar h-full" style={{ width: `${Math.round(moonGlare * 100)}%` }} />
             </div>
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-sm leading-relaxed text-paper/80">
               {moon
                 ? `Ay %${Math.round(moon.illumination * 100)} aydınlık; karanlık saatlerde ufkun üstünde kalma oranı %${Math.round(moon.upDuringDarkFraction * 100)}.`
                 : '—'}
             </p>
           </div>
 
-          <div className="p-4 bg-ink-2 border border-line space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-muted uppercase">Işık Kirliliği</span>
-              <span className="text-xs font-bold text-rose">Bortle 8–9</span>
+          <div className="min-w-0 space-y-3 bg-ink-2 p-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm font-medium text-paper/85">Işık kirliliği</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-rose">Bortle 8–9</span>
             </div>
-            <div className="w-full bg-ink h-1.5 border border-line overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden bg-paper/10">
               <div className="bg-rose h-full w-[88%]" />
             </div>
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-sm leading-relaxed text-paper/80">
               {ISTANBUL_SITE.city} merkezinden gezegenler ve Ay rahat izlenir; Samanyolu için şehirden en az 60–80 km uzaklaş.
             </p>
           </div>

@@ -5,14 +5,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
-import {
-  MapPin,
-  Play,
-  Pause,
-  Layers,
-  Disc
-} from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { MapPin, Play, Pause } from 'lucide-react';
 import { useInView } from '@/lib/useInView';
 import { seededRandom } from '@/lib/random';
 
@@ -380,6 +373,23 @@ function MilkyWayScene({
 // -------------------------------------------------------------
 // Main Component
 // -------------------------------------------------------------
+
+// Ortak görünüm sınıfları
+const VIEW_BUTTON =
+  'inline-flex min-h-9 items-center gap-1.5 border px-3 text-sm transition-colors cursor-pointer';
+const VIEW_BUTTON_IDLE = 'border-line bg-ink text-paper/80 hover:border-paper/40 hover:text-paper';
+const VIEW_BUTTON_ACTIVE = 'border-star-gold bg-star-gold text-ink font-medium';
+
+// Galaksinin temel verileri (sayı ve birimler olduğu gibi)
+const GALAXY_FACTS: { label: string; value: string; mono?: boolean; solar?: boolean }[] = [
+  { label: 'Galaksi', value: 'Samanyolu (Via Lactea)' },
+  { label: 'Çap', value: '~105.700 Işık Yılı', mono: true },
+  { label: 'Yıldız sayısı', value: '100 - 400 Milyar', mono: true },
+  { label: 'Güneş uzaklığı', value: '26.670 Işık Yılı (8.2 kpc)', mono: true, solar: true },
+  { label: 'Güneş orbital hızı', value: '828.000 km/sa (230 km/s)', mono: true },
+  { label: 'Galaktik yıl', value: '~230 Milyon Yıl', mono: true },
+];
+
 export function MilkyWayPointCloud3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef);
@@ -395,46 +405,32 @@ export function MilkyWayPointCloud3D() {
   return (
     <div
       ref={containerRef}
-      className="relative ticks border border-line bg-ink text-paper overflow-hidden"
+      className="relative border border-line bg-ink text-paper overflow-hidden"
     >
-      <Ticks />
-
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line p-5 sm:p-6 bg-ink-2/60 backdrop-blur-sm">
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded border border-star-gold/30 bg-star-gold/10 text-star-gold">
-            <Disc className="h-4 w-4 animate-spin text-star-gold" style={{ animationDuration: '12s' }} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] text-star-gold uppercase tracking-widest font-semibold">
-                3D GALAKTİK KARTOGRAFYA
-              </span>
-              <span className="px-1.5 py-0.2 border border-line text-[9px] font-mono text-muted uppercase">
-                28.000+ YILDIZ NOKTASI
-              </span>
-            </div>
-            <h3 className="display display-tight text-xl sm:text-2xl text-paper">
-              Samanyolu Galaksisi & Güneş’in Konumu
-            </h3>
-          </div>
+      {/* Başlık ve görünüm seçimi */}
+      <div className="flex flex-col gap-4 border-b border-line p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <h3 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+            Samanyolu Galaksisi ve Güneş’in konumu
+          </h3>
+          <p className="mt-1.5 text-sm text-paper/70">
+            3D galaksi haritası · 28.000+ yıldız noktası
+          </p>
         </div>
 
         {/* View preset pills */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => {
               setCameraPreset('cinematic');
               setActiveRegionId('all');
             }}
-            className={`px-2.5 py-1 transition-colors cursor-pointer border text-[11px] uppercase tracking-wider ${
-              cameraPreset === 'cinematic'
-                ? 'border-star-gold bg-star-gold text-ink font-bold'
-                : 'border-line bg-ink text-muted hover:text-paper hover:border-line'
+            className={`${VIEW_BUTTON} ${
+              cameraPreset === 'cinematic' ? VIEW_BUTTON_ACTIVE : VIEW_BUTTON_IDLE
             }`}
           >
-            Açılı Bakış
+            Açılı bakış
           </button>
           <button
             type="button"
@@ -442,13 +438,11 @@ export function MilkyWayPointCloud3D() {
               setCameraPreset('top');
               setActiveRegionId('all');
             }}
-            className={`px-2.5 py-1 transition-colors cursor-pointer border text-[11px] uppercase tracking-wider ${
-              cameraPreset === 'top'
-                ? 'border-star-gold bg-star-gold text-ink font-bold'
-                : 'border-line bg-ink text-muted hover:text-paper hover:border-line'
+            className={`${VIEW_BUTTON} ${
+              cameraPreset === 'top' ? VIEW_BUTTON_ACTIVE : VIEW_BUTTON_IDLE
             }`}
           >
-            Kuşbakışı Disk
+            Kuşbakışı disk
           </button>
           <button
             type="button"
@@ -456,14 +450,12 @@ export function MilkyWayPointCloud3D() {
               setCameraPreset('sun');
               setActiveRegionId('orion');
             }}
-            className={`px-2.5 py-1 transition-colors cursor-pointer border text-[11px] uppercase tracking-wider flex items-center gap-1 ${
-              cameraPreset === 'sun'
-                ? 'border-solar bg-solar text-ink font-bold'
-                : 'border-line bg-ink text-muted hover:text-paper hover:border-line'
+            className={`${VIEW_BUTTON} ${
+              cameraPreset === 'sun' ? 'border-solar bg-solar text-ink font-medium' : VIEW_BUTTON_IDLE
             }`}
           >
-            <MapPin className="h-3 w-3" />
-            Güneş (Biz)
+            <MapPin className="h-3.5 w-3.5" />
+            Güneş (biz)
           </button>
           <button
             type="button"
@@ -471,13 +463,11 @@ export function MilkyWayPointCloud3D() {
               setCameraPreset('core');
               setActiveRegionId('core');
             }}
-            className={`px-2.5 py-1 transition-colors cursor-pointer border text-[11px] uppercase tracking-wider ${
-              cameraPreset === 'core'
-                ? 'border-star-gold bg-star-gold text-ink font-bold'
-                : 'border-line bg-ink text-muted hover:text-paper hover:border-line'
+            className={`${VIEW_BUTTON} ${
+              cameraPreset === 'core' ? VIEW_BUTTON_ACTIVE : VIEW_BUTTON_IDLE
             }`}
           >
-            Sgr A* Çekirdek
+            Sgr A* çekirdek
           </button>
           <button
             type="button"
@@ -485,13 +475,11 @@ export function MilkyWayPointCloud3D() {
               setCameraPreset('edge');
               setActiveRegionId('all');
             }}
-            className={`px-2.5 py-1 transition-colors cursor-pointer border text-[11px] uppercase tracking-wider ${
-              cameraPreset === 'edge'
-                ? 'border-star-gold bg-star-gold text-ink font-bold'
-                : 'border-line bg-ink text-muted hover:text-paper hover:border-line'
+            className={`${VIEW_BUTTON} ${
+              cameraPreset === 'edge' ? VIEW_BUTTON_ACTIVE : VIEW_BUTTON_IDLE
             }`}
           >
-            Yandan Profil
+            Yandan profil
           </button>
         </div>
       </div>
@@ -509,74 +497,52 @@ export function MilkyWayPointCloud3D() {
             />
           </Canvas>
         ) : (
-          <div className="flex h-full items-center justify-center font-mono text-xs text-muted">
-            3D Galaksi Yükleniyor…
+          <div className="flex h-full items-center justify-center text-sm text-paper/70">
+            3D galaksi yükleniyor…
           </div>
         )}
 
-        {/* Floating Top-Left Telemetry Overlay */}
-        <div className="absolute top-4 left-4 pointer-events-none font-mono text-[11px] space-y-1.5 bg-ink/80 backdrop-blur-md p-3 border border-line max-w-[260px]">
-          <div className="flex items-center justify-between border-b border-line pb-1">
-            <span className="text-muted uppercase text-[9px]">GÖZLEMLENEN SİSTEM</span>
-            <span className="text-star-gold font-bold">SAMANYOLU (VIA LACTEA)</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">ÇAP:</span>
-            <span className="text-paper font-semibold">~105.700 Işık Yılı</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">YILDIZ SAYISI:</span>
-            <span className="text-paper font-semibold">100 - 400 Milyar</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">GÜNEŞ UZAKLIĞI:</span>
-            <span className="text-solar font-semibold">26.670 Işık Yılı (8.2 kpc)</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">GÜNEŞ ORBİTAL HIZI:</span>
-            <span className="text-paper font-semibold">828.000 km/sa (230 km/s)</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted">GALAKTİK YIL:</span>
-            <span className="text-paper font-semibold">~230 Milyon Yıl</span>
-          </div>
-        </div>
-
         {/* Floating Bottom-Left Controls */}
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 font-mono text-xs z-10">
+        <div className="absolute bottom-4 left-4 flex items-center gap-2 z-10">
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-ink/90 backdrop-blur border border-line text-paper hover:border-star-gold transition-colors cursor-pointer text-[11px] uppercase"
+            className="inline-flex min-h-9 items-center gap-1.5 border border-line bg-ink/85 px-3 text-sm text-paper transition-colors hover:border-star-gold cursor-pointer"
           >
-            {isRotating ? <Pause className="h-3 w-3 text-star-gold" /> : <Play className="h-3 w-3 text-star-gold" />}
-            <span>{isRotating ? 'Dönüşü Durdur' : 'Dönüşü Başlat'}</span>
+            {isRotating ? <Pause className="h-3.5 w-3.5 text-star-gold" /> : <Play className="h-3.5 w-3.5 text-star-gold" />}
+            <span>{isRotating ? 'Dönüşü durdur' : 'Dönüşü başlat'}</span>
           </button>
-        </div>
-
-        {/* Sun Beacon Legend Marker (Bottom Right of Canvas) */}
-        <div className="absolute bottom-4 right-4 pointer-events-none bg-ink/80 backdrop-blur border border-solar/40 p-2.5 font-mono text-[10px] space-y-1">
-          <div className="flex items-center gap-1.5 text-solar font-bold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-solar animate-ping" />
-            <span>Güneş Sistemi / Biz Buradayız</span>
-          </div>
-          <p className="text-muted text-[9px] max-w-[200px]">
-            Sarı halka ve dikey fener çizgisi Güneşimizin Orion Mahmuzu’ndaki 26.670 ışık yılı uzaklıktaki konumunu gösterir.
-          </p>
         </div>
       </div>
 
+      {/* Galaksi verileri ve Güneş işareti açıklaması */}
+      <div className="border-t border-line p-5 sm:p-6 space-y-4">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
+          {GALAXY_FACTS.map((fact) => (
+            <div key={fact.label} className="min-w-0">
+              <dt className="text-sm text-paper/70">{fact.label}</dt>
+              <dd
+                className={`mt-0.5 text-sm ${fact.mono ? 'font-mono' : 'font-medium'} ${
+                  fact.solar ? 'text-solar' : 'text-paper'
+                }`}
+              >
+                {fact.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <p className="flex items-start gap-2 text-sm leading-relaxed text-paper/80">
+          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-solar" aria-hidden="true" />
+          <span>
+            <span className="font-medium text-solar">Güneş Sistemi, biz buradayız.</span>{' '}
+            Sarı halka ve dikey fener çizgisi Güneşimizin Orion Mahmuzu’ndaki 26.670 ışık yılı uzaklıktaki konumunu gösterir.
+          </span>
+        </p>
+      </div>
+
       {/* Region / Spiral Arm Selector Bar */}
-      <div className="border-t border-line bg-ink-2 p-4 sm:p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-muted uppercase tracking-widest font-semibold flex items-center gap-1.5">
-            <Layers className="h-3 w-3 text-star-gold" />
-            SARMAL KOLLAR & GALAKTİK BÖLGELERİ KEŞFET
-          </span>
-          <span className="font-mono text-[10px] text-muted">
-            Seçili Bölge: <span className="text-star-gold font-bold">{activeRegion.name}</span>
-          </span>
-        </div>
+      <div className="border-t border-line p-5 sm:p-6 space-y-4">
+        <div className="text-sm font-medium text-paper/80">Sarmal kollar ve galaktik bölgeler</div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {GALACTIC_REGIONS.map((region) => {
@@ -591,24 +557,19 @@ export function MilkyWayPointCloud3D() {
                   else if (region.id === 'orion') setCameraPreset('sun');
                   else if (region.id === 'all') setCameraPreset('cinematic');
                 }}
-                className={`p-2.5 text-left transition-all border font-mono text-xs cursor-pointer flex flex-col justify-between ${
+                className={`flex min-w-0 flex-col gap-1 border p-3 text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border-star-gold bg-ink text-paper shadow-[0_0_15px_rgba(245,197,66,0.15)]'
-                    : 'border-line bg-ink/60 text-muted hover:border-line hover:text-paper'
+                    ? 'border-star-gold bg-ink-2'
+                    : 'border-line bg-ink hover:border-paper/40'
                 }`}
               >
-                <div>
-                  <span
-                    className="block text-[9px] uppercase tracking-wider font-semibold"
-                    style={{ color: region.color }}
-                  >
-                    {region.type}
-                  </span>
-                  <span className="font-bold text-[11px] text-paper mt-0.5 line-clamp-1">
-                    {region.name}
-                  </span>
-                </div>
-                <span className="text-[9px] text-muted block mt-1.5 font-mono">
+                <span className="text-xs font-medium" style={{ color: region.color }}>
+                  {region.type}
+                </span>
+                <span className="text-sm font-medium leading-snug text-paper">
+                  {region.name}
+                </span>
+                <span className="mt-auto pt-1 text-xs text-paper/70">
                   {region.starsCount}
                 </span>
               </button>
@@ -617,21 +578,19 @@ export function MilkyWayPointCloud3D() {
         </div>
 
         {/* Selected Region Explanatory Dossier */}
-        <div className="border border-line bg-ink p-4 space-y-2 font-mono text-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2">
-            <div className="flex items-center gap-2">
+        <div className="border-t border-line pt-4 space-y-2">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h4 className="flex items-center gap-2 text-lg font-semibold leading-snug text-paper">
               <span
-                className="w-2.5 h-2.5 rounded-full inline-block"
+                className="w-2.5 h-2.5 shrink-0 rounded-full inline-block"
                 style={{ backgroundColor: activeRegion.color }}
               />
-              <h4 className="font-bold text-paper text-sm">{activeRegion.name}</h4>
-              <span className="text-muted text-[10px] uppercase">({activeRegion.type})</span>
-            </div>
-            <span className="text-[10px] text-star-gold font-bold uppercase tracking-wider">
-              {activeRegion.starsCount}
-            </span>
+              {activeRegion.name}
+            </h4>
+            <span className="text-sm text-paper/70">{activeRegion.type}</span>
           </div>
-          <p className="text-muted text-xs leading-relaxed font-sans">
+          <p className="text-sm text-star-gold">{activeRegion.starsCount}</p>
+          <p className="text-base leading-relaxed text-paper/85">
             {activeRegion.description}
           </p>
         </div>

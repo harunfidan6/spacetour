@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Award, CheckCircle2, XCircle, RotateCcw, Sparkles, ChevronRight, Shield, Download } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { Award, CheckCircle2, XCircle, RotateCcw, ChevronRight, Shield, Download } from 'lucide-react';
 
 interface QuizQuestion {
   id: number;
@@ -493,7 +492,6 @@ export function CosmicAcademyQuiz() {
         title: 'Galaktik Baş Astrofizikçi',
         grade: 'Kozmik Seviye V (Mükemmel)',
         color: 'text-amber-400',
-        badge: '⟦★⟧ ASTRO-PH-ALPHA',
         desc: 'Genel Görelilik, erken evren kozmolojisi ve derin uzay fiziğinde en yüksek yetkinlik derecesi.'
       };
     } else if (percentage >= 70) {
@@ -501,7 +499,6 @@ export function CosmicAcademyQuiz() {
         title: 'Derin Uzay Keşif Pilotu',
         grade: 'Kozmik Seviye IV (İleri Düzey)',
         color: 'text-emerald-400',
-        badge: '⟦▲⟧ DEEP-SPACE-CADET',
         desc: 'Yıldız evrimi ve orbital mekanik konularında güçlü teorik ve operasyonel bilgiye sahip.'
       };
     } else if (percentage >= 50) {
@@ -509,7 +506,6 @@ export function CosmicAcademyQuiz() {
         title: 'Yörünge Görev Uzmanı',
         grade: 'Kozmik Seviye III (Orta Seviye)',
         color: 'text-cyan-400',
-        badge: '⟦◆⟧ ORBIT-SPECIALIST',
         desc: 'Güneş sistemi ve gezegen bilimleri temellerinde başarılı kavrayış.'
       };
     } else {
@@ -517,7 +513,6 @@ export function CosmicAcademyQuiz() {
         title: 'Gözlemevi Asistanı & Kaşif',
         grade: 'Kozmik Seviye II (Başlangıç)',
         color: 'text-violet',
-        badge: '⟦●⟧ OBSERVER-INITIATE',
         desc: 'Evrenin gizemlerini keşfetme yolunda harika bir ilk adım. Tekrar deneyerek unvanını yükselt!'
       };
     }
@@ -528,49 +523,46 @@ export function CosmicAcademyQuiz() {
   }, [score, percentage]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-violet">
-            <span className="live-dot" /> SpaceTour Kozmik Akademi & Değerlendirme
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Astrofizik <span className="serif-i text-violet">& yetkinlik testi</span>
+      <div className="flex flex-col justify-between gap-5 border-b border-line pb-6 md:flex-row md:items-end">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Astrofizik & yetkinlik testi
           </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
+          <p className="mt-2 max-w-xl text-base leading-relaxed text-paper/80">
             {quizSize} soruluk interaktif astrofizik sınavını tamamlayın, evrenin kurallarına dair bilginizi ölçün ve adınıza kişisel bir Kozmik Kaşif sertifikası oluşturun.
           </p>
         </div>
 
-        {/* Progress Pill & Mode Switch */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Mode switch & progress */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           {!isFinished && (
-            <div className="flex border border-line bg-ink-2 p-0.5">
+            <div className="inline-flex border border-line">
               <button
                 type="button"
+                aria-pressed={quizSize === 10}
                 onClick={() => handleRestart(10)}
-                className={`px-2.5 py-1 text-xs font-mono transition-colors ${quizSize === 10 ? 'bg-violet text-ink font-semibold' : 'text-muted hover:text-paper'}`}
+                className={`min-h-9 px-3 text-sm transition-colors cursor-pointer ${quizSize === 10 ? 'bg-violet text-ink font-medium' : 'text-paper/70 hover:text-paper'}`}
               >
-                10 Soru
+                10 soru
               </button>
               <button
                 type="button"
+                aria-pressed={quizSize === 30}
                 onClick={() => handleRestart(30)}
-                className={`px-2.5 py-1 text-xs font-mono transition-colors ${quizSize === 30 ? 'bg-violet text-ink font-semibold' : 'text-muted hover:text-paper'}`}
+                className={`min-h-9 border-l border-line px-3 text-sm transition-colors cursor-pointer ${quizSize === 30 ? 'bg-violet text-ink font-medium' : 'text-paper/70 hover:text-paper'}`}
               >
-                30 Soru
+                30 soru
               </button>
             </div>
           )}
-          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
-            Soru: <span className="text-paper font-bold">{currentQuestionIndex + 1} / {totalQuestions}</span>
-          </div>
-          <div className="label px-3 py-1.5 border border-line bg-ink-2 text-muted">
-            Doğru: <span className="text-lime font-bold">{score}</span>
-          </div>
+          <span className="text-sm text-paper/70">
+            Soru: <span className="font-mono tabular-nums text-paper">{currentQuestionIndex + 1} / {totalQuestions}</span>
+          </span>
+          <span className="text-sm text-paper/70">
+            Doğru: <span className="font-mono tabular-nums text-lime">{score}</span>
+          </span>
         </div>
       </div>
 
@@ -578,199 +570,189 @@ export function CosmicAcademyQuiz() {
         /* Quiz in progress */
         <div className="space-y-6">
           {/* Progress Bar */}
-          <div className="w-full bg-ink-2 h-1 overflow-hidden border border-line">
+          <div className="h-1 w-full overflow-hidden bg-ink-3">
             <div
               className="h-full bg-violet transition-all duration-300"
               style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
             />
           </div>
 
-          {/* Question Card */}
-          <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between">
-              <span className="label text-violet border border-violet/30 bg-ink px-2.5 py-1">
-                {currentQ.category}
-              </span>
-              <span className="label text-muted">ID: #Q{currentQ.id.toString().padStart(2, '0')}</span>
-            </div>
-
-            <h4 className="display display-tight text-xl md:text-2xl text-paper">
+          {/* Question */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-violet">{currentQ.category}</p>
+            <h4 className="font-display text-xl font-semibold leading-snug text-paper sm:text-2xl">
               {currentQ.question}
             </h4>
-
-            {/* Options */}
-            <div className="grid grid-cols-1 gap-px border border-line bg-line pt-2">
-              {currentQ.options.map((option, idx) => {
-                const isSelected = selectedAnswers[currentQuestionIndex] === idx;
-                const isCorrect = idx === currentQ.correctAnswer;
-                const hasAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
-
-                let btnStyle = 'bg-ink text-paper hover:bg-ink-3';
-                if (hasAnswered) {
-                  if (isCorrect) {
-                    btnStyle = 'bg-lime text-ink font-bold';
-                  } else if (isSelected && !isCorrect) {
-                    btnStyle = 'bg-rose-signal text-ink';
-                  } else {
-                    btnStyle = 'bg-ink/50 text-muted opacity-50';
-                  }
-                }
-
-                return (
-                  <button
-                    key={idx}
-                    disabled={hasAnswered}
-                    onClick={() => handleSelectOption(idx)}
-                    className={`w-full p-4 text-left transition-colors flex items-center justify-between gap-4 text-sm cursor-pointer ${btnStyle}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="h-6 w-6 border border-line bg-ink-2 flex items-center justify-center font-mono text-xs text-muted flex-shrink-0">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                      <span>{option}</span>
-                    </div>
-
-                    {hasAnswered && isCorrect && (
-                      <CheckCircle2 className="w-5 h-5 text-ink flex-shrink-0" />
-                    )}
-                    {hasAnswered && isSelected && !isCorrect && (
-                      <XCircle className="w-5 h-5 text-ink flex-shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Explanation Drawer */}
-            {showExplanation && (
-              <div className="p-5 border border-line bg-ink space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="label text-violet flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Bilimsel Açıklama: {currentQ.scientificConcept}</span>
-                  </span>
-                  <span className={`label ${selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? 'text-lime' : 'text-rose-signal'}`}>
-                    {selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? '✓ Doğru Cevap' : '✗ Yanlış Cevap'}
-                  </span>
-                </div>
-                <p className="text-xs text-paper/80 leading-relaxed">
-                  {currentQ.explanation}
-                </p>
-                <div className="pt-2 flex justify-end">
-                  <button
-                    onClick={handleNext}
-                    className="label px-5 py-2.5 bg-paper text-ink font-bold flex items-center gap-2 hover:bg-paper/90 transition-colors cursor-pointer"
-                  >
-                    <span>{currentQuestionIndex < totalQuestions - 1 ? 'Sonraki Soru' : 'Sonuçları Gör'}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
+
+          {/* Options */}
+          <div className="grid grid-cols-1 gap-px border border-line bg-line">
+            {currentQ.options.map((option, idx) => {
+              const isSelected = selectedAnswers[currentQuestionIndex] === idx;
+              const isCorrect = idx === currentQ.correctAnswer;
+              const hasAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
+
+              let btnStyle = 'bg-ink text-paper hover:bg-ink-3';
+              let letterStyle = 'text-paper/60';
+              if (hasAnswered) {
+                if (isCorrect) {
+                  btnStyle = 'bg-lime text-ink font-semibold';
+                  letterStyle = 'text-ink/70';
+                } else if (isSelected && !isCorrect) {
+                  btnStyle = 'bg-rose-signal text-ink';
+                  letterStyle = 'text-ink/70';
+                } else {
+                  btnStyle = 'bg-ink text-paper/60';
+                  letterStyle = 'text-paper/50';
+                }
+              }
+
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  disabled={hasAnswered}
+                  onClick={() => handleSelectOption(idx)}
+                  className={`flex w-full min-h-12 items-center justify-between gap-4 px-4 py-3 text-left text-base leading-snug transition-colors cursor-pointer disabled:cursor-default ${btnStyle}`}
+                >
+                  <span className="flex min-w-0 items-baseline gap-3">
+                    <span className={`w-4 shrink-0 font-mono text-sm ${letterStyle}`}>
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span className="min-w-0">{option}</span>
+                  </span>
+
+                  {hasAnswered && isCorrect && (
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-ink" />
+                  )}
+                  {hasAnswered && isSelected && !isCorrect && (
+                    <XCircle className="h-5 w-5 shrink-0 text-ink" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Explanation */}
+          {showExplanation && (
+            <div className="border border-line bg-ink-2 p-4 sm:p-6 space-y-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <span className="min-w-0 text-sm font-medium text-violet">
+                  Bilimsel açıklama: {currentQ.scientificConcept}
+                </span>
+                <span className={`text-sm font-medium ${selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? 'text-lime' : 'text-rose-signal'}`}>
+                  {selectedAnswers[currentQuestionIndex] === currentQ.correctAnswer ? '✓ Doğru cevap' : '✗ Yanlış cevap'}
+                </span>
+              </div>
+              <p className="text-base leading-relaxed text-paper/85">
+                {currentQ.explanation}
+              </p>
+              <div className="flex justify-end pt-1">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="inline-flex min-h-10 items-center gap-2 bg-paper px-5 text-sm font-semibold text-ink transition-colors hover:bg-paper/90 cursor-pointer"
+                >
+                  <span>{currentQuestionIndex < totalQuestions - 1 ? 'Sonraki soru' : 'Sonuçları gör'}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
-        /* Quiz Finished - Official Certificate View */
+        /* Quiz finished: certificate view */
         <div className="space-y-8">
-          <div className="p-6 sm:p-8 border border-line bg-ink-2 text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 border border-violet/40 bg-ink text-violet mb-2">
-              <Award className="w-6 h-6 animate-pulse" />
-            </div>
-            <h4 className="display display-tight text-3xl md:text-4xl text-paper">
-              Değerlendirme Tamamlandı
+          <div className="space-y-4 text-center">
+            <Award className="mx-auto h-7 w-7 text-violet" />
+            <h4 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+              Değerlendirme tamamlandı
             </h4>
-            <p className="text-sm text-paper/70 max-w-lg mx-auto">
-              Toplam 10 sorudan <span className="text-lime font-bold">{score}</span> tanesini doğru cevaplayarak <span className="text-paper font-bold">%{percentage}</span> başarı oranı elde ettiniz.
+            <p className="mx-auto max-w-lg text-base leading-relaxed text-paper/80">
+              Toplam {totalQuestions} sorudan <span className="font-semibold tabular-nums text-lime">{score}</span> tanesini doğru cevaplayarak <span className="font-semibold tabular-nums text-paper">%{percentage}</span> başarı oranı elde ettiniz.
             </p>
 
             {/* Candidate Name Input */}
-            <div className="max-w-xs mx-auto pt-2">
-              <label className="block label text-muted mb-1 text-left">
-                Sertifikada Görünecek İsim / Çağrı Kodu:
-              </label>
+            <label className="mx-auto flex max-w-xs flex-col gap-1.5 pt-2 text-left">
+              <span className="text-sm text-paper/70">Sertifikada görünecek isim / çağrı kodu</span>
               <input aria-label="Sertifikada yazacak ad"
                 type="text"
                 value={candidateName}
                 onChange={(e) => setCandidateName(e.target.value)}
                 maxLength={30}
-                className="w-full bg-ink border border-line px-4 py-2 font-mono text-xs text-paper focus:outline-none focus:border-violet"
-                placeholder="Adınız veya Çağrı Kodunuz"
+                className="w-full min-h-10 border border-line bg-ink px-3 py-2 text-base text-paper focus:border-violet focus:outline-none"
+                placeholder="Adınız veya çağrı kodunuz"
               />
-            </div>
+            </label>
           </div>
 
           {/* Printable Certificate Preview */}
-          <div className="ticks relative border border-line bg-ink p-8 sm:p-12 space-y-6 text-center">
-            <Ticks />
-
-            {/* Corner Accents */}
-            <div className="absolute top-4 left-4 label text-muted">CERT-ID: {verificationHash}</div>
-            <div className="absolute top-4 right-4 label text-muted">Kişisel başarı belgesi</div>
-            <div className="absolute bottom-4 left-4 label text-muted">Tarih: {new Date().toLocaleDateString('tr-TR')}</div>
-            <div className="absolute bottom-4 right-4 label text-lime">Durum: Onaylandı</div>
-
-            <div className="space-y-2 pt-6">
-              <span className="label text-violet tracking-[0.25em]">
-                SPACETOUR TR KOZMİK GÖZLEMEVİ AKADEMİSİ
-              </span>
-              <h2 className="display display-tight text-3xl md:text-5xl text-paper tracking-wider">
-                Astrofizik Yetkinlik Belgesi
+          <div className="border border-line p-5 text-center space-y-7 sm:p-10">
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-violet">SpaceTour TR Gözlemevi Akademisi</p>
+              <h2 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+                Astrofizik yetkinlik belgesi
               </h2>
-              <div className="w-24 h-px bg-violet mx-auto mt-2" />
             </div>
 
-            <div className="space-y-2 py-4">
-              <p className="label text-muted">Bu belge, evrenin fiziksel yasaları sınavını başarıyla tamamlayan</p>
-              <h3 className="display display-tight text-2xl md:text-4xl text-paper font-bold uppercase underline decoration-violet decoration-2 underline-offset-8">
+            <div className="space-y-3">
+              <p className="text-sm text-paper/80 sm:text-base">Bu belge, evrenin fiziksel yasaları sınavını başarıyla tamamlayan</p>
+              {/* break-words yalnızca boşluksuz uzun kullanıcı girdisinin taşmaması için */}
+              <h3 className="font-display text-2xl font-semibold leading-tight text-paper break-words sm:text-3xl">
                 {candidateName || 'Kozmik Kaşif'}
               </h3>
-              <p className="text-xs text-paper/70 max-w-xl mx-auto pt-2 leading-relaxed">
+              <p className="mx-auto max-w-xl text-sm leading-relaxed text-paper/80 sm:text-base">
                 adına düzenlenmiş olup adayın astrofizik, genel görelilik, derin uzay dalgaboyu gözlemleri ve yörünge mekaniği konularındaki yetkinliğini tasdik eder.
               </p>
             </div>
 
-            {/* Rank Card inside Certificate */}
-            <div className="inline-block border border-line bg-ink-2 p-5 text-center space-y-1">
-              <div className="label text-muted">Atanan Kozmik Unvan</div>
-              <div className={`display display-tight text-xl font-bold ${rankInfo.color}`}>
+            {/* Assigned rank */}
+            <div className="space-y-1">
+              <div className="text-sm text-paper/70">Atanan unvan</div>
+              <div className={`font-display text-xl font-semibold leading-snug ${rankInfo.color}`}>
                 {rankInfo.title}
               </div>
-              <div className="label text-paper/80 mt-1">
-                {rankInfo.badge} · {rankInfo.grade}
-              </div>
+              <div className="text-sm text-paper/80">{rankInfo.grade}</div>
             </div>
 
             {/* Signatures */}
-            <div className="flex justify-between items-end pt-8 max-w-lg mx-auto border-t border-line text-xs font-mono text-muted">
+            <div className="mx-auto flex max-w-lg items-end justify-between gap-4 border-t border-line pt-6">
               <div className="text-center">
-                <div className="serif-i text-paper text-sm">SpaceTour TR</div>
-                <div className="label text-[10px] mt-1">Gözlem Masası Şefi</div>
+                <div className="serif-i text-base text-paper">SpaceTour TR</div>
+                <div className="mt-1 text-xs text-paper/70">Gözlem masası şefi</div>
               </div>
-              <div className="w-10 h-10 border border-violet/40 flex items-center justify-center text-violet">
-                <Shield className="w-5 h-5" />
-              </div>
+              <Shield className="h-6 w-6 shrink-0 text-violet/80" />
               <div className="text-center">
-                <div className="serif-i text-paper text-sm">Kozmik Kurul</div>
-                <div className="label text-[10px] mt-1">Yetkilendirme Mührü</div>
+                <div className="serif-i text-base text-paper">Kozmik Kurul</div>
+                <div className="mt-1 text-xs text-paper/70">Yetkilendirme mührü</div>
               </div>
+            </div>
+
+            {/* Certificate details */}
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm text-paper/70">
+              <span>Belge no: <span className="font-mono text-paper/85">{verificationHash}</span></span>
+              <span>Tarih: <span className="font-mono tabular-nums text-paper/85">{new Date().toLocaleDateString('tr-TR')}</span></span>
+              <span>Durum: <span className="text-lime">Onaylandı</span></span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <button
+              type="button"
               onClick={() => window.print()}
-              className="label px-6 py-3 bg-paper text-ink font-bold flex items-center gap-2 hover:bg-paper/90 transition-colors cursor-pointer"
+              className="inline-flex min-h-10 items-center gap-2 bg-paper px-5 text-sm font-semibold text-ink transition-colors hover:bg-paper/90 cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              <span>Sertifikayı Yazdır / PDF Kaydet</span>
+              <Download className="h-4 w-4" />
+              <span>Sertifikayı yazdır / PDF kaydet</span>
             </button>
             <button
+              type="button"
               onClick={() => handleRestart()}
-              className="label px-6 py-3 border border-line bg-ink-2 text-paper/80 flex items-center gap-2 hover:bg-ink-3 transition-colors cursor-pointer"
+              className="inline-flex min-h-10 items-center gap-2 border border-line bg-ink-2 px-5 text-sm text-paper/85 transition-colors hover:bg-ink-3 cursor-pointer"
             >
-              <RotateCcw className="w-4 h-4" />
-              <span>Testi Baştan Başlat</span>
+              <RotateCcw className="h-4 w-4" />
+              <span>Testi baştan başlat</span>
             </button>
           </div>
         </div>

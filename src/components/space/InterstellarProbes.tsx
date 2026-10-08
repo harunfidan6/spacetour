@@ -1,10 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Rocket, Radio, Box, Activity } from 'lucide-react';
+import { Radio, Box, Activity } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { useNow } from '@/lib/useNow';
 import { SpacecraftExplorer3D } from './SpacecraftExplorer3D';
+
+// Ortak görünüm sınıfları
+const VIEW_BUTTON = 'inline-flex min-h-9 items-center gap-1.5 px-3 text-sm transition-colors cursor-pointer';
+const STAT_CELL = 'min-w-0 bg-ink p-3';
+const STAT_LABEL = 'block text-sm text-paper/70';
+const STAT_VALUE = 'mt-1 block font-mono text-base font-semibold tabular-nums';
+const STAT_NOTE = 'mt-1 block text-sm text-paper/70';
 
 const AU_KM = 149_597_870.7;
 const LIGHT_KM_S = 299_792.458;
@@ -111,50 +118,47 @@ export function InterstellarProbes() {
     <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
       <Ticks />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-4">
-        <div className="flex items-center gap-2">
-          <Rocket className="h-4 w-4 text-violet animate-pulse" />
-          <div>
-            <h3 className="display display-tight text-xl text-paper sm:text-2xl">
-              Yıldızlararası Sondalar & Uzay Araçları
-            </h3>
-            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
-              DERİN UZAY İLETİŞİM AĞI & 3D HANGAR
-            </span>
-          </div>
+      {/* Başlık ve görünüm seçimi */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-5">
+        <div className="min-w-0">
+          <h3 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+            Yıldızlararası sondalar ve uzay araçları
+          </h3>
+          <p className="mt-1.5 text-sm text-paper/70">
+            Derin uzay iletişim ağı ve 3D hangar
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center bg-ink border border-line p-0.5 font-mono text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="flex items-center border border-line p-0.5">
             <button
               type="button"
               onClick={() => setViewMode('3d')}
-              className={`px-3 py-1 flex items-center gap-1.5 transition-colors cursor-pointer ${
+              className={`${VIEW_BUTTON} ${
                 viewMode === '3d'
-                  ? 'bg-paper text-ink font-bold'
-                  : 'text-muted hover:text-paper'
+                  ? 'bg-paper text-ink font-semibold'
+                  : 'text-paper/80 hover:text-paper'
               }`}
             >
-              <Box size={13} />
-              <span>3D Model Hangarı</span>
+              <Box size={14} />
+              <span>3D modeller</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('telemetry')}
-              className={`px-3 py-1 flex items-center gap-1.5 transition-colors cursor-pointer ${
+              className={`${VIEW_BUTTON} ${
                 viewMode === 'telemetry'
-                  ? 'bg-paper text-ink font-bold'
-                  : 'text-muted hover:text-paper'
+                  ? 'bg-paper text-ink font-semibold'
+                  : 'text-paper/80 hover:text-paper'
               }`}
             >
-              <Activity size={13} />
-              <span>DSN Telemetri</span>
+              <Activity size={14} />
+              <span>DSN telemetrisi</span>
             </button>
           </div>
           {viewMode === 'telemetry' && (
-            <span className="hidden md:flex items-center gap-1.5 border border-violet/30 bg-violet/10 px-2.5 py-1 text-[10px] font-mono text-violet font-bold uppercase tracking-wider">
-              <Radio size={12} className="animate-spin text-violet" style={{ animationDuration: '4s' }} />
-              {selectedProbe.auPerYear ? 'MESAFE ANLIK TAHMİN' : 'YAKLAŞIK KONUM'}
+            <span className="hidden md:inline-flex items-center gap-1.5 text-xs text-paper/70">
+              <Radio size={13} className="text-violet" />
+              {selectedProbe.auPerYear ? 'Anlık mesafe tahmini' : 'Yaklaşık konum'}
             </span>
           )}
         </div>
@@ -164,8 +168,8 @@ export function InterstellarProbes() {
         <SpacecraftExplorer3D />
       ) : (
         <>
-          {/* Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
+          {/* Sonda seçimi */}
+          <div className="flex flex-wrap items-center gap-2">
             {PROBES_DATA.map((probe) => {
               const isActive = selectedProbe.id === probe.id;
               return (
@@ -174,10 +178,10 @@ export function InterstellarProbes() {
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setSelectedProbe(probe)}
-                  className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
+                  className={`min-h-9 whitespace-nowrap border px-3 text-sm transition-colors cursor-pointer ${
                     isActive
-                      ? 'border-violet bg-violet text-ink font-bold'
-                      : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
+                      ? 'border-violet bg-violet text-ink font-semibold'
+                      : 'border-line text-paper/80 hover:border-paper/40 hover:text-paper'
                   }`}
                 >
                   <span lang="en">{probe.name}</span>
@@ -186,62 +190,62 @@ export function InterstellarProbes() {
             })}
           </div>
 
-          {/* Detail Showcase */}
-          <div className="border border-line bg-ink-2 p-5 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-              <div>
-                <span className="text-[10px] text-muted font-mono uppercase tracking-wider">{selectedProbe.mission}</span>
-                <h4 className="text-xl font-bold text-paper font-mono mt-0.5">{selectedProbe.name}</h4>
+          {/* Seçili sondanın ayrıntıları */}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+              <div className="min-w-0">
+                <span className="block text-sm text-paper/70">{selectedProbe.mission}</span>
+                <h4 className="mt-0.5 font-display text-xl font-semibold leading-tight text-paper">{selectedProbe.name}</h4>
               </div>
-              <span className={`px-2.5 py-1 text-[10px] font-mono font-bold border uppercase tracking-wider ${selectedProbe.badgeColor}`}>
+              <span className={`shrink-0 border px-2.5 py-1 text-xs font-medium ${selectedProbe.badgeColor}`}>
                 {selectedProbe.status}
               </span>
             </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">DÜNYA’YA UZAKLIK</span>
-            <span className="text-base font-bold text-paper mt-0.5 block">
-              {!now
-                ? '—'
-                : distanceAu >= 1
-                  ? `${distanceAu.toFixed(2)} AU`
-                  : `${(distanceKm / 1_000_000).toFixed(2)} Milyon km`}
-            </span>
-            <span className="text-[10px] text-muted block mt-1">
-              {now ? `${(distanceKm / 1_000_000_000).toFixed(2)} Milyar km` : '—'}
-            </span>
-          </div>
+            <div className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-4">
+              <div className={STAT_CELL}>
+                <span className={STAT_LABEL}>Dünya’ya uzaklık</span>
+                <span className={`${STAT_VALUE} text-paper`}>
+                  {!now
+                    ? '—'
+                    : distanceAu >= 1
+                      ? `${distanceAu.toFixed(2)} AU`
+                      : `${(distanceKm / 1_000_000).toFixed(2)} Milyon km`}
+                </span>
+                <span className={`${STAT_NOTE} font-mono tabular-nums`}>
+                  {now ? `${(distanceKm / 1_000_000_000).toFixed(2)} Milyar km` : '—'}
+                </span>
+              </div>
 
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">
-              {selectedProbe.id === 'parker' ? 'TEPE HIZ' : 'MEVCUT HIZ'}
-            </span>
-            <span className="text-base font-bold text-solar mt-0.5 block">
-              {selectedProbe.speedKmH.toLocaleString('tr-TR')} km/sa
-            </span>
-            <span className="text-[10px] text-muted block mt-1">
-              {(selectedProbe.speedKmH / 3600).toFixed(1)} km/saniye
-            </span>
-          </div>
+              <div className={STAT_CELL}>
+                <span className={STAT_LABEL}>
+                  {selectedProbe.id === 'parker' ? 'Tepe hız' : 'Mevcut hız'}
+                </span>
+                <span className={`${STAT_VALUE} text-solar`}>
+                  {selectedProbe.speedKmH.toLocaleString('tr-TR')} km/sa
+                </span>
+                <span className={`${STAT_NOTE} font-mono tabular-nums`}>
+                  {(selectedProbe.speedKmH / 3600).toFixed(1)} km/saniye
+                </span>
+              </div>
 
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">SİNYAL GECİKMESİ</span>
-            <span className="text-sm font-bold text-paper block mt-0.5 sm:text-base">
-              {now ? formatLightTime(lightSeconds) : '—'}
-            </span>
-            <span className="text-[10px] text-muted block mt-1">Işık hızıyla tek yön</span>
-          </div>
+              <div className={STAT_CELL}>
+                <span className={STAT_LABEL}>Sinyal gecikmesi</span>
+                <span className={`${STAT_VALUE} text-paper`}>
+                  {now ? formatLightTime(lightSeconds) : '—'}
+                </span>
+                <span className={STAT_NOTE}>Işık hızıyla tek yön</span>
+              </div>
 
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">FIRLATILIŞ YILI</span>
-            <span className="text-base font-bold text-paper mt-0.5 block">{selectedProbe.launchYear}</span>
-            <span className="text-[10px] text-muted block mt-1">
-              {now ? `${now.getFullYear() - selectedProbe.launchYear} yıldır görevde` : '—'}
-            </span>
+              <div className={STAT_CELL}>
+                <span className={STAT_LABEL}>Fırlatılış yılı</span>
+                <span className={`${STAT_VALUE} text-paper`}>{selectedProbe.launchYear}</span>
+                <span className={STAT_NOTE}>
+                  {now ? `${now.getFullYear() - selectedProbe.launchYear} yıldır görevde` : '—'}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
         </>
       )}
     </div>

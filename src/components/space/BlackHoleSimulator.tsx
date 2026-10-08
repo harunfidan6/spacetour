@@ -5,10 +5,16 @@ import { useInView } from '@/lib/useInView';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { Clock, Sliders, ShieldAlert } from 'lucide-react';
 import { createAccretionDiskTexture } from './textures';
-import { Ticks } from '@/components/motion/primitives';
 import { seededRandom } from '@/lib/random';
+
+// Ortak görünüm sınıfları
+const PANEL = 'border border-line bg-ink-2 p-4 sm:p-5';
+const FIELD_LABEL = 'text-sm text-paper/70';
+const BODY_TEXT = 'mt-2 text-sm leading-relaxed text-paper/85';
+const READOUT_VALUE = 'mt-1 font-mono text-2xl font-semibold leading-tight tabular-nums';
+const CANVAS_BUTTON =
+  'pointer-events-auto inline-flex min-h-9 shrink-0 items-center border border-line bg-ink/85 px-3 text-sm text-paper transition-colors hover:border-violet cursor-pointer';
 
 function BlackHole3DMesh({
   distanceRs,
@@ -316,36 +322,29 @@ export function BlackHoleSimulator() {
   // Tidal Spaghettification risk
   const spaghettificationRisk =
     distanceRs < 2.0
-      ? { level: 'KRİTİK / ÖLÜMCÜL', desc: 'Aşırı kütleçekimsel gelgit dalgası bedeninizi atomlarına ayırır.', color: 'text-rose-400 bg-rose-500/10 border-rose-500/30' }
+      ? { level: 'Kritik / ölümcül', desc: 'Aşırı kütleçekimsel gelgit dalgası bedeninizi atomlarına ayırır.', color: 'text-rose-400 bg-rose-500/10 border-rose-500/30' }
       : distanceRs < 5.0
-      ? { level: 'YÜKSEK GELGİT ETKİSİ', desc: 'Miller Gezegeni yörüngesi. Devasa zaman genleşmesi ve devasa gelgit dalgaları.', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' }
-      : { level: 'GÜVENLİ YÖRÜNGE', desc: 'İstikrarlı dairesel yörünge. Güvenli bilimsel gözlem mesafesi.', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' };
+      ? { level: 'Yüksek gelgit etkisi', desc: 'Miller Gezegeni yörüngesi. Devasa zaman genleşmesi ve devasa gelgit dalgaları.', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' }
+      : { level: 'Güvenli yörünge', desc: 'İstikrarlı dairesel yörünge. Güvenli bilimsel gözlem mesafesi.', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' };
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 border-b border-line pb-6">
-        <div>
-          <div className="label flex items-center gap-2 text-violet">
-            <span className="live-dot" /> Genel Görelilik & Astrofizik Laboratuvarı
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Gargantua <span className="serif-i text-violet">& zaman genleşmesi</span>
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            Albert Einstein&apos;ın kütleçekimsel zaman bükülmesini ve süper kütleli bir kara deliğin etrafındaki ışık merceklenmesini deneyimleyin.
-          </p>
-        </div>
-
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-violet">
-          Schwarzschild metriği · γ = 1/√(1-r_s/r)
-        </div>
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-6 sm:space-y-8">
+      {/* Başlık */}
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Gargantua ve zaman genleşmesi
+        </h3>
+        <p className="mt-2 text-sm text-paper/70">
+          Genel görelilik · Schwarzschild metriği:{' '}
+          <span className="whitespace-nowrap font-mono text-paper/85">γ = 1/√(1-r_s/r)</span>
+        </p>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
+          Albert Einstein&apos;ın kütleçekimsel zaman bükülmesini ve süper kütleli bir kara deliğin etrafındaki ışık merceklenmesini deneyimleyin.
+        </p>
       </div>
 
       {/* Main 3D Canvas & Simulation Deck */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
         {/* 3D Black Hole Canvas (7 cols) */}
         <div ref={stageRef} className="lg:col-span-7 relative h-80 sm:h-[460px] w-full border border-line bg-black overflow-hidden">
           <Canvas frameloop={stageVisible ? 'always' : 'never'} dpr={[1, 1.5]} camera={{ position: [0, 2.5, 9.5], fov: 45 }} gl={{ powerPreference: 'high-performance' }}>
@@ -369,39 +368,34 @@ export function BlackHoleSimulator() {
             />
           </Canvas>
 
-          {/* Interactive controls on canvas */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none bg-ink/80 px-3 py-1.5 backdrop-blur border border-line">
-            <span className="h-2 w-2 rounded-full bg-violet animate-ping" />
-            <span className="label text-paper">
-              Gözlem gemisi yörüngesi · {distanceRs.toFixed(1)} r_s
+          {/* Renkli halkanın anlamı ve geminin uzaklığı */}
+          <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-1.5rem)] bg-ink/85 px-2.5 py-1.5 text-xs leading-snug text-paper sm:left-4 sm:top-4 sm:text-sm">
+            Renkli halka: gözlem gemisi yörüngesi ·{' '}
+            <span className="whitespace-nowrap font-mono tabular-nums">{distanceRs.toFixed(1)} r_s</span>
+          </div>
+
+          {/* Kullanım ipucu ve disk dönüşü düğmesi */}
+          <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 sm:inset-x-4 sm:bottom-4">
+            <span className="min-w-0 bg-ink/70 px-2 py-1 text-xs leading-snug text-paper/80">
+              360° sürükle · yakınlaştır
             </span>
-          </div>
-
-          <div className="absolute top-4 right-4 flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setIsRotating(!isRotating)}
-              className="label px-3 py-1.5 bg-ink/80 border border-line text-paper backdrop-blur hover:bg-ink-3 transition-colors cursor-pointer"
+              className={CANVAS_BUTTON}
             >
-              {isRotating ? 'Döndürmeyi Duraklat' : 'Döndür'}
+              {isRotating ? 'Döndürmeyi duraklat' : 'Döndür'}
             </button>
-          </div>
-
-          <div className="absolute inset-x-4 bottom-4 flex items-center justify-between bg-ink/80 px-4 py-2 border border-line backdrop-blur pointer-events-none">
-            <span className="label text-muted">Renkli halka: gözlemci yörüngesi</span>
-            <span className="label text-paper">360° Sürükle · Yakınlaştır</span>
           </div>
         </div>
 
         {/* Telemetry & Time Dilation Cockpit (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-4">
           {/* Distance Slider */}
-          <div className="border border-line bg-ink-2 p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="label text-muted flex items-center gap-1.5">
-                <Sliders size={13} className="text-violet" />
-                Olay Ufkuna Uzaklık
-              </span>
-              <span className="label text-violet font-bold text-sm">
+          <div className={`${PANEL} space-y-3`}>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm text-paper/80">Olay ufkuna uzaklık</span>
+              <span className="whitespace-nowrap font-mono text-base font-semibold tabular-nums text-violet">
                 {distanceRs.toFixed(1)} r<sub>s</sub>
               </span>
             </div>
@@ -416,55 +410,63 @@ export function BlackHoleSimulator() {
               className="w-full accent-[var(--violet)] cursor-pointer h-1.5 bg-ink"
             />
 
-            <div className="flex justify-between text-[10px] font-mono text-muted">
-              <span className="text-rose-signal">1.1 r<sub>s</sub> (Kritik)</span>
-              <span>6.0 r<sub>s</sub> (ISCO)</span>
-              <span className="text-lime">20.0 r<sub>s</sub> (Güvenli)</span>
+            <div className="grid grid-cols-3 gap-2 text-xs leading-snug">
+              <span className="flex flex-col text-rose-signal">
+                <span className="font-mono">1.1 r<sub>s</sub></span>
+                <span>Kritik</span>
+              </span>
+              <span className="flex flex-col items-center text-paper/70">
+                <span className="font-mono">6.0 r<sub>s</sub></span>
+                <span>ISCO</span>
+              </span>
+              <span className="flex flex-col items-end text-lime">
+                <span className="font-mono">20.0 r<sub>s</sub></span>
+                <span>Güvenli</span>
+              </span>
             </div>
           </div>
 
           {/* Time Dilation Readout Grid */}
           <div className="grid grid-cols-2 gap-px border border-line bg-line">
             <div className="bg-ink p-4">
-              <span className="label text-muted">Burada geçen</span>
-              <div className="display display-tight mt-2 text-2xl text-violet">1.0 Saat</div>
+              <div className={FIELD_LABEL}>Burada geçen</div>
+              <div className={`${READOUT_VALUE} text-violet`}>1.0 Saat</div>
             </div>
             <div className="bg-ink p-4">
-              <span className="label text-muted">Dünya’da geçen</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">{timeDilationText}</div>
+              <div className={FIELD_LABEL}>Dünya’da geçen</div>
+              <div className={`${READOUT_VALUE} text-paper`}>{timeDilationText}</div>
             </div>
           </div>
 
-          {/* Lorentz & Relativity Card */}
-          <div className="border border-line bg-ink-2 p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-line pb-2">
-              <span className="label text-violet flex items-center gap-1.5">
-                <Clock size={13} />
-                Genel Görelilik Zaman Faktörü
-              </span>
-              <span className="label text-paper font-mono">
+          {/* Zaman faktörü ve gelgit kuvveti */}
+          <div className={PANEL}>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm font-medium text-violet">Genel görelilik zaman faktörü</span>
+              <span className="whitespace-nowrap font-mono text-sm tabular-nums text-paper">
                 γ = {timeDilationFactor > 1000 ? '∞' : timeDilationFactor.toFixed(2)}x
               </span>
             </div>
 
-            <p className="text-xs leading-relaxed text-paper/75">
+            <p className={BODY_TEXT}>
               {distanceRs < 2.0
                 ? 'Olay ufkuna o kadar yakınsınız ki uzay-zaman neredeyse donmuş durumda. Dünya’da uygarlıklar yükselip yıkılırken siz yalnızca dakikalar yaşarsınız.'
                 : distanceRs < 6.0
                 ? 'Interstellar filmindeki Miller Gezegeni fiziği. Burada 1 saatlik araştırma Dünya’daki sevdikleriniz için yıllar demektir.'
                 : 'Zaman genleşmesi fark edilir ancak kararlıdır. Dünya ile iletişim gecikmesi düşüktür.'}
             </p>
-          </div>
 
-          {/* Spaghettification / Tidal Force Alert */}
-          <div className="border border-line bg-ink-2 p-4">
-            <div className="flex items-center gap-2">
-              <ShieldAlert size={14} className="text-violet" />
-              <span className="label text-paper">Gelgit kuvveti: {spaghettificationRisk.level}</span>
+            {/* Spaghettification / Tidal Force Alert */}
+            <div className="mt-4 border-t border-line pt-4">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-sm font-medium text-paper/85">Gelgit kuvveti</span>
+                <span className={`border px-2 py-0.5 text-xs font-medium ${spaghettificationRisk.color}`}>
+                  {spaghettificationRisk.level}
+                </span>
+              </div>
+              <p className={BODY_TEXT}>
+                {spaghettificationRisk.desc}
+              </p>
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-paper/70">
-              {spaghettificationRisk.desc}
-            </p>
           </div>
         </div>
       </div>

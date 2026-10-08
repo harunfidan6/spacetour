@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { History, Hourglass } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { History } from 'lucide-react';
 
 interface TimeItem {
   id: string;
@@ -76,39 +75,30 @@ export function CosmicTimeMachine() {
   const [selectedItem, setSelectedItem] = useState<TimeItem>(COSMIC_TIME_DATA[3]); // Polaris default
 
   return (
-    <div className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-6">
-      <Ticks />
-
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-4">
-        <div className="flex items-center gap-2">
-          <Hourglass className="h-4 w-4 text-solar animate-spin" style={{ animationDuration: '8s' }} />
-          <div>
-            <h3 className="display display-tight text-xl text-paper sm:text-2xl">
-              Kozmik Zaman Makinesi · Geçmişe Bakış
-            </h3>
-            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
-              IŞIK HIZI & ZAMAN İLİŞKİSİ
-            </span>
-          </div>
-        </div>
-        <span className="font-mono text-[10px] px-2.5 py-1 border border-solar/30 bg-solar/10 text-solar font-bold uppercase tracking-wider">
-          GÖKYÜZÜNE BAKMAK GEÇMİŞE BAKMAKTIR
-        </span>
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Kozmik zaman makinesi
+        </h3>
+        <p className="mt-1.5 text-sm text-paper/70">Geçmişe bakış · Işık hızı ve zaman ilişkisi</p>
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-paper/80">
+          Gökyüzüne bakmak geçmişe bakmaktır.
+        </p>
       </div>
 
       {/* Target Selector Buttons */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
+      <div className="flex flex-wrap gap-2 text-sm">
         {COSMIC_TIME_DATA.map((item) => {
           const isActive = selectedItem.id === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setSelectedItem(item)}
-              className={`px-3 py-1.5 whitespace-nowrap transition-colors cursor-pointer border uppercase tracking-wider ${
+              className={`min-h-10 max-w-full border px-3 py-2 text-left leading-snug transition-colors cursor-pointer ${
                 isActive
-                  ? 'border-solar bg-solar text-ink font-bold'
-                  : 'border-line bg-ink-2 text-muted hover:border-line hover:text-paper'
+                  ? 'border-solar bg-solar text-ink font-medium'
+                  : 'border-line bg-ink-2 text-paper/80 hover:border-paper/40 hover:text-paper'
               }`}
             >
               {item.name}
@@ -118,35 +108,42 @@ export function CosmicTimeMachine() {
       </div>
 
       {/* Time Warp Display Panel */}
-      <div className="border border-line bg-ink-2 p-6 space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-line pb-4">
-          <div>
-            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">SEÇİLİ HEDEF GÖK CİSMİ</span>
-            <h4 className="font-mono text-xl sm:text-2xl font-bold text-paper mt-0.5">{selectedItem.name}</h4>
+      <div className="border border-line bg-ink-2 p-5 sm:p-6 space-y-6">
+        <div className="flex flex-col gap-4 border-b border-line pb-5 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <span className="text-sm text-paper/70">Seçili gök cismi</span>
+            <h4 className="mt-1 font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+              {selectedItem.name}
+            </h4>
           </div>
 
-          <div className="flex flex-col md:items-end">
-            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">IŞIĞIN YOLCULUK SÜRESİ</span>
-            <div className="font-mono text-xl font-bold text-solar">{selectedItem.lightTime}</div>
+          <div className="flex min-w-0 flex-col md:items-end md:text-right">
+            <span className="text-sm text-paper/70">Işığın yolculuk süresi</span>
+            <div className="mt-1 font-mono text-lg font-semibold tabular-nums text-solar sm:text-xl">
+              {selectedItem.lightTime}
+            </div>
           </div>
         </div>
 
-        {/* Narrative Box */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          <div className="md:col-span-4 bg-ink p-4 border border-line space-y-2 font-mono text-xs">
-            <div className="text-muted text-[10px] uppercase tracking-widest">DÜNYA’DAKİ DÖNEM</div>
-            <div className="text-sm font-bold text-paper">{selectedItem.earthEra}</div>
-            <div className="pt-2 border-t border-line text-[11px] text-muted">
-              Mesafe: <strong className="text-paper">{selectedItem.distanceKm}</strong>
+        {/* Narrative */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-6">
+          <div className="min-w-0 space-y-4 md:col-span-4">
+            <div>
+              <div className="text-sm text-paper/70">Dünya’daki dönem</div>
+              <div className="mt-1 text-base font-medium text-paper">{selectedItem.earthEra}</div>
+            </div>
+            <div>
+              <div className="text-sm text-paper/70">Mesafe</div>
+              <div className="mt-1 font-mono text-sm tabular-nums text-paper/90">{selectedItem.distanceKm}</div>
             </div>
           </div>
 
-          <div className="md:col-span-8 p-4 bg-ink border border-line space-y-2">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-solar">
-              <History size={14} />
-              <span>IŞIK YOLA ÇIKTIĞINDA DÜNYA’DA NE OLUYORDU?</span>
+          <div className="min-w-0 space-y-2 border-t border-line pt-5 md:col-span-8 md:border-t-0 md:border-l md:pl-6 md:pt-0">
+            <div className="flex items-center gap-2 text-sm font-medium text-solar">
+              <History size={16} className="shrink-0" />
+              <span>Işık yola çıktığında Dünya’da ne oluyordu?</span>
             </div>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="text-base leading-relaxed text-paper/85">
               {selectedItem.earthHistory}
             </p>
           </div>

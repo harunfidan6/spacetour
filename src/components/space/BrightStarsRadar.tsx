@@ -2,7 +2,11 @@
 
 import React, { useState } from 'react';
 import { useRevealOnChange } from '@/lib/useRevealOnChange';
-import { Ticks } from '@/components/motion/primitives';
+
+// Ortak görünüm sınıfları
+const META_LABEL = 'text-sm text-paper/70';
+const METRIC_VALUE = 'mt-1 font-mono text-xl font-semibold leading-tight tabular-nums sm:text-2xl';
+const METRIC_UNIT = 'font-mono text-sm font-normal text-paper/70';
 
 interface BrightStar {
   id: string;
@@ -139,59 +143,48 @@ export function BrightStarsRadar() {
   const railRef = useRevealOnChange(selectedStar);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-lime">
-            <span className="live-dot" /> Gökkubbe Yıldız Kataloğu
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Gökkubbenin <span className="serif-i text-lime">en parlak sekiz yıldızı</span>
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            Kuzey yarımküreden çıplak gözle ilk seçilen devler. Kadirleri, tayf türleri, uzaklıkları ve mitolojik hikâyeleriyle gökyüzü kerterizleri.
-          </p>
-        </div>
-
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-lime">
-          8 Ana Kerteriz · Alt-Azimuth Koordinatları
-        </div>
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Gökkubbenin en parlak sekiz yıldızı
+        </h3>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
+          Kuzey yarımküreden çıplak gözle ilk seçilen devler. Kadirleri, tayf türleri, uzaklıkları ve mitolojik hikâyeleriyle gökyüzü kerterizleri.
+        </p>
+        <p className="mt-2 text-sm text-paper/70">
+          Yıldız kataloğu · 8 kerteriz yıldızı · alt-azimut koordinatları
+        </p>
       </div>
 
       {/* 8-Star Selection Grid */}
       <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-px border border-line bg-line">
-        {BRIGHTEST_STARS.map((s, idx) => {
+        {BRIGHTEST_STARS.map((s) => {
           const isSelected = s.id === selectedStar.id;
           return (
             <button
               key={s.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => setSelectedStar(s)}
-              className={`p-4 text-left flex flex-col justify-between transition-colors cursor-pointer ${
+              className={`flex min-w-0 flex-col gap-2 p-3 text-left transition-colors cursor-pointer sm:p-4 ${
                 isSelected
                   ? 'bg-lime text-ink'
                   : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className={`label ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
-                  0{idx + 1}
+              <span className="flex min-w-0 items-center justify-between gap-2">
+                <span className="min-w-0 truncate text-base font-semibold leading-tight">
+                  {s.name.split(' (')[0]}
                 </span>
                 <span
-                  className="h-2.5 w-2.5 rounded-full border border-line"
+                  className="h-2.5 w-2.5 shrink-0 rounded-full border border-line"
                   style={{ background: s.colorHex }}
                 />
-              </div>
-              <div>
-                <div className="display display-tight text-base font-bold truncate">
-                  {s.name.split(' (')[0]}
-                </div>
-                <div className={`label mt-1 text-[10px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
-                  {s.magnitude > 0 ? `+${s.magnitude}` : s.magnitude} mag
-                </div>
-              </div>
+              </span>
+              <span className={`font-mono text-xs tabular-nums ${isSelected ? 'text-ink/80' : 'text-paper/70'}`}>
+                {s.magnitude > 0 ? `+${s.magnitude}` : s.magnitude} mag
+              </span>
             </button>
           );
         })}
@@ -200,92 +193,96 @@ export function BrightStarsRadar() {
       {/* Selected Star Technical Dossier */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
         {/* Left: Star Key Identity (5 cols) */}
-        <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
+        <div className="lg:col-span-5 bg-ink p-5 sm:p-8 flex flex-col justify-between gap-6">
           <div>
-            <div className="flex items-center justify-between border-b border-line pb-3">
-              <span className="label text-lime">{selectedStar.bayer}</span>
-              <span className="label text-muted">{selectedStar.distanceLightYears} Işık Yılı</span>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+              <span className="text-lime">{selectedStar.bayer}</span>
+              <span className="text-paper/70">
+                <span className="font-mono tabular-nums">{selectedStar.distanceLightYears}</span> ışık yılı
+              </span>
             </div>
 
-            <h4 className="display display-tight mt-6 text-3xl sm:text-4xl text-paper">
+            <h4 className="mt-4 font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
               {selectedStar.name}
             </h4>
-            <div className="serif-i text-lg text-lime mt-1">
+            <div className="mt-1 text-base text-lime">
               {selectedStar.constellation}
             </div>
 
-            <p className="mt-4 text-xs leading-relaxed text-paper/75">
+            <p className="mt-4 text-base leading-relaxed text-paper/85">
               {selectedStar.description}
             </p>
           </div>
 
           {/* Mythology Callout */}
-          <div className="border-l-2 border-lime pl-4 py-1">
-            <span className="label text-muted">Mitolojik Köken</span>
-            <p className="mt-1 text-xs leading-relaxed text-paper/85 serif-i">
+          <div className="border-l-2 border-lime pl-4">
+            <div className="text-sm font-medium text-paper/70">Mitolojik köken</div>
+            <p className="mt-1 text-sm leading-relaxed text-paper/85">
               &ldquo;{selectedStar.mythology}&rdquo;
             </p>
           </div>
         </div>
 
         {/* Right: Technical Metrics Grid (7 cols) */}
-        <div className="lg:col-span-7 bg-ink-2 p-6 sm:p-8 space-y-6">
-          <div className="label text-paper border-b border-line pb-2 flex items-center justify-between">
-            <span>Astrofiziksel Spektrum Verileri</span>
-            <span className="text-muted">Yerel Ufuk İçi Konum</span>
+        <div className="lg:col-span-7 bg-ink-2 p-5 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
+            <span className="text-sm font-medium text-paper/85">Astrofiziksel veriler</span>
+            <span className={META_LABEL}>Yerel ufuktaki konum</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-px border border-line bg-line">
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Görünür Parlaklık</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
-                {selectedStar.magnitude} <span className="label text-xs">mag</span>
-              </div>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Görünür parlaklık</dt>
+              <dd className={`${METRIC_VALUE} text-paper`}>
+                {selectedStar.magnitude} <span className={METRIC_UNIT}>mag</span>
+              </dd>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Yüzey Sıcaklığı</span>
-              <div className="display display-tight mt-2 text-2xl text-lime">
-                {selectedStar.colorTempK.toLocaleString('tr-TR')} <span className="label text-xs">K</span>
-              </div>
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Yüzey sıcaklığı</dt>
+              <dd className={`${METRIC_VALUE} text-lime`}>
+                {selectedStar.colorTempK.toLocaleString('tr-TR')} <span className={METRIC_UNIT}>K</span>
+              </dd>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Mesafe</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
-                {selectedStar.distanceLightYears} <span className="label text-xs">ly</span>
-              </div>
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Mesafe</dt>
+              <dd className={`${METRIC_VALUE} text-paper`}>
+                {selectedStar.distanceLightYears} <span className={METRIC_UNIT}>ly</span>
+              </dd>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Ufuk Yüksekliği (Alt)</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Ufuk yüksekliği (alt)</dt>
+              <dd className={`${METRIC_VALUE} text-paper`}>
                 +{selectedStar.altAz.alt}°
-              </div>
+              </dd>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Azimut Açısı (Az)</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Azimut açısı (az)</dt>
+              <dd className={`${METRIC_VALUE} text-paper`}>
                 {selectedStar.altAz.az}°
-              </div>
+              </dd>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Spektral Sınıf</span>
-              <div className="display display-tight mt-2 text-lg text-lime truncate">
+            <div className="min-w-0">
+              <dt className={META_LABEL}>Spektral sınıf</dt>
+              <dd className={`${METRIC_VALUE} text-lime`}>
                 {selectedStar.spectralType.split(' ')[0]}
-              </div>
+              </dd>
             </div>
-          </div>
+          </dl>
 
           {/* Visual Color Temperature Bar */}
-          <div className="border border-line bg-ink p-4 space-y-2">
-            <div className="flex items-center justify-between label text-[10px]">
-              <span className="text-muted">Tayf Rengi: {selectedStar.spectralType}</span>
-              <span className="text-paper">{selectedStar.colorTempK} Kelvin</span>
+          <div className="space-y-2 border-t border-line pt-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+              <span className="text-paper/70">Tayf rengi: <span className="text-paper/90">{selectedStar.spectralType}</span></span>
+              <span className="text-paper/90">
+                <span className="font-mono tabular-nums">{selectedStar.colorTempK}</span> Kelvin
+              </span>
             </div>
-            <div className="h-2 w-full bg-ink-3 overflow-hidden border border-line relative">
+            <div className="h-2 w-full bg-ink-3 overflow-hidden relative">
               <div
                 className="h-full transition-all duration-500"
                 style={{

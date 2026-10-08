@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Sun, Wind, AlertTriangle, ShieldCheck, Magnet } from 'lucide-react';
+import { Wind, AlertTriangle, ShieldCheck, Magnet } from 'lucide-react';
 import { Ticks } from '@/components/motion/primitives';
 import { useInView } from '@/lib/useInView';
 import { usePolledJson } from '@/lib/usePolledJson';
@@ -29,13 +29,13 @@ function windNote(speed: number): string {
 }
 
 function kpStatus(kp: number): string {
-  if (kp >= 5) return `G${Math.min(5, Math.floor(kp) - 4)} JEOMANYETİK FIRTINA`;
-  if (kp >= 4) return 'JEOMANYETİK AKTİF';
-  return 'JEOMANYETİK SAKİN';
+  if (kp >= 5) return `G${Math.min(5, Math.floor(kp) - 4)} jeomanyetik fırtına`;
+  if (kp >= 4) return 'Jeomanyetik aktif';
+  return 'Jeomanyetik sakin';
 }
 
 function kpColor(kp: number | null): string {
-  if (kp === null) return 'border-line text-muted';
+  if (kp === null) return 'border-line text-paper/70';
   if (kp < 4) return 'border-lime/30 bg-lime/10 text-lime';
   if (kp < 5) return 'border-solar/30 bg-solar/10 text-solar';
   return 'border-rose/30 bg-rose/10 text-rose';
@@ -64,65 +64,70 @@ export function SpaceWeatherWidget() {
       <Ticks />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-4">
-        <div className="flex items-center gap-2">
-          <Sun className="h-4 w-4 text-solar animate-spin" style={{ animationDuration: '15s' }} />
-          <div>
-            <h3 className="display display-tight text-xl text-paper sm:text-2xl">
-              Güneş & Uzay Hava Durumu
-            </h3>
-            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">
-              {offline ? 'NOAA SWPC · VERİ ALINAMADI' : 'NOAA SWPC · DSCOVR & GOES UYDU VERİSİ'}
-            </span>
-          </div>
+      <div className="flex flex-col items-start justify-between gap-3 border-b border-line pb-5 sm:flex-row sm:items-center">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Güneş & uzay hava durumu
+          </h3>
+          <p className="mt-1.5 text-sm text-paper/70">
+            {offline ? 'NOAA SWPC · veri alınamadı' : 'NOAA SWPC · DSCOVR ve GOES uydu verisi'}
+          </p>
         </div>
-        <span className={`px-2.5 py-1 text-[10px] font-mono border font-bold uppercase tracking-wider ${kpColor(kp)}`}>
-          {kp === null ? 'KP —' : `KP ${kp.toFixed(1)} · ${kpStatus(kp)}`}
+        <span className={`shrink-0 border px-2.5 py-1 text-sm font-medium ${kpColor(kp)}`}>
+          {kp === null ? (
+            'Kp —'
+          ) : (
+            <>
+              Kp <span className="font-mono tabular-nums">{kp.toFixed(1)}</span> · {kpStatus(kp)}
+            </>
+          )}
         </span>
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-        <div className="bg-ink-2 p-4 border border-line">
-          <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <Wind size={12} className="text-solar" /> GÜNEŞ RÜZGARI
+      <div className="grid grid-cols-2 gap-px border border-line bg-line">
+        <div className="min-w-0 bg-ink-2 p-3 sm:p-4">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <Wind size={14} className="shrink-0 text-solar" aria-hidden /> Güneş rüzgârı
           </div>
-          <div className="text-xl font-bold text-paper">
-            {speed ?? '—'} <span className="text-[10px] font-normal text-muted">km/s</span>
+          <div className="mt-2 font-mono text-2xl font-semibold tabular-nums text-paper">
+            {speed ?? '—'} <span className="text-sm font-normal text-paper/70">km/s</span>
           </div>
-          <div className="text-[10px] text-muted mt-1">{speed === null ? '—' : windNote(speed)}</div>
+          <div className="mt-1.5 text-sm leading-snug text-paper/80">{speed === null ? '—' : windNote(speed)}</div>
         </div>
 
-        <div className="bg-ink-2 p-4 border border-line">
-          <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <Magnet size={12} className="text-solar" /> MANYETİK ALAN Bz
+        <div className="min-w-0 bg-ink-2 p-3 sm:p-4">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <Magnet size={14} className="shrink-0 text-solar" aria-hidden /> Manyetik alan Bz
           </div>
-          <div className="text-xl font-bold text-solar">
-            {bz ?? '—'} <span className="text-[10px] font-normal text-muted">nT</span>
+          <div className="mt-2 font-mono text-2xl font-semibold tabular-nums text-solar">
+            {bz ?? '—'} <span className="text-sm font-normal text-paper/70">nT</span>
           </div>
-          <div className="text-[10px] text-muted mt-1">
+          <div className="mt-1.5 text-sm leading-snug text-paper/80">
             {bz === null ? '—' : bz <= -5 ? 'Güneye dönük · fırtına tetikleyici' : 'Zayıf / kuzeye dönük · sakin'}
           </div>
         </div>
 
-        <div className="bg-ink-2 p-4 border border-line">
-          <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <AlertTriangle size={12} className="text-solar" /> X-IŞINI SEVİYESİ
+        <div className="min-w-0 bg-ink-2 p-3 sm:p-4">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <AlertTriangle size={14} className="shrink-0 text-solar" aria-hidden /> X-ışını seviyesi
           </div>
-          <div className="text-xl font-bold text-paper">{flare?.current_class ?? '—'}</div>
-          <div className="text-[10px] text-muted mt-1 leading-snug">
+          <div className="mt-2 font-mono text-2xl font-semibold tabular-nums text-paper">{flare?.current_class ?? '—'}</div>
+          <div className="mt-1.5 text-sm leading-snug text-paper/80">
             {flare?.max_class && flare.max_time
               ? `Son patlama ${flare.max_class} · ${clock.format(new Date(flare.max_time))}`
               : 'GOES X-ışını akısı'}
           </div>
         </div>
 
-        <div className="bg-ink-2 p-4 border border-line">
-          <div className="flex items-center gap-1.5 text-muted text-[10px] uppercase tracking-wider mb-1">
-            <ShieldCheck size={12} className="text-lime" /> KUTUP IŞIĞI (AURORA)
+        <div className="min-w-0 bg-ink-2 p-3 sm:p-4">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <ShieldCheck size={14} className="shrink-0 text-lime" aria-hidden /> Kutup ışığı (aurora)
           </div>
-          <div className="text-xl font-bold text-lime">{kp === null ? '—' : `≥ ${auroraLatitude(kp)}° K`}</div>
-          <div className="text-[10px] text-muted mt-1 leading-snug">
+          <div className="mt-2 font-mono text-2xl font-semibold tabular-nums text-lime">
+            {kp === null ? '—' : `≥ ${auroraLatitude(kp)}° K`}
+          </div>
+          <div className="mt-1.5 text-sm leading-snug text-paper/80">
             {kp === null
               ? '—'
               : kp >= 8

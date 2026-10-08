@@ -8,11 +8,16 @@ import {
   Play,
   Pause,
   Layers,
-  Radio,
   ChevronRight
 } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 import { useInView } from '@/lib/useInView';
+
+// Ortak görünüm sınıfları
+const CHIP_BUTTON = 'min-h-9 border px-3 text-sm transition-colors cursor-pointer';
+const ICON_BUTTON =
+  'inline-flex h-9 w-9 items-center justify-center border transition-colors cursor-pointer';
+const ICON_IDLE = 'border-line bg-ink/85 text-paper/80 hover:border-paper/40 hover:text-paper';
+const ICON_ON = 'border-solar bg-solar text-ink';
 
 export type SpacecraftId = 'jwst' | 'iss' | 'voyager1' | 'perseverance';
 
@@ -451,20 +456,14 @@ export function SpacecraftExplorer3D() {
   );
 
   return (
-    <div ref={containerRef} className="relative border border-line bg-ink overflow-hidden p-6 sm:p-10 space-y-8">
-      {/* Header with Title and Spacecraft Switcher Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <Radio size={14} className="text-solar" />
-            <span className="doc-kicker text-solar font-bold">NASA & ESA İkonik Görevler</span>
-          </div>
-          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
-            İkonik Uzay Araçları <span className="doc-serif text-gold">3D Vitrini</span>
-          </h3>
-        </div>
+    <div ref={containerRef} className="relative space-y-6">
+      {/* Başlık ve araç seçimi */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="text-lg font-semibold leading-snug text-paper">
+          İkonik uzay araçları 3D vitrini
+        </h3>
 
-        {/* Spacecraft switcher chips */}
+        {/* Araç seçimi */}
         <div className="flex flex-wrap items-center gap-2">
           {SPACECRAFTS.map((craft) => (
             <button
@@ -474,10 +473,10 @@ export function SpacecraftExplorer3D() {
                 setActiveCraftId(craft.id);
                 setActiveHotspotId(null);
               }}
-              className={`rounded-full px-4 py-2 font-mono text-xs transition-all cursor-pointer ${
+              className={`${CHIP_BUTTON} ${
                 activeCraftId === craft.id
-                  ? 'border border-solar bg-solar text-ink font-bold shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-                  : 'border border-line bg-ink-2 text-paper/70 hover:border-white/30 hover:text-paper'
+                  ? 'border-solar bg-solar text-ink font-semibold'
+                  : 'border-line text-paper/80 hover:border-paper/40 hover:text-paper'
               }`}
             >
               {craft.id === 'jwst' ? 'James Webb' : craft.id === 'iss' ? 'ISS' : craft.id === 'voyager1' ? 'Voyager 1' : 'Perseverance'}
@@ -486,97 +485,88 @@ export function SpacecraftExplorer3D() {
         </div>
       </div>
 
-      {/* Main 3D Stage & Hotspot Inspection Deck */}
-      <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
-        {/* Left: 3D Canvas Stage */}
-        <div className="relative h-[360px] sm:h-[440px] w-full border border-line bg-[#020206] lg:col-span-7 overflow-hidden ticks">
-          <Ticks />
-
-          <Canvas
-            frameloop={inView ? 'always' : 'never'}
-            dpr={[1, 1.5]}
-            camera={{ position: [0, 1.5, 4.8], fov: 42 }}
-            gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          >
-            <ambientLight intensity={0.65} />
-            <directionalLight position={[6, 8, 5]} intensity={2.6} color="#fff8e7" />
-            <directionalLight position={[-6, -4, -4]} intensity={0.8} color="#38bdf8" />
-
-            <SpacecraftMesh
-              craftId={activeCraft.id}
-              isWireframe={isWireframe}
-              isRotating={isRotating}
-            />
-
-            <OrbitControls
-              enableZoom={true}
-              enablePan={false}
-              autoRotate={isRotating}
-              autoRotateSpeed={0.8}
-              minDistance={2.5}
-              maxDistance={8.5}
-            />
-          </Canvas>
-
-          {/* Top Controls Overlay */}
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-ink/90 border border-line p-1 text-xs font-mono">
-            <button
-              type="button"
-              onClick={() => setIsRotating(!isRotating)}
-              title={isRotating ? 'Döndürmeyi Duraklat' : 'Döndürmeyi Başlat'}
-              className={`p-1.5 transition-colors cursor-pointer border ${
-                isRotating ? 'border-line text-muted hover:text-paper' : 'border-solar bg-solar text-ink font-bold'
-              }`}
+      {/* 3D sahne ve alt sistem incelemesi */}
+      <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
+        {/* Sol: 3D sahne */}
+        <div className="space-y-2 lg:col-span-7">
+          <div className="relative h-[360px] sm:h-[440px] w-full border border-line bg-[#020206] overflow-hidden">
+            <Canvas
+              frameloop={inView ? 'always' : 'never'}
+              dpr={[1, 1.5]}
+              camera={{ position: [0, 1.5, 4.8], fov: 42 }}
+              gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
             >
-              {isRotating ? <Pause size={13} /> : <Play size={13} />}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsWireframe(!isWireframe)}
-              title="3D Tel Kafes Modu"
-              className={`p-1.5 transition-colors cursor-pointer border ${
-                isWireframe ? 'border-solar bg-solar text-ink font-bold' : 'border-line text-muted hover:text-paper'
-              }`}
-            >
-              <Layers size={13} />
-            </button>
+              <ambientLight intensity={0.65} />
+              <directionalLight position={[6, 8, 5]} intensity={2.6} color="#fff8e7" />
+              <directionalLight position={[-6, -4, -4]} intensity={0.8} color="#38bdf8" />
+
+              <SpacecraftMesh
+                craftId={activeCraft.id}
+                isWireframe={isWireframe}
+                isRotating={isRotating}
+              />
+
+              <OrbitControls
+                enableZoom={true}
+                enablePan={false}
+                autoRotate={isRotating}
+                autoRotateSpeed={0.8}
+                minDistance={2.5}
+                maxDistance={8.5}
+              />
+            </Canvas>
+
+            {/* Sahne denetimleri */}
+            <div className="absolute top-3 right-3 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsRotating(!isRotating)}
+                title={isRotating ? 'Döndürmeyi duraklat' : 'Döndürmeyi başlat'}
+                className={`${ICON_BUTTON} ${isRotating ? ICON_IDLE : ICON_ON}`}
+              >
+                {isRotating ? <Pause size={15} /> : <Play size={15} />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsWireframe(!isWireframe)}
+                title="3D tel kafes modu"
+                className={`${ICON_BUTTON} ${isWireframe ? ICON_ON : ICON_IDLE}`}
+              >
+                <Layers size={15} />
+              </button>
+            </div>
           </div>
 
-          {/* Bottom Telemetry Tag */}
-          <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono text-muted">
-            <span className="flex items-center gap-1.5 text-solar">
-              <span className="h-2 w-2 rounded-full bg-solar animate-ping" />
-              <span>3D ETKİLEŞİMLİ PBR MODELİ</span>
-            </span>
-            <span>Fareyle 360° Çevirin · Tekerlek ile Yakınlaşın</span>
-          </div>
+          <p className="text-sm text-paper/70">
+            3D etkileşimli PBR modeli · Fareyle 360° çevirin, tekerlek ile yakınlaşın
+          </p>
         </div>
 
-        {/* Right: Technical Specs & Hotspots Inspector */}
-        <div className="space-y-6 lg:col-span-5">
-          <div className="border-b border-line pb-4">
-            <span className="doc-caption text-solar font-semibold">{activeCraft.organization} · {activeCraft.launchYear}</span>
-            <h4 className="doc-title text-2xl text-paper mt-1">{activeCraft.name}</h4>
-            <p className="mt-2 text-sm leading-relaxed text-paper/75">{activeCraft.blurb}</p>
+        {/* Sağ: teknik bilgiler ve alt sistemler */}
+        <div className="space-y-5 lg:col-span-5">
+          <div>
+            <span className="block text-sm text-paper/70">{activeCraft.organization} · {activeCraft.launchYear}</span>
+            <h4 className="mt-1 font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">{activeCraft.name}</h4>
+            <p className="mt-2 text-base leading-relaxed text-paper/85">{activeCraft.blurb}</p>
           </div>
 
-          {/* Telemetry Stats hairline grid */}
-          <div className="grid grid-cols-2 gap-2 font-mono text-xs">
-            <div className="rounded-lg border border-line bg-ink-2 p-3">
-              <span className="doc-caption block text-[10px] text-paper/40">GÜNCEL KONUM</span>
-              <span className="text-paper font-semibold block truncate mt-0.5">{activeCraft.currentLocation}</span>
+          {/* Konum ve uzaklık */}
+          <div className="grid grid-cols-1 gap-3 border-t border-line pt-4 sm:grid-cols-2">
+            <div className="min-w-0">
+              <span className="block text-sm text-paper/70">Güncel konum</span>
+              <span className="mt-0.5 block text-sm font-medium text-paper">{activeCraft.currentLocation}</span>
             </div>
-            <div className="rounded-lg border border-line bg-ink-2 p-3">
-              <span className="doc-caption block text-[10px] text-paper/40">DÜNYA’YA UZAKLIK</span>
-              <span className="text-solar font-semibold block truncate mt-0.5">{activeCraft.distance}</span>
+            <div className="min-w-0">
+              <span className="block text-sm text-paper/70">Dünya’ya uzaklık</span>
+              <span className="mt-0.5 block font-mono text-sm font-semibold tabular-nums text-solar">{activeCraft.distance}</span>
             </div>
           </div>
 
-          {/* Hotspot / Subsystem Selector Buttons */}
+          {/* Alt sistem seçimi */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="doc-kicker text-gold text-xs">Kritik Mühendislik Alt Sistemleri</span>
-              <span className="doc-caption text-muted text-[10px]">{activeCraft.hotspots.length} Bileşen</span>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm font-medium text-paper/80">Mühendislik alt sistemleri</span>
+              <span className="shrink-0 text-sm text-paper/70">{activeCraft.hotspots.length} bileşen</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -587,27 +577,27 @@ export function SpacecraftExplorer3D() {
                     key={spot.id}
                     type="button"
                     onClick={() => setActiveHotspotId(spot.id)}
-                    className={`flex items-center justify-between rounded-lg border p-2.5 text-left transition-all cursor-pointer ${
+                    className={`flex min-h-10 min-w-0 items-center justify-between gap-2 border px-3 py-2 text-left text-sm leading-snug transition-colors cursor-pointer ${
                       isSelected
-                        ? 'border-gold bg-gold/15 text-gold font-semibold shadow-[0_0_12px_rgba(245,197,66,0.2)]'
-                        : 'border-line bg-ink-2 text-paper/70 hover:border-white/20 hover:text-paper'
+                        ? 'border-gold bg-gold/10 text-gold font-medium'
+                        : 'border-line text-paper/80 hover:border-paper/40 hover:text-paper'
                     }`}
                   >
-                    <span className="truncate text-xs">{spot.name.split(' (')[0]}</span>
-                    <ChevronRight size={12} className={isSelected ? 'text-gold' : 'text-muted'} />
+                    <span className="min-w-0">{spot.name.split(' (')[0]}</span>
+                    <ChevronRight size={14} className={`shrink-0 ${isSelected ? 'text-gold' : 'text-paper/50'}`} />
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Detailed Hotspot Inspector Slate */}
-          <div className="rounded-xl border border-gold/30 bg-ink-2/90 p-5 backdrop-blur-md">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
-              <span className="doc-title text-base text-gold">{selectedHotspot.name}</span>
-              <span className="doc-kicker text-[10px] text-paper/60">{selectedHotspot.role}</span>
+          {/* Seçili alt sistemin ayrıntısı */}
+          <div className="border-t border-line pt-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-lg font-semibold leading-snug text-gold">{selectedHotspot.name}</span>
+              <span className="text-sm text-paper/70">{selectedHotspot.role}</span>
             </div>
-            <p className="text-xs leading-relaxed text-paper/85">{selectedHotspot.specs}</p>
+            <p className="mt-2 text-base leading-relaxed text-paper/85">{selectedHotspot.specs}</p>
           </div>
         </div>
       </div>

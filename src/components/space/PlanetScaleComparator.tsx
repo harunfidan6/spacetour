@@ -1,9 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Layers, Crosshair, Sparkles } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 import { PlanetGlyph } from '@/components/ui/CosmicGlyphs';
+
+// Ortak görünüm sınıfları
+const FIELD_LABEL = 'flex items-center gap-2 text-sm text-paper/70';
+const FIELD_INPUT =
+  'w-full min-h-10 border border-line bg-ink px-3 py-2 text-base text-paper transition-colors cursor-pointer focus:outline-none';
+const BODY_NAME = 'flex items-center justify-center gap-2 text-base font-semibold text-paper';
+const BODY_DIAMETER = 'font-mono text-sm tabular-nums text-paper/70';
+const RING_GRADIENT =
+  'radial-gradient(ellipse at center, transparent 46%, rgba(220,190,140,0.5) 48%, rgba(200,165,110,0.7) 65%, transparent 68%, rgba(240,210,160,0.4) 75%, transparent 80%)';
+const SPHERE_SHADING = 'inset -8px -8px 24px rgba(0,0,0,0.9), inset 4px 4px 16px rgba(255,255,255,0.4)';
 
 interface ScaleItem {
   id: string;
@@ -117,41 +125,30 @@ export function PlanetScaleComparator() {
   const sizeB = discSize(targetB);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-violet">
-            <Layers className="h-4 w-4 animate-pulse" />
-            <span>KOZMİK ÇAP & HACİM ORANLARI</span>
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
-            Gezegen <span className="serif-i text-violet">Ölçek Karşılaştırıcı</span>
-          </h3>
-          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            Gök cisimlerini yan yana koyarak gerçek fiziksel çaplarını ve içine kaç tane sığabileceğini 1:1 ölçekle kıyaslayın.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 label text-paper bg-ink-2 border border-line px-4 py-2 shrink-0">
-          <Crosshair className="h-3.5 w-3.5 text-violet animate-spin" style={{ animationDuration: '8s' }} />
-          <span>Lazer Kumpas Kalibrasyonu:</span>
-          <span className="text-violet font-bold font-mono">1:1 Hacim Metriği</span>
-        </div>
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8">
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Gezegen ölçek karşılaştırıcı
+        </h3>
+        <p className="mt-1 text-sm text-paper/70">
+          Çap ve hacim oranları · <span className="font-mono">1:1</span> ölçek
+        </p>
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-paper/80">
+          Gök cisimlerini yan yana koyarak gerçek fiziksel çaplarını ve içine kaç tane sığabileceğini 1:1 ölçekle kıyaslayın.
+        </p>
       </div>
 
       {/* Target Selectors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-ink-2 space-y-2 border border-line/60">
-          <label className="label text-gold flex items-center gap-2 text-xs">
-            <span className="h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_rgba(255,215,0,0.8)]" /> 1. CİSİM (BAZ ALINAN)
+        <div className="space-y-1.5">
+          <label className={FIELD_LABEL}>
+            <span className="h-2 w-2 shrink-0 rounded-full bg-gold" /> 1. cisim (baz)
           </label>
           <select
             aria-label="Birinci gök cismi"
             value={targetA.id}
             onChange={(e) => setTargetA(SCALE_DATA.find((x) => x.id === e.target.value) || targetA)}
-            className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-gold transition-colors cursor-pointer font-mono"
+            className={`${FIELD_INPUT} focus:border-gold`}
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id} className="bg-ink-2 text-paper">
@@ -161,15 +158,15 @@ export function PlanetScaleComparator() {
           </select>
         </div>
 
-        <div className="p-4 bg-ink-2 space-y-2 border border-line/60">
-          <label className="label text-violet flex items-center gap-2 text-xs">
-            <span className="h-2 w-2 rounded-full bg-violet shadow-[0_0_8px_rgba(168,85,247,0.8)]" /> 2. CİSİM (HEDEF KÜTLE)
+        <div className="space-y-1.5">
+          <label className={FIELD_LABEL}>
+            <span className="h-2 w-2 shrink-0 rounded-full bg-violet" /> 2. cisim (hedef)
           </label>
           <select
             aria-label="İkinci gök cismi"
             value={targetB.id}
             onChange={(e) => setTargetB(SCALE_DATA.find((x) => x.id === e.target.value) || targetB)}
-            className="w-full bg-ink border border-line px-4 py-2.5 text-sm font-bold text-paper focus:outline-none focus:border-violet transition-colors cursor-pointer font-mono"
+            className={`${FIELD_INPUT} focus:border-violet`}
           >
             {SCALE_DATA.map((item) => (
               <option key={item.id} value={item.id} className="bg-ink-2 text-paper">
@@ -180,46 +177,33 @@ export function PlanetScaleComparator() {
         </div>
       </div>
 
-      {/* Holographic Comparison Deck Arena */}
-      <div className="relative border border-line bg-ink-2/80 p-8 flex flex-col md:flex-row items-center justify-around gap-8 min-h-[360px] overflow-hidden">
-        {/* Futuristic Laser Caliper Horizontal Guide Lines */}
-        <div className="absolute inset-x-8 top-12 border-b border-dashed border-violet/25 pointer-events-none flex items-center justify-between text-[9px] font-mono text-violet/50 px-2">
-          <span>▲ ÜST TAYF SINIRI</span>
-          <span>LAZER HİZALAMA KUMPASI</span>
-          <span>▲ 1:1 ÖLÇEK</span>
-        </div>
-        <div className="absolute inset-x-8 bottom-24 border-b border-dashed border-violet/25 pointer-events-none flex items-center justify-between text-[9px] font-mono text-violet/50 px-2">
-          <span>▼ TABAN SIFIR NOKTASI</span>
-          <span>DENGE DÜZLEMİ</span>
-          <span>▼ TABAN SIFIR NOKTASI</span>
-        </div>
-
+      {/* Comparison Arena */}
+      <div className="relative border border-line bg-ink-2 p-4 sm:p-8 flex flex-col md:flex-row items-center justify-around gap-8 min-h-[360px] overflow-hidden">
         {/* Item A */}
-        <div className="relative flex flex-col items-center gap-6 z-10 w-[220px]">
+        <div className="relative z-10 flex flex-col items-center gap-4 w-[220px]">
           <div className="relative flex items-center justify-center min-h-[190px]">
-            {/* Saturn Concentric 3D Rings representation */}
+            {/* Ring representation */}
             {targetA.hasRings && (
               <div
-                className="absolute pointer-events-none rounded-full border border-gold/40 transition-all duration-700 ease-out"
+                className="absolute pointer-events-none rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${sizeA * 2.3}px`,
                   height: `${sizeA * 0.72}px`,
-                  background: 'radial-gradient(ellipse at center, transparent 46%, rgba(220,190,140,0.5) 48%, rgba(200,165,110,0.7) 65%, transparent 68%, rgba(240,210,160,0.4) 75%, transparent 80%)',
-                  boxShadow: '0 0 15px rgba(255,215,0,0.2)',
+                  background: RING_GRADIENT,
                   transform: 'rotate(-20deg)',
                   zIndex: 0
                 }}
               />
             )}
 
-            {/* 3D Volumetric Spherical Body */}
+            {/* Spherical Body */}
             <div
               className="relative flex items-center justify-center transition-all duration-700 ease-in-out rounded-full z-10"
               style={{
                 width: `${sizeA}px`,
                 height: `${sizeA}px`,
                 background: targetA.gradient,
-                boxShadow: `0 0 35px ${targetA.glow}, inset -8px -8px 24px rgba(0,0,0,0.9), inset 4px 4px 16px rgba(255,255,255,0.4)`
+                boxShadow: `0 0 12px ${targetA.glow}, ${SPHERE_SHADING}`
               }}
             >
               {sizeA >= 28 && (
@@ -232,78 +216,67 @@ export function PlanetScaleComparator() {
             </div>
           </div>
 
-          {/* Holographic Pedestal Base */}
-          <div className="relative flex flex-col items-center">
-            <div
-              className="h-2 rounded-full border border-gold/40 bg-gold/10 transition-all duration-700"
-              style={{ width: `${Math.max(60, sizeA * 0.85)}px`, boxShadow: '0 0 16px rgba(255,215,0,0.3)' }}
-            />
-            <div className="text-center bg-ink border border-line px-4 py-2 mt-2 w-full">
-              <div className="display display-tight text-paper text-sm font-bold flex items-center justify-center gap-1.5">
-                <span>{targetA.name}</span>
-                {targetA.hasRings && <Sparkles size={11} className="text-gold" />}
-              </div>
-              <div className="label text-[10px] text-muted font-mono">{targetA.diameterKm.toLocaleString()} km</div>
+          <div className="text-center">
+            <div className={BODY_NAME}>
+              <span className="h-2 w-2 shrink-0 rounded-full bg-gold" />
+              <span>{targetA.name}</span>
             </div>
+            <div className={BODY_DIAMETER}>{targetA.diameterKm.toLocaleString()} km</div>
           </div>
         </div>
 
-        {/* Telemetry Gauge Readout */}
-        <div className="z-10 flex flex-col items-center gap-3 text-center px-6 py-5 bg-ink/95 border border-line/80 backdrop-blur-xl shadow-2xl max-w-[260px]">
-          <span className="label text-violet font-mono tracking-widest text-[11px] flex items-center gap-1.5">
-            <Crosshair size={12} className="text-violet" />
-            ÇAP METRİĞİ
-          </span>
-          <div className="display display-tight text-4xl font-black text-paper font-mono">
-            {ratio}x <span className="label text-muted font-normal text-xs block mt-1">kat fiziksel çap</span>
+        {/* Ratio Readout */}
+        <div className="z-10 flex w-full max-w-[260px] flex-col items-center gap-3 text-center">
+          <span className="text-sm text-paper/70">Çap oranı</span>
+          <div>
+            <div className="font-mono text-4xl font-semibold leading-none tabular-nums text-paper">{ratio}x</div>
+            <div className="mt-1.5 text-sm text-paper/70">kat fiziksel çap</div>
           </div>
 
           {/* Ratio bar */}
-          <div className="w-full h-1.5 bg-ink-2 border border-line rounded-full overflow-hidden my-1">
+          <div className="w-full h-1.5 bg-line rounded-full overflow-hidden my-1">
             <div
-              className="h-full bg-gradient-to-r from-violet to-primary transition-all duration-700"
+              className="h-full bg-violet transition-all duration-700"
               style={{ width: `${Math.min(100, Math.max(8, (small.diameterKm / big.diameterKm) * 100))}%` }}
             />
           </div>
 
-          <div className="h-px w-full bg-line" />
           {big.id === small.id ? (
-            <p className="label text-muted text-xs leading-relaxed">Aynı gök cismini karşılaştırıyorsun.</p>
+            <p className="text-sm leading-relaxed text-paper/80">Aynı gök cismini karşılaştırıyorsun.</p>
           ) : (
-            <p className="label text-muted text-xs leading-relaxed">
-              <strong className="text-paper">{big.name}</strong> içine tam <br />
-              <strong className="text-violet text-base font-mono font-bold">{volumeRatio}</strong><br />
-              adet <strong className="text-paper">{small.name}</strong> sığar
+            <p className="text-sm leading-relaxed text-paper/80">
+              <strong className="font-semibold text-paper">{big.name}</strong> içine tam <br />
+              <strong className="font-mono text-xl font-semibold tabular-nums text-violet">{volumeRatio}</strong><br />
+              adet <strong className="font-semibold text-paper">{small.name}</strong> sığar
             </p>
           )}
         </div>
 
         {/* Item B */}
-        <div className="relative flex flex-col items-center gap-6 z-10 w-[220px]">
+        <div className="relative z-10 flex flex-col items-center gap-4 w-[220px]">
           <div className="relative flex items-center justify-center min-h-[190px]">
-            {/* Saturn Concentric 3D Rings representation */}
+            {/* Ring representation */}
             {targetB.hasRings && (
               <div
-                className="absolute pointer-events-none rounded-full border border-violet/40 transition-all duration-700 ease-out"
+                className="absolute pointer-events-none rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${sizeB * 2.3}px`,
                   height: `${sizeB * 0.72}px`,
-                  background: 'radial-gradient(ellipse at center, transparent 46%, rgba(220,190,140,0.5) 48%, rgba(200,165,110,0.7) 65%, transparent 68%, rgba(240,210,160,0.4) 75%, transparent 80%)',
-                  boxShadow: '0 0 15px rgba(168,85,247,0.2)',
+                  background: RING_GRADIENT,
                   transform: 'rotate(-20deg)',
                   zIndex: 0
                 }}
               />
             )}
 
-            {/* 3D Volumetric Spherical Body */}
+            {/* Spherical Body */}
             <div
               className="relative flex items-center justify-center transition-all duration-700 ease-in-out rounded-full z-10"
               style={{
                 width: `${sizeB}px`,
                 height: `${sizeB}px`,
                 background: targetB.gradient,
-                boxShadow: `0 0 45px ${targetB.glow}, inset -8px -8px 24px rgba(0,0,0,0.9), inset 4px 4px 16px rgba(255,255,255,0.4)`
+                boxShadow: `0 0 12px ${targetB.glow}, ${SPHERE_SHADING}`
               }}
             >
               {sizeB >= 28 && (
@@ -316,19 +289,12 @@ export function PlanetScaleComparator() {
             </div>
           </div>
 
-          {/* Holographic Pedestal Base */}
-          <div className="relative flex flex-col items-center">
-            <div
-              className="h-2 rounded-full border border-violet/40 bg-violet/10 transition-all duration-700"
-              style={{ width: `${Math.max(60, sizeB * 0.85)}px`, boxShadow: '0 0 16px rgba(168,85,247,0.3)' }}
-            />
-            <div className="text-center bg-ink border border-line px-4 py-2 mt-2 w-full">
-              <div className="display display-tight text-paper text-sm font-bold flex items-center justify-center gap-1.5">
-                <span>{targetB.name}</span>
-                {targetB.hasRings && <Sparkles size={11} className="text-violet" />}
-              </div>
-              <div className="label text-[10px] text-muted font-mono">{targetB.diameterKm.toLocaleString()} km</div>
+          <div className="text-center">
+            <div className={BODY_NAME}>
+              <span className="h-2 w-2 shrink-0 rounded-full bg-violet" />
+              <span>{targetB.name}</span>
             </div>
+            <div className={BODY_DIAMETER}>{targetB.diameterKm.toLocaleString()} km</div>
           </div>
         </div>
       </div>

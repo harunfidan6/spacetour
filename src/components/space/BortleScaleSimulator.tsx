@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sliders, Eye, Sparkles, MapPin } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 
 interface BortleClass {
   classLevel: number;
@@ -222,39 +221,31 @@ export function BortleScaleSimulator() {
   }, [bortleIndex, currentLevel]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-lime">
-            <span className="live-dot" /> Atmosferik Görüş & Işık Kirliliği
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Bortle skalası <span className="serif-i text-lime">& gece göğü karanlığı</span>
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
-            Kentsel aydınlatmanın gökyüzünü nasıl sildiğini interaktif slider ile deneyimleyin. 1. Sınıf saf karanlıktan 9. Sınıf şehir merkezine yıldız kaybı.
-          </p>
-        </div>
-
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-lime">
-          NELM 8.0 → 4.0 mag · 9 Gözlem Sınıfı
-        </div>
+    <div className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık */}
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Bortle skalası ve gece göğü karanlığı
+        </h3>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
+          Kentsel aydınlatmanın gökyüzünü nasıl sildiğini interaktif slider ile deneyimleyin. 1. Sınıf saf karanlıktan 9. Sınıf şehir merkezine yıldız kaybı.
+        </p>
+        <p className="mt-2 text-sm text-paper/70">
+          Işık kirliliği · NELM <span className="font-mono tabular-nums">8.0 → 4.0 mag</span> · 9 gözlem sınıfı
+        </p>
       </div>
 
-      {/* Interactive Slider Bar */}
-      <div className="border border-line bg-ink-2 p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sliders size={14} className="text-lime" />
-            <span className="label text-paper font-bold">
-              Bortle Sınıfı: {bortleIndex} · {currentLevel.title}
+      {/* Sınıf seçici */}
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <div className="flex min-w-0 items-center gap-2">
+            <Sliders size={16} className="shrink-0 text-lime" />
+            <span className="text-base font-medium text-paper">
+              Bortle sınıfı: <span className="font-mono tabular-nums">{bortleIndex}</span> · {currentLevel.title}
             </span>
           </div>
-          <span className="label text-lime">
-            Limit Kadir: {currentLevel.nelm}
+          <span className="text-sm text-paper/70">
+            Limit kadir: <span className="font-mono tabular-nums text-lime">{currentLevel.nelm}</span>
           </span>
         </div>
 
@@ -268,74 +259,83 @@ export function BortleScaleSimulator() {
           className="w-full accent-[var(--lime)] cursor-pointer h-2 bg-ink"
         />
 
-        <div className="grid grid-cols-9 gap-1 text-center label text-[10px] text-muted">
+        <div className="grid grid-cols-9 gap-1 text-center text-sm text-paper/70">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <button
               key={n}
               onClick={() => setBortleIndex(n)}
-              className={`py-1 border transition-colors cursor-pointer ${
-                bortleIndex === n ? 'border-lime bg-lime text-ink font-bold' : 'border-line hover:border-paper/40'
+              className={`min-h-9 border px-0 transition-colors cursor-pointer ${
+                bortleIndex === n ? 'border-lime bg-lime text-ink font-semibold' : 'border-line hover:border-paper/40 hover:text-paper'
               }`}
             >
-              Sınıf {n}
+              <span className="max-sm:sr-only">Sınıf </span>
+              <span className="tabular-nums">{n}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Simulated Night Sky Canvas */}
-      <div className="relative border border-line bg-black overflow-hidden h-72 sm:h-96 w-full">
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={384}
-          className="w-full h-full block"
-        />
-
-        {/* Canvas Badges */}
-        <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-          <span className="label px-3 py-1 bg-ink/90 border border-line text-lime backdrop-blur">
-            Görülebilen Yıldız: ~{currentLevel.visibleStarsApprox.toLocaleString('tr-TR')}
-          </span>
-          <span className="label px-3 py-1 bg-ink/80 border border-line text-muted backdrop-blur">
-            Gökyüzü Parlaklığı: {currentLevel.skyQualityMeter} mag/arcsec²
-          </span>
+      {/* Simüle gece göğü */}
+      <div className="space-y-4">
+        <div className="relative border border-line bg-black overflow-hidden h-72 sm:h-96 w-full">
+          <canvas
+            ref={canvasRef}
+            width={800}
+            height={384}
+            className="w-full h-full block"
+          />
         </div>
 
-        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between bg-ink/90 px-4 py-2 border border-line backdrop-blur pointer-events-none">
-          <span className="label text-muted">Örnek Konum: {currentLevel.turkeyReference}</span>
-          <span className="label text-paper">{bortleIndex <= 3 ? 'Kusursuz Gözlem' : bortleIndex <= 6 ? 'Kısmi Gözlem' : 'Yoğun Kirlilik'}</span>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-3">
+          <div>
+            <div className="text-sm text-paper/70">Görülebilen yıldız</div>
+            <div className="mt-0.5 font-mono text-lg tabular-nums text-lime">
+              ~{currentLevel.visibleStarsApprox.toLocaleString('tr-TR')}
+            </div>
+          </div>
+          <div>
+            <div className="text-sm text-paper/70">Gökyüzü parlaklığı</div>
+            <div className="mt-0.5 font-mono text-lg tabular-nums text-paper">
+              {currentLevel.skyQualityMeter} <span className="text-sm text-paper/70">mag/arcsec²</span>
+            </div>
+          </div>
+          <div>
+            <div className="text-sm text-paper/70">Gözlem koşulu</div>
+            <div className="mt-0.5 text-lg text-paper">
+              {bortleIndex <= 3 ? 'Kusursuz gözlem' : bortleIndex <= 6 ? 'Kısmi gözlem' : 'Yoğun kirlilik'}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Analytical Detail Grid */}
+      {/* Sınıf ayrıntıları */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line">
-        <div className="bg-ink p-6 space-y-2">
-          <div className="label text-muted flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-lime" />
-            <span>Samanyolu Görünürlüğü</span>
+        <div className="bg-ink p-5 sm:p-6">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <Eye className="h-4 w-4 shrink-0 text-lime" />
+            <span>Samanyolu görünürlüğü</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed pt-1">
+          <p className="mt-2 text-base leading-relaxed text-paper/85">
             {currentLevel.milkyWayVisibility}
           </p>
         </div>
 
-        <div className="bg-ink p-6 space-y-2">
-          <div className="label text-muted flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-paper" />
-            <span>Gözlemsel Tanım</span>
+        <div className="bg-ink p-5 sm:p-6">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <Sparkles className="h-4 w-4 shrink-0 text-lime" />
+            <span>Gözlemsel tanım</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed pt-1">
+          <p className="mt-2 text-base leading-relaxed text-paper/85">
             {currentLevel.description}
           </p>
         </div>
 
-        <div className="bg-ink p-6 space-y-2">
-          <div className="label text-muted flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-rose-signal" />
-            <span>Türkiye Referans Noktaları</span>
+        <div className="bg-ink p-5 sm:p-6">
+          <div className="flex items-center gap-2 text-sm text-paper/70">
+            <MapPin className="h-4 w-4 shrink-0 text-lime" />
+            <span>Türkiye referans noktaları</span>
           </div>
-          <p className="text-xs text-paper/80 leading-relaxed pt-1">
+          <p className="mt-2 text-base leading-relaxed text-paper/85">
             {currentLevel.turkeyReference}
           </p>
         </div>
