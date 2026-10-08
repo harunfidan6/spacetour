@@ -1,0 +1,17 @@
+{
+  "_kaynak": "src/lib/astrophysics/skyTonight.ts, src/lib/astrology/lunarCalendar.ts, src/data/events.ts · İstanbul, 8 Ekim 2026 Perşembe gecesi",
+  "tarih": "8 Ekim 2026",
+  "gun": "Perşembe",
+  "sehir": "İstanbul",
+  "gunBatimi": "18:34",
+  "karanlik": ["20:10", "05:30"],
+  "gunDogumu": "07:08",
+  "ay": { "aydinlik": 4, "evre": "Küçülen Hilal", "burc": "Başak", "dogus": "04:33", "not": "Karanlık saatlerin hiçbirinde gökte değil" },
+  "yeniAy": { "kalanGun": 2, "tarih": "10 Ekim Cumartesi", "saat": "19:00", "burc": "Terazi" },
+  "saturn": { "aralik": ["19:10", "06:10"], "enIyi": "00:40", "yon": "Güney", "yukseklik": 51, "kadir": 0.3, "takimyildiz": "Balıklar" },
+  "mars": { "aralik": ["01:50", "06:40"], "yon": "Güneydoğu", "kadir": 1.1, "takimyildiz": "Yengeç" },
+  "jupiter": { "aralik": ["03:00", "06:40"], "yon": "Güneydoğu", "kadir": -1.9, "takimyildiz": "Aslan", "not": "Gecenin en parlak gezegeni" },
+  "venus": { "gorunur": false },
+  "orionid": { "kalanGun": 13, "tarih": "21 Ekim", "saatte": 20, "kaynak": "Halley kuyruklu yıldızı", "sacilma": "Avcı (Orion)" },
+  "adres": "spacetour.com.tr"
+}

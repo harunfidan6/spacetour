@@ -36,6 +36,8 @@ const SCENES = {
   astroloji: { dur: 30, out: 'spacetour-astroloji', veri: {} },
   // Günlük Reels: yeni ana sayfa ve o günün gökyüzü (21 sn)
   gunluk: { dur: 21, out: 'spacetour-gunluk', veri: {} },
+  // "Bu gece gökyüzü" Reels: siteden bağımsız hareketli grafik (24 sn)
+  gece: { dur: 24, out: 'spacetour-gece', veri: {} },
 };
 const SCENE = process.argv[3] || 'tanitim', SC = SCENES[SCENE];
 if (!SC) throw new Error(`Bilinmeyen senaryo: ${SCENE} (${Object.keys(SCENES).join(', ')})`);
@@ -64,10 +66,13 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 const server = http.createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
   if (u.pathname.startsWith('/film/')) {
+    const THREE_DIR = path.join(ROOT, 'node_modules/three/build');
     let file = u.pathname === '/film/_gsap.js'
       ? path.join(ROOT, 'node_modules/gsap/dist/gsap.min.js')
-      : path.join(DIR, decodeURIComponent(u.pathname.slice('/film/'.length)));
-    if (!file.startsWith(DIR) && !file.endsWith('gsap.min.js')) { res.writeHead(403).end(); return; }
+      : u.pathname.startsWith('/film/_three/')
+        ? path.join(THREE_DIR, path.basename(decodeURIComponent(u.pathname)))
+        : path.join(DIR, decodeURIComponent(u.pathname.slice('/film/'.length)));
+    if (!file.startsWith(DIR) && !file.startsWith(THREE_DIR) && !file.endsWith('gsap.min.js')) { res.writeHead(403).end(); return; }
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
     if (!fs.existsSync(file)) { res.writeHead(404).end(); return; }
     res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream', 'cache-control': 'no-store' });
