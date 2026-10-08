@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Compass } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 
 type Mode = 'hopping' | 'precession';
 
@@ -324,59 +322,60 @@ export function PolarisPrecessionHop() {
     );
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-violet">
-            <Compass className="h-4 w-4" /> Göksel Yön Bulma & Eksen Yalpalama Mekaniği
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Kutup yıldızı rehberi <span className="serif-i text-violet">& presesyon çemberi</span>
+    <div className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık ve kip seçici */}
+      <div className="flex flex-col justify-between gap-6 border-b border-line pb-6 lg:flex-row lg:items-end">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Kutup yıldızı rehberi ve presesyon çemberi
           </h3>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-paper/70">
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
             Kuzey Gökkubbesi’nin dönme ekseni sabit değildir. Dünyanın topaç gibi 25.772 yıllık yalpalaması (eksen devinimi) kutup noktasını gökyüzünde bir çember boyunca kaydırır.
           </p>
         </div>
 
-        {/* Mode Selector Tabs */}
-        <div className="grid grid-cols-2 gap-px border border-line bg-line">
+        {/* Kip seçici */}
+        <div className="grid shrink-0 grid-cols-2 gap-px border border-line bg-line">
           <button
+            type="button"
+            aria-pressed={activeTab === 'precession'}
             onClick={() => setActiveTab('precession')}
-            className={`px-4 py-2.5 text-xs font-mono transition-colors ${
+            className={`min-h-10 px-4 py-2 text-sm leading-snug transition-colors cursor-pointer ${
               activeTab === 'precession'
-                ? 'bg-violet text-ink font-bold'
-                : 'bg-ink text-paper hover:bg-ink-3'
+                ? 'bg-violet text-ink font-semibold'
+                : 'bg-ink text-paper/85 hover:bg-ink-3'
             }`}
           >
-            Presesyon Çemberi (25.772 Yıl)
+            Presesyon çemberi (25.772 yıl)
           </button>
           <button
+            type="button"
+            aria-pressed={activeTab === 'hopping'}
             onClick={() => setActiveTab('hopping')}
-            className={`px-4 py-2.5 text-xs font-mono transition-colors ${
+            className={`min-h-10 px-4 py-2 text-sm leading-snug transition-colors cursor-pointer ${
               activeTab === 'hopping'
-                ? 'bg-violet text-ink font-bold'
-                : 'bg-ink text-paper hover:bg-ink-3'
+                ? 'bg-violet text-ink font-semibold'
+                : 'bg-ink text-paper/85 hover:bg-ink-3'
             }`}
           >
-            Yıldız Atlama (Star-Hopping)
+            Yıldız atlama (star-hopping)
           </button>
         </div>
       </div>
 
-      {/* TAB 1: PRECESSION CIRCLE */}
+      {/* Presesyon çemberi */}
       {activeTab === 'precession' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
-          {/* Left Canvas Display (7 cols) */}
-          <div className="lg:col-span-7 bg-black p-6 sm:p-8 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-muted mb-4 font-mono">
-              <span>Tutulma Kutbu Merkezli Eksen Projeksiyonu</span>
-              <span className="text-violet">Eğim: 23° 26′</span>
+          {/* Çizim alanı */}
+          <div className="lg:col-span-7 flex min-w-0 flex-col justify-between bg-black p-4 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+              <span className="text-paper/70">Tutulma kutbu merkezli eksen projeksiyonu</span>
+              <span className="text-paper/70">
+                Eğim: <span className="font-mono tabular-nums text-violet">23° 26′</span>
+              </span>
             </div>
 
-            <div className="relative aspect-square w-full max-w-[480px] mx-auto border border-line/40 overflow-hidden bg-ink/50">
+            <div className="relative aspect-square w-full max-w-[480px] mx-auto overflow-hidden bg-ink/50">
               <canvas
                 ref={precessionCanvasRef}
                 width={500}
@@ -385,11 +384,11 @@ export function PolarisPrecessionHop() {
               />
             </div>
 
-            {/* Slider */}
+            {/* Zaman kaydırıcısı */}
             <div className="mt-6 space-y-2 border-t border-line pt-4">
-              <div className="flex items-center justify-between font-mono text-xs">
-                <span className="text-muted">Zaman Tüneli:</span>
-                <span className="text-lime-signal font-bold">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <span className="text-sm text-paper/70">Zaman tüneli</span>
+                <span className="font-mono text-sm font-semibold tabular-nums text-lime-signal">
                   {targetYear > 0 ? `M.S. ${targetYear}` : `M.Ö. ${Math.abs(targetYear)}`}
                 </span>
               </div>
@@ -402,59 +401,60 @@ export function PolarisPrecessionHop() {
                 onChange={(e) => setTargetYear(parseInt(e.target.value))}
                 className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-violet"
               />
-              <div className="flex justify-between font-mono text-[10px] text-muted">
+              <div className="flex justify-between gap-2 font-mono text-[11px] leading-snug text-paper/70 sm:text-xs">
                 <span>M.Ö. 12.000</span>
-                <span>M.Ö. 3000 (Giza)</span>
-                <span>2026 (Bugün)</span>
-                <span>M.S. 14.000 (Vega)</span>
+                <span className="text-center">M.Ö. 3000 (Giza)</span>
+                <span className="text-center">2026 (Bugün)</span>
+                <span className="text-right">M.S. 14.000 (Vega)</span>
               </div>
             </div>
           </div>
 
-          {/* Right Information Panel (5 cols) */}
-          <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
+          {/* Seçili çağın bilgisi */}
+          <div className="lg:col-span-5 flex min-w-0 flex-col justify-between gap-6 bg-ink p-4 sm:p-6">
             <div>
-              <span className="label text-violet">Seçili Çağın Kutup Yıldızı</span>
-              <h4 className="display display-tight mt-2 text-2xl text-paper">
+              <span className="text-sm text-paper/70">Seçili çağın kutup yıldızı</span>
+              <h4 className="mt-1 font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
                 {selectedHistoricalStar.starName}
               </h4>
-              <p className="serif-i text-base text-violet mt-0.5">
-                {selectedHistoricalStar.constellation} Takımyıldızı · {selectedHistoricalStar.yearLabel}
+              <p className="mt-1 text-sm text-violet">
+                {selectedHistoricalStar.constellation} takımyıldızı · {selectedHistoricalStar.yearLabel}
               </p>
 
-              <div className="grid grid-cols-2 gap-px border border-line bg-line my-6">
-                <div className="bg-ink-2 p-3">
-                  <span className="label text-muted block">Gök Kutbuna Uzaklık</span>
-                  <span className="font-mono text-sm text-paper">{selectedHistoricalStar.distanceDegFromPole}° yay derecesi</span>
+              <div className="my-6 grid grid-cols-2 gap-4 border-y border-line py-4">
+                <div className="min-w-0">
+                  <span className="block text-sm text-paper/70">Gök kutbuna uzaklık</span>
+                  <span className="mt-0.5 block font-mono text-base tabular-nums text-paper">{selectedHistoricalStar.distanceDegFromPole}° yay derecesi</span>
                 </div>
-                <div className="bg-ink-2 p-3">
-                  <span className="label text-muted block">Görünür Parlaklık</span>
-                  <span className="font-mono text-sm text-paper">+{selectedHistoricalStar.magnitude} mag</span>
+                <div className="min-w-0">
+                  <span className="block text-sm text-paper/70">Görünür parlaklık</span>
+                  <span className="mt-0.5 block font-mono text-base tabular-nums text-paper">+{selectedHistoricalStar.magnitude} mag</span>
                 </div>
               </div>
 
-              <div className="border-l-2 border-violet pl-4 py-1">
-                <span className="label text-muted">Tarihsel ve Astronomik Önem</span>
-                <p className="mt-1 text-xs leading-relaxed text-paper/85">
+              <div>
+                <span className="text-sm font-medium text-violet">Tarihsel ve astronomik önem</span>
+                <p className="mt-2 text-base leading-relaxed text-paper/85">
                   {selectedHistoricalStar.historicalContext}
                 </p>
               </div>
             </div>
 
-            {/* Quick Presets */}
+            {/* Hızlı seçim */}
             <div className="border-t border-line pt-4">
-              <span className="label text-muted block mb-2">Tarihsel Dönüm Noktaları</span>
+              <span className="mb-2 block text-sm text-paper/70">Tarihsel dönüm noktaları</span>
               <div className="grid grid-cols-2 gap-2">
                 {HISTORICAL_POLE_STARS.map((star) => (
                   <button
                     key={star.year}
+                    type="button"
                     onClick={() => setTargetYear(star.year)}
-                    className="p-2 border border-line text-left bg-ink-2 hover:bg-ink-3 transition-colors cursor-pointer"
+                    className="min-h-11 min-w-0 border border-line bg-ink-2 px-3 py-2 text-left transition-colors hover:bg-ink-3 cursor-pointer"
                   >
-                    <div className="font-mono text-[10px] text-violet">
+                    <div className="font-mono text-xs tabular-nums text-violet">
                       {star.year > 0 ? `+${star.year}` : star.year}
                     </div>
-                    <div className="font-mono text-xs text-paper truncate">
+                    <div className="truncate text-sm text-paper">
                       {star.starName.split(' ')[0]}
                     </div>
                   </button>
@@ -465,17 +465,19 @@ export function PolarisPrecessionHop() {
         </div>
       )}
 
-      {/* TAB 2: STAR HOPPING */}
+      {/* Yıldız atlama */}
       {activeTab === 'hopping' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
-          {/* Left Canvas (7 cols) */}
-          <div className="lg:col-span-7 bg-black p-6 sm:p-8 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-muted mb-4 font-mono">
-              <span>Büyük Ayı Cezvesi Üzerinden 5x Vektörleme</span>
-              <span className="text-lime-signal">İlerleme: %{hopProgress}</span>
+          {/* Çizim alanı */}
+          <div className="lg:col-span-7 flex min-w-0 flex-col justify-between bg-black p-4 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+              <span className="text-paper/70">Büyük Ayı kepçesinden 5 kat uzatma</span>
+              <span className="text-paper/70">
+                İlerleme: <span className="font-mono tabular-nums text-lime-signal">%{hopProgress}</span>
+              </span>
             </div>
 
-            <div className="relative aspect-[4/3] w-full border border-line/40 overflow-hidden bg-ink/50">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink/50">
               <canvas
                 ref={hopCanvasRef}
                 width={600}
@@ -484,10 +486,10 @@ export function PolarisPrecessionHop() {
               />
             </div>
 
-            {/* Controls */}
+            {/* Kontroller */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-line pt-4">
-              <div className="w-full sm:w-2/3 space-y-1">
-                <span className="label text-muted block">5 Kat Uzatma Vektörünü Çiz:</span>
+              <div className="w-full sm:w-2/3 space-y-2">
+                <span className="block text-sm text-paper/70">5 kat uzatma vektörünü çiz</span>
                 <input aria-label="İşaretçi yıldız uzatma ilerlemesi"
                   type="range"
                   min="0"
@@ -499,54 +501,54 @@ export function PolarisPrecessionHop() {
               </div>
 
               <button
+                type="button"
                 onClick={() => setHopProgress(100)}
-                className="w-full sm:w-auto px-4 py-2 border border-lime-signal text-lime-signal font-mono text-xs hover:bg-lime-signal hover:text-ink transition-colors cursor-pointer"
+                className="min-h-10 w-full sm:w-auto shrink-0 border border-lime-signal px-4 py-2 text-sm text-lime-signal transition-colors hover:bg-lime-signal hover:text-ink cursor-pointer"
               >
-                Polaris’e Kilitle (100%)
+                Polaris’e kilitle (%100)
               </button>
             </div>
           </div>
 
-          {/* Right Guide Dossier (5 cols) */}
-          <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
+          {/* Saha rehberi */}
+          <div className="lg:col-span-5 flex min-w-0 flex-col justify-between gap-6 bg-ink p-4 sm:p-6">
             <div>
-              <span className="label text-lime-signal">Gözlemci Saha Protokolü</span>
-              <h4 className="display display-tight mt-2 text-2xl text-paper">
-                Gökyüzünde Kuzey Nasıl Bulunur?
+              <h4 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+                Gökyüzünde kuzey nasıl bulunur?
               </h4>
-              <p className="mt-3 text-xs leading-relaxed text-paper/75">
+              <p className="mt-3 text-base leading-relaxed text-paper/85">
                 Gökyüzünde pusula olmadan kuzey yönünü ve bulunduğunuz coğrafi enlemi bulmanın bin yıllık yöntemidir.
               </p>
 
-              <ol className="mt-6 space-y-3 font-mono text-xs text-paper/85">
-                <li className="flex gap-2">
-                  <span className="text-lime-signal font-bold">1.</span>
+              <ol className="mt-6 space-y-3 text-sm leading-relaxed text-paper/85">
+                <li className="flex gap-3">
+                  <span className="shrink-0 font-mono font-semibold text-lime-signal">1.</span>
                   <span>Kuzey ufkuna bakın ve 7 parlak yıldızdan oluşan devasa <strong>Büyük Ayı</strong> (Ursa Major) kepçesini bulun.</span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-lime-signal font-bold">2.</span>
+                <li className="flex gap-3">
+                  <span className="shrink-0 font-mono font-semibold text-lime-signal">2.</span>
                   <span>Kepçenin su içilen dış kenarındaki iki yıldızı bulun: <strong>Merak</strong> ve <strong>Dubhe</strong>.</span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-lime-signal font-bold">3.</span>
+                <li className="flex gap-3">
+                  <span className="shrink-0 font-mono font-semibold text-lime-signal">3.</span>
                   <span>Merak’tan Dubhe’ye doğru zihninizde düz bir ok çekin ve bu mesafeyi <strong>tam 5 katı kadar</strong> ileri uzatın.</span>
                 </li>
-                <li className="flex gap-2">
-                  <span className="text-lime-signal font-bold">4.</span>
+                <li className="flex gap-3">
+                  <span className="shrink-0 font-mono font-semibold text-lime-signal">4.</span>
                   <span>Karşınıza çıkacak orta parlaklıktaki tek yıldız <strong>Polaris</strong>’tir. Küçük Ayı’nın kuyruk ucudur.</span>
                 </li>
               </ol>
 
-              {/* Latitude Principle Card */}
-              <div className="mt-6 border border-line bg-ink-2 p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="label text-muted">Enlem İlkesi</span>
-                  <span className="font-mono text-xs text-lime-signal">{latitudeDeg}° Kuzey</span>
+              {/* Enlem ilkesi */}
+              <div className="mt-6 space-y-3 border-t border-line pt-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <span className="text-sm font-medium text-paper/85">Enlem ilkesi</span>
+                  <span className="text-sm text-lime-signal"><span className="font-mono tabular-nums">{latitudeDeg}°</span> kuzey</span>
                 </div>
-                <p className="text-xs text-paper/70">
+                <p className="text-sm leading-relaxed text-paper/80">
                   Polaris’in ufuk çizgisinden kaç derece yukarıda olduğu, tam olarak bulunduğunuz yerin kuzey enlemine eşittir.
                 </p>
-                <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-3 pt-1">
                   <input aria-label="Gözlemci enlemi"
                     type="range"
                     min="10"
@@ -555,15 +557,17 @@ export function PolarisPrecessionHop() {
                     onChange={(e) => setLatitudeDeg(parseInt(e.target.value))}
                     className="w-full h-1.5 bg-ink-3 appearance-none cursor-pointer accent-lime-signal"
                   />
-                  <span className="font-mono text-xs text-paper shrink-0">{latitudeDeg}° Ufuk Yüksekliği</span>
+                  <span className="shrink-0 text-sm text-paper/80">
+                    <span className="font-mono tabular-nums text-paper">{latitudeDeg}°</span> ufuk yüksekliği
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-line pt-3 font-mono text-[11px] text-muted flex items-start gap-2">
-              <span className="text-solar font-bold text-[10px] tracking-wider border border-solar/40 px-1 py-0.2 shrink-0">İPUCU</span>
-              <em>Eğer Büyük Ayı binaların ardında kalmışsa, karşı taraftaki &quot;W&quot; şeklindeki Kraliçe (Cassiopeia) takımyıldızının kollarından da Polaris’e ulaşabilirsiniz.</em>
-            </div>
+            <p className="border-t border-line pt-4 text-sm leading-relaxed text-paper/80">
+              <span className="font-medium text-solar">İpucu:</span>{' '}
+              Eğer Büyük Ayı binaların ardında kalmışsa, karşı taraftaki &quot;W&quot; şeklindeki Kraliçe (Cassiopeia) takımyıldızının kollarından da Polaris’e ulaşabilirsiniz.
+            </p>
           </div>
         </div>
       )}

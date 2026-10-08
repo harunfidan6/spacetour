@@ -318,56 +318,56 @@ export function CelestialSphere3D() {
           <Scene time={time} layers={layers} picked={picked} setPicked={setPicked} auto={auto && !picked} />
         </Canvas>
 
-        <div className="pointer-events-none absolute left-4 top-4 space-y-1 font-mono text-xs">
-          <div className="label text-gold">3D gök küresi</div>
-          <div className="text-paper">{fmt(time)}</div>
-          <div className="text-muted">İstanbul saati · sürükle, yakınlaştır, gök cismine dokun</div>
+        <div className="pointer-events-none absolute left-4 right-4 top-4 space-y-1 sm:right-auto sm:max-w-sm">
+          <div className="text-sm font-medium text-gold">3D gök küresi</div>
+          <div className="font-mono text-sm tabular-nums text-paper">{fmt(time)}</div>
+          <div className="text-sm leading-snug text-paper/80">İstanbul saati · sürükle, yakınlaştır, gök cismine dokun</div>
         </div>
 
         {info && (
-          <div className="absolute right-4 top-4 w-60 border border-line bg-ink/90 p-4 font-mono text-xs backdrop-blur" aria-live="polite">
-            <div className="text-sm font-bold text-paper">{info.title}</div>
-            {info.lines.map((l) => <div key={l} className="mt-1 text-paper/75">{l}</div>)}
+          <div className="absolute inset-x-4 bottom-4 border border-line bg-ink/90 p-4 sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-4 sm:w-64" aria-live="polite">
+            <div className="text-base font-semibold text-paper">{info.title}</div>
+            {info.lines.map((l) => <div key={l} className="mt-1 text-sm tabular-nums text-paper/80">{l}</div>)}
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 border-t border-line bg-ink-2 p-4 font-mono text-xs">
+      <div className="flex flex-wrap items-center gap-3 border-t border-line bg-ink-2 p-4 text-sm">
         <button type="button" onClick={() => setPlaying((p) => !p)} className="flex h-9 items-center gap-2 border border-gold/50 px-3 text-gold hover:bg-gold hover:text-ink" aria-label={playing ? 'Durdur' : 'Oynat'}>
           {playing ? <Pause size={14} /> : <Play size={14} />} {playing ? 'Durdur' : 'Oynat'}
         </button>
-        <label className="flex items-center gap-2 text-muted">
+        <label className="flex items-center gap-2 text-paper/70">
           Hız
           <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="h-9 border border-line bg-ink px-2 text-paper">
             {SPEEDS.map((s, i) => <option key={s.label} value={i}>{s.label}</option>)}
           </select>
         </label>
-        <button type="button" onClick={() => setTime((t) => new Date(t.getTime() - 86400000))} className="h-9 border border-line px-3 text-paper/80 hover:border-paper">−1 gün</button>
-        <button type="button" onClick={() => setTime((t) => new Date(t.getTime() + 86400000))} className="h-9 border border-line px-3 text-paper/80 hover:border-paper">+1 gün</button>
+        <button type="button" onClick={() => setTime((t) => new Date(t.getTime() - 86400000))} className="h-9 whitespace-nowrap border border-line px-3 tabular-nums text-paper/80 hover:border-paper">−1 gün</button>
+        <button type="button" onClick={() => setTime((t) => new Date(t.getTime() + 86400000))} className="h-9 whitespace-nowrap border border-line px-3 tabular-nums text-paper/80 hover:border-paper">+1 gün</button>
         <button type="button" onClick={() => { setTime(new Date()); setSpeed(0); }} className="flex h-9 items-center gap-2 border border-line px-3 text-paper/80 hover:border-paper">
           <RotateCcw size={13} /> Şimdi
         </button>
-        <label className="flex items-center gap-2 text-muted">
+        <label className="flex min-h-9 items-center gap-2 text-paper/70">
           <input type="checkbox" checked={auto} onChange={() => setAuto((a) => !a)} className="accent-[var(--gold)]" /> Kendiliğinden dön
         </label>
-        <div className="ml-auto flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 sm:ml-auto">
           {LAYER_LABELS.map(([k, label, color]) => (
             <button key={k} type="button" onClick={() => toggle(k)} aria-pressed={layers[k]}
-              className={`flex h-9 items-center gap-2 border px-3 ${layers[k] ? 'border-paper/40 text-paper' : 'border-line text-muted'}`}>
-              <span className="h-2 w-2 rounded-full" style={{ background: layers[k] ? color : 'transparent', border: `1px solid ${color}` }} />
+              className={`flex h-9 items-center gap-2 whitespace-nowrap border px-3 ${layers[k] ? 'border-paper/40 text-paper' : 'border-line text-paper/70'}`}>
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: layers[k] ? color : 'transparent', border: `1px solid ${color}` }} />
               {label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid gap-px border-t border-line bg-line sm:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-px border-t border-line bg-line max-sm:fill-row-2 sm:grid-cols-4 sm:max-lg:fill-row-4 lg:grid-cols-7">
         {BODIES.map((b) => {
           const lon = longitude(b.id, time);
           return (
-            <button key={b.id} type="button" onClick={() => setPicked({ kind: 'body', id: b.id })} className="bg-ink p-3 text-left font-mono text-xs hover:bg-ink-2">
-              <span className="flex items-center gap-2 text-paper"><span className="h-2 w-2 rounded-full" style={{ background: b.color }} />{BODY_NAMES[b.id]}</span>
-              <span className="mt-1 block text-muted">{signOf(lon)}</span>
+            <button key={b.id} type="button" onClick={() => setPicked({ kind: 'body', id: b.id })} className="min-w-0 bg-ink p-3 text-left hover:bg-ink-2">
+              <span className="flex items-center gap-2 text-sm font-medium text-paper"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: b.color }} />{BODY_NAMES[b.id]}</span>
+              <span className="mt-1 block text-sm tabular-nums text-paper/70">{signOf(lon)}</span>
             </button>
           );
         })}

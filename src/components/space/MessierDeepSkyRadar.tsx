@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Telescope } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
@@ -120,161 +119,157 @@ export function MessierDeepSkyRadar() {
   const railRef = useRevealOnChange(selectedTarget);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-lime">
-            <span className="live-dot" /> Derin Uzay Atlası · 110 Nesne
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Messier kataloğu <span className="serif-i text-lime">& derin uzay hedefleri</span>
+    <div className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık */}
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-6">
+        <div className="min-w-0 max-w-2xl">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Messier kataloğu ve derin uzay hedefleri
           </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
+          <p className="mt-2 text-sm leading-relaxed text-paper/80 sm:text-base">
             Charles Messier’in 18. yüzyılda derlediği katalogdan kuzey göğünün en görkemli 6 derin uzay cismi: galaksiler, gaz bulutsuları ve küresel kümeler.
           </p>
         </div>
-
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-lime">
-          M31 → M57 · Gözlem Rehberi
-        </div>
+        <p className="shrink-0 text-sm text-paper/70">
+          Katalogda <span className="tabular-nums text-paper">110</span> nesne
+        </p>
       </div>
 
-      {/* 6 Target Selector Grid */}
+      {/* Hedef seçimi */}
       <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
         {MESSIER_TARGETS.map((m) => {
           const isSelected = m.id === selectedTarget.id;
           return (
             <button
               key={m.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => setSelectedTarget(m)}
-              className={`p-4 text-left flex flex-col justify-between transition-colors cursor-pointer ${
+              className={`flex min-w-0 flex-col justify-between p-4 text-left transition-colors cursor-pointer ${
                 isSelected
                   ? 'bg-lime text-ink'
                   : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className={`label ${isSelected ? 'text-ink/80 font-bold' : 'text-lime'}`}>
+              <span className="mb-3 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                <span className={`font-mono text-sm font-semibold ${isSelected ? 'text-ink' : 'text-lime'}`}>
                   {m.messier}
                 </span>
-                <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
+                <span className={`font-mono text-xs ${isSelected ? 'text-ink/80' : 'text-paper/70'}`}>
                   {m.ngc}
                 </span>
-              </div>
-              <div>
-                <div className="display display-tight text-base font-bold truncate">
+              </span>
+              <span className="block">
+                <span className="block text-base font-semibold leading-snug">
                   {m.name.split(' (')[0]}
-                </div>
-                <div className={`label mt-1 text-[10px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                </span>
+                <span className={`mt-1 block text-xs leading-snug ${isSelected ? 'text-ink/80' : 'text-paper/70'}`}>
                   {m.constellation}
-                </div>
-              </div>
+                </span>
+              </span>
             </button>
           );
         })}
       </div>
 
-      {/* Main Target Dossier Layout */}
+      {/* Seçili hedefin dosyası */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
-        {/* Left: Imagery & Target Intro (5 cols) */}
-        <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
+        {/* Sol: görsel ve tanıtım */}
+        <div className="flex min-w-0 flex-col justify-between gap-6 bg-ink p-5 sm:p-8 lg:col-span-5">
           <div>
-            <div className="flex items-center justify-between border-b border-line pb-3">
-              <span className="label text-lime">{selectedTarget.messier} · {selectedTarget.ngc}</span>
-              <span className="label text-muted">{selectedTarget.distance}</span>
+            <div className="font-mono text-sm tabular-nums text-lime">
+              {selectedTarget.messier} · {selectedTarget.ngc}
             </div>
-
-            <h4 className="display display-tight mt-6 text-3xl sm:text-4xl text-paper">
+            <h4 className="mt-2 font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
               {selectedTarget.name}
             </h4>
-            <div className="serif-i text-lg text-lime mt-1">
+            <div className="mt-1.5 text-base text-paper/80">
               {selectedTarget.type} · {selectedTarget.constellation}
             </div>
 
-            <div className="relative h-44 w-full border border-line overflow-hidden my-4 bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={selectedTarget.image.src}
-                alt={selectedTarget.name}
-                className="w-full h-full object-cover filter contrast-110"
-              />
-              <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[10px] text-paper/80 backdrop-blur">
-                Hubble / Teleskop Gözlemi
+            <figure className="mt-5">
+              <div className="h-44 w-full overflow-hidden bg-black">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedTarget.image.src}
+                  alt={selectedTarget.name}
+                  className="w-full h-full object-cover filter contrast-110"
+                />
               </div>
-            </div>
+              <figcaption className="mt-2 text-xs leading-snug text-paper/70">
+                Görsel · {selectedTarget.image.credit}
+              </figcaption>
+            </figure>
 
-            <p className="text-xs leading-relaxed text-paper/75">
+            <p className="mt-5 text-base leading-relaxed text-paper/85">
               {selectedTarget.description}
             </p>
           </div>
 
-          {/* Observation Tip */}
-          <div className="border-l-2 border-lime pl-4 py-1">
-            <span className="label text-muted">Gözlem & Ekipman İpucu</span>
-            <p className="mt-1 text-xs leading-relaxed text-paper/85">
+          {/* Gözlem ipucu */}
+          <div className="border-t border-line pt-5">
+            <div className="text-sm font-medium text-lime">Gözlem ve ekipman ipucu</div>
+            <p className="mt-2 text-base leading-relaxed text-paper/85">
               {selectedTarget.observationTip}
             </p>
           </div>
         </div>
 
-        {/* Right: Technical Specs & Equipment (7 cols) */}
-        <div className="lg:col-span-7 bg-ink-2 p-6 sm:p-8 space-y-6">
-          <div className="label text-paper border-b border-line pb-2 flex items-center justify-between">
-            <span>Optik & Fiziksel Parametreler</span>
-            <span className="text-muted">Kuzey Yarımküre</span>
+        {/* Sağ: teknik özellikler ve ekipman */}
+        <div className="min-w-0 space-y-6 bg-ink-2 p-5 sm:p-8 lg:col-span-7">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
+            <span className="text-sm font-medium text-paper/85">Optik ve fiziksel parametreler</span>
+            <span className="text-sm text-paper/70">Kuzey yarımküre</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-px border border-line bg-line">
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Görünür Kadir</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
-                {selectedTarget.magnitude > 0 ? `+${selectedTarget.magnitude}` : selectedTarget.magnitude} <span className="label text-xs">mag</span>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-6">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Görünür kadir</div>
+              <div className="mt-1 font-mono text-2xl font-semibold tabular-nums text-paper">
+                {selectedTarget.magnitude > 0 ? `+${selectedTarget.magnitude}` : selectedTarget.magnitude} <span className="text-sm font-normal text-paper/70">mag</span>
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Uzaklık</span>
-              <div className="display display-tight mt-2 text-2xl text-lime">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Uzaklık</div>
+              <div className="mt-1 text-base font-semibold leading-snug tabular-nums text-paper sm:text-lg">
                 {selectedTarget.distance}
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">En İyi Gözlem Dönemi</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">En iyi gözlem dönemi</div>
+              <div className="mt-1 text-base font-semibold leading-snug text-paper sm:text-lg">
                 {selectedTarget.bestSeason}
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Gereken Asgari Optik</span>
-              <div className="display display-tight mt-2 text-lg text-lime truncate">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Gereken asgari optik</div>
+              <div className="mt-1 text-base font-semibold leading-snug text-paper sm:text-lg">
                 {selectedTarget.minEquipment}
               </div>
             </div>
           </div>
 
-          {/* Observing Deck Checklist */}
-          <div className="border border-line bg-ink p-5 space-y-3">
-            <span className="label text-paper flex items-center gap-1.5">
-              <Telescope size={14} className="text-lime" />
-              Gözlem Alanı Kontrol Listesi
-            </span>
-            <ul className="space-y-2 text-xs text-paper/70 font-mono">
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-lime" />
-                <span>Hedef Takımyıldız: <strong className="text-paper">{selectedTarget.constellation}</strong></span>
+          {/* Gözlem kontrol listesi */}
+          <div className="space-y-3 border-t border-line pt-6">
+            <div className="flex items-center gap-2 text-sm font-medium text-paper/85">
+              <Telescope size={16} className="shrink-0 text-lime" aria-hidden="true" />
+              Gözlem alanı kontrol listesi
+            </div>
+            <ul className="space-y-2.5 text-sm leading-relaxed text-paper/80">
+              <li className="flex items-start gap-2.5">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
+                <span>Hedef takımyıldız: <strong className="font-semibold text-paper">{selectedTarget.constellation}</strong></span>
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-lime" />
-                <span>Görüş Önerisi: En az Bortle 4 ve altında karanlık bir gökyüzü tercih edin.</span>
+              <li className="flex items-start gap-2.5">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
+                <span>Görüş önerisi: En az Bortle 4 ve altında karanlık bir gökyüzü tercih edin.</span>
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-lime" />
-                <span>Gözlem hazırlığı: Gözünüzü en az 20 dakika karanlığa alıştırın (Kırmızı fener kullanın).</span>
+              <li className="flex items-start gap-2.5">
+                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
+                <span>Gözlem hazırlığı: Gözünüzü en az 20 dakika karanlığa alıştırın (kırmızı fener kullanın).</span>
               </li>
             </ul>
           </div>
