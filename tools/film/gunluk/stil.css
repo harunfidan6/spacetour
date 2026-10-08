@@ -1,8 +1,8 @@
 /* Günlük Reels: tanitim/stil.css üstüne üst başlık şeridi ve alt künye */
 #frames iframe { opacity: 1; }
 
-#topshade { position: absolute; inset: 0 0 auto 0; height: 34%; opacity: 0; pointer-events: none;
-  background: linear-gradient(to bottom, rgb(5 5 8 / 0.94) 0%, rgb(5 5 8 / 0.8) 42%, rgb(5 5 8 / 0) 100%); }
+#topshade { position: absolute; inset: 0 0 auto 0; height: 30%; opacity: 0; pointer-events: none;
+  background: linear-gradient(to bottom, #050508 0%, #050508 62%, rgb(5 5 8 / 0) 100%); }
 #tops { position: absolute; inset: 0; pointer-events: none; }
 .top { position: absolute; left: var(--g); right: var(--g); top: 58px; }
 .top .kick { display: flex; align-items: center; gap: 14px; }
