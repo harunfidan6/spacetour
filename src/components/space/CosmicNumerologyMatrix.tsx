@@ -7,12 +7,20 @@ import {
   CoreNumberAnalysis,
   NUMBER_KEYS
 } from '@/data/numerology';
-import {
-  SacredTetractysGlyph
-} from '@/components/ui/CosmicGlyphs';
 import { NumericInput } from '@/components/ui/NumericInput';
 import { daysInMonth } from '@/data/zodiac';
 import { Compass, Shield, Feather, Key, Flame } from 'lucide-react';
+
+// Ortak görünüm sınıfları
+const FIELD = 'flex flex-col justify-end gap-1.5 lg:col-span-1';
+const FIELD_LABEL = 'text-sm text-paper/70';
+const FIELD_INPUT =
+  'w-full min-h-10 border border-line bg-ink px-3 py-2 text-base text-paper focus:border-gold focus:outline-none';
+const SECTION_LABEL = 'text-sm font-medium text-paper/80';
+const READING_LABEL = 'text-sm font-medium text-gold';
+const READING_TEXT = 'mt-2 text-base leading-relaxed text-paper/85';
+const BIG_NUMBER = 'shrink-0 font-mono text-4xl font-semibold leading-none tabular-nums text-gold sm:text-5xl';
+const DETAIL_TITLE = 'font-display text-xl font-semibold leading-tight text-paper sm:text-2xl';
 
 export function CosmicNumerologyMatrix() {
   const [firstName, setFirstName] = useState('Atlas');
@@ -50,60 +58,54 @@ export function CosmicNumerologyMatrix() {
   }, [activePillar, report]);
 
   return (
-    <div className="relative border border-line bg-ink p-6 sm:p-10 space-y-10">
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8 sm:space-y-10">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <SacredTetractysGlyph size={18} className="text-gold" />
-            <span className="doc-kicker text-gold">Pisagor ve Keldani Geleneği</span>
-          </div>
-          <h3 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
-            Numeroloji & Yaşam Yolu Analizi
-          </h3>
-        </div>
-        <div className="doc-caption px-3 py-1.5 border border-line bg-ink-2 text-paper/80 text-xs">
-          4 Temel Sütun ve Kişisel Yıl
-        </div>
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Numeroloji & Yaşam Yolu Analizi
+        </h3>
+        <p className="mt-2 text-sm text-paper/70">
+          Pisagor ve Keldani geleneği · 4 temel sütun ve kişisel yıl
+        </p>
       </div>
 
       {/* Interactive Input Form */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 border border-line bg-ink-2 p-6">
-        <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Adınız</label>
+      <div className="grid grid-cols-6 gap-3 sm:gap-4 lg:grid-cols-5">
+        <label className={`${FIELD} col-span-3`}>
+          <span className={FIELD_LABEL}>Adınız</span>
           <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="Adınız"
-            className="w-full bg-ink border border-line px-3 py-2 text-sm text-paper focus:border-gold focus:outline-none"
+            className={FIELD_INPUT}
           />
-        </div>
+        </label>
 
-        <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Soyadınız</label>
+        <label className={`${FIELD} col-span-3`}>
+          <span className={FIELD_LABEL}>Soyadınız</span>
           <input
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="Soyadınız"
-            className="w-full bg-ink border border-line px-3 py-2 text-sm text-paper focus:border-gold focus:outline-none"
+            className={FIELD_INPUT}
           />
-        </div>
+        </label>
 
-        <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Günü</label>
+        <label className={`${FIELD} col-span-2`}>
+          <span className={FIELD_LABEL}>Doğum günü</span>
           <NumericInput
             value={day}
             min={1}
             max={maxDay}
             onValueChange={(v: number) => setDay(Math.min(v, maxDay))}
-            className="w-full bg-ink border border-line px-3 py-2 text-sm text-paper focus:border-gold focus:outline-none"
+            className={FIELD_INPUT}
           />
-        </div>
+        </label>
 
-        <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Ayı</label>
+        <label className={`${FIELD} col-span-2`}>
+          <span className={FIELD_LABEL}>Doğum ayı</span>
           <NumericInput
             value={month}
             min={1}
@@ -112,12 +114,12 @@ export function CosmicNumerologyMatrix() {
               setMonth(v);
               setDay((d) => Math.min(d, daysInMonth(v, year)));
             }}
-            className="w-full bg-ink border border-line px-3 py-2 text-sm text-paper focus:border-gold focus:outline-none"
+            className={FIELD_INPUT}
           />
-        </div>
+        </label>
 
-        <div className="space-y-1.5">
-          <label className="doc-kicker text-paper/75 text-[11px] uppercase">Doğum Yılı</label>
+        <label className={`${FIELD} col-span-2`}>
+          <span className={FIELD_LABEL}>Doğum yılı</span>
           <NumericInput
             value={year}
             min={1920}
@@ -126,53 +128,53 @@ export function CosmicNumerologyMatrix() {
               setYear(v);
               setDay((d) => Math.min(d, daysInMonth(month, v)));
             }}
-            className="w-full bg-ink border border-line px-3 py-2 text-sm text-paper focus:border-gold focus:outline-none"
+            className={FIELD_INPUT}
           />
-        </div>
+        </label>
       </div>
 
       {/* 5 Core Pillars Selector Cards */}
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 sm:max-lg:fill-row-2 lg:grid-cols-5 lg:fill-row-5">
+      <div className="grid grid-cols-2 gap-px border border-line bg-line max-lg:fill-row-2 lg:grid-cols-5 lg:fill-row-5">
         {[
           {
             id: 'lifePath',
-            label: '1. Yaşam Yolu',
+            label: 'Yaşam Yolu',
             num: report.lifePathNumber.number,
             title: report.lifePathNumber.archetype,
             icon: Compass,
-            badge: report.lifePathNumber.isMaster ? 'MASTER' : 'ÇEKİRDEK'
+            note: report.lifePathNumber.isMaster ? 'Master' : 'Çekirdek'
           },
           {
             id: 'destiny',
-            label: '2. Kader / İfade',
+            label: 'Kader / İfade',
             num: report.destinyNumber.number,
             title: report.destinyNumber.archetype,
             icon: Feather,
-            badge: report.destinyNumber.isMaster ? 'MASTER' : 'İSİM'
+            note: report.destinyNumber.isMaster ? 'Master' : 'İsim'
           },
           {
             id: 'soulUrge',
-            label: '3. Ruh Arzusu',
+            label: 'Ruh Arzusu',
             num: report.soulUrgeNumber.number,
             title: report.soulUrgeNumber.archetype,
             icon: Flame,
-            badge: 'SESLİ'
+            note: 'Sesli harfler'
           },
           {
             id: 'personality',
-            label: '4. Kişilik Maskesi',
+            label: 'Kişilik Maskesi',
             num: report.personalityNumber.number,
             title: report.personalityNumber.archetype,
             icon: Shield,
-            badge: 'SESSİZ'
+            note: 'Sessiz harfler'
           },
           {
             id: 'personalYear',
             label: `${report.personalYearNumber.year} Kişisel Yıl`,
             num: report.personalYearNumber.number,
-            title: 'Yıllık Döngü',
+            title: 'Yıllık döngü',
             icon: Key,
-            badge: String(report.personalYearNumber.year)
+            note: ''
           }
         ].map((pillar) => {
           const isSelected = activePillar === pillar.id;
@@ -180,33 +182,36 @@ export function CosmicNumerologyMatrix() {
             <button
               key={pillar.id}
               type="button"
+              aria-pressed={isSelected}
               onClick={() => setActivePillar(pillar.id as typeof activePillar)}
-              className={`p-5 text-left transition-all cursor-pointer flex flex-col justify-between ${
+              className={`flex min-w-0 flex-col p-4 text-left transition-colors cursor-pointer sm:p-5 ${
                 isSelected
-                  ? 'bg-gold text-ink font-semibold'
+                  ? 'bg-gold text-ink'
                   : 'bg-ink-2 text-paper hover:bg-ink hover:text-gold'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className={`doc-caption text-[11px] ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+              <span className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                <span className={`text-sm font-medium ${isSelected ? 'text-ink' : 'text-paper/85'}`}>
                   {pillar.label}
                 </span>
-                <span className={`doc-caption text-[11px] px-1.5 py-0.5 border ${
-                  isSelected ? 'border-ink/30 text-ink' : 'border-line text-gold'
-                }`}>
-                  {pillar.badge}
-                </span>
-              </div>
+                {pillar.note ? (
+                  <span
+                    className={`text-xs ${
+                      isSelected ? 'text-ink/80' : pillar.note === 'Master' ? 'text-gold' : 'text-paper/70'
+                    }`}
+                  >
+                    {pillar.note}
+                  </span>
+                ) : null}
+              </span>
 
-              <div className="my-4 flex items-baseline gap-2">
-                <span className="doc-title text-3xl sm:text-4xl">
-                  {pillar.num}
-                </span>
-              </div>
+              <span className="my-3 font-mono text-3xl font-semibold leading-none tabular-nums sm:text-4xl">
+                {pillar.num}
+              </span>
 
-              <div className={`text-xs truncate ${isSelected ? 'text-ink/90 font-bold' : 'text-paper/70'}`}>
+              <span className={`mt-auto text-sm leading-snug ${isSelected ? 'text-ink/85' : 'text-paper/75'}`}>
                 {pillar.title}
-              </div>
+              </span>
             </button>
           );
         })}
@@ -214,72 +219,67 @@ export function CosmicNumerologyMatrix() {
 
       {/* Detailed Dossier for Selected Pillar */}
       {activePillar !== 'personalYear' ? (
-        <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
-            <div className="flex items-center gap-4">
-              <div className="grid place-items-center h-16 w-16 border border-line bg-ink rounded-full">
-                <span className="doc-title text-3xl text-gold">{activeAnalysis.number}</span>
-              </div>
-              <div>
-                <h4 className="doc-title text-2xl sm:text-3xl text-paper">
-                  {activeAnalysis.title}
-                </h4>
-                <div className="doc-caption text-paper/75 text-xs mt-1">
-                  Yönetici Gezegen: {activeAnalysis.rulingCosmicBody} · Zodyak Rezonansı: {activeAnalysis.zodiacAffinity}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {activeAnalysis.sacredKeywords.map((kw, i) => (
-                <span key={i} className="doc-caption px-3 py-1 rounded-full border border-line bg-ink text-paper/85 text-[11px]">
-                  # {kw}
+        <div className="border border-line bg-ink-2 p-5 sm:p-8 space-y-6">
+          <div className="flex items-start gap-4">
+            <span className={BIG_NUMBER}>{activeAnalysis.number}</span>
+            <div className="min-w-0 space-y-2">
+              <h4 className={DETAIL_TITLE}>
+                {activeAnalysis.title}
+              </h4>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-paper/70">
+                <span>
+                  Yönetici gezegen: <span className="text-paper/90">{activeAnalysis.rulingCosmicBody}</span>
                 </span>
-              ))}
+                <span>
+                  Uyumlu burçlar: <span className="text-paper/90">{activeAnalysis.zodiacAffinity}</span>
+                </span>
+              </div>
+              <p className="text-sm text-paper/70">
+                Anahtar sözcükler:{' '}
+                <span className="text-paper/90">{activeAnalysis.sacredKeywords.join(' · ')}</span>
+              </p>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="border border-line bg-ink p-5 space-y-2">
-              <span className="doc-kicker text-gold">ÖZ ENERJİ & MİZACIN DOĞASI</span>
-              <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
+          <div className="grid gap-6 border-t border-line pt-6 md:grid-cols-2">
+            <div>
+              <div className={READING_LABEL}>Öz enerji ve mizaç</div>
+              <p className={READING_TEXT}>
                 {activeAnalysis.essence}
               </p>
             </div>
 
-            <div className="border border-line bg-ink p-5 space-y-2">
-              <span className="doc-kicker text-gold">RUHSAL YAŞAM MİSYONU</span>
-              <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
+            <div>
+              <div className={READING_LABEL}>Ruhsal misyon</div>
+              <p className={READING_TEXT}>
                 {activeAnalysis.soulMission}
               </p>
             </div>
-          </div>
 
-          <div className="border border-rose-signal/30 bg-rose-signal/5 p-5 space-y-2">
-            <span className="doc-kicker text-rose-signal">KARMİK GÖLGE & AŞILMASI GEREKEN İMTİHAN</span>
-            <p className="text-xs sm:text-sm text-paper/85 leading-relaxed">
-              {activeAnalysis.shadowChallenge}
-            </p>
+            <div className="md:col-span-2">
+              <div className="text-sm font-medium text-rose-signal">Karmik gölge ve sınav</div>
+              <p className={READING_TEXT}>
+                {activeAnalysis.shadowChallenge}
+              </p>
+            </div>
           </div>
         </div>
       ) : (
         /* Personal Year Detailed Report */
-        <div className="border border-line bg-ink-2 p-6 sm:p-8 space-y-6">
-          <div className="flex items-center gap-4 border-b border-line pb-6">
-            <div className="grid place-items-center h-16 w-16 border border-line bg-ink rounded-full">
-              <span className="doc-title text-3xl text-gold">{report.personalYearNumber.number}</span>
-            </div>
-            <div>
-              <div className="doc-kicker text-gold">{report.personalYearNumber.year} YILI KİŞİSEL DÖNGÜSÜ</div>
-              <h4 className="doc-title text-2xl sm:text-3xl text-paper mt-1">
+        <div className="border border-line bg-ink-2 p-5 sm:p-8 space-y-6">
+          <div className="flex items-start gap-4">
+            <span className={BIG_NUMBER}>{report.personalYearNumber.number}</span>
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">{report.personalYearNumber.year} yılı kişisel döngüsü</div>
+              <h4 className={`mt-1 ${DETAIL_TITLE}`}>
                 {report.personalYearNumber.theme}
               </h4>
             </div>
           </div>
 
-          <div className="border border-line bg-ink p-6 space-y-3">
-            <span className="doc-kicker text-gold">BU YIL İÇİN STRATEJİ & TAVSİYE</span>
-            <p className="text-sm leading-relaxed text-paper/90">
+          <div className="border-t border-line pt-6">
+            <div className={READING_LABEL}>Bu yıl için tavsiye</div>
+            <p className={READING_TEXT}>
               {report.personalYearNumber.advice}
             </p>
           </div>
@@ -288,7 +288,7 @@ export function CosmicNumerologyMatrix() {
 
       {/* Ek sayılar: hangi sütun seçili olursa olsun görünür */}
       <div className="space-y-3">
-        <span className="doc-kicker text-gold">Ek sayılar</span>
+        <div className={SECTION_LABEL}>Ek sayılar</div>
         <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {[
             { k: 'Doğum günü sayısı', n: report.birthdayNumber, t: NUMBER_KEYS[report.birthdayNumber]?.talent },
@@ -296,24 +296,21 @@ export function CosmicNumerologyMatrix() {
             { k: 'Kişisel ay', n: report.personalMonth.number, t: NUMBER_KEYS[report.personalMonth.number]?.cycle },
             { k: `Bugün (${report.personalDay.date})`, n: report.personalDay.number, t: NUMBER_KEYS[report.personalDay.number]?.cycle },
           ].map((x) => (
-            <div key={x.k} className="bg-ink p-5">
+            <div key={x.k} className="bg-ink p-4 sm:p-5">
               <div className="flex items-baseline justify-between gap-3">
-                <span className="doc-kicker text-paper/70">{x.k}</span>
-                <span className="doc-title text-2xl text-gold">{x.n}</span>
+                <span className="text-sm text-paper/70">{x.k}</span>
+                <span className="font-mono text-2xl font-semibold leading-none tabular-nums text-gold">{x.n}</span>
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-paper/85">{x.t}</p>
+              <p className="mt-2 text-sm leading-relaxed text-paper/80">{x.t}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Pythagorean Letters Reference Table */}
-      <div className="border-t border-line pt-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="doc-caption text-paper/75 text-[11px]">PİSAGOR HARF - SAYI FREKANS TABLOSU</span>
-          <span className="doc-caption text-paper/75 text-[11px]">1’DEN 9’A KADAR KOZMİK AKORLAR</span>
-        </div>
-        <div className="grid grid-cols-3 sm:grid-cols-9 gap-px border border-line bg-line text-center text-xs">
+      <div className="space-y-3">
+        <div className={SECTION_LABEL}>Pisagor harf-sayı tablosu</div>
+        <div className="grid grid-cols-3 gap-px border border-line bg-line text-center sm:grid-cols-9">
           {[
             { num: 1, letters: 'A, J, S, Ş' },
             { num: 2, letters: 'B, K, T' },
@@ -325,9 +322,9 @@ export function CosmicNumerologyMatrix() {
             { num: 8, letters: 'H, Q, Z' },
             { num: 9, letters: 'I, İ, R' }
           ].map((col) => (
-            <div key={col.num} className="bg-ink p-2.5">
-              <div className="doc-caption text-gold font-bold">{col.num}</div>
-              <div className="font-mono text-[11px] text-paper/70 mt-1">{col.letters}</div>
+            <div key={col.num} className="bg-ink px-2 py-2.5">
+              <div className="font-mono text-sm font-semibold text-gold">{col.num}</div>
+              <div className="mt-1 font-mono text-xs text-paper/80">{col.letters}</div>
             </div>
           ))}
         </div>

@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  Clock,
   Zap,
   ShieldCheck,
   Calendar,
@@ -75,75 +74,63 @@ export function DailyCosmicTransitWidget() {
   const isMercuryRetro = sky?.mercuryRetro ?? false;
 
   return (
-    <div id="gunluk-transitler" className="relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      {/* Widget Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="doc-kicker text-gold flex items-center gap-2">
-            <Clock className="h-4 w-4 text-gold" />
-            <span>Canlı Efemeris & Günlük Gezegen Konumları</span>
-          </div>
-          <h2 className="doc-title mt-3 text-2xl sm:text-3xl text-paper">
-            Günün Gezegen Hareketleri <span className="doc-serif italic text-gold">& Burç Yorumları</span>
+    <div id="gunluk-transitler" className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık */}
+      <div className="flex flex-col justify-between gap-4 border-b border-line pb-6 sm:flex-row sm:items-end">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Günün gezegen hareketleri ve burç yorumları
           </h2>
-          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
-            {sky ? `${dateFormatted}, ${dayName} • ` : ''}Gökyüzündeki güncel Ay fazı, gezegen yöneticisi ve 12 burç için günlük arketip rehberi.
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-paper/80 sm:text-base">
+            Gökyüzündeki güncel Ay fazı, gezegen yöneticisi ve 12 burç için günlük arketip rehberi.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 doc-caption text-paper bg-ink-2 border border-line px-4 py-2 shrink-0">
-          <Calendar size={14} className="text-gold" />
-          <span>{dateFormatted}</span>
+        <div className="flex shrink-0 items-center gap-2 text-sm text-paper/80">
+          <Calendar size={16} className="text-gold" />
+          <span>{dateFormatted}{dayName && `, ${dayName}`}</span>
         </div>
       </div>
 
-      {/* Cosmic Weather Telemetry Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-px border border-line bg-line">
-        {/* 1. Moon Phase (Bespoke Vector Moon) */}
-        <div className="bg-ink-2 p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="doc-kicker text-violet">
-              GÜNCEL AY FAZI
-            </span>
-            <VectorMoonPhase illumination={illuminationPct} waning={sky ? !sky.moon.waxing : false} size={30} className="text-paper" />
+      {/* Gökyüzü durumu: Ay fazı, günün yöneticisi, Merkür */}
+      <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-3">
+        <div className="space-y-2 bg-ink-2 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm text-paper/70">Ay fazı</span>
+            <VectorMoonPhase illumination={illuminationPct} waning={sky ? !sky.moon.waxing : false} size={28} className="shrink-0 text-paper" />
           </div>
-          <div className="doc-title text-base sm:text-lg text-paper">
-            {moonPhaseName}{sky && ` (%${illuminationPct} Aydınlık)`}
+          <div className="text-lg font-semibold leading-snug text-paper">
+            {moonPhaseName}
+            {sky && (
+              <span className="font-normal text-paper/70">
+                {' '}(%{illuminationPct} aydınlık)
+              </span>
+            )}
           </div>
-          <p className="text-xs text-paper/75 leading-relaxed">
-            {moonPhaseDesc}
+          <p className="text-sm leading-relaxed text-paper/80">{moonPhaseDesc}</p>
+        </div>
+
+        <div className="space-y-2 bg-ink-2 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm text-paper/70">Günün yönetici gezegeni</span>
+            <PlanetGlyph planet={dayRuler.planetId} size={22} className={`shrink-0 ${dayRuler.color}`} />
+          </div>
+          <div className="text-lg font-semibold leading-snug text-paper">{dayRuler.planet}</div>
+          <p className="text-sm leading-relaxed text-paper/80">
+            Bugün <strong className="font-medium text-paper">{dayRuler.focus}</strong> temaları kozmik olarak destekleniyor.
           </p>
         </div>
 
-        {/* 2. Planetary Ruler of the Day */}
-        <div className="bg-ink-2 p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="doc-kicker text-gold">
-              GÜNÜN GEZEGENSEL YÖNETİCİSİ
-            </span>
-            <PlanetGlyph planet={dayRuler.planetId} size={22} className={dayRuler.color} />
+        <div className="space-y-2 bg-ink-2 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm text-paper/70">Merkür&apos;ün hareketi</span>
+            <PlanetGlyph planet="mercury" size={20} className="shrink-0 text-gold" />
           </div>
-          <div className="doc-title text-base sm:text-lg text-paper">
-            {dayRuler.planet}
+          <div className="flex items-center gap-2 text-lg font-semibold leading-snug text-paper">
+            {isMercuryRetro ? <Hourglass className="shrink-0 text-gold" size={18} /> : <ShieldCheck className="shrink-0 text-lime" size={18} />}
+            <span>{!sky ? 'Hesaplanıyor' : isMercuryRetro ? 'Retrograd (geri hareket)' : 'Düz harekette'}</span>
           </div>
-          <p className="text-xs text-paper/75 leading-relaxed">
-            Bugün <strong className="text-paper">{dayRuler.focus}</strong> temaları kozmik olarak destekleniyor.
-          </p>
-        </div>
-
-        {/* 3. Mercury Status */}
-        <div className="bg-ink-2 p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="doc-kicker text-gold">
-              MERKÜR İLETİŞİM DÖNGÜSÜ
-            </span>
-            <PlanetGlyph planet="mercury" size={20} className="text-gold" />
-          </div>
-          <div className="doc-title text-base sm:text-lg text-paper flex items-center gap-2">
-            {isMercuryRetro ? <Hourglass className="text-gold" size={18} /> : <ShieldCheck className="text-lime" size={18} />}
-            <span>{!sky ? 'Hesaplanıyor' : isMercuryRetro ? 'Retrograd (Geri Hareket)' : 'Düz Harekette'}</span>
-          </div>
-          <p className="text-xs text-paper/75 leading-relaxed">
+          <p className="text-sm leading-relaxed text-paper/80">
             {isMercuryRetro
               ? 'Gökyüzünde geri gidiyor gibi görünüyor: sözleşmeleri, yazışmaları ve teknik planları bir kez daha gözden geçir.'
               : 'Zihinsel netlik, yeni kontratlar, teknolojik hamleler ve açık iletişim için elverişli akış.'}
@@ -151,19 +138,15 @@ export function DailyCosmicTransitWidget() {
         </div>
       </div>
 
-      {/* 12 Signs Quick Selector */}
+      {/* Burç seçimi ve günlük yorum */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="doc-kicker text-paper flex items-center gap-2">
-            <PlanetGlyph planet="sun" size={14} className="text-gold" />
-            Burcunuzu Seçin & Günlük Yorumu Okuyun
-          </h3>
-          <span className="doc-caption text-paper/75">
-            Seçili: <strong className="text-paper">{selectedSign.name}</strong>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h3 className="text-base font-semibold text-paper">Burcunuzu seçin</h3>
+          <span className="text-sm text-paper/70">
+            Seçili: <strong className="font-medium text-paper">{selectedSign.name}</strong>
           </span>
         </div>
 
-        {/* Horizontal Zodiac Selector Buttons with Bespoke Glyphs */}
         <div ref={railRef} className="choice-rail grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-px border border-line bg-line" style={{ '--rail-w': '27%' } as React.CSSProperties}>
           {ZODIAC_SIGNS.map((s) => {
             const isSelected = s.id === selectedSignId;
@@ -171,10 +154,10 @@ export function DailyCosmicTransitWidget() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSignId(s.id)}
-                className={`flex flex-col items-center justify-center p-3 transition-colors cursor-pointer ${
+                className={`flex min-w-0 cursor-pointer flex-col items-center justify-center px-2 py-3 transition-colors ${
                   isSelected
-                    ? 'bg-gold text-ink font-semibold'
-                    : 'bg-ink-2 text-paper/75 hover:text-paper hover:bg-ink-3'
+                    ? 'bg-gold text-ink'
+                    : 'bg-ink-2 text-paper/80 hover:bg-ink-3 hover:text-paper'
                 }`}
               >
                 <ZodiacGlyph
@@ -182,112 +165,102 @@ export function DailyCosmicTransitWidget() {
                   size={20}
                   className={`mb-1.5 ${isSelected ? 'text-ink' : 'text-paper/70'}`}
                 />
-                <span className="text-xs font-bold font-sans">{s.name}</span>
-                <span className="doc-caption text-[11px] mt-0.5 opacity-70">{s.element}</span>
+                <span className="text-sm font-semibold lg:text-xs">{s.name}</span>
+                <span className="mt-0.5 text-xs opacity-80">{s.element}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Active Daily Horoscope Card */}
-        <div className="border border-line bg-ink-2 p-6 sm:p-8 relative overflow-hidden">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-line pb-6">
-            <div className="flex items-center gap-4">
-              <ZodiacGlyph sign={selectedSign.id} size={48} className="text-gold shrink-0" />
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <h3 className="doc-title text-2xl sm:text-3xl text-paper">
-                    {selectedSign.name} Burcu Günlük Yorumu
-                  </h3>
-                  <span className="doc-caption px-2.5 py-0.5 border border-gold/40 bg-gold/10 text-gold font-medium">
-                    {selectedSign.dates}
-                  </span>
-                </div>
-                <div className="doc-caption text-paper/75 mt-1">
-                  Element: {selectedSign.element} ({selectedSign.modality}) • Yönetici: {selectedSign.rulingPlanet}
-                </div>
+        {/* Seçili burcun günlük yorumu */}
+        <div className="border border-line bg-ink-2 p-4 sm:p-8">
+          <div className="flex flex-col gap-4 border-b border-line pb-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex min-w-0 items-start gap-4 sm:items-center">
+              <ZodiacGlyph sign={selectedSign.id} size={44} className="shrink-0 text-gold" />
+              <div className="min-w-0">
+                <h3 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+                  {selectedSign.name} burcu günlük yorumu
+                </h3>
+                <p className="mt-1 text-sm text-paper/70">
+                  {selectedSign.dates} · Element: {selectedSign.element} ({selectedSign.modality}) · Yönetici: {selectedSign.rulingPlanet}
+                </p>
                 {reading && (
-                  <div className="doc-caption mt-1 text-paper/70">
+                  <p className="mt-1 text-sm text-paper/70">
                     Ay bugün {reading.moonIn} · {reading.house}. ev: {reading.houseArea}
-                  </div>
+                  </p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-ink border border-line px-4 py-2.5 shrink-0 font-mono text-xs">
-              <Hourglass size={16} className="text-gold" />
-              <div>
-                <span className="doc-caption text-[11px] text-paper/75 block">Günün Şanslı Saatleri</span>
-                <span className="text-paper font-bold">{reading ? reading.luckyHours : '—'}</span>
+            <div className="flex shrink-0 items-start gap-2.5 md:max-w-xs">
+              <Hourglass size={16} className="mt-0.5 shrink-0 text-gold" />
+              <div className="min-w-0">
+                <span className="block text-sm text-paper/70">Günün şanslı saatleri</span>
+                <span className="text-sm font-medium tabular-nums text-paper">{reading ? reading.luckyHours : '—'}</span>
               </div>
             </div>
           </div>
 
-          {/* 3 Pillars: Energy, Love, Career */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line mt-6">
-            {/* Energy */}
-            <div className="bg-ink p-5 space-y-2">
-              <div className="doc-kicker text-gold flex items-center gap-2">
-                <Zap size={14} className="text-gold" />
-                <span>Kozmik Enerji & Odak</span>
+          {/* Enerji, aşk, kariyer */}
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-paper">
+                <Zap size={16} className="shrink-0 text-gold" />
+                <span>Enerji ve odak</span>
               </div>
-              <p className="text-xs text-paper/75 leading-relaxed font-sans">
+              <p className="text-base leading-relaxed text-paper/85">
                 {reading ? reading.energy : pending}
               </p>
             </div>
 
-            {/* Love & Relations */}
-            <div className="bg-ink p-5 space-y-2">
-              <div className="doc-kicker text-rose-signal flex items-center gap-2">
-                <Heart size={14} className="text-rose-signal" />
-                <span>Aşk & İlişkiler</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-paper">
+                <Heart size={16} className="shrink-0 text-rose-signal" />
+                <span>Aşk ve ilişkiler</span>
               </div>
-              <p className="text-xs text-paper/75 leading-relaxed font-sans">
+              <p className="text-base leading-relaxed text-paper/85">
                 {reading ? reading.love : pending}
               </p>
             </div>
 
-            {/* Career & Wealth */}
-            <div className="bg-ink p-5 space-y-2">
-              <div className="doc-kicker text-paper flex items-center gap-2">
-                <Briefcase size={14} className="text-paper" />
-                <span>Kariyer & Maddiyat</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-paper">
+                <Briefcase size={16} className="shrink-0 text-paper/80" />
+                <span>Kariyer ve maddiyat</span>
               </div>
-              <p className="text-xs text-paper/75 leading-relaxed font-sans">
+              <p className="text-base leading-relaxed text-paper/85">
                 {reading ? reading.career : pending}
               </p>
             </div>
           </div>
 
           {reading && (
-            <div className="mt-6 grid gap-px border border-line bg-line md:grid-cols-3">
-              <div className="bg-ink p-4">
-                <span className="doc-caption text-gold">Ay {reading.moonIn}</span>
-                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.moonMood}</p>
-                <p className="mt-1 text-xs leading-relaxed text-paper/75">{reading.moonFocus}</p>
+            <div className="mt-6 grid grid-cols-1 gap-6 border-t border-line pt-6 md:grid-cols-3">
+              <div>
+                <span className="text-sm text-paper/70">Ay {reading.moonIn}</span>
+                <p className="mt-1.5 text-sm leading-relaxed text-paper/80">{reading.moonMood}</p>
+                <p className="mt-1 text-sm leading-relaxed text-paper/80">{reading.moonFocus}</p>
               </div>
-              <div className="bg-ink p-4">
-                <span className="doc-caption text-gold">Sağlık & enerji</span>
-                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.wellbeing}</p>
+              <div>
+                <span className="text-sm text-paper/70">Sağlık ve enerji</span>
+                <p className="mt-1.5 text-sm leading-relaxed text-paper/80">{reading.wellbeing}</p>
               </div>
-              <div className="bg-ink p-4">
-                <span className="doc-caption text-gold">Sosyal hayat</span>
-                <p className="mt-2 text-xs leading-relaxed text-paper/80">{reading.social}</p>
+              <div>
+                <span className="text-sm text-paper/70">Sosyal hayat</span>
+                <p className="mt-1.5 text-sm leading-relaxed text-paper/80">{reading.social}</p>
               </div>
             </div>
           )}
-          {reading?.moonChange && <p className="mt-3 text-xs text-paper/75">{reading.moonChange}</p>}
+          {reading?.moonChange && <p className="mt-4 text-sm leading-relaxed text-paper/80">{reading.moonChange}</p>}
 
-          {/* Cosmic Tip Footer */}
-          <div className="mt-6 pt-4 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
-            <div className="flex items-center gap-2 text-paper/75">
-              <span className="text-gold font-bold">Rehber Not:</span>
-              <span>{reading ? reading.tip : pending}</span>
-            </div>
-
-            <div className="doc-caption text-paper/75 italic">
+          {/* Rehber not ve motto */}
+          <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+            <p className="text-sm leading-relaxed text-paper/85">
+              <span className="font-semibold text-gold">Rehber not:</span> {reading ? reading.tip : pending}
+            </p>
+            <p className="text-sm italic leading-relaxed text-paper/70 sm:max-w-xs sm:shrink-0 sm:text-right">
               Motto: &quot;{selectedSign.traits.motto}&quot;
-            </div>
+            </p>
           </div>
         </div>
       </div>

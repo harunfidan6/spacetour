@@ -2,14 +2,7 @@
 
 import React, { useState, useMemo, useId } from 'react';
 import Link from 'next/link';
-import {
-  Sparkles,
-  ArrowRight,
-  Telescope,
-  BookOpen,
-  Orbit,
-  Info
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import {
   ZODIAC_SIGNS,
   ASTROLOGICAL_HOUSES,
@@ -32,7 +25,6 @@ import {
   AscendantGlyph
 } from '@/components/ui/CosmicGlyphs';
 import { POPULAR_LOCATIONS } from '@/utils/astronomy';
-import { Ticks } from '@/components/motion/primitives';
 import { NumericInput } from '@/components/ui/NumericInput';
 
 interface AspectInfo {
@@ -67,6 +59,25 @@ const CITY_UTC_OFFSET: Record<string, number> = {
   Tokyo: 9,
 };
 
+type NatalTab = 'reading' | 'trinity' | 'planets' | 'houses' | 'poster';
+
+const TABS: { id: NatalTab; label: string }[] = [
+  { id: 'reading', label: 'Kişisel yorum' },
+  { id: 'trinity', label: 'Üçlü ve çark' },
+  { id: 'planets', label: 'Gezegenler' },
+  { id: 'houses', label: '12 ev' },
+  { id: 'poster', label: 'Doğum kartı' },
+];
+
+// Açı renk anahtarı: çarktaki açı çizgileriyle aynı renkler (aspects hesabındaki aspectTypes)
+const ASPECT_LEGEND = [
+  { name: 'Üçgen (120°)', color: '#e5c158' },
+  { name: 'Kavuşum (0°)', color: '#00d4ff' },
+  { name: 'Sekstil (60°)', color: '#d4ff3d' },
+  { name: 'Kare (90°)', color: '#ff3d7f' },
+  { name: 'Karşıt (180°)', color: '#ff5b22' },
+];
+
 export function NatalChartCalculator() {
   const [day, setDay] = useState(15);
   const [month, setMonth] = useState(4); // April
@@ -93,7 +104,7 @@ export function NatalChartCalculator() {
   const instant = birthInstant(year, month, day, hour, minute, zoneOffset);
 
   // Active view tab: 'trinity' | 'planets' | 'houses' | 'poster'
-  const [activeTab, setActiveTab] = useState<'reading' | 'trinity' | 'planets' | 'houses' | 'poster'>('reading');
+  const [activeTab, setActiveTab] = useState<NatalTab>('reading');
   const [selectedHouse, setSelectedHouse] = useState<AstrologicalHouse | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
   const [hoveredAspect, setHoveredAspect] = useState<AspectInfo | null>(null);
@@ -393,99 +404,61 @@ export function NatalChartCalculator() {
   );
 
   return (
-    <div id="dogum-haritasi" className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-line">
+    <div id="dogum-haritasi" className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık ve sekmeler */}
+      <div className="space-y-5 border-b border-line pb-6">
         <div>
-          <div className="label flex items-center gap-2 text-gold">
-            <Sparkles className="h-4 w-4 animate-pulse" />
-            <span>GÖKYÜZÜ KOORDİNATLARI & NATAL ÇARK</span>
-          </div>
-          <h2 className="display display-tight mt-3 text-[clamp(1.8rem,3.2vw,3rem)] text-paper">
-            Doğum Haritası, Gezegenler <span className="serif-i text-gold">& Açı Şebekesi</span>
+          <h2 className="display text-2xl text-paper sm:text-3xl">
+            Doğum haritası, gezegenler ve açılar
           </h2>
-          <p className="mt-2 max-w-xl text-xs leading-relaxed text-paper/70">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-paper/80 sm:text-base">
             Doğum anınızdaki gezegen açılarını, Yükselen burçtan başlayan on iki evi (tam burç ev sistemi) ve 360° zodyak çarkını inceleyin.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 border border-line bg-ink-2 p-1 text-xs font-mono">
-          <button
-            onClick={() => setActiveTab('reading')}
-            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
-              activeTab === 'reading' ? 'bg-gold text-ink' : 'text-muted hover:text-paper'
-            }`}
-          >
-            Kişisel Yorum
-          </button>
-          <button
-            onClick={() => setActiveTab('trinity')}
-            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
-              activeTab === 'trinity'
-                ? 'bg-gold text-ink'
-                : 'text-muted hover:text-paper'
-            }`}
-          >
-            Natal Çark & Üçlü Benlik
-          </button>
-          <button
-            onClick={() => setActiveTab('planets')}
-            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
-              activeTab === 'planets'
-                ? 'bg-paper text-ink'
-                : 'text-muted hover:text-paper'
-            }`}
-          >
-            Gezegen Yerleşimleri
-          </button>
-          <button
-            onClick={() => setActiveTab('houses')}
-            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
-              activeTab === 'houses'
-                ? 'bg-violet text-ink'
-                : 'text-muted hover:text-paper'
-            }`}
-          >
-            12 Astrolojik Ev
-          </button>
-          <button
-            onClick={() => setActiveTab('poster')}
-            className={`px-3 py-1.5 font-bold transition-all cursor-pointer ${
-              activeTab === 'poster'
-                ? 'bg-gold text-ink'
-                : 'text-gold hover:text-paper border border-gold/40'
-            }`}
-          >
-            Doğum Kartı Posteri
-          </button>
+        <div className="flex w-fit max-w-full flex-wrap gap-1 border border-line bg-ink-2 p-1">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => setActiveTab(tab.id)}
+                className={`min-h-9 cursor-pointer px-3 text-sm font-medium transition-colors ${
+                  isActive ? 'bg-gold text-ink' : 'text-paper/75 hover:bg-ink-3 hover:text-paper'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Input Form Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line font-mono text-xs">
+      {/* Doğum bilgileri */}
+      <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-6">
         {/* Day */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-day`} className="label text-muted block mb-1 text-[11px]">GÜN</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-day`} className="mb-1 block text-xs text-paper/70">Gün</label>
           <NumericInput
             id={`${fid}-day`}
             min={1}
             max={maxDay}
             value={day}
             onValueChange={setDay}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none"
+            className="w-full bg-transparent font-mono text-base font-semibold text-paper outline-none"
           />
         </div>
 
         {/* Month */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-month`} className="label text-muted block mb-1 text-[11px]">AY</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-month`} className="mb-1 block text-xs text-paper/70">Ay</label>
           <select
             id={`${fid}-month`}
             value={month}
             onChange={(e) => changeMonth(parseInt(e.target.value, 10))}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none cursor-pointer"
+            className="w-full cursor-pointer bg-transparent text-base font-semibold text-paper outline-none"
           >
             {[
               'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -499,52 +472,52 @@ export function NatalChartCalculator() {
         </div>
 
         {/* Year */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-year`} className="label text-muted block mb-1 text-[11px]">YIL</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-year`} className="mb-1 block text-xs text-paper/70">Yıl</label>
           <NumericInput
             id={`${fid}-year`}
             min={1920}
             max={2030}
             value={year}
             onValueChange={changeYear}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none"
+            className="w-full bg-transparent font-mono text-base font-semibold text-paper outline-none"
           />
         </div>
 
         {/* Hour */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-hour`} className="label text-muted block mb-1 text-[11px]">SAAT (0-23)</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-hour`} className="mb-1 block text-xs text-paper/70">Saat (0–23)</label>
           <NumericInput
             id={`${fid}-hour`}
             min={0}
             max={23}
             value={hour}
             onValueChange={setHour}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none"
+            className="w-full bg-transparent font-mono text-base font-semibold text-paper outline-none"
           />
         </div>
 
         {/* Minute */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-minute`} className="label text-muted block mb-1 text-[11px]">DAKİKA</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-minute`} className="mb-1 block text-xs text-paper/70">Dakika</label>
           <NumericInput
             id={`${fid}-minute`}
             min={0}
             max={59}
             value={minute}
             onValueChange={setMinute}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none"
+            className="w-full bg-transparent font-mono text-base font-semibold text-paper outline-none"
           />
         </div>
 
         {/* City */}
-        <div className="bg-ink-2 p-3">
-          <label htmlFor={`${fid}-city`} className="label text-muted block mb-1 text-[11px]">DOĞUM ŞEHRİ</label>
+        <div className="bg-ink-2 px-3 py-2.5 focus-within:bg-ink-3">
+          <label htmlFor={`${fid}-city`} className="mb-1 block text-xs text-paper/70">Doğum şehri</label>
           <select
             id={`${fid}-city`}
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full bg-transparent text-sm font-bold text-paper outline-none cursor-pointer"
+            className="w-full cursor-pointer bg-transparent text-base font-semibold text-paper outline-none"
           >
             {POPULAR_LOCATIONS.map((loc) => (
               <option key={loc.city} value={loc.city} className="bg-ink-2 text-paper">
@@ -555,275 +528,245 @@ export function NatalChartCalculator() {
         </div>
       </div>
 
-      {/* Numerology Life Path Banner */}
-      <div className="border border-line bg-ink-2 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 bg-violet/20 border border-violet/40 flex items-center justify-center text-violet font-mono text-2xl font-black">
+      {/* Yaşam yolu sayısı */}
+      <div className="flex flex-col gap-4 border border-line bg-ink-2 p-4 sm:flex-row sm:items-center sm:p-5">
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-violet/40 font-mono text-2xl font-bold text-violet">
             {lifePath.number}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="label text-[11px] text-violet font-bold">
-                PİSAGOR YAŞAM YOLU SAYISI (NUMEROLOJİ)
-              </span>
-              <span className="label text-[11px] bg-violet/20 text-violet px-2 py-0.5 border border-violet/30 font-mono font-bold">
-                No: {lifePath.number}
-              </span>
-            </div>
-            <h4 className="display display-tight text-base font-bold text-paper mt-1">
+          <div className="min-w-0">
+            <div className="text-xs text-paper/70">Yaşam yolu sayısı (Pisagor numerolojisi)</div>
+            <h4 className="mt-0.5 text-base font-semibold text-paper">
               {lifePath.title}
             </h4>
-            <p className="text-xs text-paper/75 mt-0.5">
+            <p className="mt-1 text-sm leading-relaxed text-paper/80">
               {lifePath.description}
             </p>
           </div>
         </div>
 
-        <div className="label text-muted bg-ink px-3 py-1.5 border border-line shrink-0">
-          {day} + {month} + {year} = Titreşim: <strong className="text-paper">{lifePath.number}</strong>
+        <div className="shrink-0 text-sm text-paper/70 sm:text-right">
+          <span className="font-mono">{day} + {month} + {year}</span> → titreşim{' '}
+          <strong className="font-mono text-paper">{lifePath.number}</strong>
         </div>
       </div>
 
-      {/* TAB 1: Core Trinity & High-Precision Interactive Natal Wheel */}
+      {/* Sekme: kişisel yorum */}
       {activeTab === 'reading' && <NatalReadingPanel reading={reading} />}
 
+      {/* Sekme: üçlü ve çark */}
       {activeTab === 'trinity' && (
-        <div className="space-y-8">
-          {/* Trinity Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line">
+        <div className="space-y-10">
+          {/* Güneş, Yükselen, Ay */}
+          <div className="grid grid-cols-1 gap-px border border-line bg-line lg:grid-cols-3">
             {/* 1. Sun Sign */}
-            <div className="bg-ink-2 p-6 relative overflow-hidden group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <PlanetGlyph planet="sun" size={18} className="text-gold" />
-                  <span className="label text-gold">GÜNEŞ BURCU (ÖZ BENLİK)</span>
-                </div>
-                <ZodiacGlyph sign={sunSign.id} size={32} className="text-gold" />
+            <div className="bg-ink-2 p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm font-medium text-gold">
+                  <PlanetGlyph planet="sun" size={16} className="shrink-0 text-gold" />
+                  Güneş burcu (öz benlik)
+                </span>
+                <ZodiacGlyph sign={sunSign.id} size={28} className="shrink-0 text-gold" />
               </div>
 
-              <h3 className="display display-tight text-3xl font-black text-paper">{sunSign.name}</h3>
-              <div className="label text-muted mt-1">{sunSign.dates}</div>
+              <h3 className="display mt-3 text-2xl text-paper">{sunSign.name}</h3>
+              <div className="mt-1 text-sm text-paper/70">{sunSign.dates}</div>
 
-              <div className="mt-4 pt-4 border-t border-line space-y-2 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-muted">Element:</span>
-                  <span className="text-paper font-bold flex items-center gap-1.5">
+              <div className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Element</span>
+                  <span className="flex items-center gap-1.5 text-right text-paper">
                     {elementGlyphs[sunSign.element]}
                     {sunSign.element} ({sunSign.modality})
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Yönetici Gezegen:</span>
-                  <span className="text-paper font-bold">{sunSign.rulingPlanet}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Yönetici gezegen</span>
+                  <span className="text-right text-paper">{sunSign.rulingPlanet}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Motto:</span>
-                  <span className="text-gold serif-i">{sunSign.traits.motto}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="shrink-0 text-paper/70">Motto</span>
+                  <span className="text-right text-paper/85">{sunSign.traits.motto}</span>
                 </div>
               </div>
             </div>
 
             {/* 2. Rising Sign (Ascendant) */}
-            <div className="bg-ink-2 p-6 relative overflow-hidden group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <AscendantGlyph size={18} className="text-lime" />
-                  <span className="label text-lime">YÜKSELEN (DOĞU UFKU / 1. EV)</span>
-                </div>
-                <ZodiacGlyph sign={risingSign.id} size={32} className="text-lime" />
+            <div className="bg-ink-2 p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm font-medium text-lime">
+                  <AscendantGlyph size={16} className="shrink-0 text-lime" />
+                  Yükselen (doğu ufku, 1. ev)
+                </span>
+                <ZodiacGlyph sign={risingSign.id} size={28} className="shrink-0 text-lime" />
               </div>
 
-              <h3 className="display display-tight text-3xl font-black text-paper">{risingSign.name}</h3>
-              <div className="label text-muted mt-1">1. Ev Başlangıcı (ASC)</div>
+              <h3 className="display mt-3 text-2xl text-paper">{risingSign.name}</h3>
+              <div className="mt-1 text-sm text-paper/70">1. ev başlangıcı (ASC)</div>
 
-              <div className="mt-4 pt-4 border-t border-line space-y-2 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-muted">Element:</span>
-                  <span className="text-paper font-bold flex items-center gap-1.5">
+              <div className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Element</span>
+                  <span className="flex items-center gap-1.5 text-right text-paper">
                     {elementGlyphs[risingSign.element]}
                     {risingSign.element} ({risingSign.modality})
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Dış Algı & Arketip:</span>
-                  <span className="text-paper font-bold">{risingSign.traits.archetype}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="shrink-0 text-paper/70">Dış algı ve arketip</span>
+                  <span className="text-right text-paper">{risingSign.traits.archetype}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Yönetici:</span>
-                  <span className="text-lime font-bold">{risingSign.rulingPlanet}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Yönetici</span>
+                  <span className="text-right text-paper">{risingSign.rulingPlanet}</span>
                 </div>
               </div>
             </div>
 
             {/* 3. Moon Sign */}
-            <div className="bg-ink-2 p-6 relative overflow-hidden group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <PlanetGlyph planet="moon" size={18} className="text-violet" />
-                  <span className="label text-violet">AY BURCU (İÇ DÜNYA)</span>
-                </div>
-                <ZodiacGlyph sign={moonSign.id} size={32} className="text-violet" />
+            <div className="bg-ink-2 p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm font-medium text-violet">
+                  <PlanetGlyph planet="moon" size={16} className="shrink-0 text-violet" />
+                  Ay burcu (iç dünya)
+                </span>
+                <ZodiacGlyph sign={moonSign.id} size={28} className="shrink-0 text-violet" />
               </div>
 
-              <h3 className="display display-tight text-3xl font-black text-paper">{moonSign.name}</h3>
-              <div className="label text-muted mt-1">Bilinçdışı Güvenlik & Ruh</div>
+              <h3 className="display mt-3 text-2xl text-paper">{moonSign.name}</h3>
+              <div className="mt-1 text-sm text-paper/70">Bilinçdışı güvenlik ve ruh</div>
 
-              <div className="mt-4 pt-4 border-t border-line space-y-2 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-muted">Element:</span>
-                  <span className="text-paper font-bold flex items-center gap-1.5">
+              <div className="mt-4 space-y-2 border-t border-line pt-4 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Element</span>
+                  <span className="flex items-center gap-1.5 text-right text-paper">
                     {elementGlyphs[moonSign.element]}
                     {moonSign.element} ({moonSign.modality})
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Duygusal Güç:</span>
-                  <span className="text-violet font-bold">{moonSign.traits.strengths[0]}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="text-paper/70">Duygusal güç</span>
+                  <span className="text-right text-paper">{moonSign.traits.strengths[0]}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Motto:</span>
-                  <span className="text-violet serif-i">{moonSign.traits.motto}</span>
+                <div className="flex justify-between gap-3">
+                  <span className="shrink-0 text-paper/70">Motto</span>
+                  <span className="text-right text-paper/85">{moonSign.traits.motto}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Interactive 360° Natal Wheel & Aspect Network */}
-          <div className="border border-line bg-ink-2 p-6 lg:p-8 flex flex-col xl:flex-row items-center gap-8">
-            {/* The SVG 360° Natal Wheel */}
-            <div className="relative w-80 h-80 sm:w-96 sm:h-96 md:w-[420px] md:h-[420px] flex-shrink-0 select-none">
+          {/* 360° çark ve açılar */}
+          <div className="flex flex-col items-center gap-8 xl:flex-row xl:items-start">
+            <div className="relative aspect-square w-full max-w-[420px] shrink-0 select-none xl:w-[420px]">
               {wheelSvg}
 
-              {/* Center Info Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="label text-[11px] text-muted font-bold">
-                  {sunSign.name} ☉
-                </span>
-                <span className="font-mono text-xs font-black text-gold">
-                  {risingSign.name} ↑
-                </span>
-                <span className="label text-[11px] text-paper/70">
-                  {aspects.length} Açı
-                </span>
+              {/* Çarkın ortası */}
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center leading-tight">
+                <span className="text-[11px] text-paper/70">{sunSign.name} ☉</span>
+                <span className="text-xs font-semibold text-gold">{risingSign.name} ↑</span>
+                <span className="text-[11px] text-paper/70">{aspects.length} açı</span>
               </div>
             </div>
 
-            {/* Side Aspect & Planetary Details Panel */}
-            <div className="w-full space-y-4 text-xs font-mono">
-              <div className="flex items-center justify-between border-b border-line pb-2">
-                <span className="label text-gold flex items-center gap-1.5">
-                  <Info size={13} />
-                  Açı Şebekesi & Gezegen Fasetleri
-                </span>
-                <span className="label text-muted">{aspects.length} Aktif Majör Açı</span>
+            {/* Açı ayrıntıları */}
+            <div className="w-full min-w-0 space-y-5">
+              <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+                <span className="text-base font-semibold text-paper">Açılar</span>
+                <span className="text-sm text-paper/70">{aspects.length} majör açı</span>
               </div>
 
-              {/* Dynamic Aspect Telemetry Bar */}
               {hoveredAspect ? (
-                <div className="border border-gold bg-gold/10 p-3 text-paper transition-all">
-                  <div className="flex items-center justify-between text-[11px] font-bold">
+                <div className="border border-gold/50 bg-ink-2 p-4">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-sm font-semibold">
                     <span className="text-gold">{hoveredAspect.p1} & {hoveredAspect.p2}</span>
-                    <span className="px-1.5 py-0.5 bg-gold text-ink text-[11px]">{hoveredAspect.name}</span>
+                    <span className="text-paper/85">{hoveredAspect.name}</span>
                   </div>
-                  <p className="mt-1 text-[11px] text-paper/85 leading-relaxed font-sans">
+                  <p className="mt-1 text-sm leading-relaxed text-paper/85">
                     {hoveredAspect.interpretation}
                   </p>
-                  <div className="mt-2 flex items-center gap-4 text-[11px] text-muted">
-                    <span>Açısal Fark: <strong className="text-paper">{hoveredAspect.exactAngle}°</strong></span>
-                    <span>Tolerans (Orb): <strong className="text-paper">{hoveredAspect.orb}°</strong></span>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-paper/70">
+                    <span>Açısal fark: <strong className="font-mono font-semibold text-paper">{hoveredAspect.exactAngle}°</strong></span>
+                    <span>Tolerans (orb): <strong className="font-mono font-semibold text-paper">{hoveredAspect.orb}°</strong></span>
                   </div>
                 </div>
               ) : (
-                <div className="border border-line bg-ink p-3 text-muted text-[11px] leading-relaxed">
+                <p className="border border-line bg-ink-2 p-4 text-sm leading-relaxed text-paper/80">
                   Çark üzerindeki renkli açı çizgilerine veya gezegen pinlerine gelerek Güneş, Ay ve gezegenler arasındaki majör açı geometrilerini (Üçgen, Kare, Sekstil, Karşıt) inceleyin.
-                </div>
+                </p>
               )}
 
-              {/* Aspect Legend Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
-                <span className="flex items-center gap-1 text-gold"><span className="h-2 w-2 rounded-full bg-gold" /> Üçgen (120°)</span>
-                <span className="flex items-center gap-1 text-primary"><span className="h-2 w-2 rounded-full bg-primary" /> Kavuşum (0°)</span>
-                <span className="flex items-center gap-1 text-lime"><span className="h-2 w-2 rounded-full bg-lime" /> Sekstil (60°)</span>
-                <span className="flex items-center gap-1 text-rose-signal"><span className="h-2 w-2 rounded-full bg-rose-signal" /> Kare (90°)</span>
-                <span className="flex items-center gap-1 text-solar"><span className="h-2 w-2 rounded-full bg-solar" /> Karşıt (180°)</span>
-              </div>
+              {/* Renk anahtarı: çarktaki çizgi renkleriyle aynı */}
+              <ul className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-paper/80">
+                {ASPECT_LEGEND.map((a) => (
+                  <li key={a.name} className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: a.color }} />
+                    {a.name}
+                  </li>
+                ))}
+              </ul>
 
-              {/* Deep Narrative */}
-              <div className="border border-line bg-ink p-4 space-y-2 text-xs font-sans text-paper/75 leading-relaxed">
-                <p>
-                  Doğum anınızdaki gök mekaniği, Güneş&apos;inizin <strong className="text-paper">{sunSign.name}</strong> burcundaki iradesi ile 1. Evinizi yöneten <strong className="text-paper">{risingSign.name}</strong> Yükseleninizi birleştirir.
-                </p>
-                <div className="grid grid-cols-2 gap-2 pt-2 font-mono text-[11px] border-t border-line">
-                  <div>
-                    <span className="text-muted block text-[11px]">Şanslı Sayılar</span>
-                    <span className="text-gold font-bold">{sunSign.details.luckyNumbers.join(', ')}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted block text-[11px]">Kozmik Taş</span>
-                    <span className="text-paper font-bold">{sunSign.details.stone}</span>
-                  </div>
+              <p className="text-sm leading-relaxed text-paper/80">
+                Doğum anınızdaki gök mekaniği, Güneş&apos;inizin <strong className="font-semibold text-paper">{sunSign.name}</strong> burcundaki iradesi ile 1. Evinizi yöneten <strong className="font-semibold text-paper">{risingSign.name}</strong> Yükseleninizi birleştirir.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="block text-xs text-paper/70">Şanslı sayılar</span>
+                  <span className="font-mono font-semibold text-gold">{sunSign.details.luckyNumbers.join(', ')}</span>
+                </div>
+                <div>
+                  <span className="block text-xs text-paper/70">Burç taşı</span>
+                  <span className="font-semibold text-paper">{sunSign.details.stone}</span>
                 </div>
               </div>
 
-              <div className="pt-1">
-                <Link
-                  href="/harita"
-                  className="inline-flex items-center gap-2 text-gold hover:text-paper font-mono text-xs font-bold transition-colors"
-                >
-                  <Telescope size={14} />
-                  <span>3D Gökyüzünde {sunSign.name} Takımyıldızını Gör</span>
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
+              <Link
+                href="/harita"
+                className="inline-flex min-h-9 items-center gap-2 text-sm font-medium text-gold transition-colors hover:text-paper"
+              >
+                <span>{sunSign.name} takımyıldızını 3D gökyüzünde gör</span>
+                <ArrowRight size={14} className="shrink-0" />
+              </Link>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: Planetary Placements Table */}
+      {/* Sekme: gezegen yerleşimleri */}
       {activeTab === 'planets' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <div>
-              <h3 className="display display-tight text-lg font-bold text-paper flex items-center gap-2">
-                <Orbit className="text-paper" size={18} />
-                Gezegen Yerleşimleri & Ev Dağılımı
-              </h3>
-              <p className="text-xs text-muted mt-0.5">
-                Doğum anınızdaki gezegenlerin bulunduğu burçlar, dereceler ve hayat alanları (evler).
-              </p>
-            </div>
+          <div>
+            <h3 className="display text-xl text-paper">Gezegen yerleşimleri ve evler</h3>
+            <p className="mt-1 text-sm leading-relaxed text-paper/80">
+              Doğum anınızdaki gezegenlerin bulunduğu burçlar, dereceler ve hayat alanları (evler).
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px border border-line bg-line">
+          <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2">
             {planetaryPlacements.map((p) => {
               const signData = ZODIAC_SIGNS.find((s) => s.name === p.sign);
 
               return (
-                <div
-                  key={p.planet}
-                  className="bg-ink-2 p-4 hover:bg-ink-3 transition-all space-y-2"
-                >
-                  <div className="flex items-center justify-between">
+                <div key={p.planet} className="space-y-2 bg-ink-2 p-4">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="h-9 w-9 bg-ink border border-line text-paper flex items-center justify-center">
-                        <PlanetGlyph planet={p.planet} size={18} className="text-gold" />
-                      </span>
+                      <PlanetGlyph planet={p.planet} size={20} className="shrink-0 text-gold" />
                       <div>
-                        <h4 className="display display-tight text-sm font-bold text-paper">{p.planet}</h4>
-                        <div className="flex items-center gap-1.5 label text-[11px] text-muted">
-                          {signData && <ZodiacGlyph sign={signData.id} size={12} className="text-paper/70" />}
-                          <span>{p.degree}° {p.sign}</span>
+                        <h4 className="text-base font-semibold text-paper">{p.planet}</h4>
+                        <div className="flex items-center gap-1.5 text-sm text-paper/70">
+                          {signData && <ZodiacGlyph sign={signData.id} size={12} className="shrink-0 text-paper/70" />}
+                          <span><span className="font-mono">{p.degree}°</span> {p.sign}</span>
                         </div>
                       </div>
                     </div>
 
-                    <span className="label text-xs font-bold px-2.5 py-1 bg-ink text-gold border border-line">
-                      {p.house}. Ev
+                    <span className="shrink-0 text-sm font-medium text-gold">
+                      {p.house}. ev
                     </span>
                   </div>
 
-                  <p className="text-xs text-paper/75 leading-relaxed pt-1">
+                  <p className="text-sm leading-relaxed text-paper/80">
                     {p.meaning}
                   </p>
                 </div>
@@ -833,22 +776,17 @@ export function NatalChartCalculator() {
         </div>
       )}
 
-      {/* TAB 3: 12 Astrological Houses Guide */}
+      {/* Sekme: 12 ev */}
       {activeTab === 'houses' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <div>
-              <h3 className="display display-tight text-lg font-bold text-paper flex items-center gap-2">
-                <BookOpen className="text-violet" size={18} />
-                12 Astrolojik Ev (Dodekatemoria)
-              </h3>
-              <p className="text-xs text-muted mt-0.5">
-                Her ev insanın yaşamındaki belirli bir alanı yönetir. İncelemek istediğiniz eve tıklayın.
-              </p>
-            </div>
+          <div>
+            <h3 className="display text-xl text-paper">12 astrolojik ev</h3>
+            <p className="mt-1 text-sm leading-relaxed text-paper/80">
+              Her ev insanın yaşamındaki belirli bir alanı yönetir. İncelemek istediğiniz eve tıklayın.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border border-line bg-line">
+          <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {ASTROLOGICAL_HOUSES.map((h) => {
               const isSelected = selectedHouse?.number === h.number;
               const govSign = ZODIAC_SIGNS.find((s) => s.name === h.governingSign);
@@ -859,171 +797,158 @@ export function NatalChartCalculator() {
                   key={h.number}
                   aria-pressed={isSelected}
                   onClick={() => setSelectedHouse(h)}
-                  className={`block w-full text-left p-4 cursor-pointer transition-all duration-300 space-y-2 ${
+                  className={`block w-full cursor-pointer space-y-2 p-4 text-left text-paper transition-colors ${
                     isSelected
-                      ? 'bg-violet/15 text-paper border border-violet/50'
-                      : 'bg-ink-2 hover:bg-ink-3 text-paper'
+                      ? 'bg-violet/15 ring-1 ring-inset ring-violet/60'
+                      : 'bg-ink-2 hover:bg-ink-3'
                   }`}
                 >
-                  <span className="flex items-center justify-between">
-                    <span className="label text-xs font-bold text-violet">
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold text-violet">
                       {h.title}
                     </span>
-                    <span className="label text-[11px] text-muted">
+                    <span className="shrink-0 text-xs text-paper/70">
                       {h.traditionalName}
                     </span>
                   </span>
 
-                  <span className="block display display-tight text-sm font-bold text-paper">
+                  <span className="block text-base font-semibold text-paper">
                     {h.area}
                   </span>
 
-                  <span className="block text-xs text-paper/75 line-clamp-2 leading-relaxed">
+                  <span className="block text-sm leading-relaxed text-paper/80 line-clamp-2">
                     {h.description}
                   </span>
 
-                  <span className="pt-2 flex items-center justify-between label text-[11px] text-muted border-t border-line">
+                  <span className="flex items-center justify-between gap-2 pt-1 text-xs text-paper/70">
                     <span className="flex items-center gap-1.5">
-                      {govSign && <ZodiacGlyph sign={govSign.id} size={11} className="text-violet" />}
-                      Doğal Yöneticisi: <strong className="text-paper">{h.governingSign}</strong>
+                      {govSign && <ZodiacGlyph sign={govSign.id} size={12} className="shrink-0 text-violet" />}
+                      <span>Doğal yöneticisi: <strong className="font-semibold text-paper">{h.governingSign}</strong></span>
                     </span>
-                    <span className="text-violet">Detay Gör →</span>
+                    <span className="shrink-0 text-violet">Detay gör →</span>
                   </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Selected House Modal / Drawer */}
+          {/* Seçili ev */}
           {selectedHouse && (
-            <div className="p-5 border border-violet bg-ink-2 flex flex-col sm:flex-row items-start justify-between gap-4 mt-4">
+            <div className="flex flex-col items-start justify-between gap-4 border border-violet/60 bg-ink-2 p-5 sm:flex-row">
               <div className="space-y-1">
-                <div className="label text-xs text-violet font-bold">
-                  Seçili Ev Analizi: {selectedHouse.title} ({selectedHouse.traditionalName})
+                <div className="text-sm font-medium text-violet">
+                  Seçili ev: {selectedHouse.title} ({selectedHouse.traditionalName})
                 </div>
-                <h4 className="display display-tight text-base font-bold text-paper">
+                <h4 className="text-lg font-semibold text-paper">
                   {selectedHouse.area}
                 </h4>
-                <p className="text-xs text-paper/75 max-w-2xl leading-relaxed">
+                <p className="max-w-2xl text-sm leading-relaxed text-paper/80">
                   {selectedHouse.description} Bu ev doğum haritanızda hangi gezegenle kesişiyorsa, o hayat alanında yoğun bir bilinç ve deneyim yaşanır.
                 </p>
               </div>
 
               <button
+                type="button"
                 onClick={() => setSelectedHouse(null)}
-                className="label px-3 py-1.5 border border-line bg-ink hover:bg-ink-3 text-paper shrink-0 cursor-pointer"
+                className="min-h-9 shrink-0 cursor-pointer border border-line bg-ink px-4 text-sm text-paper transition-colors hover:bg-ink-3"
               >
-                Kapat ✕
+                Kapat
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* 4. TAB: POSTER / ARŞİV BELGESİ */}
+      {/* Sekme: doğum kartı (yazdırılabilir poster) */}
       {activeTab === 'poster' && (
-        <div className="space-y-6">
-          <div data-print-poster className="border border-gold/40 bg-ink-2 p-6 sm:p-10 relative overflow-hidden text-paper space-y-8">
-            <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-              <ZodiacGlyph sign={sunSign.id} size={280} className="text-gold" />
+        <div data-print-poster className="space-y-8 border border-gold/40 bg-ink-2 p-5 text-paper sm:p-10">
+          {/* Kart başlığı */}
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
+            <h3 className="display text-2xl text-paper sm:text-3xl">
+              Doğum gök atlası
+            </h3>
+            <div className="text-sm sm:text-right">
+              <div className="text-xs text-paper/70">Doğum yeri</div>
+              <div className="font-semibold text-paper">{city}</div>
+              <div className="font-mono text-xs text-paper/70">{location.latitude.toFixed(2)}°K, {location.longitude.toFixed(2)}°D</div>
             </div>
+          </div>
 
-            {/* Poster Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
-              <div>
-                <div className="label text-gold text-xs tracking-wide uppercase">
-                  ARŞİV BELGESİ № ASTRO-NATALIS-{year}{String(month).padStart(2, '0')}{String(day).padStart(2, '0')}
-                </div>
-                <h3 className="display display-tight text-3xl sm:text-5xl text-paper mt-1">
-                  Doğum Gök Atlası & Kozmik İmzası
-                </h3>
-              </div>
-              <div className="text-right font-mono text-xs text-muted">
-                <div>DOĞUM KOORDİNATI</div>
-                <div className="text-paper font-bold">{city}</div>
-                <div>{location.latitude.toFixed(2)}°K, {location.longitude.toFixed(2)}°D</div>
-              </div>
-            </div>
-
-            {/* Poster Core Grid */}
-            <div data-print-grid className="grid gap-8 lg:grid-cols-12 items-center">
-              {/* Scaled Wheel */}
-              <div className="lg:col-span-6 flex justify-center">
-                <div className="relative w-full max-w-[340px] aspect-square border border-line rounded-full p-2 bg-ink/60 shadow-[0_0_30px_rgba(255,215,0,0.06)]">
-                  {wheelSvg}
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="label text-[11px] text-muted">{sunSign.name} ☉</span>
-                    <span className="font-mono text-[11px] font-black text-gold">{risingSign.name} ↑</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trinity & Placement Badges */}
-              <div className="lg:col-span-6 space-y-6">
-                <div className="grid grid-cols-2 gap-px border border-line bg-line">
-                  <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-gold text-[11px]">GÜNEŞ (ÖZ KİMLİK)</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <ZodiacGlyph sign={sunSign.id} size={22} className="text-gold" />
-                      <div className="text-sm font-bold text-paper">{sunSign.name}</div>
-                    </div>
-                    <div className="text-[11px] text-muted">{sunSign.element} · {sunSign.modality}</div>
-                  </div>
-
-                  <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-paper text-[11px]">AY (DUYGU & BİLİNÇDIŞI)</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <ZodiacGlyph sign={moonSign.id} size={22} className="text-paper" />
-                      <div className="text-sm font-bold text-paper">{moonSign.name}</div>
-                    </div>
-                    <div className="text-[11px] text-muted">{moonSign.element} · {moonSign.modality}</div>
-                  </div>
-
-                  <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-violet text-[11px]">YÜKSELEN (ASC / MASKE)</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <ZodiacGlyph sign={risingSign.id} size={22} className="text-violet" />
-                      <div className="text-sm font-bold text-paper">{risingSign.name}</div>
-                    </div>
-                    <div className="text-[11px] text-muted">{risingSign.element} · {risingSign.modality}</div>
-                  </div>
-
-                  <div className="bg-ink p-4 space-y-1">
-                    <span className="label text-gold text-[11px]">YAŞAM YOLU SAYISI</span>
-                    <div className="flex items-baseline gap-2 mt-1">
-                      <span className="display display-tight text-2xl text-gold">{lifePath.number}</span>
-                      <span className="text-xs font-semibold text-paper truncate">{lifePath.title}</span>
-                    </div>
-                    <div className="text-[11px] text-muted">Pisagor Kutsal Sayısı</div>
-                  </div>
-                </div>
-
-                <div className="border-l-2 border-gold pl-4 py-2 bg-ink/40">
-                  <div className="label text-gold text-[11px]">KOZMİK YAŞAM REHBERİ</div>
-                  <p className="text-xs leading-relaxed text-paper/85 mt-1">
-                    {sunSign.name} Güneşi’nin iradesi, {risingSign.name} Yükseleni’nin dış dünyayla kurduğu temas ve {moonSign.name} Ayı’nın sezgisel derinliğiyle birleşiyor. Yaşam yolunuzdaki {lifePath.title} misyonu sizi daima hakikate taşır.
-                  </p>
+          {/* Çark ve üçlü */}
+          <div data-print-grid className="grid items-center gap-8 lg:grid-cols-12">
+            <div className="flex justify-center lg:col-span-6">
+              <div className="relative aspect-square w-full max-w-[340px]">
+                {wheelSvg}
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center leading-tight">
+                  <span className="text-[11px] text-paper/70">{sunSign.name} ☉</span>
+                  <span className="text-[11px] font-semibold text-gold">{risingSign.name} ↑</span>
                 </div>
               </div>
             </div>
 
-            {/* Poster Actions Footer */}
-            <div className="border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="label text-muted text-xs">
-                SPACETOUR.COM.TR · DOĞUM HARİTASI · {day}.{month}.{year} {String(hour).padStart(2, '0')}:{String(minute).padStart(2, '0')}
+            <div className="space-y-6 lg:col-span-6">
+              <div className="grid grid-cols-2 gap-px border border-line bg-line">
+                <div className="space-y-1 bg-ink p-3 sm:p-4">
+                  <span className="block text-xs text-gold">Güneş (öz kimlik)</span>
+                  <div className="flex items-center gap-2">
+                    <ZodiacGlyph sign={sunSign.id} size={20} className="shrink-0 text-gold" />
+                    <div className="text-sm font-semibold text-paper">{sunSign.name}</div>
+                  </div>
+                  <div className="text-xs text-paper/70">{sunSign.element} · {sunSign.modality}</div>
+                </div>
+
+                <div className="space-y-1 bg-ink p-3 sm:p-4">
+                  <span className="block text-xs text-paper">Ay (duygu ve bilinçdışı)</span>
+                  <div className="flex items-center gap-2">
+                    <ZodiacGlyph sign={moonSign.id} size={20} className="shrink-0 text-paper" />
+                    <div className="text-sm font-semibold text-paper">{moonSign.name}</div>
+                  </div>
+                  <div className="text-xs text-paper/70">{moonSign.element} · {moonSign.modality}</div>
+                </div>
+
+                <div className="space-y-1 bg-ink p-3 sm:p-4">
+                  <span className="block text-xs text-violet">Yükselen (ASC, maske)</span>
+                  <div className="flex items-center gap-2">
+                    <ZodiacGlyph sign={risingSign.id} size={20} className="shrink-0 text-violet" />
+                    <div className="text-sm font-semibold text-paper">{risingSign.name}</div>
+                  </div>
+                  <div className="text-xs text-paper/70">{risingSign.element} · {risingSign.modality}</div>
+                </div>
+
+                <div className="space-y-1 bg-ink p-3 sm:p-4">
+                  <span className="block text-xs text-gold">Yaşam yolu sayısı</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-mono text-2xl font-bold text-gold">{lifePath.number}</span>
+                    <span className="min-w-0 text-xs font-semibold leading-snug text-paper">{lifePath.title}</span>
+                  </div>
+                  <div className="text-xs text-paper/70">Pisagor numerolojisi</div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  data-print-hide
-                  className="label px-5 py-2.5 border border-gold bg-gold text-ink font-bold hover:bg-gold/90 transition-all cursor-pointer flex items-center gap-2"
-                >
-                  <span>Posteri Yazdır / PDF Olarak Kaydet</span>
-                </button>
+              <div className="border-l-2 border-gold/70 pl-4">
+                <div className="text-sm font-semibold text-gold">Yaşam rehberi</div>
+                <p className="mt-1 text-sm leading-relaxed text-paper/85">
+                  {sunSign.name} Güneşi’nin iradesi, {risingSign.name} Yükseleni’nin dış dünyayla kurduğu temas ve {moonSign.name} Ayı’nın sezgisel derinliğiyle birleşiyor. Yaşam yolunuzdaki {lifePath.title} misyonu sizi daima hakikate taşır.
+                </p>
               </div>
             </div>
+          </div>
+
+          {/* Künye ve yazdır */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+            <div className="text-xs text-paper/70">
+              spacetour.com.tr · Doğum haritası ·{' '}
+              <span className="font-mono">{day}.{month}.{year} {String(hour).padStart(2, '0')}:{String(minute).padStart(2, '0')}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => window.print()}
+              data-print-hide
+              className="inline-flex min-h-10 cursor-pointer items-center bg-gold px-5 text-sm font-semibold text-ink transition-colors hover:bg-gold/90"
+            >
+              Yazdır veya PDF olarak kaydet
+            </button>
           </div>
         </div>
       )}
