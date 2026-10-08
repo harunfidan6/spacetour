@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useInView } from '@/lib/useInView';
-import { Sparkles } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 
 export function PlanckCMBExplorer() {
   const [omegaB, setOmegaB] = useState<number>(4.9); // Baryon %
@@ -223,100 +221,100 @@ export function PlanckCMBExplorer() {
   }, [omegaTotal, omegaM, omegaB, omegaC, h0]);
 
   return (
-    <div className="relative ticks border border-line bg-ink p-6 sm:p-8">
-      <Ticks />
-      {/* Header */}
-      <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="border border-violet/30 bg-violet/10 px-2 py-0.5 font-mono text-[10px] text-violet font-bold uppercase tracking-wider">
-              ESA PLANCK · WMAP · COBE
-            </span>
-            <span className="label text-muted">Büyük Patlamanın 380.000 Yıl Sonrası</span>
-          </div>
-          <h3 className="display display-tight mt-2 text-2xl text-paper sm:text-3xl">
-            Kozmik Mikrodalga Arka Plan Işıması (CMB) & Evrenin Geometrisi
+    <div className="border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık */}
+      <div className="flex flex-col gap-5 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h3 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+            Kozmik mikrodalga arka plan ışıması (CMB) ve evrenin geometrisi
           </h3>
-          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-paper/70">
-            Son saçılma yüzeyinden (z ≈ 1100) kalan 2.7255 K sıcaklığındaki relikt fotonlar ve 
+          <p className="mt-1.5 text-sm text-paper/70">
+            ESA Planck · WMAP · COBE · Büyük Patlamanın 380.000 yıl sonrası
+          </p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
+            Son saçılma yüzeyinden (z ≈ 1100) kalan 2.7255 K sıcaklığındaki relikt fotonlar ve
             akustik salınım tepeleriyle modern kozmolojinin (ΛCDM Modeli) parametrelerini test et.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 border border-line bg-ink-2 px-4 py-2.5 font-mono text-xs">
-          <span className="text-muted">Evrenin Yaşı (t₀):</span>
-          <span className="text-lime font-bold text-sm">{universeAgeGyr} Milyar Yıl</span>
+        <div className="shrink-0 sm:text-right">
+          <div className="text-sm text-paper/70">Evrenin yaşı (t₀)</div>
+          <div className="mt-0.5 font-mono text-xl font-semibold tabular-nums text-lime">
+            {universeAgeGyr} milyar yıl
+          </div>
         </div>
       </div>
 
-      {/* Main Interactive Deck */}
+      {/* Etkileşimli alan */}
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
-        {/* Left: 3D CMB Sphere */}
-        <div className="flex flex-col items-center justify-center border border-line bg-ink-2 p-5 lg:col-span-5">
-          <div className="flex w-full items-center justify-between border-b border-line pb-2.5">
-            <span className="font-mono text-xs uppercase tracking-wider text-paper">
-              3D Göksel Sıcaklık Anizotropi Küresi
+        {/* Sol: CMB küresi */}
+        <div className="flex flex-col items-center border border-line bg-ink-2 p-4 sm:p-5 lg:col-span-5">
+          <div className="flex w-full flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <span className="text-sm font-medium text-paper">
+              3D göksel sıcaklık anizotropi küresi
             </span>
-            <span className="font-mono text-[10px] text-violet">ΔT = ±200 μK</span>
+            <span className="font-mono text-xs text-paper/70">ΔT = ±200 μK</span>
           </div>
 
-          <div className="relative my-4 flex items-center justify-center">
+          <div className="my-4 flex w-full items-center justify-center">
             <canvas
               ref={sphereCanvasRef}
               width={280}
               height={280}
-              className="rounded-full shadow-[0_0_40px_rgba(122,92,255,0.15)]"
+              className="h-auto max-w-full rounded-full"
             />
           </div>
 
-          <div className="flex w-full items-center justify-between border-t border-line pt-3 font-mono text-[10px] text-muted">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-1.5 text-xs text-paper/70">
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#0033aa]" />
-              <span>-200μK (Yoğun çekirdek)</span>
+              <span className="h-2 w-2 shrink-0 rounded-full bg-[#0033aa]" />
+              <span>
+                <span className="font-mono">-200μK</span> (Yoğun çekirdek)
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#ff3311]" />
-              <span>+200μK (Kozmik boşluk)</span>
+              <span className="h-2 w-2 shrink-0 rounded-full bg-[#ff3311]" />
+              <span>
+                <span className="font-mono">+200μK</span> (Kozmik boşluk)
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Right: Acoustic Power Spectrum C_ell & Sliders */}
-        <div className="space-y-6 lg:col-span-7">
-          {/* Angular Power Spectrum Graph */}
-          <div className="border border-line bg-ink-2 p-4">
-            <div className="flex items-center justify-between border-b border-line pb-2.5">
-              <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-violet" />
-                <span className="font-mono text-xs uppercase tracking-wider text-paper">
-                  Açısal Güç Spektrumu (Dℓ = ℓ(ℓ+1)Cℓ / 2π)
-                </span>
-              </div>
-              <span className="font-mono text-[10px] text-lime">Akustik Tepeler</span>
+        {/* Sağ: açısal güç spektrumu ve parametreler */}
+        <div className="min-w-0 space-y-6 lg:col-span-7">
+          {/* Açısal güç spektrumu */}
+          <div className="border border-line bg-ink-2 p-4 sm:p-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <span className="text-sm font-medium text-paper">
+                Açısal güç spektrumu{' '}
+                <span className="font-mono text-xs font-normal text-paper/70">(Dℓ = ℓ(ℓ+1)Cℓ / 2π)</span>
+              </span>
+              <span className="text-xs text-paper/70">Akustik tepeler</span>
             </div>
             <canvas
               ref={powerSpectrumCanvasRef}
               width={560}
               height={170}
-              className="mt-3 w-full h-40 bg-black border border-line"
+              className="mt-3 w-full h-40 bg-black"
             />
           </div>
 
-          {/* Parameter Sliders */}
-          <div className="border border-line bg-ink-2 p-5">
-            <div className="flex items-center justify-between border-b border-line pb-2">
-              <span className="label text-violet">Kozmolojik Parametreler (ΛCDM Modeli)</span>
-              <span className="font-mono text-xs text-paper">
-                Geometri: <strong className="text-lime">{geometryType}</strong>
+          {/* Parametre sürgüleri */}
+          <div className="border border-line bg-ink-2 p-4 sm:p-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span className="text-sm font-medium text-paper">Kozmolojik parametreler (ΛCDM modeli)</span>
+              <span className="text-sm text-paper/70">
+                Geometri: <strong className="font-medium text-lime">{geometryType}</strong>
               </span>
             </div>
 
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="mt-4 grid gap-5 sm:grid-cols-2">
               {/* Baryon Density */}
-              <div className="space-y-1 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-paper/70">Baryonik Madde (Ωb):</span>
-                  <span className="text-solar font-bold">%{omegaB.toFixed(1)}</span>
+              <div className="min-w-0 space-y-1.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-paper/80">Baryonik madde (Ωb)</span>
+                  <span className="font-mono text-sm font-semibold tabular-nums text-solar">%{omegaB.toFixed(1)}</span>
                 </div>
                 <input aria-label="Baryonik madde oranı"
                   type="range"
@@ -330,10 +328,10 @@ export function PlanckCMBExplorer() {
               </div>
 
               {/* Cold Dark Matter Density */}
-              <div className="space-y-1 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-paper/70">Soğuk Karanlık Madde (Ωc):</span>
-                  <span className="text-violet font-bold">%{omegaC.toFixed(1)}</span>
+              <div className="min-w-0 space-y-1.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-paper/80">Soğuk karanlık madde (Ωc)</span>
+                  <span className="font-mono text-sm font-semibold tabular-nums text-violet">%{omegaC.toFixed(1)}</span>
                 </div>
                 <input aria-label="Soğuk karanlık madde oranı"
                   type="range"
@@ -347,10 +345,10 @@ export function PlanckCMBExplorer() {
               </div>
 
               {/* Dark Energy Density */}
-              <div className="space-y-1 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-paper/70">Karanlık Enerji (ΩΛ):</span>
-                  <span className="text-lime font-bold">%{omegaL.toFixed(1)}</span>
+              <div className="min-w-0 space-y-1.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-paper/80">Karanlık enerji (ΩΛ)</span>
+                  <span className="font-mono text-sm font-semibold tabular-nums text-lime">%{omegaL.toFixed(1)}</span>
                 </div>
                 <input aria-label="Karanlık enerji oranı"
                   type="range"
@@ -364,10 +362,10 @@ export function PlanckCMBExplorer() {
               </div>
 
               {/* Hubble Constant */}
-              <div className="space-y-1 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-paper/70">Hubble Sabiti (H₀):</span>
-                  <span className="text-paper font-bold">{h0.toFixed(1)} km/s/Mpc</span>
+              <div className="min-w-0 space-y-1.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-paper/80">Hubble sabiti (H₀)</span>
+                  <span className="whitespace-nowrap font-mono text-sm font-semibold tabular-nums text-paper">{h0.toFixed(1)} km/s/Mpc</span>
                 </div>
                 <input aria-label="Hubble sabiti"
                   type="range"
@@ -382,11 +380,20 @@ export function PlanckCMBExplorer() {
             </div>
 
             {/* Readout stats */}
-            <div className="mt-4 flex flex-wrap items-center justify-between border-t border-line pt-3 font-mono text-[10px] text-muted">
-              <span>Toplam Yoğunluk Parametresi: Ω_tot = {omegaTotal.toFixed(3)}</span>
-              <span>Rekombinasyon Sıcaklığı: T_rec ≈ 3000 K</span>
-              <span>Kızılöteye Kayma: z ≈ 1090</span>
-            </div>
+            <dl className="mt-5 grid gap-3 border-t border-line pt-4 sm:grid-cols-3">
+              <div className="min-w-0">
+                <dt className="text-xs text-paper/70">Toplam yoğunluk parametresi</dt>
+                <dd className="mt-0.5 font-mono text-sm tabular-nums text-paper">Ω_tot = {omegaTotal.toFixed(3)}</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="text-xs text-paper/70">Rekombinasyon sıcaklığı</dt>
+                <dd className="mt-0.5 font-mono text-sm text-paper">T_rec ≈ 3000 K</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="text-xs text-paper/70">Kızılöteye kayma</dt>
+                <dd className="mt-0.5 font-mono text-sm text-paper">z ≈ 1090</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </div>

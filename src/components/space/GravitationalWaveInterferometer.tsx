@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useInView } from '@/lib/useInView';
 import { Volume2, Play, Activity, Disc3 } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
 
 interface EventPreset {
   id: string;
@@ -264,22 +263,18 @@ export function GravitationalWaveInterferometer() {
   }, [fStart, fMerge, activePolarization, visible]);
 
   return (
-    <div className="relative ticks border border-line bg-ink p-6 sm:p-8">
-      <Ticks />
-      {/* Header bar */}
-      <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="border border-lime/30 bg-lime/10 px-2 py-0.5 font-mono text-[10px] text-lime font-bold uppercase tracking-wider">
-              LIGO · VIRGO · KAGRA
-            </span>
-            <span className="label text-muted">2017 Nobel Fizik Ödülü</span>
-          </div>
-          <h3 className="display display-tight mt-2 text-2xl text-paper sm:text-3xl">
-            Lazer İnterferometresi Kütleçekimsel Dalga Laboratuvarı
+    <div className="border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık ve cıvıltı sesi */}
+      <div className="flex flex-col gap-5 border-b border-line pb-6 md:flex-row md:items-end md:justify-between">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Kütleçekimsel dalga laboratuvarı
           </h3>
-          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-paper/70">
-            Uzayzaman dokusunda ışık hızında yayılan metrik dalgalanmalarını ($h_+, h_\times$) ve 
+          <p className="mt-1.5 text-sm text-paper/70">
+            Lazer interferometresi · LIGO, Virgo, KAGRA · 2017 Nobel Fizik Ödülü
+          </p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/80">
+            Uzayzaman dokusunda ışık hızında yayılan metrik dalgalanmalarını (h+, h×) ve
             karadelik birleşmelerinin &ldquo;kozmik cıvıltı&rdquo; sesini gerçek ses senteziyle deneyimle.
           </p>
         </div>
@@ -289,21 +284,23 @@ export function GravitationalWaveInterferometer() {
           type="button"
           onClick={playChirp}
           disabled={isPlayingSound}
-          className={`flex items-center justify-center gap-2.5 border px-5 py-3 font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+          className={`inline-flex min-h-10 shrink-0 items-center justify-center gap-2 border px-4 text-sm font-medium transition-colors cursor-pointer ${
             isPlayingSound
-              ? 'border-lime bg-lime text-ink font-black shadow-[0_0_25px_rgba(212,255,61,0.5)] scale-105'
-              : 'border-solar bg-solar text-ink font-bold hover:bg-solar/90 shadow-[0_0_15px_rgba(255,91,34,0.3)]'
+              ? 'border-lime bg-lime text-ink'
+              : 'border-solar bg-solar text-ink hover:bg-solar/90'
           }`}
         >
           {isPlayingSound ? (
             <>
-              <Volume2 size={16} className="animate-bounce" />
-              <span>Cıvıltı Çalıyor ({fStart}Hz → {fMerge}Hz)</span>
+              <Volume2 size={16} className="shrink-0" />
+              <span>
+                Cıvıltı çalıyor (<span className="font-mono">{fStart} Hz → {fMerge} Hz</span>)
+              </span>
             </>
           ) : (
             <>
-              <Play size={16} />
-              <span>Cıvıltıyı Dinle (Chirp Sound)</span>
+              <Play size={16} className="shrink-0" />
+              <span>Cıvıltıyı dinle (chirp)</span>
             </>
           )}
         </button>
@@ -316,126 +313,126 @@ export function GravitationalWaveInterferometer() {
             key={p.id}
             type="button"
             onClick={() => handleSelectPreset(p)}
-            className={`border px-3.5 py-2 font-mono text-xs transition-colors cursor-pointer ${
+            className={`inline-flex min-h-9 items-center gap-2 border px-3 text-sm transition-colors cursor-pointer ${
               selectedPreset === p.id
-                ? 'border-solar bg-solar/15 text-solar font-bold'
-                : 'border-line bg-ink-2 text-paper/70 hover:border-paper/30 hover:text-paper'
+                ? 'border-solar bg-solar/15 text-solar font-medium'
+                : 'border-line bg-ink-2 text-paper/80 hover:border-paper/40 hover:text-paper'
             }`}
           >
-            <span className="mr-2 text-[10px] opacity-70">[{p.type}]</span>
-            {p.name}
+            <span className="text-xs opacity-75">{p.type}</span>
+            <span className="font-mono">{p.name}</span>
           </button>
         ))}
         <button
           type="button"
           onClick={() => setSelectedPreset('custom')}
-          className={`border px-3.5 py-2 font-mono text-xs transition-colors cursor-pointer ${
+          className={`inline-flex min-h-9 items-center border px-3 text-sm transition-colors cursor-pointer ${
             selectedPreset === 'custom'
-              ? 'border-lime bg-lime/15 text-lime font-bold'
-              : 'border-line bg-ink-2 text-paper/70 hover:border-paper/30 hover:text-paper'
+              ? 'border-lime bg-lime/15 text-lime font-medium'
+              : 'border-line bg-ink-2 text-paper/80 hover:border-paper/40 hover:text-paper'
           }`}
         >
-          Özel Birleşme Simülatörü
+          Özel birleşme
         </button>
       </div>
 
       {/* Main Grid: Visualizers + Sliders */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-12">
+      <div className="mt-8 grid gap-8 lg:grid-cols-12">
         {/* Left: Waveform & Metric ring */}
-        <div className="space-y-6 lg:col-span-7">
+        <div className="min-w-0 space-y-8 lg:col-span-7">
           {/* Waveform monitor */}
-          <div className="border border-line bg-ink-2 p-4">
-            <div className="flex items-center justify-between border-b border-line pb-2.5">
-              <div className="flex items-center gap-2">
-                <Activity size={14} className="text-lime" />
-                <span className="font-mono text-xs uppercase tracking-wider text-paper">
-                  Gerinim Dalga Formu: h(t) [Time-Domain Chirp]
-                </span>
-              </div>
-              <span className="font-mono text-[10px] text-solar">ISCO: {fMerge} Hz</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <Activity size={16} className="shrink-0 text-lime" />
+              <span className="text-sm font-medium text-paper">
+                Gerinim dalga formu <span className="font-mono">h(t)</span> · zaman alanı
+              </span>
             </div>
-            <div className="relative mt-3">
-              <canvas
-                ref={canvasRef}
-                width={560}
-                height={160}
-                className="w-full h-36 bg-black border border-line"
-              />
-              <div className="absolute bottom-2 right-2 flex gap-3 font-mono text-[10px] text-muted bg-ink/80 px-2 py-1 border border-line">
-                <span>Başlangıç: {fStart} Hz</span>
-                <span className="text-solar">Birleşme: {fMerge} Hz</span>
-              </div>
+            <canvas
+              ref={canvasRef}
+              width={560}
+              height={160}
+              className="mt-3 block w-full h-36 bg-black border border-line"
+            />
+            <div className="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-sm text-paper/70">
+              <span>
+                Başlangıç: <span className="font-mono text-paper/85">{fStart} Hz</span>
+              </span>
+              <span className="text-solar">
+                Birleşme (ISCO): <span className="font-mono">{fMerge} Hz</span>
+              </span>
             </div>
           </div>
 
           {/* Spacetime Distortion Metric Quadrupole Ring */}
-          <div className="border border-line bg-ink-2 p-4">
-            <div className="flex items-center justify-between border-b border-line pb-2.5">
-              <div className="flex items-center gap-2">
-                <Disc3 size={14} className="text-solar" />
-                <span className="font-mono text-xs uppercase tracking-wider text-paper">
-                  Uzayzaman Metrik Salınımı: Kuadrupol Test Halkası
+          <div className="border-t border-line pt-6">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <Disc3 size={16} className="shrink-0 text-solar" />
+                <span className="text-sm font-medium text-paper">
+                  Uzayzaman salınımı: kuadrupol test halkası
                 </span>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setActivePolarization('plus')}
-                  className={`px-2 py-0.5 font-mono text-[10px] border cursor-pointer ${
+                  className={`inline-flex min-h-9 items-center border px-3 text-sm transition-colors cursor-pointer ${
                     activePolarization === 'plus'
-                      ? 'border-lime bg-lime/20 text-lime font-bold'
-                      : 'border-line text-muted hover:text-paper'
+                      ? 'border-lime bg-lime/15 text-lime font-medium'
+                      : 'border-line text-paper/75 hover:text-paper'
                   }`}
                 >
-                  h+ (Plus)
+                  h+ (plus)
                 </button>
                 <button
                   type="button"
                   onClick={() => setActivePolarization('cross')}
-                  className={`px-2 py-0.5 font-mono text-[10px] border cursor-pointer ${
+                  className={`inline-flex min-h-9 items-center border px-3 text-sm transition-colors cursor-pointer ${
                     activePolarization === 'cross'
-                      ? 'border-solar bg-solar/20 text-solar font-bold'
-                      : 'border-line text-muted hover:text-paper'
+                      ? 'border-solar bg-solar/15 text-solar font-medium'
+                      : 'border-line text-paper/75 hover:text-paper'
                   }`}
                 >
-                  h× (Cross)
+                  h× (cross)
                 </button>
               </div>
             </div>
-            <div className="mt-3 flex flex-col sm:flex-row items-center gap-4">
+            <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
               <canvas
                 ref={ringCanvasRef}
                 width={180}
                 height={180}
                 className="h-36 w-36 border border-line bg-black shrink-0"
               />
-              <div className="text-xs leading-relaxed text-paper/70">
+              <div className="min-w-0 text-sm leading-relaxed text-paper/80">
                 <p>
                   Kütleçekimsel dalgalar enine (transverse) ve kuadrupoler polarizasyona sahiptir. 
                   Dalga ekrandan geçerken serbest parçacıklardan oluşan dairesel test halkasını 
-                  <strong> {activePolarization === 'plus' ? 'dik eksenlerde (+)' : '45° çapraz eksenlerde (×)'}</strong> uzatıp daraltır.
+                  <strong className="font-semibold text-paper"> {activePolarization === 'plus' ? 'dik eksenlerde (+)' : '45° çapraz eksenlerde (×)'}</strong> uzatıp daraltır.
                 </p>
-                <div className="mt-3 font-mono text-[10px] text-lime">
-                  ΔL / L ≈ {peakStrainFormatted} · Uzunluk deformasyonu proton çapının 1/10.000’i kadar!
-                </div>
+                <p className="mt-3">
+                  <span className="font-mono text-lime">ΔL / L ≈ {peakStrainFormatted}</span>
+                  {' · '}Uzunluk deformasyonu proton çapının 1/10.000’i kadar!
+                </p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right: Sliders & Live Telemetry */}
-        <div className="flex flex-col justify-between border border-line bg-ink-2 p-5 lg:col-span-5">
+        <div className="flex min-w-0 flex-col justify-between border-t border-line pt-6 lg:col-span-5 lg:border-t-0 lg:border-l lg:pl-8 lg:pt-0">
           <div>
-            <div className="border-b border-line pb-3">
-              <span className="label text-solar">İkili Kütle & Mesafe Parametreleri</span>
-              <p className="mt-1 text-xs text-muted">Kütleleri değiştirerek dalga frekansı ve açığa çıkan enerjiyi hesapla.</p>
+            <div>
+              <span className="text-base font-semibold text-paper">İkili kütle ve mesafe</span>
+              <p className="mt-1 text-sm text-paper/80">Kütleleri değiştirerek dalga frekansı ve açığa çıkan enerjiyi hesapla.</p>
             </div>
 
             {/* Mass 1 Slider */}
-            <div className="mt-4 space-y-1.5">
-              <div className="flex justify-between font-mono text-xs">
-                <span className="text-paper/80">Birinci Cisim Kütlesi (M₁):</span>
-                <span className="text-solar font-bold">{m1} M☉</span>
+            <div className="mt-5 space-y-1.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-sm">
+                <span className="text-paper/80">Birinci cisim kütlesi (M₁)</span>
+                <span className="font-mono font-semibold text-solar">{m1} M☉</span>
               </div>
               <input aria-label="Birinci cisim kütlesi"
                 type="range"
@@ -452,10 +449,10 @@ export function GravitationalWaveInterferometer() {
             </div>
 
             {/* Mass 2 Slider */}
-            <div className="mt-4 space-y-1.5">
-              <div className="flex justify-between font-mono text-xs">
-                <span className="text-paper/80">İkinci Cisim Kütlesi (M₂):</span>
-                <span className="text-solar font-bold">{m2} M☉</span>
+            <div className="mt-5 space-y-1.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-sm">
+                <span className="text-paper/80">İkinci cisim kütlesi (M₂)</span>
+                <span className="font-mono font-semibold text-solar">{m2} M☉</span>
               </div>
               <input aria-label="İkinci cisim kütlesi"
                 type="range"
@@ -472,10 +469,13 @@ export function GravitationalWaveInterferometer() {
             </div>
 
             {/* Distance Slider */}
-            <div className="mt-4 space-y-1.5">
-              <div className="flex justify-between font-mono text-xs">
-                <span className="text-paper/80">Aydınlatma Mesafesi:</span>
-                <span className="text-lime font-bold">{distance} Mpc ({Math.round(distance * 3.26)} Milyon Işık Yılı)</span>
+            <div className="mt-5 space-y-1.5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-sm">
+                <span className="text-paper/80">Aydınlatma mesafesi</span>
+                <span>
+                  <span className="font-mono font-semibold text-lime">{distance} Mpc</span>{' '}
+                  <span className="text-paper/70">(<span className="font-mono">{Math.round(distance * 3.26)}</span> Milyon Işık Yılı)</span>
+                </span>
               </div>
               <input aria-label="Aydınlatma mesafesi"
                 type="range"
@@ -493,24 +493,24 @@ export function GravitationalWaveInterferometer() {
           </div>
 
           {/* Telemetry output readout */}
-          <div className="mt-6 border-t border-line pt-4">
-            <span className="label text-muted">Astrofiziksel Telemetri Çıktısı</span>
-            <dl className="mt-3 grid grid-cols-2 gap-3 font-mono text-xs">
-              <div className="border border-line bg-ink p-2.5">
-                <dt className="text-[10px] text-muted">Toplam Kütle (M)</dt>
-                <dd className="mt-1 text-paper font-bold">{totalMass} M☉</dd>
+          <div className="mt-8 border-t border-line pt-5">
+            <span className="text-sm font-medium text-paper/80">Hesaplanan değerler</span>
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-4">
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Toplam kütle (M)</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold text-paper">{totalMass} M☉</dd>
               </div>
-              <div className="border border-line bg-ink p-2.5">
-                <dt className="text-[10px] text-muted">Cıvıltı Kütlesi (ℳ)</dt>
-                <dd className="mt-1 text-lime font-bold">{chirpMass.toFixed(2)} M☉</dd>
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Cıvıltı kütlesi (ℳ)</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold text-lime">{chirpMass.toFixed(2)} M☉</dd>
               </div>
-              <div className="border border-line bg-ink p-2.5">
-                <dt className="text-[10px] text-muted">Birleşme Frekansı (f)</dt>
-                <dd className="mt-1 text-solar font-bold">{fMerge} Hz</dd>
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Birleşme frekansı (f)</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold text-solar">{fMerge} Hz</dd>
               </div>
-              <div className="border border-line bg-ink p-2.5">
-                <dt className="text-[10px] text-muted">Işınan Enerji (E=mc²)</dt>
-                <dd className="mt-1 text-violet font-bold">~{radiatedEnergy} M☉ c²</dd>
+              <div className="min-w-0">
+                <dt className="text-sm text-paper/70">Işınan enerji (E=mc²)</dt>
+                <dd className="mt-0.5 font-mono text-base font-semibold text-violet">~{radiatedEnergy} M☉ c²</dd>
               </div>
             </dl>
           </div>

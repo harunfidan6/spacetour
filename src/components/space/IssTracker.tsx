@@ -2,8 +2,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Satellite, Compass, Activity, Eye, Sparkles, Ruler, ArrowUpRight } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { ArrowUpRight } from 'lucide-react';
 import { useInView } from '@/lib/useInView';
 import { usePolledJson } from '@/lib/usePolledJson';
 import { getSunEquatorial } from '@/lib/astrophysics/skyDomeEphemeris';
@@ -79,76 +78,72 @@ export function IssTracker() {
   const status = error && !data ? 'BAĞLANTI YOK' : data ? 'CANLI KONUM' : 'BAĞLANIYOR';
 
   return (
-    <div ref={root} className="relative ticks border border-line bg-ink p-6 sm:p-8 space-y-5">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line pb-4">
-        <div className="flex items-center gap-2">
-          <Satellite className="h-4 w-4 text-solar animate-pulse" />
-          <h3 className="display display-tight text-xl text-paper sm:text-2xl">
-            ISS · Uluslararası Uzay İstasyonu Canlı Yörüngesi
-          </h3>
-        </div>
+    <div ref={root} className="relative ticks border border-line bg-ink p-4 sm:p-8 space-y-5">
+      {/* Başlık ve bağlantı durumu */}
+      <div className="flex flex-col items-start justify-between gap-3 border-b border-line pb-5 sm:flex-row sm:items-center">
+        <h3 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
+          Uluslararası Uzay İstasyonu (ISS) canlı yörüngesi
+        </h3>
         <span
-          className={`flex items-center gap-1.5 border px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider ${
-            data && !error ? 'border-lime/30 bg-lime/10 text-lime' : 'border-line text-muted'
+          className={`inline-flex shrink-0 items-center gap-2 text-xs font-medium ${
+            data && !error ? 'text-lime' : 'text-paper/70'
           }`}
         >
-          <span className={`h-1.5 w-1.5 ${data && !error ? 'bg-lime animate-ping' : 'bg-muted'}`} />
+          <span
+            className={`h-2 w-2 rounded-full ${data && !error ? 'bg-lime motion-safe:animate-pulse' : 'bg-paper/40'}`}
+          />
           {status}
         </span>
       </div>
 
-      {/* Real-time Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono" aria-live="polite">
-        <div className="bg-ink-2 p-3 border border-line">
-          <span className="text-[10px] text-muted block uppercase tracking-wider">ENLEM</span>
-          <span className="text-base font-bold text-paper mt-0.5 block">
+      {/* Anlık telemetri */}
+      <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4" aria-live="polite">
+        <div className="bg-ink p-3 sm:p-4">
+          <span className="block text-sm text-paper/70">Enlem</span>
+          <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-paper sm:text-lg">
             {data ? `${Math.abs(data.latitude).toFixed(2)}° ${data.latitude >= 0 ? 'K' : 'G'}` : '—'}
           </span>
         </div>
 
-        <div className="bg-ink-2 p-3 border border-line">
-          <span className="text-[10px] text-muted block uppercase tracking-wider">BOYLAM</span>
-          <span className="text-base font-bold text-paper mt-0.5 block">
+        <div className="bg-ink p-3 sm:p-4">
+          <span className="block text-sm text-paper/70">Boylam</span>
+          <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-paper sm:text-lg">
             {data ? `${Math.abs(data.longitude).toFixed(2)}° ${data.longitude >= 0 ? 'D' : 'B'}` : '—'}
           </span>
         </div>
 
-        <div className="bg-ink-2 p-3 border border-line">
-          <span className="text-[10px] text-muted block uppercase tracking-wider">İRTİFA</span>
-          <span className="text-base font-bold text-solar mt-0.5 block">{data ? `${data.altitude.toFixed(1)} km` : '—'}</span>
+        <div className="bg-ink p-3 sm:p-4">
+          <span className="block text-sm text-paper/70">İrtifa</span>
+          <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-solar sm:text-lg">
+            {data ? `${data.altitude.toFixed(1)} km` : '—'}
+          </span>
         </div>
 
-        <div className="bg-ink-2 p-3 border border-line">
-          <span className="text-[10px] text-muted block uppercase tracking-wider">HIZ</span>
-          <span className="text-base font-bold text-paper mt-0.5 block">
+        <div className="bg-ink p-3 sm:p-4">
+          <span className="block text-sm text-paper/70">Hız</span>
+          <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-paper sm:text-lg">
             {data ? `${Math.round(data.velocity).toLocaleString('tr-TR')} km/sa` : '—'}
           </span>
         </div>
       </div>
 
-      {/* Live view from Turkish cities */}
-      <div className="border border-line bg-ink-2 p-4 space-y-3">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-line pb-2.5">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-paper">
-            <Eye size={14} className="text-solar" />
-            <span className="uppercase tracking-wider">Şehrinden Şu Anki Görünüm</span>
-          </div>
+      {/* Türkiye'deki şehirlerden anlık görünüm */}
+      <div className="space-y-3">
+        <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          <span className="text-sm font-medium text-paper/80">Şehrinden şu anki görünüm</span>
 
-          {/* City selector pills */}
-          <div className="flex flex-wrap items-center gap-1 text-[11px] font-mono" role="group" aria-label="Şehir seç">
+          {/* Şehir seçimi */}
+          <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Şehir seç">
             {Object.keys(CITIES).map((cityName) => (
               <button
                 key={cityName}
                 type="button"
                 aria-pressed={selectedCity === cityName}
                 onClick={() => setSelectedCity(cityName)}
-                className={`px-2 py-0.5 border text-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                className={`min-h-9 border px-3 text-sm transition-colors cursor-pointer ${
                   selectedCity === cityName
-                    ? 'border-solar bg-solar text-ink font-bold'
-                    : 'border-transparent text-muted hover:text-paper'
+                    ? 'border-solar bg-solar text-ink font-semibold'
+                    : 'border-line text-paper/80 hover:border-paper/40 hover:text-paper'
                 }`}
               >
                 {cityName}
@@ -157,56 +152,55 @@ export function IssTracker() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">YER İZİNE UZAKLIK</span>
-            <span className="text-sm font-bold text-paper flex items-center gap-1.5 mt-1">
-              <Ruler size={12} className="text-solar" />
+        <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-3">
+          <div className="bg-ink p-4">
+            <span className="block text-sm text-paper/70">Yer izine uzaklık</span>
+            <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-paper sm:text-lg">
               {view ? `${Math.round(view.look.distanceKm).toLocaleString('tr-TR')} km` : '—'}
             </span>
-            <span className="text-[10px] text-solar block mt-1">
-              Yön: {view ? compassPoint(view.look.bearing) : '—'}
+            <span className="mt-1 block text-sm text-paper/70">
+              Yön: <span className="text-paper">{view ? compassPoint(view.look.bearing) : '—'}</span>
             </span>
           </div>
 
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">UFUKTAN YÜKSEKLİK</span>
-            <span className="text-sm font-bold text-paper flex items-center gap-1.5 mt-1">
-              <Sparkles size={12} className="text-solar" />
+          <div className="bg-ink p-4">
+            <span className="block text-sm text-paper/70">Ufuktan yükseklik</span>
+            <span className="mt-1 block font-mono text-base font-semibold tabular-nums text-paper sm:text-lg">
               {view ? `${view.look.elevation.toFixed(1)}°` : '—'}
             </span>
-            <span className="text-[10px] text-muted block mt-1">10° üstü çıplak gözle takip için yeterli</span>
+            <span className="mt-1 block text-sm leading-snug text-paper/80">10° üstü çıplak gözle takip için yeterli</span>
           </div>
 
-          <div className="p-3 bg-ink border border-line">
-            <span className="text-[10px] text-muted block uppercase tracking-wider">DURUM</span>
-            <span className={`text-xs font-bold flex items-center gap-1.5 mt-1 ${view?.nakedEye ? 'text-lime' : 'text-paper'}`}>
-              <Compass size={12} className="text-lime shrink-0" />
+          <div className="bg-ink p-4">
+            <span className="block text-sm text-paper/70">Durum</span>
+            <span
+              className={`mt-1 block text-base font-medium leading-snug ${view?.nakedEye ? 'text-lime' : 'text-paper'}`}
+            >
               {view?.verdict ?? '—'}
             </span>
             <Link
               href={`/canli/iss-gecisleri/${foldTr(selectedCity)}`}
-              className="text-[10px] text-solar mt-1 inline-flex items-center gap-1 hover:underline"
+              className="mt-1 inline-flex min-h-9 items-center gap-1 text-sm text-solar hover:underline"
             >
-              {selectedCity} geçiş saatleri <ArrowUpRight size={10} />
+              {selectedCity} geçiş saatleri <ArrowUpRight size={14} />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted pt-1 font-mono">
-        <div className="flex items-center gap-2">
-          <Activity size={14} className="text-solar" />
-          <span>
-            Optik Durum:{' '}
-            <strong className="text-paper">
-              {!data ? '—' : data.visibility === 'eclipsed' ? 'Dünya Gölgesinde' : 'Güneş Işığında'}
-            </strong>
-          </span>
+      {/* Alt bilgi */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm text-paper/80">
+        <div>
+          Optik durum:{' '}
+          <strong className="font-medium text-paper">
+            {!data ? '—' : data.visibility === 'eclipsed' ? 'Dünya gölgesinde' : 'Güneş ışığında'}
+          </strong>
         </div>
         <div>
-          Dünya çevresinde bir tur: <strong className="text-paper">~92.7 dakika (Günde 16 gün doğumu)</strong>
+          Dünya çevresinde bir tur:{' '}
+          <strong className="font-medium text-paper">
+            <span className="font-mono tabular-nums">~92.7</span> dakika (günde 16 gün doğumu)
+          </strong>
         </div>
       </div>
     </div>

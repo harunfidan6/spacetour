@@ -2,8 +2,18 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useInView } from '@/lib/useInView';
-import { Orbit, Play, Pause } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+import { Play, Pause } from 'lucide-react';
+
+// Ortak görünüm sınıfları (sakin okuma düzeni)
+const SECTION_LABEL = 'text-sm font-medium text-paper/80';
+const PANEL_HEAD = 'flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-3 text-sm';
+const PANEL_FOOT =
+  'mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line pt-3 text-sm';
+const SLIDER_HEAD = 'flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1';
+const SLIDER_LABEL = 'text-sm text-paper/80';
+const SLIDER_VALUE = 'font-mono text-sm font-semibold tabular-nums text-paper';
+const SLIDER_HINT = 'block text-xs text-paper/70';
+const STAT_ROW = 'flex items-baseline justify-between gap-3 border-b border-line/60 pb-2';
 
 interface ExoplanetPreset {
   id: string;
@@ -348,33 +358,23 @@ export function ExoplanetTransitLab() {
   }, [transitPhase, maxTransitDepthPercent]);
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-rose-signal">
-            <Orbit className="h-4 w-4" /> Ötegezegen Keşif & Fotometri Laboratuvarı
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Transit ışık eğrisi <span className="serif-i text-rose-signal">& ötegezegen avı</span>
-          </h3>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-paper/70">
-            Bir ötegezegen ana yıldızının önünden geçerken yıldızın görünen parlaklığında periyodik mikroskobik düşüşler yaratır. Bu transit derinliği doğrudan gezegenin yarıçapını ve atmosferik bileşimini açığa çıkarır.
-          </p>
-        </div>
-
-        {/* Live Status Badge */}
-        <div className="flex items-center gap-3 border border-line bg-ink-2 px-4 py-2 text-xs font-mono text-paper">
-          <span className="live-dot" />
-          <span>ΔF / F = (Rp / R*)² Simülatörü</span>
-        </div>
+    <div className="border border-line bg-ink p-4 sm:p-8 space-y-8">
+      {/* Başlık */}
+      <div className="border-b border-line pb-6">
+        <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+          Transit ışık eğrisi ve ötegezegen avı
+        </h3>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-paper/85">
+          Bir ötegezegen ana yıldızının önünden geçerken yıldızın görünen parlaklığında periyodik mikroskobik düşüşler yaratır. Bu transit derinliği doğrudan gezegenin yarıçapını ve atmosferik bileşimini açığa çıkarır.
+        </p>
+        <p className="mt-2 text-sm text-paper/70">
+          <span className="font-mono text-paper/85">ΔF / F = (Rp / R*)²</span> simülatörü
+        </p>
       </div>
 
-      {/* Exoplanet Presets Bar */}
+      {/* Hazır ötegezegenler */}
       <div>
-        <span className="label text-muted block mb-3">Tarihi Ötegezegen Keşif Referansları</span>
+        <div className={`${SECTION_LABEL} mb-3`}>Tarihi ötegezegen keşifleri</div>
         <div className="grid grid-cols-2 max-sm:fill-row-2 sm:grid-cols-3 sm:max-lg:fill-row-3 lg:grid-cols-5 lg:fill-row-5 gap-px border border-line bg-line">
           {EXOPLANET_PRESETS.map((preset) => {
             const isSelected = preset.id === selectedPreset.id;
@@ -382,24 +382,24 @@ export function ExoplanetTransitLab() {
               <button
                 key={preset.id}
                 onClick={() => selectPreset(preset)}
-                className={`p-3 text-left transition-colors cursor-pointer ${
+                className={`flex min-w-0 flex-col p-3 text-left transition-colors cursor-pointer sm:p-4 ${
                   isSelected
                     ? 'bg-rose-signal text-ink'
                     : 'bg-ink text-paper hover:bg-ink-3'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`label text-[10px] ${isSelected ? 'text-ink/80' : 'text-rose-signal'}`}>
+                <span className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 font-mono text-xs tabular-nums">
+                  <span className={isSelected ? 'text-ink/85' : 'text-rose-signal'}>
                     {preset.distanceLy} ly
                   </span>
-                  <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
+                  <span className={isSelected ? 'text-ink/85' : 'text-paper/70'}>
                     {preset.orbitalPeriodDays} gün
                   </span>
-                </div>
-                <div className="font-mono text-xs font-bold truncate">{preset.name}</div>
-                <div className={`text-[10px] truncate ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
+                </span>
+                <span className="text-sm font-semibold leading-snug">{preset.name}</span>
+                <span className={`text-xs ${isSelected ? 'text-ink/85' : 'text-paper/70'}`}>
                   {preset.starType}
-                </div>
+                </span>
               </button>
             );
           })}
@@ -409,13 +409,13 @@ export function ExoplanetTransitLab() {
       {/* Main Dual Simulation Arena */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
         {/* Left: Star & Planet Disc Transit Canvas (6 cols) */}
-        <div className="lg:col-span-6 bg-black p-6 sm:p-8 flex flex-col justify-between">
-          <div className="flex items-center justify-between font-mono text-xs text-muted mb-3">
-            <span>Yıldız Fotosferi & Transit Geometrisi</span>
-            <span className="text-lime-signal">Canlı Optik Projeksiyon</span>
+        <div className="lg:col-span-6 bg-black p-4 sm:p-6 flex flex-col justify-between">
+          <div className={PANEL_HEAD}>
+            <span className="text-paper/80">Yıldız fotosferi ve transit geometrisi</span>
+            <span className="text-xs text-lime-signal">Canlı görünüm</span>
           </div>
 
-          <div className="relative aspect-[4/3] w-full border border-line/40 overflow-hidden bg-ink/40">
+          <div className="relative aspect-[4/3] w-full overflow-hidden">
             <canvas
               ref={transitCanvasRef}
               width={560}
@@ -424,31 +424,33 @@ export function ExoplanetTransitLab() {
             />
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-line pt-3 font-mono text-xs">
+          <div className={PANEL_FOOT}>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center gap-2 px-3 py-1.5 border border-line bg-ink-2 hover:bg-ink-3 text-paper transition-colors cursor-pointer"
+              className="inline-flex min-h-9 items-center gap-2 border border-line bg-ink-2 px-3 text-sm text-paper transition-colors hover:bg-ink-3 cursor-pointer"
             >
               {isPlaying ? <Pause className="h-3.5 w-3.5 text-rose-signal" /> : <Play className="h-3.5 w-3.5 text-lime-signal" />}
               <span>{isPlaying ? 'Durdur' : 'Oynat'}</span>
             </button>
 
-            <span className="text-muted">
-              Yarıçap Oranı (Rp/R*): <strong className="text-paper">{(radiusRatio * 100).toFixed(2)}%</strong>
+            <span className="text-paper/70">
+              Yarıçap oranı (Rp/R*):{' '}
+              <strong className="font-mono font-semibold tabular-nums text-paper">{(radiusRatio * 100).toFixed(2)}%</strong>
             </span>
           </div>
         </div>
 
         {/* Right: Normalized Flux Light Curve Canvas (6 cols) */}
-        <div className="lg:col-span-6 bg-black p-6 sm:p-8 flex flex-col justify-between">
-          <div className="flex items-center justify-between font-mono text-xs text-muted mb-3">
-            <span>Kepler / TESS Fotometrik Işık Eğrisi</span>
+        <div className="lg:col-span-6 bg-black p-4 sm:p-6 flex flex-col justify-between">
+          <div className={PANEL_HEAD}>
+            <span className="text-paper/80">Kepler / TESS fotometrik ışık eğrisi</span>
             <span className="text-rose-signal">
-              Transit Düşüşü: %{maxTransitDepthPercent.toFixed(4)}
+              Transit düşüşü:{' '}
+              <span className="font-mono tabular-nums">%{maxTransitDepthPercent.toFixed(4)}</span>
             </span>
           </div>
 
-          <div className="relative aspect-[4/3] w-full border border-line/40 overflow-hidden bg-ink/40">
+          <div className="relative aspect-[4/3] w-full overflow-hidden">
             <canvas
               ref={lightCurveCanvasRef}
               width={560}
@@ -457,9 +459,12 @@ export function ExoplanetTransitLab() {
             />
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-line pt-3 font-mono text-xs text-muted">
-            <span>Minimum Akı: <strong>{(1 - maxTransitDepthPercent / 100).toFixed(4)} F₀</strong></span>
-            <span className="text-rose-signal">Kepler 3. Yasası ile Yörünge Boyutu</span>
+          <div className={`${PANEL_FOOT} text-paper/70`}>
+            <span>
+              Minimum akı:{' '}
+              <strong className="font-mono font-semibold tabular-nums text-paper">{(1 - maxTransitDepthPercent / 100).toFixed(4)} F₀</strong>
+            </span>
+            <span>Kepler 3. yasası ile yörünge boyutu</span>
           </div>
         </div>
       </div>
@@ -467,10 +472,10 @@ export function ExoplanetTransitLab() {
       {/* Physics Sliders & Engineering Parameters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-line bg-line">
         {/* Planet Radius Slider */}
-        <div className="bg-ink p-5 space-y-2">
-          <div className="flex items-center justify-between font-mono text-xs">
-            <span className="label text-muted">Ötegezegen Yarıçapı (Rp)</span>
-            <span className="text-paper font-bold">{planetRadiusEarth.toFixed(2)} R⊕ (Dünya)</span>
+        <div className="bg-ink p-4 sm:p-5 space-y-2">
+          <div className={SLIDER_HEAD}>
+            <span className={SLIDER_LABEL}>Ötegezegen yarıçapı (Rp)</span>
+            <span className={SLIDER_VALUE}>{planetRadiusEarth.toFixed(2)} R⊕ (Dünya)</span>
           </div>
           <input aria-label="Ötegezegen yarıçapı"
             type="range"
@@ -481,14 +486,14 @@ export function ExoplanetTransitLab() {
             onChange={(e) => setPlanetRadiusEarth(parseFloat(e.target.value))}
             className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-rose-signal"
           />
-          <span className="text-[10px] font-mono text-muted block">0.5x Dünya ile 25x Jüpiter Boyutu</span>
+          <span className={SLIDER_HINT}>0.5x Dünya ile 25x Jüpiter boyutu</span>
         </div>
 
         {/* Star Radius Slider */}
-        <div className="bg-ink p-5 space-y-2">
-          <div className="flex items-center justify-between font-mono text-xs">
-            <span className="label text-muted">Ana Yıldız Yarıçapı (R*)</span>
-            <span className="text-paper font-bold">{starRadiusSolar.toFixed(2)} R☉ (Güneş)</span>
+        <div className="bg-ink p-4 sm:p-5 space-y-2">
+          <div className={SLIDER_HEAD}>
+            <span className={SLIDER_LABEL}>Ana yıldız yarıçapı (R*)</span>
+            <span className={SLIDER_VALUE}>{starRadiusSolar.toFixed(2)} R☉ (Güneş)</span>
           </div>
           <input aria-label="Ana yıldız yarıçapı"
             type="range"
@@ -499,14 +504,14 @@ export function ExoplanetTransitLab() {
             onChange={(e) => setStarRadiusSolar(parseFloat(e.target.value))}
             className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-rose-signal"
           />
-          <span className="text-[10px] font-mono text-muted block">0.1x Kırmızı Cüce ile 3.0x Mavi Dev</span>
+          <span className={SLIDER_HINT}>0.1x kırmızı cüce ile 3.0x mavi dev</span>
         </div>
 
         {/* Impact Parameter Slider */}
-        <div className="bg-ink p-5 space-y-2">
-          <div className="flex items-center justify-between font-mono text-xs">
-            <span className="label text-muted">Transit Çarpma Parametresi (b)</span>
-            <span className="text-paper font-bold">{impactParameter.toFixed(2)}</span>
+        <div className="bg-ink p-4 sm:p-5 space-y-2">
+          <div className={SLIDER_HEAD}>
+            <span className={SLIDER_LABEL}>Transit çarpma parametresi (b)</span>
+            <span className={SLIDER_VALUE}>{impactParameter.toFixed(2)}</span>
           </div>
           <input aria-label="Transit çarpma parametresi"
             type="range"
@@ -517,52 +522,51 @@ export function ExoplanetTransitLab() {
             onChange={(e) => setImpactParameter(parseFloat(e.target.value))}
             className="w-full h-2 bg-ink-3 appearance-none cursor-pointer accent-rose-signal"
           />
-          <span className="text-[10px] font-mono text-muted block">0 = Tam Merkez, 0.9 = Kenar Sıyırma</span>
+          <span className={SLIDER_HINT}>0 = tam merkez, 0.9 = kenar sıyırma</span>
         </div>
       </div>
 
       {/* Target Technical Dossier */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
-        <div className="lg:col-span-8 bg-ink p-6 sm:p-8 space-y-4">
-          <div className="flex items-center justify-between border-b border-line pb-3">
-            <span className="label text-rose-signal">{selectedPreset.discoveryMethod}</span>
-            <span className="label text-muted">{selectedPreset.hostStar}</span>
-          </div>
-
-          <h4 className="display display-tight text-3xl text-paper">
+        <div className="lg:col-span-8 bg-ink p-4 sm:p-8 space-y-3">
+          <h4 className="font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
             {selectedPreset.name}
           </h4>
-          <div className="serif-i text-base text-rose-signal">
+          <div className="text-base text-rose-signal">
             {selectedPreset.habitabilityStatus}
           </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-paper/70">
+            <span>{selectedPreset.hostStar}</span>
+            <span>{selectedPreset.discoveryMethod}</span>
+          </div>
 
-          <p className="text-xs sm:text-sm leading-relaxed text-paper/75 pt-2">
+          <p className="text-base leading-relaxed text-paper/85 pt-2">
             {selectedPreset.description}
           </p>
         </div>
 
-        <div className="lg:col-span-4 bg-ink-2 p-6 sm:p-8 flex flex-col justify-between gap-4">
+        <div className="lg:col-span-4 bg-ink-2 p-4 sm:p-8 flex flex-col justify-between gap-5">
           <div>
-            <span className="label text-muted block mb-3">Astrofiziksel Hesaplama</span>
-            <div className="space-y-3 font-mono text-xs">
-              <div className="flex justify-between border-b border-line/60 pb-2">
-                <span className="text-muted">Işık Engelleme Oranı:</span>
-                <span className="text-rose-signal font-bold">%{maxTransitDepthPercent.toFixed(4)}</span>
+            <div className={`${SECTION_LABEL} mb-3`}>Astrofiziksel hesaplama</div>
+            <div className="space-y-3 text-sm">
+              <div className={STAT_ROW}>
+                <span className="text-paper/70">Işık engelleme oranı</span>
+                <span className="font-mono font-semibold tabular-nums text-rose-signal">%{maxTransitDepthPercent.toFixed(4)}</span>
               </div>
-              <div className="flex justify-between border-b border-line/60 pb-2">
-                <span className="text-muted">Yörünge Periyodu:</span>
-                <span className="text-paper">{selectedPreset.orbitalPeriodDays} Dünya Günü</span>
+              <div className={STAT_ROW}>
+                <span className="text-paper/70">Yörünge periyodu</span>
+                <span className="text-right font-mono tabular-nums text-paper">{selectedPreset.orbitalPeriodDays} Dünya Günü</span>
               </div>
-              <div className="flex justify-between border-b border-line/60 pb-2">
-                <span className="text-muted">Dünya’ya Mesafe:</span>
-                <span className="text-paper">{selectedPreset.distanceLy} Işık Yılı</span>
+              <div className={STAT_ROW}>
+                <span className="text-paper/70">Dünya’ya mesafe</span>
+                <span className="text-right font-mono tabular-nums text-paper">{selectedPreset.distanceLy} Işık Yılı</span>
               </div>
             </div>
           </div>
 
-          <div className="border-l-2 border-rose-signal pl-3 py-1 font-mono text-[11px] text-muted">
-            Transmisyon Spektroskopisi: Gezegen yıldızın önünden geçerken, yıldız ışığının bir kısmı gezegenin atmosfer gazlarından süzülür. Bu sayede Webb su, metan ve karbondioksit tespit edebilir.
-          </div>
+          <p className="text-sm leading-relaxed text-paper/80">
+            <span className="font-medium text-paper">Transmisyon spektroskopisi:</span> Gezegen yıldızın önünden geçerken, yıldız ışığının bir kısmı gezegenin atmosfer gazlarından süzülür. Bu sayede Webb su, metan ve karbondioksit tespit edebilir.
+          </p>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Ticks } from '@/components/motion/primitives';
 import { useRevealOnChange } from '@/lib/useRevealOnChange';
 import { ASTRO_IMAGES, type AstroImage } from '@/data/astroImages';
 
@@ -113,165 +112,166 @@ export function MegaObservatoriesRegistry() {
   const obs = selectedObs;
 
   return (
-    <div className="ticks relative border border-line bg-ink p-6 sm:p-10 space-y-8">
-      <Ticks />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-line">
-        <div>
-          <div className="label flex items-center gap-2 text-rose-signal">
-            <span className="live-dot" /> Küresel & Yörünge Gözlemevleri
-          </div>
-          <h3 className="display display-tight mt-3 text-[clamp(1.8rem,3.4vw,3.2rem)] text-paper">
-            Mega teleskoplar <span className="serif-i text-rose-signal">& gözlemevi sicili</span>
+    <div className="space-y-8 border border-line bg-ink p-4 sm:p-8">
+      {/* Başlık */}
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-6">
+        <div className="min-w-0 max-w-2xl">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Mega teleskoplar ve gözlemevi sicili
           </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/70">
+          <p className="mt-2 text-sm leading-relaxed text-paper/80 sm:text-base">
             Dünyanın en yüksek zirvelerinden Lagrange L2 uzay noktasına kadar insanlığın en büyük optik, kızılötesi ve radyo pencereleri.
           </p>
         </div>
-
-        <div className="label border border-line bg-ink-2 px-3 py-1.5 text-rose-signal">
-          6 Dev Gözlemevi · Teknik Karşılaştırma
-        </div>
+        <p className="shrink-0 text-sm text-paper/70">
+          <span className="tabular-nums text-paper">6</span> gözlemevi · teknik karşılaştırma
+        </p>
       </div>
 
-      {/* Observatories Selector Grid */}
+      {/* Gözlemevi seçimi */}
       <div ref={railRef} className="choice-rail grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px border border-line bg-line">
         {OBSERVATORIES.map((obs) => {
           const isSelected = obs.id === selectedObs.id;
           return (
             <button
               key={obs.id}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => setSelectedObs(obs)}
-              className={`p-4 text-left flex flex-col justify-between transition-colors cursor-pointer ${
+              className={`flex min-w-0 flex-col justify-between p-4 text-left transition-colors cursor-pointer ${
                 isSelected
                   ? 'bg-rose-signal text-ink'
                   : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className={`label ${isSelected ? 'text-ink/80 font-bold' : 'text-rose-signal'}`}>
+              <span className="mb-3 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                <span className={`text-sm font-semibold ${isSelected ? 'text-ink' : 'text-rose-signal'}`}>
                   {obs.id.toUpperCase()}
                 </span>
-                <span className={`label text-[10px] ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
+                <span
+                  className={`text-xs tabular-nums ${obs.apertureDiameterM > 100 ? '' : 'font-mono'} ${
+                    isSelected ? 'text-ink/80' : 'text-paper/70'
+                  }`}
+                >
                   {obs.apertureDiameterM > 100 ? 'Dizi' : `${obs.apertureDiameterM}m`}
                 </span>
-              </div>
-              <div>
-                <div className="display display-tight text-base font-bold truncate">
+              </span>
+              <span className="block">
+                <span className="block text-base font-semibold leading-snug">
                   {obs.name.split(' (')[0]}
-                </div>
-                <div className={`label mt-1 text-[10px] truncate ${isSelected ? 'text-ink/80' : 'text-muted'}`}>
+                </span>
+                <span className={`mt-1 block text-xs leading-snug ${isSelected ? 'text-ink/80' : 'text-paper/70'}`}>
                   {obs.location.split(',')[0]}
-                </div>
-              </div>
+                </span>
+              </span>
             </button>
           );
         })}
       </div>
 
-      {/* Observatory Technical Dossier */}
+      {/* Seçili gözlemevinin dosyası */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-px border border-line bg-line">
-        {/* Left: Imagery & Core Info (5 cols) */}
-        <div className="lg:col-span-5 bg-ink p-6 sm:p-8 flex flex-col justify-between gap-6">
+        {/* Sol: görsel ve tanıtım */}
+        <div className="flex min-w-0 flex-col justify-between gap-6 bg-ink p-5 sm:p-8 lg:col-span-5">
           <div>
-            <div className="flex items-center justify-between border-b border-line pb-3">
-              <span className="label text-rose-signal">{obs.operatedBy}</span>
-              <span className="label text-muted">{obs.status}</span>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+              <span className="font-medium text-rose-signal">{obs.operatedBy}</span>
+              <span className="text-paper/70">{obs.status}</span>
             </div>
 
-            <h4 className="display display-tight mt-6 text-3xl sm:text-4xl text-paper">
+            <h4 className="mt-2 font-display text-xl font-semibold leading-tight text-paper sm:text-2xl">
               {obs.name}
             </h4>
-            <div className="serif-i text-base text-rose-signal mt-1">
+            <div className="mt-1.5 text-base text-paper/80">
               {obs.location}
             </div>
 
             {obs.image && (
-              <div className="relative h-44 w-full border border-line overflow-hidden my-4 bg-black">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={obs.image.src}
-                  alt={obs.name}
-                  className="w-full h-full object-cover filter contrast-105"
-                />
-                <div className="absolute bottom-2 right-2 label px-2 py-0.5 bg-ink/90 border border-line text-[10px] text-paper/80 backdrop-blur">
-                  {obs.altitudeOrOrbit}
+              <figure className="mt-5">
+                <div className="h-44 w-full overflow-hidden bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={obs.image.src}
+                    alt={obs.name}
+                    className="w-full h-full object-cover filter contrast-105"
+                  />
                 </div>
-              </div>
+                <figcaption className="mt-2 text-xs leading-snug text-paper/70">
+                  Görsel · {obs.image.credit}
+                </figcaption>
+              </figure>
             )}
 
-            <p className="text-xs leading-relaxed text-paper/75">
+            <p className="mt-5 text-base leading-relaxed text-paper/85">
               {obs.description}
             </p>
           </div>
 
-          {/* Highlight Discovery */}
-          <div className="border-l-2 border-rose-signal pl-4 py-1">
-            <span className="label text-muted">Öne Çıkan Bilimsel Keşif</span>
-            <p className="mt-1 text-xs leading-relaxed text-paper/85">
+          {/* Öne çıkan keşif */}
+          <div className="border-t border-line pt-5">
+            <div className="text-sm font-medium text-rose-signal">Öne çıkan bilimsel keşif</div>
+            <p className="mt-2 text-base leading-relaxed text-paper/85">
               {obs.highlightDiscovery}
             </p>
           </div>
         </div>
 
-        {/* Right: Technical Specs Grid (7 cols) */}
-        <div className="lg:col-span-7 bg-ink-2 p-6 sm:p-8 space-y-6">
-          <div className="label text-paper border-b border-line pb-2 flex items-center justify-between">
-            <span>Optik & Mühendislik Parametreleri</span>
-            <span className="text-muted">{obs.altitudeOrOrbit}</span>
+        {/* Sağ: teknik özellikler */}
+        <div className="min-w-0 space-y-6 bg-ink-2 p-5 sm:p-8 lg:col-span-7">
+          <div className="border-b border-line pb-3 text-sm font-medium text-paper/85">
+            Optik ve mühendislik parametreleri
           </div>
 
-          <div className="grid grid-cols-2 gap-px border border-line bg-line">
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Açıklık / Ayna Çapı</span>
-              <div className="display display-tight mt-2 text-2xl text-paper">
+          <div className="grid grid-cols-2 gap-x-5 gap-y-6">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Açıklık / ayna çapı</div>
+              <div className="mt-1 font-mono text-xl font-semibold tabular-nums text-paper sm:text-2xl">
                 {obs.apertureDiameterM > 100 ? '16 km Dizi' : `${obs.apertureDiameterM} Metre`}
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Işık Toplama Alanı</span>
-              <div className="display display-tight mt-2 text-2xl text-rose-signal">
-                {obs.gatheringAreaM2.toLocaleString('tr-TR')} <span className="label text-xs">m²</span>
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Işık toplama alanı</div>
+              <div className="mt-1 font-mono text-xl font-semibold tabular-nums text-rose-signal sm:text-2xl">
+                {obs.gatheringAreaM2.toLocaleString('tr-TR')} <span className="text-sm font-normal text-paper/70">m²</span>
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">Gözlem İrtifası / Konum</span>
-              <div className="display display-tight mt-2 text-lg text-paper truncate">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">Gözlem irtifası / konum</div>
+              <div className="mt-1 text-base font-semibold leading-snug tabular-nums text-paper sm:text-lg">
                 {obs.altitudeOrOrbit}
               </div>
             </div>
 
-            <div className="bg-ink p-4">
-              <span className="label text-muted">İşleten Kurum</span>
-              <div className="display display-tight mt-2 text-lg text-paper truncate">
+            <div className="min-w-0">
+              <div className="text-sm text-paper/70">İşleten kurum</div>
+              <div className="mt-1 text-base font-semibold leading-snug text-paper sm:text-lg">
                 {obs.operatedBy}
               </div>
             </div>
           </div>
 
-          {/* Spectral Coverage Bar */}
-          <div className="border border-line bg-ink p-5 space-y-3">
-            <div className="flex items-center justify-between label text-[10px]">
-              <span className="text-muted">Kapsanan Dalgaboyu Spektrumu</span>
-              <span className="text-rose-signal font-bold">{obs.wavelengths}</span>
+          {/* Dalga boyu kapsamı */}
+          <div className="space-y-2 border-t border-line pt-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span className="text-sm text-paper/70">Kapsanan dalga boyu spektrumu</span>
+              <span className="text-sm font-semibold text-rose-signal">{obs.wavelengths}</span>
             </div>
-            <div className="p-3 bg-ink-2 border border-line text-xs font-mono text-paper/80 leading-relaxed">
+            <p className="text-sm leading-relaxed text-paper/80 sm:text-base">
               Bu gözlemevi, {obs.wavelengths} bandında foton toplayarak evrenin termal, kimyasal ve kinetik süreçlerini inceler.
-            </div>
+            </p>
           </div>
 
-          {/* Aperture Comparison Visualizer */}
-          <div className="border border-line bg-ink p-5 space-y-2">
-            <div className="flex items-center justify-between label text-[10px]">
-              <span className="text-muted">Ayna Ölçeği (Hubble 2.4m = 100 baz)</span>
-              <span className="text-paper">
-                {((obs.gatheringAreaM2 / 4.5) * 100).toFixed(0)}% Işık Gücü
+          {/* Ayna ölçeği karşılaştırması */}
+          <div className="space-y-3 border-t border-line pt-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span className="text-sm text-paper/70">Ayna ölçeği (Hubble 2.4m = 100 baz)</span>
+              <span className="text-sm text-paper">
+                <span className="font-mono tabular-nums">{((obs.gatheringAreaM2 / 4.5) * 100).toFixed(0)}%</span> ışık gücü
               </span>
             </div>
-            <div className="h-2 w-full bg-ink-3 overflow-hidden border border-line relative">
+            <div className="relative h-2 w-full overflow-hidden bg-ink-3">
               <div
                 className="h-full bg-rose-signal transition-all duration-500"
                 style={{

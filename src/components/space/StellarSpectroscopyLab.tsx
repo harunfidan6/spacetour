@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Activity, Zap, Sliders } from 'lucide-react';
-import { Ticks } from '@/components/motion/primitives';
+
+// Ortak görünüm sınıfları
+const SMALL_LABEL = 'text-xs text-paper/70';
+const CARD_TITLE = 'font-display text-xl font-semibold leading-tight text-paper';
 
 interface SpectralClass {
   classLetter: 'O' | 'B' | 'A' | 'F' | 'G' | 'K' | 'M';
@@ -307,63 +309,61 @@ export function StellarSpectroscopyLab() {
   // Doppler redshift/blueshift label calculation
   const dopplerText = useMemo(() => {
     if (radialVelocityKmS === 0) return 'Durağan (v = 0 km/s)';
-    if (radialVelocityKmS > 0) return `Kızıla Kayma (+${radialVelocityKmS.toLocaleString('tr-TR')} km/s — Uzaklaşıyor)`;
-    return `Maviye Kayma (${radialVelocityKmS.toLocaleString('tr-TR')} km/s — Yaklaşıyor)`;
+    if (radialVelocityKmS > 0) return `Kızıla kayma (+${radialVelocityKmS.toLocaleString('tr-TR')} km/s — uzaklaşıyor)`;
+    return `Maviye kayma (${radialVelocityKmS.toLocaleString('tr-TR')} km/s — yaklaşıyor)`;
   }, [radialVelocityKmS]);
 
   return (
-    <div className="space-y-8">
-      {/* Intro Header Card */}
-      <div className="ticks relative border border-line bg-ink p-6 sm:p-8">
-        <Ticks />
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-3xl">
-            <span className="label text-rose-signal">05.6 Laboratuvar · Spektroskopik Çözümleme</span>
-            <h3 className="display display-tight mt-2 text-[clamp(1.8rem,3.4vw,2.8rem)] text-paper">
-              Fraunhofer Soğurma Hatları & <span className="serif-i text-rose-signal">Yıldız Barkodları</span>
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-paper/70">
-              Yıldızların iç çekirdeğinden yayılan sürekli spektrum, fotosferdeki daha soğuk gaz atomları tarafından belirli dalgaboylarında soğurulur (Kirchhoff Yasaları). Harvard Spektral Sınıflandırmasını (O-B-A-F-G-K-M) seçerek kimyasal parmak izlerini incele ve Doppler kaydırıcısıyla radyal hızın tayfı nasıl ötelediğini gözlemle.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 border border-line bg-ink-2 px-4 py-3">
-            <Activity className="h-4 w-4 text-rose-signal" />
-            <div className="text-xs">
-              <span className="label block text-muted">Referans Ölçek</span>
-              <span className="font-mono text-paper">380 – 720 nm (Görünür Bant)</span>
-            </div>
-          </div>
+    <div className="space-y-8 sm:space-y-10">
+      {/* Giriş */}
+      <div className="flex flex-col justify-between gap-4 border-b border-line pb-6 lg:flex-row lg:items-end lg:gap-8">
+        <div className="max-w-3xl">
+          <h3 className="font-display text-2xl font-semibold leading-tight text-paper sm:text-3xl">
+            Fraunhofer soğurma hatları & yıldız barkodları
+          </h3>
+          <p className="mt-3 text-base leading-relaxed text-paper/85">
+            Yıldızların iç çekirdeğinden yayılan sürekli spektrum, fotosferdeki daha soğuk gaz atomları tarafından belirli dalgaboylarında soğurulur (Kirchhoff Yasaları). Harvard Spektral Sınıflandırmasını (O-B-A-F-G-K-M) seçerek kimyasal parmak izlerini incele ve Doppler kaydırıcısıyla radyal hızın tayfı nasıl ötelediğini gözlemle.
+          </p>
+        </div>
+        <div className="shrink-0">
+          <span className={`block ${SMALL_LABEL}`}>Referans ölçek</span>
+          <span className="mt-0.5 block text-sm text-paper">
+            <span className="font-mono">380 – 720 nm</span>{' '}
+            <span className="text-paper/75">(görünür bant)</span>
+          </span>
         </div>
       </div>
 
-      {/* Class Selector Grid (O, B, A, F, G, K, M) */}
+      {/* Spektral sınıf seçici (O, B, A, F, G, K, M) */}
       <div className="grid grid-cols-2 gap-px border border-line bg-line max-sm:fill-row-2 sm:grid-cols-4 sm:max-lg:fill-row-4 lg:grid-cols-7">
         {SPECTRAL_CLASSES.map((cls) => {
           const isSelected = selectedClass.classLetter === cls.classLetter;
           return (
             <button
               key={cls.classLetter}
+              type="button"
+              aria-pressed={isSelected}
               onClick={() => setSelectedClass(cls)}
-              className={`group relative p-4 text-left transition-all ${
+              className={`flex min-w-0 flex-col p-4 text-left transition-colors ${
                 isSelected ? 'bg-rose-signal text-ink' : 'bg-ink text-paper hover:bg-ink-3'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className={`label ${isSelected ? 'text-ink/85' : 'text-muted'}`}>
+              <span className="flex items-center justify-between gap-2">
+                <span className={`text-sm ${isSelected ? 'text-ink/85' : 'text-paper/70'}`}>
                   Tip {cls.classLetter}
                 </span>
                 <span
-                  className="h-3 w-3 rounded-full border border-black/30"
+                  className="h-3 w-3 shrink-0 rounded-full border border-black/30"
                   style={{ backgroundColor: cls.colorHex }}
                 />
-              </div>
-              <span className="display display-tight mt-2 block text-3xl font-bold">
+              </span>
+              <span className="mt-2 block font-display text-3xl font-semibold leading-none">
                 {cls.classLetter}
               </span>
-              <span className={`serif-i mt-0.5 block text-sm ${isSelected ? 'text-ink' : 'text-rose-signal'}`}>
+              <span className={`mt-2 block font-mono text-sm tabular-nums ${isSelected ? 'text-ink' : 'text-rose-signal'}`}>
                 {cls.surfaceTempK.toLocaleString('tr-TR')} K
               </span>
-              <span className={`mt-2 block truncate font-mono text-[11px] ${isSelected ? 'text-ink/80' : 'text-paper/60'}`}>
+              <span className={`mt-1 block truncate text-xs ${isSelected ? 'text-ink/80' : 'text-paper/70'}`}>
                 {cls.representativeStar.split('&')[0]}
               </span>
             </button>
@@ -371,42 +371,44 @@ export function StellarSpectroscopyLab() {
         })}
       </div>
 
-      {/* Interactive Spectrogram Screen */}
-      <div className="ticks relative border border-line bg-ink p-6 sm:p-8">
-        <Ticks />
-
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
-          <div className="flex items-center gap-3">
+      {/* Etkileşimli spektrogram */}
+      <div className="border border-line bg-ink p-4 sm:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4 border-b border-line pb-4">
+          <div className="flex min-w-0 items-start gap-3">
             <span
-              className="h-4 w-4 rounded-full border border-paper/20 shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+              className="mt-1.5 h-4 w-4 shrink-0 rounded-full border border-paper/20"
               style={{ backgroundColor: selectedClass.colorHex }}
             />
-            <div>
-              <h4 className="display display-tight text-xl text-paper">
+            <div className="min-w-0">
+              <h4 className={CARD_TITLE}>
                 Sınıf {selectedClass.classLetter} — {selectedClass.name}
               </h4>
-              <p className="label text-muted">Örnek: {selectedClass.representativeStar}</p>
+              <p className="mt-1 text-sm text-paper/70">Örnek: {selectedClass.representativeStar}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <span className="label block text-muted">Wien Tepe Dalgaboyu</span>
-              <span className="font-mono text-xs text-rose-signal">{selectedClass.wienPeakNm} nm</span>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 sm:text-right">
+            <div>
+              <span className={`block ${SMALL_LABEL}`}>Wien tepe dalgaboyu</span>
+              <span className="font-mono text-sm text-rose-signal">{selectedClass.wienPeakNm} nm</span>
             </div>
-            <div className="text-right">
-              <span className="label block text-muted">Yüzey Sıcaklığı</span>
-              <span className="font-mono text-xs text-paper">{selectedClass.surfaceTempK.toLocaleString('tr-TR')} K</span>
+            <div>
+              <span className={`block ${SMALL_LABEL}`}>Yüzey sıcaklığı</span>
+              <span className="font-mono text-sm text-paper">{selectedClass.surfaceTempK.toLocaleString('tr-TR')} K</span>
             </div>
           </div>
         </div>
 
-        {/* Live Canvas Spectrum Bar */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between text-xs text-muted">
-            <span className="font-mono">380 nm (Mor / UV sınırı)</span>
-            <span className="label uppercase tracking-widest text-paper/80">Canlı Fraunhofer Spektrogramı</span>
-            <span className="font-mono">720 nm (Derin Kırmızı / IR sınırı)</span>
+        {/* Canlı tuval spektrumu */}
+        <div className="mt-6 space-y-2">
+          <div className="text-sm font-medium text-paper/80">Canlı Fraunhofer spektrogramı</div>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-xs text-paper/70">
+            <span>
+              <span className="font-mono">380 nm</span> (mor / UV sınırı)
+            </span>
+            <span className="text-right">
+              <span className="font-mono">720 nm</span> (derin kırmızı / IR sınırı)
+            </span>
           </div>
 
           <div className="relative overflow-hidden border border-line bg-black">
@@ -420,66 +422,61 @@ export function StellarSpectroscopyLab() {
             />
           </div>
 
-          {/* Wavelength Scale Ticks */}
-          <div className="flex justify-between px-1 font-mono text-[10px] text-muted">
+          {/* Dalgaboyu ölçeği */}
+          <div className="flex justify-between px-1 font-mono text-[11px] text-paper/70 sm:text-xs">
             <span>400 nm</span>
-            <span>450 nm</span>
+            <span className="max-sm:hidden">450 nm</span>
             <span>500 nm</span>
-            <span>550 nm</span>
+            <span className="max-sm:hidden">550 nm</span>
             <span>600 nm</span>
-            <span>650 nm</span>
+            <span className="max-sm:hidden">650 nm</span>
             <span>700 nm</span>
           </div>
         </div>
 
-        {/* Live Hover Readout Panel */}
-        <div className="mt-6 border border-line bg-ink-2 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Zap className="h-4 w-4 text-rose-signal" />
-              <div>
-                <span className="label block text-muted">İmleç Dalgaboyu</span>
-                <span className="font-mono text-base font-bold text-paper">
-                  {hoveredWavelength ? `${hoveredWavelength} nm` : 'Spektrum üzerine gelin'}
-                </span>
-              </div>
-            </div>
-
-            {selectedLine ? (
-              <div className="rounded border border-rose-signal/30 bg-rose-signal/10 px-3 py-1.5 text-xs text-paper">
-                <span className="font-mono font-bold text-rose-signal">{selectedLine.name}</span>
-                <span className="mx-2 text-line">|</span>
-                <span>{selectedLine.element}</span>
-                <span className="mx-2 text-line">|</span>
-                <span className="text-paper/70">{selectedLine.significance}</span>
-              </div>
+        {/* Canlı imleç okuması */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 bg-ink-2 px-4 py-3">
+          <div className="shrink-0">
+            <span className={`block ${SMALL_LABEL}`}>İmleç dalgaboyu</span>
+            {hoveredWavelength ? (
+              <span className="font-mono text-base font-semibold text-paper">{`${hoveredWavelength} nm`}</span>
             ) : (
-              <div className="text-xs text-muted">
-                Karakteristik bir Fraunhofer çizgisini incelemek için fareyi spektrum çizgilerinin üzerine getirin.
-              </div>
+              <span className="text-base text-paper/85">Spektrum üzerine gelin</span>
             )}
           </div>
+
+          {selectedLine ? (
+            <div className="min-w-0 text-sm leading-relaxed text-paper">
+              <span className="font-medium text-rose-signal">{selectedLine.name}</span>
+              <span className="mx-2 text-paper/40">·</span>
+              <span>{selectedLine.element}</span>
+              <span className="mx-2 text-paper/40">·</span>
+              <span className="text-paper/80">{selectedLine.significance}</span>
+            </div>
+          ) : (
+            <p className="min-w-0 text-sm text-paper/75">
+              Karakteristik bir Fraunhofer çizgisini incelemek için fareyi spektrum çizgilerinin üzerine getirin.
+            </p>
+          )}
         </div>
 
-        {/* Doppler Radial Velocity Slider */}
+        {/* Doppler radyal hız kaydırıcısı */}
         <div className="mt-8 border-t border-line pt-6">
-          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            <div>
-              <span className="label flex items-center gap-1.5 text-paper">
-                <Sliders className="h-3.5 w-3.5 text-rose-signal" />
-                Doppler Radyal Hız Simülatörü (Δλ / λ₀ = v / c)
-              </span>
-              <p className="mt-0.5 text-xs text-muted">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start sm:gap-6">
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-paper">
+                Doppler radyal hızı <span className="font-mono font-normal text-paper/70">(Δλ / λ₀ = v / c)</span>
+              </div>
+              <p className="mt-1 text-sm text-paper/80">
                 Yıldızın Dünya’ya göre bakış doğrultusundaki hızı çizgileri kızıla veya maviye öteler.
               </p>
             </div>
-            <div className="font-mono text-xs font-semibold text-rose-signal">
+            <div className="shrink-0 text-sm font-medium tabular-nums text-rose-signal">
               {dopplerText}
             </div>
           </div>
 
-          <div className="mt-4 flex items-center gap-4">
-            <span className="font-mono text-xs text-blue-400">-15.000 km/s</span>
+          <div className="mt-5">
             <input aria-label="Radyal hız (km/s)"
               type="range"
               min="-15000"
@@ -489,95 +486,98 @@ export function StellarSpectroscopyLab() {
               onChange={(e) => setRadialVelocityKmS(parseInt(e.target.value))}
               className="h-2 w-full cursor-pointer appearance-none bg-ink-3 accent-rose-signal"
             />
-            <span className="font-mono text-xs text-rose-signal">+15.000 km/s</span>
+            <div className="mt-2 flex justify-between gap-3 font-mono text-xs">
+              <span className="text-blue-400">-15.000 km/s</span>
+              <span className="text-rose-signal">+15.000 km/s</span>
+            </div>
           </div>
 
-          <div className="mt-2 flex justify-end">
+          <div className="mt-3 flex justify-end">
             <button
+              type="button"
               onClick={() => setRadialVelocityKmS(0)}
-              className="label text-[10px] text-muted hover:text-paper"
+              className="min-h-9 border border-line px-3 text-sm text-paper/80 transition-colors hover:border-paper/40 hover:text-paper"
             >
-              [Radyal Hızı Sıfırla: 0 km/s]
+              Radyal hızı sıfırla (0 km/s)
             </button>
           </div>
         </div>
       </div>
 
-      {/* Class Details & Chemical Breakdown Grid */}
+      {/* Sınıf ayrıntıları ve kimyasal döküm */}
       <div className="grid gap-px border border-line bg-line lg:grid-cols-12">
-        {/* Left: Star Astrophysics Dossier */}
-        <div className="bg-ink p-6 sm:p-8 lg:col-span-7">
-          <span className="label text-rose-signal">Astrofiziksel Kimlik Dosyası</span>
-          <h4 className="display display-tight mt-2 text-2xl text-paper">
+        {/* Sol: yıldızın astrofiziksel özeti */}
+        <div className="min-w-0 bg-ink p-5 sm:p-8 lg:col-span-7">
+          <h4 className={`${CARD_TITLE} sm:text-2xl`}>
             {selectedClass.name} ({selectedClass.classLetter})
           </h4>
-          <p className="mt-3 text-sm leading-relaxed text-paper/70">
+          <p className="mt-3 text-base leading-relaxed text-paper/85">
             {selectedClass.description}
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-px border border-line bg-line max-sm:fill-row-2 sm:grid-cols-3 sm:fill-row-3">
-            <div className="bg-ink-2 p-3">
-              <span className="label block text-muted">Ortalama Kütle</span>
-              <span className="font-mono text-xs text-paper">{selectedClass.massSolar}</span>
+          <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-line pt-5 sm:grid-cols-3">
+            <div>
+              <dt className={SMALL_LABEL}>Ortalama kütle</dt>
+              <dd className="mt-0.5 font-mono text-sm text-paper">{selectedClass.massSolar}</dd>
             </div>
-            <div className="bg-ink-2 p-3">
-              <span className="label block text-muted">Ana Kol Ömrü</span>
-              <span className="font-mono text-xs text-paper">{selectedClass.lifetimeYears}</span>
+            <div>
+              <dt className={SMALL_LABEL}>Ana kol ömrü</dt>
+              <dd className="mt-0.5 font-mono text-sm text-paper">{selectedClass.lifetimeYears}</dd>
             </div>
-            <div className="bg-ink-2 p-3">
-              <span className="label block text-muted">Görünür Renk</span>
-              <span className="font-mono text-xs text-paper">{selectedClass.apparentColor}</span>
+            <div>
+              <dt className={SMALL_LABEL}>Görünür renk</dt>
+              <dd className="mt-0.5 text-sm text-paper">{selectedClass.apparentColor}</dd>
             </div>
-          </div>
+          </dl>
 
-          <div className="mt-6 border-l-2 border-rose-signal pl-4">
-            <span className="label text-rose-signal">Baskın Spektral Çizgiler</span>
-            <p className="mt-1 text-xs leading-relaxed text-paper/85">
+          <div className="mt-6">
+            <div className="text-sm font-medium text-rose-signal">Baskın spektral çizgiler</div>
+            <p className="mt-1.5 text-sm leading-relaxed text-paper/85 sm:text-base">
               {selectedClass.dominantLines}
             </p>
           </div>
         </div>
 
-        {/* Right: Fraunhofer Absorption Lines Registry */}
-        <div className="flex flex-col justify-between bg-ink p-6 sm:p-8 lg:col-span-5">
+        {/* Sağ: Fraunhofer ana hatları */}
+        <div className="flex min-w-0 flex-col justify-between gap-6 bg-ink p-5 sm:p-8 lg:col-span-5">
           <div>
-            <span className="label text-muted">Fraunhofer Ana Hatları Rehberi</span>
-            <h5 className="display display-tight mt-1 text-lg text-paper">Spektrumdaki Element İmzaları</h5>
-            <div className="mt-4 max-h-72 space-y-2 overflow-y-auto pr-2">
+            <h5 className="font-display text-lg font-semibold leading-tight text-paper">Spektrumdaki element imzaları</h5>
+            <p className="mt-1 text-sm text-paper/70">Fraunhofer ana hatları rehberi</p>
+            <ul className="mt-4 divide-y divide-line border-y border-line">
               {FRAUNHOFER_LINES.slice(0, 8).map((line) => {
                 const intensity = selectedClass.lineIntensities[line.family] || 0;
                 return (
-                  <div
+                  <li
                     key={line.id}
-                    className="flex items-center justify-between border border-line/60 bg-ink-2 px-3 py-2 text-xs"
+                    className="flex items-center justify-between gap-3 py-2.5 text-sm"
                   >
-                    <div>
-                      <span className="font-mono font-bold text-paper">{line.name}</span>
-                      <span className="ml-2 text-muted">{line.element.split(' ')[0]}</span>
+                    <div className="min-w-0">
+                      <span className="font-medium text-paper">{line.name}</span>
+                      <span className="ml-2 text-paper/70">{line.element.split(' ')[0]}</span>
                     </div>
-                    <div className="flex items-center gap-3 font-mono">
-                      <span className="text-muted">{line.wavelengthNm} nm</span>
+                    <div className="flex shrink-0 items-baseline gap-3">
+                      <span className="font-mono text-xs text-paper/70">{line.wavelengthNm} nm</span>
                       <span
-                        className={`text-[10px] font-semibold ${
+                        className={`w-[4.5rem] text-right text-xs font-medium ${
                           intensity > 0.6
                             ? 'text-rose-signal'
                             : intensity > 0.2
                             ? 'text-paper'
-                            : 'text-muted'
+                            : 'text-paper/60'
                         }`}
                       >
-                        {intensity > 0.6 ? 'Çok Güçlü' : intensity > 0.2 ? 'Orta' : 'Yok/Eser'}
+                        {intensity > 0.6 ? 'Çok güçlü' : intensity > 0.2 ? 'Orta' : 'Yok / eser'}
                       </span>
                     </div>
-                  </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
 
-          <div className="mt-4 border-t border-line pt-3">
-            <span className="label block text-muted">Biliyor Muydunuz?</span>
-            <p className="mt-1 text-xs text-paper/60">
+          <div>
+            <div className="text-sm font-medium text-paper/80">Biliyor muydunuz?</div>
+            <p className="mt-1.5 text-sm leading-relaxed text-paper/80">
               Astronom Cecilia Payne-Gaposchkin, 1925 yılında bu spektroskopik çizgileri analiz ederek evrenin çoğunlukla demir veya kayadan değil, ezici çoğunlukla hidrojen ve helyumdan oluştuğunu ispatlayan ilk insandır.
             </p>
           </div>
