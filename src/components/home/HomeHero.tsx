@@ -20,7 +20,7 @@ export function HomeHero() {
   const root = useRef<HTMLElement>(null);
   const labels = useRef<(HTMLElement | null)[]>([]);
   const [inView, setInView] = useState(true);
-  const scene3d = useIdleReady(250);
+  const scene3d = useIdleReady();
   const now = useNow(60_000);
   const moon = now ? moonPhase(now) : null;
   const next = now ? upcomingEvents(now, 1)[0] : undefined;
@@ -118,8 +118,8 @@ export function HomeHero() {
           </span>
         ))}
       </div>
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgb(5_5_8/0.55)_100%)]" />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgb(5_5_8/0.85)_100%)]" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink to-transparent" />
 
       {/* Title card */}
       <div className="relative flex h-full flex-col justify-between px-[var(--gutter)] pb-8 pt-24 sm:pt-28">
