@@ -120,7 +120,8 @@
 
   /* ---------- 1. Bu gece ---------- */
   go(5.55, 'section[aria-labelledby="bu-gece"]', 1.1, 110);
-  tl.set('#chip', { autoAlpha: 1 }, 5.6).fromTo('#chip', { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 5.6);
+  tl.set('#chip', { autoAlpha: 1 }, 5.6).fromTo('#chip', { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 5.6)
+    .to('#botshade', { opacity: 1, duration: 0.5 }, 5.6).to('#botshade', { opacity: 0, duration: 0.2 }, 18.3);
   tl.add(() => { const s = $('section[aria-labelledby="bu-gece"] figure', doc()); if (s) F().kaydir(Math.round(s.getBoundingClientRect().top + win().scrollY - 230), 2.0); }, 7.4);
   caption('1-bugece');
 
