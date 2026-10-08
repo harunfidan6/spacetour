@@ -6,6 +6,7 @@ import { Line } from '@react-three/drei';
 import * as THREE from 'three';
 import type { Line2 } from 'three-stdlib';
 import { PlanetBody } from '@/components/space/PlanetBody';
+import { CosmicHeroBackdrop } from './CosmicHeroBackdrop';
 
 import { heroScene, HERO_BODIES, type LabelProjector } from './heroScene';
 
@@ -135,10 +136,14 @@ function Scene({ project }: { project: LabelProjector }) {
 
   return (
     <>
-      <ambientLight intensity={0.12} />
-      <pointLight position={[0, 0, 0]} intensity={3.4} decay={0} color="#fff1dc" />
+      <ambientLight intensity={0.16} />
+      <pointLight position={[0, 0, 0]} intensity={3.8} decay={0} color="#fff4e0" />
       {/* Soft camera-side fill so night hemispheres read as planets, not holes */}
       <directionalLight position={[-6, 10, 30]} intensity={0.55} color="#b9c6ff" />
+
+      {/* Photorealistic Cosmic Starfield, Shooting Stars & Planetary Meteor Strikes */}
+      <CosmicHeroBackdrop />
+
       <group rotation={[0, 0, -0.06]}>
         <group ref={sun}>
           <PlanetBody id="gunes" radius={SUN_R} detail={96} spin={0.6} />
