@@ -1,13 +1,13 @@
 // SpaceTour TR · “Bu gece gökyüzü” Reels (24 sn, dikey, müzik + efekt, anlatıcısız).
 // Siteden bağımsız hareketli grafik: kendi 3D sahneleri (three.js) ve kinetik yazılar; veriler veri.json'da.
-// Kayıt:  FILM_EPOCH="2026-10-08T21:00:00+03:00" npm run film -- v gece   (GPU'suz Linux'ta FILM_GL=swiftshader)
+// Kayıt:  FILM_EPOCH="2026-10-09T21:00:00+03:00" npm run film -- v gece   (GPU'suz Linux'ta FILM_GL=swiftshader)
 //
-//  0.0  Açılış: yıldızlar arasından hızla geçiş · 8 EKİM / BU GECE GÖKYÜZÜ
-//  2.5  Ay: incecik hilal, %100 → %4 · "Ay neredeyse yok"
-//  6.0  Satürn: halkalar, gölge · BÜTÜN GECE 19:10–06:10 · en iyi 00:40 güneyde
+//  0.0  Açılış: yıldızlar arasından hızla geçiş · tarih / BU GECE GÖKYÜZÜ (tarih, gün ve sayılar veri.json'dan)
+//  2.5  Ay: incecik hilal, %100 → aydınlık pay · "Ay neredeyse yok"
+//  6.0  Satürn: halkalar, gölge · saat şeridi 19:10–06:10 · en iyi an 00:30 güneyde
 // 10.5  Mars 01:50 · Jüpiter 03:00 (hızlı kesmeler)
-// 13.5  Orionid meteor yağmuru · 13 GÜN
-// 17.0  Yeni Ay'a 2 gün
+// 13.5  Orionid meteor yağmuru · Avcı takımyıldızı, ateş topu · SAATTE ~20 METEOR
+// 17.0  Yeni Ay'a kalan gün
 // 20.0  Kapanış: güncel logo · Evren hiç durmaz. · spacetour.com.tr
 import { createContext } from './core.js';
 

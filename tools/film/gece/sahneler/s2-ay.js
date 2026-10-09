@@ -40,6 +40,8 @@ uniform float uRimI;
 uniform float uRimIso;
 uniform vec3 uRimCol;
 uniform float uBump;
+uniform vec3 uCenter;
+uniform float uTanR;
 varying vec3 vP;
 varying vec3 vN;
 varying vec3 vO;
@@ -59,9 +61,18 @@ void main() {
   float h0 = lum(aF);
   float hx = lum(texture2D(uFoto, fuv + vec2(uTexel.x, 0.0)).rgb) - h0;
   float hy = lum(texture2D(uFoto, fuv + vec2(0.0, uTexel.y)).rgb) - h0;
-  vec3 N = normalize(vN);
+  // Işık için "uzaktan bakış" normali: kamera ne kadar yakın olursa olsun evre görüntüsü uzak gözlemcininki gibi
+  // (yakın kamera yarım küreden azını görür; gerçek normal hilali görünür kenarın arkasına saklardı)
+  vec3 C = normalize(uCenter - cameraPosition);
+  vec3 D = normalize(vP - cameraPosition);
+  float cd = dot(D, C);
+  vec3 e = D - C * cd;
+  float el = length(e);
+  e = el > 1e-6 ? e / el : vec3(0.0);
+  float rho = clamp((el / max(cd, 1e-4)) / uTanR, 0.0, 1.0);
+  vec3 V = -C;
+  vec3 N = normalize(rho * e + sqrt(max(1.0 - rho * rho, 0.0)) * V);
   vec3 Np = normalize(N - uBump * w * (hx * vEX + hy * vEY));
-  vec3 V = normalize(cameraPosition - vP);
   float nl = dot(N, uSun);
   float mu0 = max(dot(Np, uSun), 0.0);
   float mu = max(dot(N, V), 0.0);
@@ -173,6 +184,7 @@ export function ayKur(ctx, { seed = 11 } = {}) {
     uEarthCol: { value: new THREE.Color(0.55, 0.68, 1.0) },
     uRimI: { value: 0 }, uRimIso: { value: 0 }, uRimCol: { value: new THREE.Color(1.0, 0.82, 0.5) },
     uBump: { value: 1.6 },
+    uCenter: { value: new THREE.Vector3(0, 0, 0) }, uTanR: { value: 0.4 },
   };
   const ayMat = new THREE.ShaderMaterial({ uniforms: U, vertexShader: AY_VERT, fragmentShader: AY_FRAG });
   const ay = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 96), ayMat);
@@ -288,6 +300,7 @@ export function ayKur(ctx, { seed = 11 } = {}) {
     const lx = L.dot(qx), ly = L.dot(qy), ll = Math.hypot(lx, ly) || 1;
     HU.uSun2.value.set(lx / ll, ly / ll);
     HU.uRs.value = d / Math.sqrt(d * d - 1);
+    U.uTanR.value = 1 / Math.sqrt(d * d - 1); // görünür açısal yarıçapın tanjantı
     HU.uI.value = s.haleI ?? 0.8;
     HU.uIso.value = s.haleIso ?? 0;
     HU.uW.value = s.haleW ?? 0.02;
@@ -305,37 +318,58 @@ export function ayKur(ctx, { seed = 11 } = {}) {
   return { scene, camera, ay, hale, kur, U, HU };
 }
 
+/** Saatin yönelme eki, okunuşa göre: 04:33 → ’e (otuz üçe), 05:42 → ’ye (kırk ikiye), 06:00 → ’ya (altıya) */
+export function yonelme(saat) {
+  const [h, m] = String(saat).split(':').map(Number);
+  const BIR = ['', 'e', 'ye', 'e', 'e', 'e', 'ya', 'ye', 'e', 'a'];
+  const ON = ['', 'a', 'ye', 'a', 'a', 'ye'];
+  const ek = (n) => (n % 10 ? BIR[n % 10] : ON[Math.floor(n / 10) % 6]);
+  return '’' + (m ? ek(m) : ek(h % 12 || 12));
+}
+
+/** split() satırlarının maskesi (overflow: hidden) yazı gölgesini keser; giriş bitince maskeyi kaldır */
+export function maskeAc(ctx, node, t) {
+  ctx.tl.set(node.querySelectorAll('.line'), { overflow: 'visible' }, t);
+}
+
 export default function sahne(ctx, { t0, t1 }) {
   const { tl, gsap, el, split, kinetic } = ctx;
+  const ay = ctx.veri?.ay ?? { aydinlik: 4, dogus: '05:42' };
+  const BUYUK = (x) => String(x).toLocaleUpperCase('tr-TR');
   const A = ayKur(ctx, { seed: 21 });
 
   // Sayaç zamanı: %100 → %4, 2.62'de başlar, 3.5 vuruşunda biter. Işık aynı eğriyi izler.
   const SAY0 = t0 + 0.12, SAYD = 0.88, EASE = gsap.parseEase('power3.out');
-  const yuzde = (t) => (t <= SAY0 ? 100 : t >= SAY0 + SAYD ? 4 : 100 - 96 * EASE((t - SAY0) / SAYD));
+  const HEDEF = ay.aydinlik;
+  const yuzde = (t) => (t <= SAY0 ? 100 : t >= SAY0 + SAYD ? HEDEF : 100 - (100 - HEDEF) * EASE((t - SAY0) / SAYD));
 
+  // Son kadraj: Ay sağ altta dev; hilal sol üst kenarında, ekranı soldan sağa kesen bir yay. Yazılar yayın üstünde.
   const kam = iz(gsap, [
     [t0, { rpx: 78, cx: 270, cy: 560, yaw: -0.34, pitch: 0.13, roll: 0.16, pan: 0 }],
     [t0 + 0.45, { rpx: 205, cx: 270, cy: 566, yaw: -0.15, pitch: 0.07, roll: 0.05, pan: 0 }, 'expo.out'],
-    [t0 + 0.62, { rpx: 224, cx: 274, cy: 574, yaw: -0.12, pitch: 0.06, roll: 0.035, pan: 0 }, 'none'],
-    [t0 + 1.48, { rpx: 700, cx: 552, cy: 1100, yaw: 0.05, pitch: -0.02, roll: -0.05, pan: 0 }, 'power3.inOut'],
-    [t1 - 0.32, { rpx: 790, cx: 536, cy: 1108, yaw: 0.2, pitch: -0.05, roll: -0.11, pan: 0 }, 'none'],
-    [t1, { rpx: 820, cx: 536, cy: 1108, yaw: 0.23, pitch: -0.05, roll: -0.15, pan: 0.6 }, 'power3.in'],
+    [t0 + 0.62, { rpx: 224, cx: 274, cy: 576, yaw: -0.12, pitch: 0.06, roll: 0.035, pan: 0 }, 'none'],
+    [t0 + 1.48, { rpx: 700, cx: 580, cy: 1180, yaw: 0.05, pitch: -0.02, roll: -0.05, pan: 0 }, 'power3.inOut'],
+    [t1 - 0.32, { rpx: 745, cx: 566, cy: 1196, yaw: 0.3, pitch: -0.06, roll: -0.13, pan: 0 }, 'none'],
+    [t1, { rpx: 775, cx: 560, cy: 1200, yaw: 0.34, pitch: -0.06, roll: -0.17, pan: 0.6 }, 'power3.in'],
   ]);
-  // Hale nabzı: sayaç bitişinde (3.5) ve künye değişiminde (5.0)
+  // Nabız: sayaç bitişinde (3.5) ve künye değişiminde (5.0) hilal parlar
   const nabiz = (t, at, amp, w = 0.35) => (t < at ? 0 : amp * Math.exp(-(t - at) / w) * Math.min(1, (t - at) / 0.04));
 
   const durum = (t) => {
     const s = kam(t);
+    s.rpx += nabiz(t, t0 + 2.0, 16, 0.22); // 4.5 vuruşunda hafif kamera darbesi
     s.alfa = evreAcisi(yuzde(t));
-    s.fi = Math.PI * 0.75 + 0.06 * Math.sin((t - t0) * 1.3);
-    const iso = Math.pow(1 - s.alfa / Math.PI, 1.4);
+    s.fi = Math.PI * 0.75 + 0.05 * Math.sin((t - t0) * 1.3);
+    // Hale: dolunayda çevrede yumuşak ışık, hilalde yalnızca aydınlık kenarda hafif parıltı
+    const iso = Math.pow(Math.max(0, 1 - s.alfa / 1.1), 2);
     s.haleIso = iso;
-    s.haleI = 0.45 + 0.55 * (1 - iso) + nabiz(t, t0 + 1.0, 1.4) + nabiz(t, t0 + 2.5, 0.7);
-    s.haleW = 0.022;
-    s.haleSoft = 6.5;
-    s.haleSoftI = 0.5;
+    s.haleI = 0.3 + 0.3 * iso + nabiz(t, t0 + 1.0, 0.6) + nabiz(t, t0 + 2.5, 0.35);
+    s.haleW = 0.012;
+    s.haleSoft = 16;
+    s.haleSoftI = 0.2 + 0.25 * iso;
+    s.sunI = 5.5 + 1.8 * (1 - iso) + nabiz(t, t0 + 1.0, 3.2, 0.3) + nabiz(t, t0 + 2.5, 1.6, 0.3);
     s.earthI = 0.11;
-    s.rimI = 0.12 * (1 - iso);
+    s.rimI = 0;
     s.rimIso = 0;
     return s;
   };
@@ -351,22 +385,25 @@ export default function sahne(ctx, { t0, t1 }) {
   /* ---------- Yazılar (güvenli alan: y 110–760, kenarlardan ≥ 28 px) ---------- */
   const sayac = el('%100', { cls: 'display shadow', style: { left: 28, width: 484, top: 116, fontSize: 150, textAlign: 'center', fontVariantNumeric: 'tabular-nums', transformOrigin: '50% 60%' } });
   tl.fromTo(sayac, { autoAlpha: 0, scale: 1.7, filter: 'blur(14px)' }, { autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 0.32, ease: 'expo.out', immediateRender: false }, t0);
-  ctx.counter(sayac, 100, 4, SAY0, SAYD, (n) => `%${Math.round(n)}`);
+  ctx.counter(sayac, 100, HEDEF, SAY0, SAYD, (n) => `%${Math.round(n)}`);
   // Vuruşta darbe
   tl.fromTo(sayac, { scale: 1.16 }, { scale: 1, duration: 0.4, ease: 'expo.out', immediateRender: false }, SAY0 + SAYD);
 
   const serif = el(split('Ay neredeyse yok.'), { cls: 'serif gold shadow', style: { left: 28, width: 484, top: 268, fontSize: 68, textAlign: 'center' } });
   kinetic(serif, t0 + 1.0, { how: 'rise', stagger: 0.022, dur: 0.6 });
+  maskeAc(ctx, serif, t0 + 1.75);
 
   const cizik = el('', { style: { left: 250, top: 362, width: 40, height: 2, background: '#f5c542', transformOrigin: '50% 50%' } });
   tl.set(cizik, { autoAlpha: 1 }, t0 + 1.5);
   tl.fromTo(cizik, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: 'expo.out', immediateRender: false }, t0 + 1.5);
 
-  const kunye1 = el(split('04:33’E KADAR DOĞMUYOR'), { cls: 'mono shadow', style: { left: 20, width: 500, top: 380, fontSize: 22, textAlign: 'center', letterSpacing: '0.2em' } });
+  const kunye1 = el(split(BUYUK(`${ay.dogus}${yonelme(ay.dogus)} kadar doğmuyor`)), { cls: 'mono shadow', style: { left: 20, width: 500, top: 380, fontSize: 22, textAlign: 'center', letterSpacing: '0.2em' } });
+  maskeAc(ctx, kunye1, t0);
   kinetic(kunye1, t0 + 1.5, { how: 'type', stagger: 0.022 });
   tl.to(kunye1, { autoAlpha: 0, y: -10, filter: 'blur(6px)', duration: 0.16, ease: 'power2.in' }, t0 + 2.36);
 
-  const kunye2 = el(split('KÜÇÜLEN HİLAL · BAŞAK'), { cls: 'mono shadow', style: { left: 20, width: 500, top: 380, fontSize: 22, textAlign: 'center', letterSpacing: '0.2em' } });
+  const kunye2 = el(split('GECE BOYUNCA GÖKTE DEĞİL'), { cls: 'mono shadow', style: { left: 20, width: 500, top: 380, fontSize: 22, textAlign: 'center', letterSpacing: '0.2em' } });
+  maskeAc(ctx, kunye2, t0);
   kinetic(kunye2, t0 + 2.5, { how: 'blur', stagger: 0.018, dur: 0.35 });
 
   // Kırbaçla birlikte yazılar sola kayarak çıkar

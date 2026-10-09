@@ -1,24 +1,24 @@
 {
-  "_kaynak": "src/lib/astrophysics/skyTonight.ts, src/lib/astrology/lunarCalendar.ts, src/data/events.ts · İstanbul, 8 Ekim 2026 Perşembe gecesi",
-  "tarih": "8 Ekim 2026",
-  "gun": "Perşembe",
+  "_kaynak": "src/lib/astrophysics/skyTonight.ts, src/lib/astrology/lunarCalendar.ts, src/data/events.ts · İstanbul, 9 Ekim 2026 Cuma gecesi (→ 10 Ekim sabahı)",
+  "tarih": "9 Ekim 2026",
+  "gun": "Cuma",
   "sehir": "İstanbul",
-  "gunBatimi": "18:34",
+  "gunBatimi": "18:33",
   "karanlik": [
     "20:10",
     "05:30"
   ],
-  "gunDogumu": "07:08",
+  "gunDogumu": "07:09",
   "ay": {
-    "aydinlik": 4,
-    "evre": "Küçülen Hilal",
-    "burc": "Başak",
-    "dogus": "05:42",
-    "not": "Karanlık saatlerin hiçbirinde gökte değil (17:21'de battı, 9 Ekim 05:42'de doğar; tam karanlık 05:30'da biter)",
-    "dogusTarih": "9 Ekim Cuma sabahı"
+    "aydinlik": 1,
+    "evre": "Yeni Ay'a bir gün",
+    "batis": "17:43",
+    "dogus": "06:50",
+    "dogusTarih": "10 Ekim Cumartesi sabahı",
+    "not": "Karanlık saatlerin hiçbirinde gökte değil (17:43'te battı, 10 Ekim 06:50'de doğar; tam karanlık 05:30'da biter)"
   },
   "yeniAy": {
-    "kalanGun": 2,
+    "kalanGun": 1,
     "tarih": "10 Ekim Cumartesi",
     "saat": "19:00",
     "burc": "Terazi"
@@ -28,10 +28,10 @@
       "19:10",
       "06:10"
     ],
-    "enIyi": "00:40",
+    "enIyi": "00:30",
     "yon": "Güney",
     "yukseklik": 51,
-    "kadir": 0.3,
+    "kadir": 0.4,
     "takimyildiz": "Balıklar"
   },
   "mars": {
@@ -57,7 +57,7 @@
     "gorunur": false
   },
   "orionid": {
-    "kalanGun": 13,
+    "kalanGun": 12,
     "tarih": "21 Ekim",
     "saatte": 20,
     "kaynak": "Halley kuyruklu yıldızı",

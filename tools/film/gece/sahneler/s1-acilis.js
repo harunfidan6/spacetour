@@ -113,10 +113,6 @@ export default function sahne(ctx, { t0, t1 }) {
   const camera = new THREE.PerspectiveCamera(66, W / H, 0.1, 1200);
   const field = warpField(ctx, { count: 1700, seed: 2610, rMax: 64 });
   scene.add(field.mesh);
-  // Ön plan tozu: kameranın yanından geçen az sayıda geniş, yumuşak çizgi (derinlik hissi)
-  const dust = warpField(ctx, { count: 70, seed: 4417, rMin: 2.5, rMax: 15, gold: 0.35, sky: 0.3 });
-  dust.u.uWidth.value = 16;
-  scene.add(dust.mesh);
 
   // Tünelin ucundaki ışık: hız tepesinde ekranı beyaza boğar
   const coreMat = new THREE.SpriteMaterial({
@@ -136,7 +132,7 @@ export default function sahne(ctx, { t0, t1 }) {
   scene.add(warm);
   // Kesimden hemen önce ekranı dolduran geniş beyaz ışıma
   const whiteMat = new THREE.SpriteMaterial({
-    map: ctx.glow([[0, 'rgba(255,255,255,1)'], [0.45, 'rgba(235,243,255,0.75)'], [0.8, 'rgba(200,222,255,0.25)'], [1, 'rgba(180,210,255,0)']]),
+    map: ctx.glow([[0, 'rgba(255,255,255,1)'], [0.25, 'rgba(240,246,255,0.8)'], [0.6, 'rgba(205,225,255,0.3)'], [1, 'rgba(180,210,255,0)']]),
     transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0,
   });
   const white = new THREE.Sprite(whiteMat);
@@ -157,12 +153,9 @@ export default function sahne(ctx, { t0, t1 }) {
       field.u.uFade.value = smooth(0.0, 0.16, local);
       field.u.uBlue.value = 0.55 * ramp(t);
       field.u.uMinLen.value = 4 + 2 * ramp(t);
-      dust.u.uTravel.value = field.u.uTravel.value * 1.0;
-      dust.u.uStretch.value = field.u.uStretch.value;
-      dust.u.uFade.value = 0.32 * smooth(0.0, 0.3, local);
       // Tünel kendi ekseninde döner (sarmal hissi), tepeye doğru hızlanır
       field.mesh.rotation.z = 0.16 * local + 0.9 * Math.pow(ramp(t), 1.5);
-      dust.mesh.rotation.z = field.mesh.rotation.z;
+
       // Kaçış noktası yazıların altına iner (y≈560), hafifçe salınır
       const k1 = kick(t - 0.5, 0.02, 0.22), k2 = kick(t - 1.5, 0.02, 0.22);
       camera.rotation.set(0.12 * smooth(0.05, 0.9, local) - 0.05 * ramp(t), 0.035 * Math.sin(local * 1.7), 0);
@@ -173,8 +166,8 @@ export default function sahne(ctx, { t0, t1 }) {
       camera.updateProjectionMatrix();
       coreMat.opacity = 0.3 * smooth(0.05, 0.5, local) + 0.25 * (k1 + k2) + 0.7 * ramp(t);
       const wr = Math.pow(smooth(2.05, 2.5, t), 2.2);
-      whiteMat.opacity = wr;
-      white.scale.set(200 + 1300 * wr, 200 + 1300 * wr, 1);
+      whiteMat.opacity = 0.6 * wr;
+      white.scale.set(200 + 1200 * wr, 200 + 1200 * wr, 1);
       const cs = 70 + 40 * (k1 + k2) + 820 * Math.pow(ramp(t), 1.6);
       core.scale.set(cs, cs, 1);
       warmMat.opacity = 0.25 * smooth(0.3, 0.8, local) + 0.35 * (k1 + k2);
@@ -185,18 +178,18 @@ export default function sahne(ctx, { t0, t1 }) {
   /* ---------- Yazılar ---------- */
   const CX = { left: 0, width: W, textAlign: 'center' };
 
-  // Künye: İSTANBUL · PERŞEMBE (altın nokta), iki yanında ince çizgi
-  const kunye = ctx.el(`<span class="k-ln"></span>${spl([['İstanbul '], ['·', 'gold'], [' Perşembe']])}<span class="k-ln"></span>`, {
+  // Künye: şehir · gün (veri.json; altın nokta), iki yanında ince çizgi
+  const kunye = ctx.el(`<span class="k-ln"></span>${spl([[`${ctx.veri?.sehir ?? 'İstanbul'} `], ['·', 'gold'], [` ${ctx.veri?.gun ?? 'Cuma'}`]])}<span class="k-ln"></span>`, {
     cls: 'mono shadow', style: { ...CX, top: 146, fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' },
   });
-  kunye.querySelector('.line').style.paddingLeft = '0.28em';
+  Object.assign(kunye.querySelector('.line').style, { paddingLeft: '0.28em', overflow: 'visible' });
   const kl = kunye.querySelectorAll('.k-ln');
   kl.forEach((n) => Object.assign(n.style, { display: 'block', width: '34px', height: '1px', background: '#f5c542', opacity: '0.9' }));
   ctx.kinetic(kunye, T(0.25), { how: 'type', stagger: 0.028 });
   tl.fromTo(kl, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'expo.out', immediateRender: false }, T(0.25));
 
-  // 8 EKİM — dev başlık
-  const title = ctx.el(ctx.split('8 ekim'), { cls: 'display shadow', style: { ...CX, top: 252, fontSize: 116 } });
+  // Tarih (veri.json, ör. 9 EKİM) — dev başlık
+  const title = ctx.el(ctx.split((ctx.veri?.tarih ?? '9 Ekim 2026').replace(/\s*\d{4}$/, '').toLocaleLowerCase('tr-TR')), { cls: 'display shadow', style: { ...CX, top: 252, fontSize: 116 } });
   const unclip = (n) => n.querySelectorAll('.line').forEach((l) => { l.style.overflow = 'visible'; });
   unclip(title);
   ctx.kinetic(title, T(0.5), { how: 'slam', stagger: 0.035, dur: 0.55 });
@@ -210,7 +203,7 @@ export default function sahne(ctx, { t0, t1 }) {
   tl.to(rule, { scaleX: 2.2, autoAlpha: 0, duration: 0.24, ease: 'power3.in' }, T(1.38));
 
   // bu gece gökyüzünde — serif kanca; 1.5'te yukarı kayar
-  const hook = ctx.el(ctx.split('bu gece gökyüzünde'), { cls: 'serif shadow', style: { ...CX, top: 396, fontSize: 66 } });
+  const hook = ctx.el(ctx.split('bu gece gökyüzünde'), { cls: 'serif', style: { ...CX, top: 396, fontSize: 66 } });
   ctx.kinetic(hook, T(1.0), { how: 'rise', stagger: 0.018, dur: 0.6 });
   tl.fromTo(hook, { y: 0 }, { y: -92, duration: 0.5, ease: 'expo.inOut', immediateRender: false }, T(1.32));
   tl.set(hook.querySelectorAll('.line'), { overflow: 'visible' }, T(1.7)); // çıkışta bulanıklık kırpılmasın
@@ -227,7 +220,11 @@ export default function sahne(ctx, { t0, t1 }) {
   }
   ctx.out(kunye, T(2.1), { dur: 0.22 });
 
-  // Geçiş: beyaz flaş (2.5 kesimi)
+  // Geçiş: kaçış noktasından yayılan yumuşak beyaz ışıma → 2.5'te beyaz flaş
+  const bloom = ctx.el('', { parent: ctx.fx, style: { left: -270, top: -480, width: W * 2, height: H * 2, mixBlendMode: 'screen',
+    background: 'radial-gradient(circle at 50% 52%, #ffffff 0%, rgb(236 244 255 / 0.9) 16%, rgb(190 215 255 / 0.35) 34%, rgb(150 190 255 / 0) 52%)' } });
+  tl.fromTo(bloom, { autoAlpha: 0, scale: 0.35 }, { autoAlpha: 1, scale: 1.25, duration: 0.32, ease: 'power2.in', immediateRender: false }, T(2.18));
+  tl.to(bloom, { autoAlpha: 0, duration: 0.08, ease: 'none' }, t1 + 0.02);
   ctx.flash(t1, { color: '#ffffff', peak: 0.95, dur: 0.4 });
 
   /* ---------- Ses ---------- */

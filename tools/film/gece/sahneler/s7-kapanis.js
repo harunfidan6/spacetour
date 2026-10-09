@@ -1,6 +1,6 @@
 // s7 · Kapanış (20.0–24.0): ışık hızından iniş → güncel logo canlı kurulur → Spacetour.tr · Evren hiç durmaz. · spacetour.com.tr
 //  20.0 kesim: hit+sub, yıldız çizgileri yavaşlar, logo büyük kurulur (gezegen, halkalar çizilir, ay yörüngede)
-//  20.95 logo yerine oturur · 21.0 Spacetour.tr · 21.5 EVREN · 22.0 hiç durmaz. · 22.5 adres · 23.0 çağrı · 23.5 nefes
+//  20.7 logo yerine oturur · 21.0 Spacetour.tr · 21.5 EVREN · 22.0 hiç durmaz. · 22.5 adres · 23.0 çağrı · 23.5 nefes
 import { warpField, travelTable, kick, smooth, spl } from './s1-acilis.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -12,7 +12,7 @@ export default function sahne(ctx, { t0, t1 }) {
   /* ---------- Yerleşim (CSS px) ---------- */
   const LOGO = 280, LOGO_TOP = 106, LOGO_CY = LOGO_TOP + LOGO / 2; // logo merkezi y≈246
   const HERO_DY = 150, HERO_S = 1.42;                               // açılışta büyük ve ortada
-  const MOVE_AT = T(0.95), MOVE_DUR = 0.55;
+  const MOVE_AT = T(0.68), MOVE_DUR = 0.47;
   const moveEase = gsap.parseEase('expo.inOut');
   const heroK = (t) => 1 - moveEase(Math.min(Math.max((t - MOVE_AT) / MOVE_DUR, 0), 1)); // 1 = büyük, 0 = yerinde
 
@@ -32,10 +32,10 @@ export default function sahne(ctx, { t0, t1 }) {
     return sp;
   };
   const blobs = [
-    blob([[0, 'rgba(99,102,241,0.55)'], [0.45, 'rgba(76,29,149,0.22)'], [1, 'rgba(5,5,8,0)']], 0, 0, -160, 210, 0.9),
-    blob([[0, 'rgba(56,189,248,0.4)'], [1, 'rgba(56,189,248,0)']], 34, 30, -150, 120, 0.6),
-    blob([[0, 'rgba(124,58,237,0.45)'], [1, 'rgba(124,58,237,0)']], -42, -36, -170, 150, 0.55),
-    blob([[0, 'rgba(255,190,90,0.5)'], [0.4, 'rgba(245,158,11,0.16)'], [1, 'rgba(245,158,11,0)']], 0, 0, -140, 60, 0.5),
+    blob([[0, 'rgba(99,102,241,0.5)'], [0.4, 'rgba(76,29,149,0.18)'], [1, 'rgba(5,5,8,0)']], 0, 2, -160, 165, 0.55),
+    blob([[0, 'rgba(56,189,248,0.4)'], [1, 'rgba(56,189,248,0)']], 30, 26, -150, 90, 0.4),
+    blob([[0, 'rgba(124,58,237,0.4)'], [1, 'rgba(124,58,237,0)']], -36, -30, -170, 110, 0.3),
+    blob([[0, 'rgba(255,190,90,0.5)'], [0.4, 'rgba(245,158,11,0.16)'], [1, 'rgba(245,158,11,0)']], 0, 0, -140, 55, 0.4),
   ];
 
   // İniş: kesimde ışık hızında, 0.6 sn'de süzülmeye iner
@@ -50,7 +50,7 @@ export default function sahne(ctx, { t0, t1 }) {
       field.u.uTravel.value = travel(t) + 40;
       field.u.uStretch.value = 0.02 + v * 0.05;
       field.u.uBlue.value = 0.4 * Math.exp(-local / 0.2);
-      field.u.uWidth.value = 3.0;
+      field.u.uWidth.value = 4.0;
       field.mesh.rotation.z = -0.2 * Math.exp(-local / 0.25) + 0.045 * local;
       // Son yarım saniye: hafif yakınlaşma (nefes)
       const br = smooth(3.5, 4.0, local);
@@ -64,7 +64,7 @@ export default function sahne(ctx, { t0, t1 }) {
       const bloom = gsap.parseEase('expo.out')(Math.min(local / 0.9, 1));
       neb.rotation.z = 0.06 * local;
       blobs.forEach((b, i) => {
-        const s = b.userData.s * (0.45 + 0.55 * bloom) * (1 + 0.05 * Math.sin(local * 1.6 + i) + 0.06 * br) * (1 + 0.35 * heroK(t));
+        const s = b.userData.s * (0.45 + 0.55 * bloom) * (1 + 0.05 * Math.sin(local * 1.6 + i) + 0.06 * br) * (1 + 0.25 * heroK(t));
         b.scale.set(s, s, 1);
         b.material.opacity = b.userData.op * bloom * (1 + 0.6 * kick(local - 0.02, 0.03, 0.25));
       });
@@ -95,11 +95,14 @@ export default function sahne(ctx, { t0, t1 }) {
   const sparks = qa('path');
 
   // Halkalar: iç sarmalayıcı (ölçek) + her elips çizilerek gelir; halkada gezen parıltı
+  const glintF = mk('filter', { id: 's7glint', x: '-1', y: '-1', width: '3', height: '3' });
+  glintF.append(mk('feGaussianBlur', { stdDeviation: '1.4' }));
+  svg.querySelector('defs').append(glintF);
   const ringInner = [ringBack, ringFront].map((g) => wrapNodes([...g.children]));
   const ringEls = ringInner.flatMap((g) => [...g.querySelectorAll('ellipse')]);
   ringEls.forEach((e) => { e.setAttribute('pathLength', '1'); e.style.strokeDasharray = '1 1'; });
   const glints = ringInner.map((g) => {
-    const e = mk('ellipse', { cx: 200, cy: 200, rx: 146, ry: 32, fill: 'none', stroke: '#ffffff', 'stroke-width': 9, 'stroke-linecap': 'round', pathLength: 100, 'stroke-dasharray': '5 95', opacity: 0 });
+    const e = mk('ellipse', { cx: 200, cy: 200, rx: 146, ry: 32, fill: 'none', stroke: '#ffffff', 'stroke-width': 5, 'stroke-linecap': 'round', pathLength: 100, 'stroke-dasharray': '3 97', opacity: 0, filter: 'url(#s7glint)' });
     g.append(e);
     return e;
   });
@@ -144,7 +147,7 @@ export default function sahne(ctx, { t0, t1 }) {
 
   // — Logo kurulumu —
   tl.set(logoBox, { autoAlpha: 1 }, t0);
-  tl.fromTo(logoBox, { scale: HERO_S, y: HERO_DY }, { scale: HERO_S * 1.035, y: HERO_DY, duration: 0.95, ease: 'none', immediateRender: false }, t0);
+  tl.fromTo(logoBox, { scale: HERO_S, y: HERO_DY }, { scale: HERO_S * 1.035, y: HERO_DY, duration: 0.68, ease: 'none', immediateRender: false }, t0);
   tl.to(logoBox, { scale: 1, y: 0, duration: MOVE_DUR, ease: 'expo.inOut' }, MOVE_AT);
   // dönüş/ölçek merkezleri (SVG kullanıcı koordinatı)
   gsap.set([nebA, halo, planet, ...ringInner], { svgOrigin: '200 200' });
@@ -155,11 +158,12 @@ export default function sahne(ctx, { t0, t1 }) {
   tl.fromTo(halo, { scale: 0.2, opacity: 0 }, { scale: 1.15, opacity: 0.85, duration: 0.45, ease: 'expo.out' }, T(0.02))
     .to(halo, { scale: 1, opacity: 0.5, duration: 0.6, ease: 'power2.inOut' }, T(0.47));
   tl.fromTo(planet, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: 0.62, ease: 'back.out(1.5)' }, T(0.03));
-  tl.fromTo(ringInner, { scaleX: 0.62, scaleY: 0.2 }, { scaleX: 1, scaleY: 1, duration: 0.7, ease: 'expo.out' }, T(0.12));
+  // halkalar düz bir çizgiden açılır
+  tl.fromTo(ringInner, { scaleX: 0.8, scaleY: 0 }, { scaleX: 1, scaleY: 1, duration: 0.6, ease: 'expo.out' }, T(0.08));
   // her halka elipsi iki yarıda eşzamanlı çizilir (içten dışa)
   const ringOrder = ringInner.map((g) => [...g.querySelectorAll('ellipse')].filter((e) => !glints.includes(e)));
   ringOrder[0].forEach((e, i) => {
-    tl.fromTo([e, ringOrder[1][i]], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power3.inOut' }, T(0.1 + i * 0.05));
+    tl.fromTo([e, ringOrder[1][i]], { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.42, ease: 'power2.out' }, T(0.05 + i * 0.035));
   });
   tl.fromTo(orbit, { opacity: 0 }, { opacity: 0.45, duration: 0.6, ease: 'power2.out' }, T(0.25));
   tl.fromTo([moonB.m.parentNode, moonF.m.parentNode], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, T(0.18));
@@ -168,7 +172,7 @@ export default function sahne(ctx, { t0, t1 }) {
     gsap.set(p, { svgOrigin: `${c[0]} ${c[1]}` });
     tl.fromTo(p, { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.55, ease: 'back.out(2.2)' }, T(0.32 + i * 0.09));
     tl.to(p, { scale: 1.45, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 }, T(2.0 + i * 0.12));
-    tl.to(p, { rotation: 45, duration: 0.5, ease: 'expo.out' }, T(3.5 + i * 0.06));
+    tl.to(p, { rotation: 90, duration: 0.45, ease: 'expo.out' }, T(3.5 + i * 0.06)); // 4 köşeli yıldız: 90° sonra logodaki hâli
   });
   // halkada parıltı (shimmer anı ve kapanışta)
   for (const [at, dur] of [[0.35, 0.75], [2.9, 0.8]]) {
@@ -180,18 +184,23 @@ export default function sahne(ctx, { t0, t1 }) {
 
   /* ---------- Yazılar ---------- */
   const CX = { left: 0, width: W, textAlign: 'center' };
+  // Gölge: text-shadow yerine düğüm filtresi (maskeli satırlarda dikdörtgen gölge kırpıntısı olmasın)
+  const SH = 'drop-shadow(0 2px 12px rgb(0 0 0 / 0.55))';
+  const unclip = (n) => n.querySelectorAll('.line').forEach((l) => { l.style.overflow = 'visible'; });
 
   // Spacetour.tr — sitenin üst menüsündeki yazı biçimi (küçük harf, .tr altın)
   const word = ctx.el(spl([['Spacetour'], ['.tr', 'gold']]), {
-    parent: card, cls: 'display shadow',
-    style: { ...CX, top: 386, fontSize: 58, textTransform: 'none', fontStretch: '108%', letterSpacing: '-0.02em' },
+    parent: card, cls: 'display',
+    style: { ...CX, top: 386, fontSize: 58, textTransform: 'none', fontStretch: '108%', letterSpacing: '-0.02em', filter: SH },
   });
   ctx.kinetic(word, T(1.0), { how: 'rise', stagger: 0.028, dur: 0.7 });
 
   // Evren / hiç durmaz.
-  const evren = ctx.el(ctx.split('evren'), { parent: card, cls: 'display shadow', style: { ...CX, top: 470, fontSize: 86 } });
+  const evren = ctx.el(ctx.split('evren'), { parent: card, cls: 'display', style: { ...CX, top: 470, fontSize: 86, filter: SH } });
+  unclip(evren);
   ctx.kinetic(evren, T(1.5), { how: 'slam', stagger: 0.04, dur: 0.55 });
-  const durmaz = ctx.el(ctx.split('hiç durmaz.'), { parent: card, cls: 'serif gold shadow', style: { ...CX, top: 550, fontSize: 86, textShadow: '0 0 30px rgb(245 197 66 / 0.35), 0 2px 24px rgb(0 0 0 / 0.65)' } });
+  const durmaz = ctx.el(ctx.split('hiç durmaz.'), { parent: card, cls: 'serif gold', style: { ...CX, top: 550, fontSize: 86, filter: `drop-shadow(0 0 16px rgb(245 197 66 / 0.3)) ${SH}` } });
+  unclip(durmaz);
   ctx.kinetic(durmaz, T(2.0), { how: 'blur', stagger: 0.03, dur: 0.6 });
   // vurgu: hafif ölçek darbesi
   tl.fromTo(evren, { scale: 1.08 }, { scale: 1, duration: 0.8, ease: 'expo.out', immediateRender: false }, T(1.5));
@@ -200,7 +209,7 @@ export default function sahne(ctx, { t0, t1 }) {
   const url = ctx.el(`<span class="u-ln"></span>${spl([['spacetour.com.tr']])}<span class="u-ln"></span>`, {
     parent: card, cls: 'mono', style: { ...CX, top: 666, fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', color: '#f4f3ee' },
   });
-  url.querySelector('.line').style.paddingLeft = '0.28em';
+  Object.assign(url.querySelector('.line').style, { paddingLeft: '0.28em', overflow: 'visible' });
   const ul = [...url.querySelectorAll('.u-ln')];
   ul.forEach((n, i) => Object.assign(n.style, { display: 'block', width: '46px', height: '1.5px', background: '#f5c542', transformOrigin: i ? '0% 50%' : '100% 50%', boxShadow: '0 0 10px rgb(245 197 66 / 0.6)' }));
   ctx.kinetic(url, T(2.5), { how: 'type', stagger: 0.024 });
@@ -213,8 +222,7 @@ export default function sahne(ctx, { t0, t1 }) {
   // 23.5–24.0: nefes — bütün kart çok hafif yakınlaşır
   tl.fromTo(card, { scale: 1 }, { scale: 1.022, duration: 0.5, ease: 'sine.inOut', immediateRender: false }, T(3.5));
 
-  // Kesim: hafif flaş
-  ctx.flash(t0, { color: '#fff6e0', peak: 0.55, dur: 0.35 });
+  // Kesim: flaş yok — geçişi ışık hızından iniş (yıldız çizgileri) ve hit taşır
 
   /* ---------- Ses ---------- */
   ctx.sound(t0, 'hit', 0.9);
