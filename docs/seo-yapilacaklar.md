@@ -46,6 +46,7 @@ Son güncelleme: 7 Ekim 2026. Dayanak: canlı sitenin 73 sayfalık taraması ve 
 - [x] Burç uyumu ikilileri (78): `/astroloji/burc-uyumu/koc-aslan`; FAQPage şeması, ters sıra 308 yönlenir, sitemap ve iç bağlantılar (6 Ekim).
 - [x] "Ay bugün hangi burçta" sayfası (`/astroloji/ay-bugun`, 15 dk'da bir yenilenir, 7 günlük Ay takvimi, SSS). Aylık Ay takvimi (`/astroloji/ay-takvimi/ekim-2026`, 2026–2028, 36 ay + dizin): ana evre saatleri, gün gün evre ve burç, FAQPage (7 Ekim).
 - [x] Retro takvimi: 5 gezegen × 2026–2027 (`/astroloji/retrolar/merkur-2026`), gerçek istasyon tarihleri, gölge dönemleri, SSS.
+- [x] Retro sayfaları derinleştirildi (9 Ekim): TSİ saatli duruşlar, gün gün takvim (gölge, burç geçişleri, iç kavuşum / karşı konum), 12 burca ev ev etkiler, İstanbul’dan görünürlük, genişletilmiş SSS, Article şeması. Elle yazılmış 2026 verisindeki yanlış burç/tarihler artık kullanılmıyor (tarihler hep efemeristen).
 - [x] 69 gök olayına ayrı sayfa (`/takvim/tam-gunes-tutulmasi-12-agustos-2026`) ve yıl özetleri (`/takvim/2026`…), tür rehberleri ve iç bağlantılar.
 - [x] ISS görünür geçişleri, 16 şehir (`/canli/iss-gecisleri/istanbul`): CelesTrak TLE + SGP4, saatte bir yenilenir, FAQPage; canlı ISS takipçisi buraya bağlanır (7 Ekim).
 - [x] Gezegen sayfalarına veriden üretilen soru-cevap + FAQPage (uydu sayıları Wikipedia 2026 ile güncellendi: Jüpiter 115, Satürn 293, Uranüs 29).
