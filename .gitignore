@@ -54,3 +54,4 @@ vercel_logs.json
 # Instagram paylaşım paketi (üretilmiş görseller, büyük dosyalar)
 /paylasim/
 /paylasim.zip
+/paylasim-*.zip
