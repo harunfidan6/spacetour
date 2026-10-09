@@ -54,4 +54,6 @@ pay=md('hikaye-burc.md')
 pay=pay[pay.index('## Paylaşım'):pay.index('## Notlar')]
 open(f'{P}/6-burc-hikayeleri/PAYLASIM.txt','w',encoding='utf8').write(pay)
 open(f'{P}/5-gunluk-8-ekim/PAYLASIM.txt','w',encoding='utf8').write(md('gun-2026-10-08.md'))
+
+shutil.copy2(f'{I}/paylasim-beni-oku.txt', f'{P}/BENİ-OKU.txt')
 print('ok')
