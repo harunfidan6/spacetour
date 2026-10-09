@@ -23,5 +23,13 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     return () => cancelAnimationFrame(id);
   }, [pathname]);
 
+  // İlk hidrasyon bitti: "geç açılış" işaretini (layout'taki satır içi betik) kaldır
+  useEffect(() => {
+    const w = window as Window & { __splitLate?: number };
+    clearTimeout(w.__splitLate);
+    const id = requestAnimationFrame(() => document.documentElement.classList.remove('split-late'));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return <TransitionContext.Provider value={api}>{children}</TransitionContext.Provider>;
 }

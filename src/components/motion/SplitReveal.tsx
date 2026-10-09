@@ -47,6 +47,14 @@ export function SplitReveal({
       el.setAttribute('data-split-ready', '');
       return;
     }
+    // İlk açılış yavaş geçtiyse metin zaten bölünmeden görünüyor: ekrandakini yeniden gizleyip oynatma
+    if (document.documentElement.classList.contains('split-late')) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) {
+        el.setAttribute('data-split-ready', '');
+        return;
+      }
+    }
 
     let started = false;
     let current: gsap.core.Animation | null = null;

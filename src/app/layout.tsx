@@ -112,7 +112,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "document.documentElement.classList.add('js');try{if(/[?&]film=1/.test(location.search)){document.documentElement.dataset.film='';sessionStorage.setItem('spacetour:intro','1')}if(sessionStorage.getItem('spacetour:intro')==='1')document.documentElement.dataset.introSeen=''}catch(e){}",
+              "document.documentElement.classList.add('js');window.__splitLate=setTimeout(function(){document.documentElement.classList.add('split-late')},1000);try{if(/[?&]film=1/.test(location.search)){document.documentElement.dataset.film='';sessionStorage.setItem('spacetour:intro','1')}if(sessionStorage.getItem('spacetour:intro')==='1')document.documentElement.dataset.introSeen=''}catch(e){}",
           }}
         />
         {/* Privacy-friendly analytics by Plausible */}
