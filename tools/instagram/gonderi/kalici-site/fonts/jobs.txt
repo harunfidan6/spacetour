@@ -1,0 +1,16 @@
+https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdfoLnnA.woff2 Archivo-100-latin-ext.woff2
+https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdnoLg.woff2 Archivo-100-latin.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2 Geist-400-latin-ext.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwcGFU.woff2 Geist-400-latin.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2 Geist-500-latin-ext.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwcGFU.woff2 Geist-500-latin.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwSGFWfOw.woff2 Geist-600-latin-ext.woff2
+https://fonts.gstatic.com/s/geist/v5/gyByhwUxId8gMEwcGFU.woff2 Geist-600-latin.woff2
+https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrkdmgPn.woff2 GeistMono-400-latin-ext.woff2
+https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrcdmg.woff2 GeistMono-400-latin.woff2
+https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrkdmgPn.woff2 GeistMono-500-latin-ext.woff2
+https://fonts.gstatic.com/s/geistmono/v6/or3nQ6H-1_WfwkMZI_qYFrcdmg.woff2 GeistMono-500-latin.woff2
+https://fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjgn7MsNo.woff2 InstrumentSerif-400i-latin-ext.woff2
+https://fonts.gstatic.com/s/instrumentserif/v5/jizHRFtNs2ka5fXjeivQ4LroWlx-6zAjjH7M.woff2 InstrumentSerif-400i-latin.woff2
+https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zsTjmbI.woff2 InstrumentSerif-400-latin-ext.woff2
+https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2 InstrumentSerif-400-latin.woff2

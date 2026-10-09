@@ -199,3 +199,116 @@ spacetour.com.tr (bağlantı profilde)
 
 #iss #uzayistasyonu #uzay #astronomi #nasa #astronot #gökyüzü #uzaybilimi
 ```
+
+# Site tarzı seri “Evren arşivi” № 01–10
+
+Sitenin görsel dilinde: koyu zemin, tam boy NASA/ESA fotoğrafı, altın vurgu, Archivo başlık, Instrument Serif
+italik ve Geist. Dosyalar `cikti/gonderi/site-NN-<ad>.png` (1080×1350). Hepsi tek betikten üretilir:
+`node tools/instagram/gonderi/kalici-site/build.mjs` (tek gönderi için sonuna `04` gibi numarasını ekle).
+Fotoğraflar sitenin `public/images/space` klasöründen; görsel künyesi her gönderinin sağ altında.
+
+Ortak kapanış (her açıklamanın sonuna):
+
+```
+Gökyüzünü her gün takip etmek için: spacetour.com.tr (bağlantı profilde)
+```
+
+## № 01 · Hubble Ultra Derin Alan
+
+```
+Bir kum tanesi kadar gökyüzü, 10.000 galaksi. 🌌
+
+Kol mesafesinde tuttuğun bir kum tanesinin kapattığı kadar küçük bir alan. Hubble oraya toplam 11 gün boyunca baktı; boş sanılan karanlıktan yaklaşık 10.000 galaksi çıktı. En uzaklarının ışığı 13 milyar yıldır yolda.
+
+#hubble #galaksi #uzay #astronomi #evren #derinuzay #nasa #uzaybilimi
+```
+
+## № 02 · Yaratılış Sütunları
+
+```
+Işığı 6.500 yıl önce yola çıktı. ✨
+
+Kartal Bulutsusu'ndaki Yaratılış Sütunları'nın içinde yeni yıldızlar doğuyor. En uzun sütun yaklaşık 4 ışık yılı boyunda: neredeyse Güneş'ten en yakın yıldıza kadarki yol. Fotoğraf James Webb Uzay Teleskobu'nun kızılötesi kamerasından.
+
+#yaratılışsütunları #jameswebb #bulutsu #uzay #astronomi #evren #nasa #uzaybilimi
+```
+
+## № 03 · Orion Bulutsusu
+
+```
+Çıplak gözle görülen bir yıldız doğumevi. 🌠
+
+Avcı takımyıldızının kılıcında bulanık bir yıldız gibi görünen M42, aslında 1.344 ışık yılı uzakta, yaklaşık 24 ışık yılı genişliğinde dev bir gaz bulutu. Hubble bu fotoğrafta 3.000'den fazla yıldız saydı. Kış gecelerinde dürbünle bile seçilir.
+
+#orion #avcı #bulutsu #hubble #uzay #astronomi #gökyüzü #uzaybilimi
+```
+
+## № 04 · Yengeç Bulutsusu
+
+```
+1054'te gündüz görülen yıldız patlaması. 💥
+
+Çinli gökbilimciler 1054 yılında gökte "konuk bir yıldız" kaydetti: 23 gün boyunca gündüz bile görüldü. Bugün o süpernovanın hâlâ genişleyen kalıntısına bakıyoruz. Merkezindeki pulsar saniyede 30 kez dönüyor.
+
+#yengeçbulutsusu #süpernova #hubble #uzay #astronomi #evren #tarih #uzaybilimi
+```
+
+## № 05 · M87 kara deliği
+
+```
+İlk kez fotoğraflanan kara delik. 🕳️
+
+2019'da yayımlanan bu görüntü için dünyanın dört bir yanındaki radyo teleskopları tek bir dev teleskop gibi çalıştı. M87 galaksisinin merkezindeki bu kara delik 55 milyon ışık yılı uzakta ve kütlesi Güneş'in 6,5 milyar katı. Ortadaki karanlık, ışığın bile kaçamadığı bölgenin gölgesi.
+
+#karadelik #m87 #olayufku #uzay #astronomi #evren #bilim #uzaybilimi
+```
+
+## № 06 · Satürn'ün halkaları
+
+```
+270.000 km genişlik, ~10 metre kalınlık. 🪐
+
+Satürn'ün ana halkaları uçtan uca Dünya ile Ay arasındaki yolun %70'i kadar; ama çoğu yerde bir apartmandan ince. Milyarlarca buz ve kaya parçasından oluşur. Fotoğraf Cassini sondasından: halkalar ekinoksta neredeyse yandan görünüyor.
+
+#satürn #cassini #gezegenler #uzay #astronomi #güneşsistemi #nasa #uzaybilimi
+```
+
+## № 07 · Mars'ta gün batımı
+
+```
+Mars'ta gün batımı mavidir. 🔴🔵
+
+Gündüz Mars'ın gökyüzü toz yüzünden pembemsi turuncudur. Güneş batarken ince toz mavi ışığı Güneş'in çevresine saçar; Mars'taki gezginler bu mavi akşamları fotoğrafladı. Orada bir gün 24 saat 37 dakika sürüyor.
+
+#mars #kızılgezegen #gezegenler #uzay #astronomi #nasa #güneşsistemi #uzaybilimi
+```
+
+## № 08 · Tam Güneş tutulması
+
+```
+400 kat büyük, 400 kat uzak. 🌑☀️
+
+Güneş, Ay'dan yaklaşık 400 kat büyük ama 400 kat da uzak. Bu yüzden ikisi gökte neredeyse aynı boyda görünür ve Ay, Güneş'i tam örtebilir. Ay her yıl 3,8 cm uzaklaştığı için bu güzel tesadüf sonsuza dek sürmeyecek.
+
+#güneştutulması #tutulma #ay #güneş #uzay #astronomi #gökyüzü #uzaybilimi
+```
+
+## № 09 · Hava ışıması
+
+```
+Dünya kendi kendine parlar. 💚
+
+Uzay İstasyonu'ndan çekilen bu fotoğrafta ufkun üstündeki yeşil şerit "hava ışıması": gündüz Güneş'in parçaladığı oksijen atomları gece yaklaşık 100 km yükseklikte yeniden birleşirken bu yeşil ışığı salar. Altta şehirlerin ışıkları, üstte yıldızlar.
+
+#havaışıması #airglow #iss #uzayistasyonu #dünya #uzay #astronomi #uzaybilimi
+```
+
+## № 10 · Webb'in altın aynası
+
+```
+Altın kaplı 6,5 metre. ✨
+
+James Webb Uzay Teleskobu'nun 18 altıgen parçadan oluşan ana aynası, kızılötesi ışığı iyi yansıtsın diye incecik bir altın tabakayla kaplı. Bütün aynadaki altın yaklaşık bir golf topu ağırlığında: 48 gram. Teleskop bugün Dünya'dan 1,5 milyon km uzakta çalışıyor.
+
+#jameswebb #teleskop #uzay #astronomi #nasa #bilim #evren #uzaybilimi
+```
