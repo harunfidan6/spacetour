@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>SpaceTour TR · günlük Reels çekim sayfası</title>
+<link rel="stylesheet" href="/film/tanitim/stil.css">
+<link rel="stylesheet" href="/film/gunluk/stil.css">
+</head>
+<body>
+<div id="stage">
+  <!-- Sahne: sitenin ana sayfası (?film=1), senaryo.js ekler -->
+  <div id="frames"></div>
+
+  <!-- Üst yazı: her bölümün kısa başlığı -->
+  <div id="topshade"></div>
+  <div id="tops"></div>
+
+  <!-- Alt künye: tarih ve adres -->
+  <div id="botshade"></div>
+  <div id="chip"><span class="c-dot"></span><span class="c-date doc-kicker"></span><span class="c-sep"></span><span class="c-url doc-kicker">spacetour.com.tr</span></div>
+
+  <!-- Kapanış -->
+  <section id="end" class="card">
+    <canvas class="stars"></canvas>
+    <div class="e-glow"></div>
+    <div class="fx-grain"></div>
+    <div class="e-copy">
+      <svg class="e-logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect class="l-bg" width="64" height="64" rx="14" fill="#050508" />
+        <circle class="l-ring" cx="32" cy="32" r="21" fill="none" stroke="#f4f3ee" stroke-opacity="0.55" stroke-width="2.2" pathLength="1" />
+        <circle class="l-sun" cx="32" cy="32" r="9.5" fill="#f59e0b" />
+        <circle class="l-planet" cx="53" cy="32" r="5" fill="#38bdf8" />
+      </svg>
+      <div class="e-word">Spacetour<span>.tr</span></div>
+      <div class="e-slogan doc-title"><span class="w1"></span> <span class="w2 doc-serif"></span></div>
+      <div class="e-url"><span class="u-rule"></span><span class="u-text doc-kicker"></span><span class="u-rule"></span></div>
+    </div>
+    <p class="e-credit doc-caption"></p>
+  </section>
+
+  <div id="dip"></div>
+</div>
+<script src="/film/_gsap.js"></script>
+<script src="/film/gunluk/senaryo.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { heroScene } from './heroScene';
+import { heroQuality, heroScene, scaled } from './heroScene';
 import { HOT, SOFT, placeStreak, radialTexture, streakMaterial } from './heroEffects';
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
@@ -187,8 +187,8 @@ const DUST_TO = new THREE.Color('#b9772f');
  */
 export function Comet({ orbit }: { orbit: CometOrbit }) {
   const { camera } = useThree();
-  const ion = useMemo(() => new ParticlePool(260), []);
-  const dust = useMemo(() => new ParticlePool(380), []);
+  const ion = useMemo(() => new ParticlePool(scaled(260)), []);
+  const dust = useMemo(() => new ParticlePool(scaled(380)), []);
   usePointScale([ion, dust]);
   const coma = useRef<THREE.Sprite>(null);
   const core = useRef<THREE.Sprite>(null);
@@ -231,25 +231,27 @@ export function Comet({ orbit }: { orbit: CometOrbit }) {
     v.away.copy(v.pos).normalize();
 
     const show = THREE.MathUtils.clamp(heroScene.intro * 1.5 - 0.5, 0, 1);
+    const grow = 1 + (1 - heroQuality.detail) * 0.6;
     // Güneş'e yakınken etkinlik artar (yaklaşık 1/r²), uzakta sönük bir nokta kalır
     const activity = THREE.MathUtils.clamp((9 / r) * (9 / r), 0.12, 2.2);
 
     if (!heroScene.frozen && show > 0) {
       const rate = THREE.MathUtils.clamp(activity, 0.55, 1.4);
-      debt.current.ion += delta * 150 * rate;
-      debt.current.dust += delta * 190 * rate;
+      // Zayıf cihazda daha az ama daha iri parçacık: kuyruk boyu aynı kalır
+      debt.current.ion += delta * 150 * rate * heroQuality.detail;
+      debt.current.dust += delta * 190 * rate * heroQuality.detail;
       while (debt.current.ion >= 1) {
         debt.current.ion -= 1;
         v.jitter.set(rand(-1, 1), rand(-1, 1), rand(-1, 1)).multiplyScalar(0.12 * s);
         v.tmp.copy(v.away).multiplyScalar(rand(5, 8) * s * (0.6 + 0.4 * activity)).add(v.jitter);
-        ion.emit(v.pos, v.tmp, rand(1.1, 1.7), rand(0.22, 0.4) * s, 0.9 * show, ION_FROM, ION_TO);
+        ion.emit(v.pos, v.tmp, rand(1.1, 1.7), rand(0.22, 0.4) * s * grow, 0.9 * show, ION_FROM, ION_TO);
       }
       while (debt.current.dust >= 1) {
         debt.current.dust -= 1;
         // Toz, çekirdeğin yörünge hızının bir kısmını korur: yörüngenin gerisinde kalıp kıvrılır
         v.jitter.set(rand(-1, 1), rand(-1, 1), rand(-1, 1)).multiplyScalar(0.25 * s);
         v.tmp.copy(v.vel).multiplyScalar(0.55).addScaledVector(v.away, rand(0.6, 1.6) * s).add(v.jitter);
-        dust.emit(v.pos, v.tmp, rand(2.2, 3.4), rand(0.45, 0.9) * s, 0.5 * show, DUST_FROM, DUST_TO);
+        dust.emit(v.pos, v.tmp, rand(2.2, 3.4), rand(0.45, 0.9) * s * grow, 0.5 * show, DUST_FROM, DUST_TO);
       }
     }
     ion.step(delta, 0, 0);
@@ -359,7 +361,7 @@ export function SolarActivity({ radius, loops = 4 }: { radius: number; loops?: n
   const { camera } = useThree();
   const root = useRef<THREE.Group>(null);
   const flash = useRef<THREE.Sprite>(null);
-  const cme = useMemo(() => new ParticlePool(420), []);
+  const cme = useMemo(() => new ParticlePool(scaled(420)), []);
   usePointScale([cme]);
   const hot = useMemo(() => radialTexture(HOT), []);
   const loopMats = useMemo(
@@ -447,7 +449,7 @@ export function SolarActivity({ radius, loops = 4 }: { radius: number; loops?: n
         e.wait = rand(5, 9);
         e.t = 0;
         limbNormal(_view, e.at);
-        for (let i = 0; i < 260; i++) {
+        for (let i = 0, n = scaled(260); i < n; i++) {
           v.d.set(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize().multiplyScalar(rand(0.1, 0.45)).add(e.at).normalize();
           v.p.copy(e.at).multiplyScalar(radius * 1.02);
           v.w.copy(v.d).multiplyScalar(radius * rand(0.5, 1.9));

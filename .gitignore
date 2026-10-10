@@ -50,3 +50,8 @@ vercel_logs.json
 
 # Instagram kart çıktıları (tools/instagram/kartlar.mjs ile yeniden üretilir)
 /tools/instagram/cikti/
+
+# Instagram paylaşım paketi (üretilmiş görseller, büyük dosyalar)
+/paylasim/
+/paylasim.zip
+/paylasim-*.zip

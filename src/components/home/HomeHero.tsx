@@ -89,8 +89,9 @@ export function HomeHero({ moon, next }: HomeHeroProps) {
 
   return (
     <section ref={root} aria-labelledby="evren" className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-ink" style={{ '--page-accent': 'var(--gold)' } as CSSProperties}>
-      {/* Katmanlar: Samanyolu fotoğrafı, 3D sahne, okunurluk gölgeleri */}
-      <Image src="/images/space/eso-milky-way-23ddfc.jpg" alt="" fill priority sizes="100vw" quality={60} className="-z-30 object-cover opacity-35 mix-blend-screen motion-safe:animate-[hero-drift_38s_ease-in-out_infinite_alternate] max-lg:object-[70%_center]" />
+      {/* Katmanlar: Samanyolu fotoğrafı, 3D sahne, okunurluk gölgeleri. Fotoğrafın kayması, altın parıltı ve
+          düğme bulanıklığı yalnızca geniş ekranda: telefonda her karede yeniden boyama/bulanıklaştırma ister. */}
+      <Image src="/images/space/eso-milky-way-23ddfc.jpg" alt="" fill priority sizes="100vw" quality={60} className="-z-30 object-cover opacity-35 mix-blend-screen lg:motion-safe:animate-[hero-drift_38s_ease-in-out_infinite_alternate] max-lg:object-[70%_center]" />
       <div aria-hidden className="absolute inset-0 -z-30 bg-[radial-gradient(ellipse_at_62%_55%,rgb(255_150_60/0.16),transparent_55%)] max-lg:bg-[radial-gradient(ellipse_at_45%_62%,rgb(255_150_60/0.18),transparent_50%)]" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-20">
         {scene3d && (
@@ -117,7 +118,7 @@ export function HomeHero({ moon, next }: HomeHeroProps) {
             <SplitReveal as="span" className="doc-title block whitespace-nowrap pt-[0.06em] text-[clamp(3.4rem,13.5vw,6.5rem)] text-paper lg:text-[clamp(6rem,8.4vw,9.25rem)]" trigger="intro" effect="rise">
               Evren
             </SplitReveal>
-            <span data-hero-fade className="doc-serif -mt-[0.04em] block bg-[linear-gradient(100deg,#e39b2d_0%,var(--gold)_22%,#f8e09a_38%,#fff6d8_46%,#f8e09a_54%,var(--gold)_70%,#e39b2d_100%)] bg-[length:200%_100%] bg-clip-text motion-safe:animate-[hero-sheen_7s_linear_infinite] pb-[0.12em] pr-[0.1em] whitespace-nowrap text-[clamp(3.1rem,12.4vw,6rem)] leading-[1.02] text-transparent lg:text-[clamp(5rem,6.8vw,7.5rem)]">
+            <span data-hero-fade className="doc-serif -mt-[0.04em] block bg-[linear-gradient(100deg,#e39b2d_0%,var(--gold)_22%,#f8e09a_38%,#fff6d8_46%,#f8e09a_54%,var(--gold)_70%,#e39b2d_100%)] bg-[length:200%_100%] bg-clip-text lg:motion-safe:animate-[hero-sheen_7s_linear_infinite] pb-[0.12em] pr-[0.1em] whitespace-nowrap text-[clamp(3.1rem,12.4vw,6rem)] leading-[1.02] text-transparent lg:text-[clamp(5rem,6.8vw,7.5rem)]">
               hiç durmaz.
             </span>
           </h1>
@@ -147,7 +148,7 @@ export function HomeHero({ moon, next }: HomeHeroProps) {
             </a>
             <Link
               href="/harita/planetaryum"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/25 bg-ink/40 px-4 py-[0.8rem] text-[15px] text-paper backdrop-blur-md transition-colors hover:border-gold/60 hover:text-gold sm:gap-3 sm:px-7 sm:py-[1.05rem] sm:text-lg"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/25 bg-ink/70 px-4 py-[0.8rem] text-[15px] text-paper lg:bg-ink/40 lg:backdrop-blur-md transition-colors hover:border-gold/60 hover:text-gold sm:gap-3 sm:px-7 sm:py-[1.05rem] sm:text-lg"
             >
               3D gök küresi <ArrowUpRight size={18} />
             </Link>

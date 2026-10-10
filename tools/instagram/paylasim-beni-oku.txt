@@ -1,0 +1,24 @@
+SPACETOUR TR · INSTAGRAM PAYLAŞIM PAKETİ
+=======================================
+
+Her görselin yanında aynı adlı bir .txt dosyası var: içinde Instagram açıklaması ve etiketleri hazır.
+Kopyalayıp yapıştırman yeterli. Hikâyelerin açıklaması olmaz; onlar için PAYLASIM.txt notlarına bak.
+
+1-tarihsiz-seri/        11 gönderi (1080×1350). Tarih yok, istediğin gün paylaş.
+                        Afiş tarzı, her biri ayrı renkte. № 01 Işık yolculuğu … № 11 Uzay İstasyonu.
+
+2-evren-arsivi/         10 gönderi (1080×1350). Tarih yok, istediğin gün paylaş.
+                        Sitenin tarzında: koyu zemin, NASA/ESA fotoğrafı, altın vurgu.
+
+3-hafta-1-kartlar/      8 gönderi (1080×1350), 7–13 Ekim haftası için hazırlanan ilk kartlar.
+                        DİKKAT: 03 (Venüs retrosu), 04 (Yeni Ay, 10 Ekim), 05 (Ekim takvimi) ve 07 (Plüton)
+                        tarihe bağlı; geçtikten sonra paylaşma. 01, 02, 06 ve 08 her zaman paylaşılabilir.
+
+4-reels/                "Bu gece gökyüzü" dikey video (1080×1920, 24 sn), 9 Ekim gecesi için.
+                        Yalnızca 9 Ekim'de paylaşılabilir.
+                        eski-deneme/ : siteden kaydedilen ilk video (beğenilmeyen sürüm), arşiv için.
+
+5-gunluk-8-ekim/        8 Ekim için hazırlanan gönderi ve hikâyeler. Tarihi geçti; arşiv için.
+
+6-burc-hikayeleri/      Günlük burç hikâye paketleri, 7–13 Ekim (her gün 5 kare, 1080×1920).
+                        Sıra: 0-kapak → 1-ates → 2-toprak → 3-hava → 4-su. Yalnızca kendi gününde paylaş.

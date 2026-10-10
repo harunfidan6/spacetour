@@ -1,0 +1,23 @@
+/* Günlük Reels: tanitim/stil.css üstüne üst başlık şeridi ve alt künye */
+#frames iframe { opacity: 1; }
+
+#topshade { position: absolute; inset: 0 0 auto 0; height: 33%; opacity: 0; pointer-events: none;
+  background: linear-gradient(to bottom, #050508 0%, #050508 66%, rgb(5 5 8 / 0) 100%); }
+#botshade { position: absolute; inset: auto 0 0 0; height: 15%; opacity: 0; pointer-events: none;
+  background: linear-gradient(to top, #050508 0%, #050508 45%, rgb(5 5 8 / 0) 100%); }
+#tops { position: absolute; inset: 0; pointer-events: none; }
+.top { position: absolute; left: var(--g); right: var(--g); top: 58px; }
+.top .kick { display: flex; align-items: center; gap: 14px; }
+.top .kick .doc-kicker { font-size: 12px; letter-spacing: 0.3em; white-space: nowrap; }
+.top .t-title { margin-top: 14px; color: #f4f3ee; white-space: nowrap; font-size: 46px; }
+.top .t-title .ln { display: block; overflow: hidden; padding: 0.08em 0 0.02em; margin-bottom: -0.06em; }
+.top .t-title .ln2 { color: var(--acc, #f5c542); text-transform: none; }
+.top .t-title .ch { display: inline-block; will-change: transform; }
+
+#chip { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
+  padding: 10px 18px; border-radius: 999px; background: rgb(5 5 8 / 0.72); border: 1px solid rgb(244 243 238 / 0.14);
+  backdrop-filter: blur(10px); opacity: 0; white-space: nowrap; }
+#chip .doc-kicker { font-size: 11px; letter-spacing: 0.22em; color: #f4f3ee; }
+#chip .c-date { color: #f5c542; }
+#chip .c-dot { width: 7px; height: 7px; border-radius: 50%; background: #f5c542; box-shadow: 0 0 10px #f5c542; }
+#chip .c-sep { width: 1px; height: 12px; background: rgb(244 243 238 / 0.3); }

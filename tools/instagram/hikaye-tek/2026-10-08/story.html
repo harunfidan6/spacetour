@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<title>Yeni Ay Geri Sayım</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500;62..125,800&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500&display=block" rel="stylesheet" />
+<style>
+  :root { --ink: #050508; --paper: #f4f3ee; --muted: #a8a69f; --gold: #f5c542; --gut: 72px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; background: var(--ink); overflow: hidden; }
+  .story { position: relative; width: 1080px; height: 1920px; color: var(--paper); font-family: 'Geist', sans-serif; overflow: hidden; background: var(--ink); }
+  #art { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+
+  /* Üst künye: marka + tarih (Instagram profil çubuğunun altında) */
+  .top { position: absolute; top: 268px; left: var(--gut); right: var(--gut); display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 34px; letter-spacing: -0.01em; }
+  .brand i { width: 52px; height: 52px; display: block; }
+  .brand i svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .brand b { font-weight: 500; color: var(--gold); }
+  .when { font-family: 'Geist Mono', monospace; font-size: 22px; letter-spacing: 0.22em; margin-right: -0.22em; text-transform: uppercase; color: var(--gold); }
+
+  /* Kahraman: Ay diskinin içinde geri sayım */
+  .hero { position: absolute; left: 0; right: 0; text-align: center; }
+  .to { top: var(--to-y, 444px); font-family: 'Instrument Serif', serif; font-style: italic; font-size: 104px; line-height: 1; color: var(--gold); letter-spacing: -0.01em; }
+  .num { top: var(--num-y, 522px); font-family: 'Archivo', sans-serif; font-weight: 800; font-stretch: 112%; font-size: var(--num-size, 490px); line-height: 1; letter-spacing: -0.04em; color: var(--paper); }
+  .unit { top: var(--unit-y, 962px); font-family: 'Archivo', sans-serif; font-weight: 800; font-stretch: 125%; font-size: 66px; line-height: 1; letter-spacing: 0.32em; margin-right: -0.32em; color: var(--paper); }
+  .tagline { top: var(--tag-y, 1106px); font-family: 'Instrument Serif', serif; font-style: italic; font-size: 52px; line-height: 1; color: rgba(244,243,238,0.92); }
+
+  /* Ay yolculuğu şeridi: etiketler */
+  .stop { position: absolute; top: var(--lab-y, 1302px); font-family: 'Geist Mono', monospace; text-transform: uppercase; white-space: nowrap; }
+  .stop b { display: block; font-weight: 500; font-size: 28px; letter-spacing: 0.08em; color: var(--paper); }
+  .stop span { display: block; margin-top: 8px; font-size: 24px; letter-spacing: 0.06em; color: var(--muted); }
+  .stop.c { transform: translateX(-50%); text-align: center; }
+  .stop.l { text-align: left; }
+  .stop.r { transform: translateX(-100%); text-align: right; }
+  .stop.gold b, .stop.gold span { color: var(--gold); }
+
+  .credit { position: absolute; left: 1030px; top: 760px; transform: translate(-50%, -50%) rotate(90deg); font-family: 'Geist Mono', monospace; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(168,166,159,0.55); white-space: nowrap; }
+
+  /* #debug: güvenli alanlar ve çıkartma alanı */
+  .dbg { display: none; position: absolute; left: 0; right: 0; pointer-events: none; }
+  :target .dbg, .debug .dbg { display: block; }
+</style>
+</head>
+<body>
+<div class="story" id="story">
+  <svg id="art" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <div class="top">
+    <div class="brand"><i><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="hpl" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#fff4cc"/><stop offset=".3" stop-color="#fbbf24"/><stop offset=".7" stop-color="#ea580c"/><stop offset="1" stop-color="#7c2d12"/></radialGradient><linearGradient id="hring" x1="0" x2="1"><stop offset="0" stop-color="#7dd3fc"/><stop offset=".55" stop-color="#ffffff"/><stop offset="1" stop-color="#a5b4fc"/></linearGradient><clipPath id="hback"><rect x="-40" y="-40" width="144" height="72"/></clipPath><clipPath id="hfront"><rect x="-40" y="32" width="144" height="72"/></clipPath></defs><g transform="rotate(-18 32 32)"><ellipse cx="32" cy="32" rx="27" ry="7" fill="none" stroke="url(#hring)" stroke-width="4" clip-path="url(#hback)"/></g><circle cx="32" cy="32" r="15.5" fill="url(#hpl)"/><g transform="rotate(-18 32 32)"><ellipse cx="32" cy="32" rx="27" ry="7" fill="none" stroke="url(#hring)" stroke-width="4" clip-path="url(#hfront)"/></g><circle cx="52" cy="13" r="3.6" fill="#38bdf8"/></svg></i><span>Spacetour<b>.tr</b></span></div>
+    <div class="when">8 Ekim · Perşembe</div>
+  </div>
+
+  <div class="hero to" id="to">Yeni Ay’a</div>
+  <div class="hero num" id="num">2</div>
+  <div class="hero unit" id="unit">GÜN</div>
+  <div class="hero tagline" id="tagline">Hafta sonu, ayın en karanlık geceleri.</div>
+
+  <div id="stops"></div>
+  <div class="credit">Görsel · Gregory H. Revera · CC BY-SA 3.0</div>
+
+  <div class="dbg" style="top:0;height:250px;background:rgba(255,0,0,.18)"></div>
+  <div class="dbg" style="bottom:0;height:300px;background:rgba(255,0,0,.18)"></div>
+  <div class="dbg" style="top:1395px;height:200px;left:90px;right:90px;border:3px dashed #0f0;color:#0f0;font:28px monospace;display:none" id="stk"></div>
+</div>
+
+<script>
+  const NS = 'http://www.w3.org/2000/svg';
+  const art = document.getElementById('art');
+  const svg = (tag, attrs = {}, parent = art) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); parent.appendChild(e); return e; };
+  const defs = svg('defs');
+
+  // Ay fotoğrafı (1920×1825): disk merkezi (961, 930), yarıçap 797 px
+  const PHOTO = { src: '../../../../public/images/space/fullmoon2010-a02ba6.jpg', w: 1920, h: 1825, cx: 961, cy: 930, r: 797 };
+  const moonImage = (cx, cy, r, attrs, parent) => {
+    const s = r / PHOTO.r;
+    return svg('image', { href: PHOTO.src, x: cx - PHOTO.cx * s, y: cy - PHOTO.cy * s, width: PHOTO.w * s, height: PHOTO.h * s, preserveAspectRatio: 'none', ...attrs }, parent);
+  };
+
+  // Aydınlık bölge: k = aydınlanma oranı (0–1), side 'L' (küçülen, Kuzey yarımkürede sol) ya da 'R' (büyüyen)
+  function litPath(cx, cy, r, k, side) {
+    if (k >= 0.999) return `M${cx - r} ${cy}A${r} ${r} 0 1 0 ${cx + r} ${cy}A${r} ${r} 0 1 0 ${cx - r} ${cy}Z`;
+    const rx = r * Math.abs(1 - 2 * k);
+    const top = `${cx} ${cy - r}`, bot = `${cx} ${cy + r}`;
+    if (side === 'R') return `M${top}A${r} ${r} 0 0 1 ${bot}A${rx} ${r} 0 0 ${k < 0.5 ? 0 : 1} ${top}Z`;
+    return `M${top}A${r} ${r} 0 0 0 ${bot}A${rx} ${r} 0 0 ${k < 0.5 ? 1 : 0} ${top}Z`;
+  }
+
+  // Filtreler: yer ışığı (çok koyu, hafif mavi) ve aydınlık yüz
+  defs.innerHTML = `
+    <filter id="earth" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.115 0 0 0 0.006  0 0.125 0 0 0.008  0 0 0.155 0 0.016  0 0 0 1 0"/></filter>
+    <filter id="earthSmall" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.2 0 0 0 0.02  0 0.21 0 0 0.022  0 0 0.25 0 0.03  0 0 0 1 0"/></filter>
+    <filter id="lit" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1.32 0 0 0 0.04  0 1.27 0 0 0.03  0 0 1.16 0 0.0  0 0 0 1 0"/></filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <filter id="glow" x="-100%" y="-50%" width="300%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>
+    <filter id="glowSmall" x="-300%" y="-60%" width="700%" height="220%"><feGaussianBlur stdDeviation="3.2"/></filter>
+    <filter id="glowWide" x="-150%" y="-60%" width="400%" height="220%"><feGaussianBlur stdDeviation="46"/></filter>
+    <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset=".62" stop-color="#8fb4ff" stop-opacity=".10"/><stop offset=".78" stop-color="#6d8fd8" stop-opacity=".04"/><stop offset="1" stop-color="#050508" stop-opacity="0"/></radialGradient>
+    <radialGradient id="limb" cx=".5" cy="1" r=".75"><stop offset="0" stop-color="#2b5fb8" stop-opacity=".22"/><stop offset=".55" stop-color="#1b2f66" stop-opacity=".08"/><stop offset="1" stop-color="#050508" stop-opacity="0"/></radialGradient>
+    <linearGradient id="track" x1="0" x2="1"><stop offset="0" stop-color="#f4f3ee" stop-opacity=".45"/><stop offset="1" stop-color="#f4f3ee" stop-opacity=".3"/></linearGradient>
+    <linearGradient id="streak" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5c542" stop-opacity="0"/><stop offset="1" stop-color="#fff4cc" stop-opacity="1"/></linearGradient>`;
+
+  // Yıldızlar (sabit tohumlu, her çizimde aynı)
+  let seed = 20261008;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const stars = svg('g');
+  for (let i = 0; i < 300; i++) {
+    const x = rnd() * 1080, y = rnd() * 1920, s = rnd();
+    const r = 0.45 + s * s * 1.5, op = 0.12 + rnd() * 0.6;
+    svg('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: r.toFixed(2), fill: rnd() > 0.85 ? '#ffe7b0' : '#f4f3ee', opacity: op.toFixed(2) }, stars);
+  }
+
+  // Alt kenarda Dünya’nın atmosfer ışıltısı (sakin, yazısız)
+  svg('rect', { x: 0, y: 1500, width: 1080, height: 420, fill: 'url(#limb)' });
+
+  // ---- Kahraman Ay: %4 aydınlık, küçülen hilal (aydınlık kenar solda) ----
+  const H = { cx: 540, cy: 735, r: 345, k: 0.04 };
+  defs.insertAdjacentHTML('beforeend', `<clipPath id="heroDisc"><circle cx="${H.cx}" cy="${H.cy}" r="${H.r}"/></clipPath>
+    <mask id="heroLit" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><path d="${litPath(H.cx, H.cy, H.r, H.k, 'L')}" fill="#fff" filter="url(#soft)"/></mask>`);
+  svg('circle', { cx: H.cx, cy: H.cy, r: H.r * 1.55, fill: 'url(#halo)' });
+  const crescent = litPath(H.cx, H.cy, H.r, H.k, 'L');
+  svg('path', { d: crescent, fill: '#ffe2a8', opacity: 0.32, filter: 'url(#glowWide)' });
+  svg('path', { d: crescent, fill: '#fff4dc', opacity: 0.55, filter: 'url(#glow)' });
+  // Diskin altına koyu zemin (yıldızlar görünmesin)
+  svg('circle', { cx: H.cx, cy: H.cy, r: H.r, fill: '#050508' });
+  const heroEarth = svg('g', { 'clip-path': 'url(#heroDisc)' });
+  moonImage(H.cx, H.cy, H.r, { filter: 'url(#earth)' }, heroEarth);
+  const heroLit = svg('g', { 'clip-path': 'url(#heroDisc)' });
+  moonImage(H.cx, H.cy, H.r, { filter: 'url(#lit)', mask: 'url(#heroLit)' }, heroLit);
+  svg('circle', { cx: H.cx, cy: H.cy, r: H.r - 0.5, fill: 'none', stroke: '#c9d6ff', 'stroke-opacity': 0.12, 'stroke-width': 1.5 });
+
+  // ---- Orionid mühür sayacı (sağ üst) ----
+  const O = { cx: 914, cy: 450, r: 108 };
+  const stamp = svg('g', { transform: `translate(${O.cx} ${O.cy})` });
+  svg('circle', { r: O.r, fill: 'rgba(5,5,8,0.55)', stroke: '#f5c542', 'stroke-opacity': 0.8, 'stroke-width': 1.6 }, stamp);
+  svg('circle', { r: O.r - 25, fill: 'none', stroke: '#f5c542', 'stroke-opacity': 0.35, 'stroke-width': 1 }, stamp);
+  const ringR = O.r - 13.5;
+  defs.insertAdjacentHTML('beforeend', `<path id="ring" d="M0 ${-ringR}A${ringR} ${ringR} 0 1 1 -0.01 ${-ringR}"/>`);
+  const RING = 'METEOR YAĞMURU · 21 EKİM · SAATTE ~20 METEOR · ';
+  const ringText = svg('text', { 'font-family': 'Geist Mono', 'font-size': 16, fill: '#f5c542', 'fill-opacity': 0.9, 'letter-spacing': 2, transform: `rotate(${-(7 / RING.length) * 360})` }, stamp);
+  const tp = svg('textPath', { href: '#ring', startOffset: '0', textLength: (2 * Math.PI * ringR - 8).toFixed(1), lengthAdjust: 'spacing' }, ringText);
+  tp.textContent = RING;
+  const t1 = svg('text', { y: -28, 'text-anchor': 'middle', 'font-family': 'Geist Mono', 'font-weight': 500, 'font-size': 19, 'letter-spacing': 2, fill: '#f5c542' }, stamp); t1.textContent = 'ORİONİD';
+  const t2 = svg('text', { y: 31, 'text-anchor': 'middle', 'font-family': 'Archivo', 'font-weight': 800, 'font-size': 70, 'letter-spacing': -2, fill: '#f4f3ee' }, stamp); t2.textContent = '13';
+  const t3 = svg('text', { y: 56, 'text-anchor': 'middle', 'font-family': 'Geist Mono', 'font-weight': 500, 'font-size': 18, 'letter-spacing': 4, fill: '#f4f3ee' }, stamp); t3.textContent = 'GÜN';
+
+  // ---- Ay yolculuğu şeridi: 7 durak, eşit aralıklı ----
+  const TRACK_Y = 1252, X0 = 108, STEP = 144;
+  const stopsData = [
+    { k: 0.04, side: 'L', r: 34, name: 'Bugün', date: '8 Ekim · %4', align: 'l' },
+    { k: 0.03, side: 'L', r: 17 },
+    { k: 0, side: 'L', r: 34, name: 'Yeni Ay', date: '10 Ekim · 19:00', align: 'c', gold: true, target: true },
+    { k: 0.22, side: 'R', r: 17 },
+    { k: 0.5, side: 'R', r: 34, name: 'İlk Dördün', date: '18 Ekim', align: 'c' },
+    { k: 0.84, side: 'R', r: 17 },
+    { k: 1, side: 'R', r: 34, name: 'Dolunay', date: '26 Ekim', align: 'r' },
+  ];
+  svg('line', { x1: X0, y1: TRACK_Y, x2: X0 + STEP * 6, y2: TRACK_Y, stroke: '#f4f3ee', 'stroke-opacity': 0.34, 'stroke-width': 2 });
+  // Bugünden Yeni Ay’a: geri sayımın altın kesimi
+  svg('line', { x1: X0, y1: TRACK_Y, x2: X0 + STEP * 2, y2: TRACK_Y, stroke: '#f5c542', 'stroke-width': 3 });
+  const stopsEl = document.getElementById('stops');
+  stopsData.forEach((s, i) => {
+    const cx = X0 + STEP * i, cy = TRACK_Y;
+    const id = `m${i}`;
+    defs.insertAdjacentHTML('beforeend', `<clipPath id="${id}d"><circle cx="${cx}" cy="${cy}" r="${s.r}"/></clipPath>`);
+    svg('circle', { cx, cy, r: s.r + 7, fill: '#050508' });
+    if (s.target) svg('circle', { cx, cy, r: s.r + 9, fill: 'none', stroke: '#f5c542', 'stroke-width': 2.5 });
+    const g = svg('g', { 'clip-path': `url(#${id}d)` });
+    moonImage(cx, cy, s.r, { filter: 'url(#earthSmall)' }, g);
+    if (s.k > 0) {
+      defs.insertAdjacentHTML('beforeend', `<clipPath id="${id}l"><path d="${litPath(cx, cy, s.r, s.k, s.side)}"/></clipPath>`);
+      if (s.k < 0.3) svg('path', { d: litPath(cx, cy, s.r, s.k, s.side), fill: '#fff4dc', opacity: 0.7, filter: 'url(#glowSmall)' });
+      const gl = svg('g', { 'clip-path': `url(#${id}l)` });
+      moonImage(cx, cy, s.r, { filter: 'url(#lit)' }, gl);
+    }
+    svg('circle', { cx, cy, r: s.r - 0.5, fill: 'none', stroke: '#c9d6ff', 'stroke-opacity': 0.22, 'stroke-width': 1 });
+    if (s.name) {
+      const d = document.createElement('div');
+      d.className = `stop ${s.align}${s.gold ? ' gold' : ''}`;
+      d.style.left = (s.align === 'l' ? cx - s.r : s.align === 'r' ? cx + s.r : cx) + 'px';
+      d.innerHTML = `<b>${s.name}</b><span>${s.date}</span>`;
+      stopsEl.appendChild(d);
+    }
+  });
+
+  if (location.hash === '#debug') { document.getElementById('story').classList.add('debug'); document.getElementById('stk').style.display = 'block'; }
+</script>
+</body>
+</html>

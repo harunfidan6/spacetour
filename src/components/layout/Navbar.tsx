@@ -59,7 +59,7 @@ export default function Navbar() {
       <nav
         className={`fixed inset-x-0 top-0 z-[120] transition-[transform,background-color,border-color] duration-500 ease-[cubic-bezier(.16,1,.3,1)] ${
           hidden && !menuOpen ? '-translate-y-full' : 'translate-y-0'
-        } ${scrolled ? 'border-b border-line bg-ink/80 backdrop-blur-xl' : 'border-b border-transparent bg-transparent'}`}
+        } ${scrolled ? 'border-b border-line bg-ink/95 lg:bg-ink/80 lg:backdrop-blur-xl' : 'border-b border-transparent bg-transparent'}`}
       >
         <div className="flex h-16 items-center gap-6 px-[var(--gutter)]">
           <Link href="/" className="group flex items-center gap-2.5 text-paper" aria-label="Spacetour.tr ana sayfa">
@@ -90,7 +90,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="group flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.04] py-1.5 pl-3.5 pr-2 text-paper backdrop-blur-md transition-all hover:border-gold/40 hover:bg-gold/10 hover:text-gold cursor-pointer"
+              className="group flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-ink/60 py-1.5 pl-3.5 pr-2 text-paper lg:bg-white/[0.04] lg:backdrop-blur-md transition-all hover:border-gold/40 hover:bg-gold/10 hover:text-gold cursor-pointer"
               aria-expanded={menuOpen}
               aria-controls="site-menu"
             >

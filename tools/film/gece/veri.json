@@ -1,0 +1,67 @@
+{
+  "_kaynak": "src/lib/astrophysics/skyTonight.ts, src/lib/astrology/lunarCalendar.ts, src/data/events.ts · İstanbul, 9 Ekim 2026 Cuma gecesi (→ 10 Ekim sabahı)",
+  "tarih": "9 Ekim 2026",
+  "gun": "Cuma",
+  "sehir": "İstanbul",
+  "gunBatimi": "18:33",
+  "karanlik": [
+    "20:10",
+    "05:30"
+  ],
+  "gunDogumu": "07:09",
+  "ay": {
+    "aydinlik": 1,
+    "evre": "Yeni Ay'a bir gün",
+    "batis": "17:43",
+    "dogus": "06:50",
+    "dogusTarih": "10 Ekim Cumartesi sabahı",
+    "not": "Karanlık saatlerin hiçbirinde gökte değil (17:43'te battı, 10 Ekim 06:50'de doğar; tam karanlık 05:30'da biter)"
+  },
+  "yeniAy": {
+    "kalanGun": 1,
+    "tarih": "10 Ekim Cumartesi",
+    "saat": "19:00",
+    "burc": "Terazi"
+  },
+  "saturn": {
+    "aralik": [
+      "19:10",
+      "06:10"
+    ],
+    "enIyi": "00:30",
+    "yon": "Güney",
+    "yukseklik": 51,
+    "kadir": 0.4,
+    "takimyildiz": "Balıklar"
+  },
+  "mars": {
+    "aralik": [
+      "01:50",
+      "06:40"
+    ],
+    "yon": "Güneydoğu",
+    "kadir": 1.1,
+    "takimyildiz": "Yengeç"
+  },
+  "jupiter": {
+    "aralik": [
+      "03:00",
+      "06:40"
+    ],
+    "yon": "Güneydoğu",
+    "kadir": -1.9,
+    "takimyildiz": "Aslan",
+    "not": "Gecenin en parlak gezegeni"
+  },
+  "venus": {
+    "gorunur": false
+  },
+  "orionid": {
+    "kalanGun": 12,
+    "tarih": "21 Ekim",
+    "saatte": 20,
+    "kaynak": "Halley kuyruklu yıldızı",
+    "sacilma": "Avcı (Orion)"
+  },
+  "adres": "spacetour.com.tr"
+}
