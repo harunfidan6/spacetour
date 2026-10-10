@@ -1,13 +1,13 @@
 'use client';
 /* eslint-disable react-hooks/immutability -- the R3F frame loop mutates three.js objects (uniforms, tmp vectors, the camera) by design */
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Line, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { PlanetBody, SunGlow } from '@/components/space/PlanetBody';
 import { NASA_TEXTURES, SolarGranulationShader, loadNasaTexture } from '@/components/space/nasaTextures';
-import { heroScene } from './heroScene';
+import { TIER_DETAIL, detectHeroTier, heroQuality, heroScene, scaled, type HeroTier } from './heroScene';
 import { ForegroundDust, MeteorImpacts, ShootingStars, SunCorona, type PlanetRegistry } from './heroEffects';
 import { Comet, SolarActivity, type CometOrbit } from './heroParticles';
 import { HeroPlanetBody } from './heroPlanets';
@@ -118,7 +118,7 @@ function Orbit({ radius, opacity = 0.3 }: { radius: number; opacity?: number }) 
 function AsteroidBelt({ inner, outer }: { inner: number; outer: number }) {
   const geometry = useMemo(() => {
     const rand = seeded(7);
-    const count = 2600;
+    const count = scaled(2600, 600);
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const a = rand() * Math.PI * 2;
@@ -171,7 +171,7 @@ function GalileanMoons({ radius }: { radius: number }) {
           }}
         >
           <mesh position={[radius * m.d, 0, 0]}>
-            <sphereGeometry args={[radius * m.r, 16, 16]} />
+            <sphereGeometry args={[radius * m.r, 12, 12]} />
             <meshStandardMaterial color={m.color} roughness={1} />
           </mesh>
         </group>
@@ -210,7 +210,7 @@ function Planet({ id, place, index, registry }: { id: PlanetId; place: Placement
       {id === 'dunya' && (
         <group ref={moon}>
           <group position={[radius * 1.9, 0.12, 0]}>
-            <PlanetBody id="ay" radius={radius * 0.3} detail={28} />
+            <PlanetBody id="ay" radius={radius * 0.3} detail={scaled(28, 16)} />
           </group>
         </group>
       )}
@@ -279,10 +279,10 @@ function HeroSun({ radius }: { radius: number }) {
   return (
     <group>
       <mesh ref={body} material={surface}>
-        <sphereGeometry args={[radius, 96, 96]} />
+        <sphereGeometry args={[radius, scaled(96, 40), scaled(96, 40)]} />
       </mesh>
       <mesh scale={1.06} material={corona}>
-        <sphereGeometry args={[radius, 64, 64]} />
+        <sphereGeometry args={[radius, scaled(64, 32), scaled(64, 32)]} />
       </mesh>
       <SunGlow radius={radius * 1.15} strength={1} />
       <SunGlow radius={radius * 2.6} strength={0.42} />
@@ -324,8 +324,8 @@ function Scene() {
 
   return (
     <>
-      <Stars radius={140} depth={80} count={5000} factor={4.2} saturation={0} fade speed={1} />
-      <ShootingStars />
+      <Stars radius={140} depth={80} count={scaled(5000)} factor={4.2} saturation={0} fade speed={1} />
+      <ShootingStars count={heroQuality.tier === 0 ? 2 : 3} />
       <ambientLight intensity={0.18} />
       <pointLight position={[0, 0, 0]} intensity={4.4} decay={0} color="#fff0d6" />
       {/* Kamera tarafından sıcak dolgu: kameraya bakan gece yüzleri delik gibi görünmesin */}
@@ -350,23 +350,83 @@ function Scene() {
         <Comet key={i} orbit={c} />
       ))}
       <MeteorImpacts planets={registry} />
-      <ForegroundDust />
+      {heroQuality.tier > 0 && <ForegroundDust count={scaled(140)} />}
       <Rig layout={layout} />
     </>
   );
 }
 
+/**
+ * Kare hızını izler: sahne açıldıktan sonra 2 saniyelik ortalama 45 fps'nin altında kalırsa kademeyi
+ * bir düşürür (çözünürlük, en altta 30 fps sınırı). Yalnızca aşağı iner; film çekiminde kapalı.
+ */
+function AutoQuality({ tier, onDecline }: { tier: HeroTier; onDecline: () => void }) {
+  const acc = useRef({ wait: 1.5, t: 0, n: 0 });
+  useFrame((_, delta) => {
+    if (tier === 0 || heroScene.intro < 0.3) return;
+    const a = acc.current;
+    if (a.wait > 0) {
+      a.wait -= delta;
+      return;
+    }
+    a.t += delta;
+    a.n += 1;
+    if (a.t < 2) return;
+    if (a.n / a.t < 45) {
+      onDecline();
+      a.wait = 1.5;
+    }
+    a.t = 0;
+    a.n = 0;
+  });
+  return null;
+}
+
+/** Zayıf cihazda kare sınırı: çizimi istekle (frameloop="demand") ~30 fps'te tetikler. */
+function FrameCap({ fps }: { fps: number }) {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    let raf = 0;
+    let last = 0;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (now - last >= 1000 / fps - 2) {
+        last = now;
+        invalidate();
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [fps, invalidate]);
+  return null;
+}
+
+const DPR: Record<HeroTier, number | [number, number]> = { 0: 1, 1: [1, 1.3], 2: [1, 1.75] };
+
 /** Ana sayfa açılışındaki yoğun Güneş Sistemi sahnesi (NASA dokularıyla). */
 export function HeroCosmos3D({ active }: { active: boolean }) {
+  // Başlangıç kademesi cihazdan; ayrıntı (parçacık, yıldız, bölüt sayıları) kurulumda bir kez belirlenir
+  const [start] = useState(() => {
+    const t = document.documentElement.dataset.film !== undefined ? 2 : detectHeroTier();
+    heroQuality.tier = t;
+    heroQuality.detail = TIER_DETAIL[t];
+    return t;
+  });
+  const [tier, setTier] = useState<HeroTier>(start);
+  const capped = tier === 0 && start < 2;
   return (
     <Canvas
-      frameloop={active ? 'always' : 'never'}
-      dpr={[1, 1.75]}
+      frameloop={!active ? 'never' : capped ? 'demand' : 'always'}
+      dpr={DPR[tier]}
       camera={{ position: WIDE.camera, fov: WIDE.fov, near: 0.1, far: 600 }}
-      gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+      gl={{ alpha: true, antialias: start === 2, powerPreference: 'high-performance' }}
       style={{ position: 'absolute', inset: 0 }}
     >
       <Scene />
+      {start === 2 && document.documentElement.dataset.film !== undefined ? null : (
+        <AutoQuality tier={tier} onDecline={() => setTier((t) => (t > 0 ? ((t - 1) as HeroTier) : t))} />
+      )}
+      {capped && active && <FrameCap fps={30} />}
     </Canvas>
   );
 }

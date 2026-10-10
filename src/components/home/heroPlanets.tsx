@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { PlanetBody } from '@/components/space/PlanetBody';
 import { EarthDayNightShader, NASA_TEXTURES, SaturnGlobeShader, SaturnRingShader, loadNasaTexture } from '@/components/space/nasaTextures';
-import { heroScene } from './heroScene';
+import { heroScene, scaled } from './heroScene';
 
 /* ---------- Güneş'e bakan atmosfer halkası ---------- */
 
@@ -66,7 +66,7 @@ export function Atmosphere({ radius, color, scale = 1.05, power = 2.4, strength 
   });
   return (
     <mesh ref={mesh} scale={scale} material={mat}>
-      <sphereGeometry args={[radius, 64, 64]} />
+      <sphereGeometry args={[radius, scaled(64, 32), scaled(64, 32)]} />
     </mesh>
   );
 }
@@ -106,10 +106,10 @@ export function HeroEarth({ radius }: { radius: number }) {
   return (
     <group rotation={[0, 0, THREE.MathUtils.degToRad(23.4)]}>
       <mesh ref={body} material={surface}>
-        <sphereGeometry args={[radius, 72, 72]} />
+        <sphereGeometry args={[radius, scaled(72, 36), scaled(72, 36)]} />
       </mesh>
       <mesh ref={clouds} scale={1.012}>
-        <sphereGeometry args={[radius, 64, 64]} />
+        <sphereGeometry args={[radius, scaled(64, 32), scaled(64, 32)]} />
         <meshStandardMaterial map={cloudMap} transparent opacity={0.95} depthWrite={false} roughness={1} />
       </mesh>
       <Atmosphere radius={radius} color="#6fb4ff" scale={1.07} power={2.2} strength={1.4} />
@@ -157,7 +157,7 @@ export function HeroSaturn({ radius }: { radius: number }) {
       }),
     [radius, inner, outer]
   );
-  const ringGeo = useMemo(() => new THREE.RingGeometry(inner, outer, 192, 1), [inner, outer]);
+  const ringGeo = useMemo(() => new THREE.RingGeometry(inner, outer, scaled(192, 96), 1), [inner, outer]);
   const dir = useMemo(() => new THREE.Vector3(), []);
   useEffect(
     () => () => {
@@ -182,7 +182,7 @@ export function HeroSaturn({ radius }: { radius: number }) {
   return (
     <group ref={group} rotation={[0.12, 0, THREE.MathUtils.degToRad(26.7)]}>
       <mesh ref={globe} material={globeMat}>
-        <sphereGeometry args={[radius, 96, 96]} />
+        <sphereGeometry args={[radius, scaled(96, 40), scaled(96, 40)]} />
       </mesh>
       <mesh geometry={ringGeo} material={ringMat} rotation={[-Math.PI / 2, 0, 0]} />
       <Atmosphere radius={radius} color="#ffd9a0" scale={1.03} power={3} strength={0.6} />
@@ -207,7 +207,7 @@ export function HeroPlanetBody({ id, radius }: { id: string; radius: number }) {
   const atmo = ATMOSPHERES[id];
   return (
     <>
-      <PlanetBody id={id} radius={radius} detail={radius > 1 ? 96 : 56} spin={1.5} glow={false} />
+      <PlanetBody id={id} radius={radius} detail={scaled(radius > 1 ? 96 : 56, 28)} spin={1.5} glow={false} />
       {atmo && <Atmosphere radius={radius} color={atmo.color} strength={atmo.strength} />}
     </>
   );
