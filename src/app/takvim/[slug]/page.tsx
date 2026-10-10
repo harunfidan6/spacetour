@@ -8,7 +8,10 @@ import { DOC_IMAGES } from '@/data/docImages';
 import { events, eventTypeLabels, type AstronomicalEvent, type EventType } from '@/data/events';
 import { eventSlug, eventBySlug, EVENT_YEARS } from '@/lib/eventSlug';
 import { eventBodies, eventLunarMonth } from '@/lib/eventLinks';
-import { buildPageMetadata, getArticleJsonLd, getBreadcrumbJsonLd, CONTENT_DATES } from '@/lib/seo';
+import { buildPageMetadata, getArticleJsonLd, getBreadcrumbJsonLd, getFaqPageJsonLd, CONTENT_DATES } from '@/lib/seo';
+import { compassName, lunationDetail, meteorDetail, type LunationDetail, type MeteorDetail } from '@/lib/eventDetail';
+import { FULL_MOON_HOUSE, NEW_MOON_HOUSE } from '@/data/lunationHouses';
+import { SIGN_IDS, SIGN_NAMES } from '@/lib/astrology/dailySky';
 
 // "Kaç gün kaldı" bilgisi güncel kalsın
 export const revalidate = 86400;
@@ -73,6 +76,41 @@ const GUIDE: Record<EventType, { what: string; how: string }> = {
 };
 
 const fmtDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long', timeZone: 'Europe/Istanbul' });
+const TZ = 'Europe/Istanbul';
+const clock = (ms: number) => new Date(ms).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: TZ });
+const dayClock = (ms: number) => `${new Date(ms).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', timeZone: TZ })} ${clock(ms)}`;
+const eveningLabel = (ms: number) => new Date(ms).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long', timeZone: TZ });
+const LUNAR = ['dolunay', 'super-ay'];
+
+/** Meteor yağmuru ve dolunay / yeni Ay için soru-cevaplar (hesaplanmış değerlerle) */
+function eventFaq(e: AstronomicalEvent, m: MeteorDetail | null, l: LunationDetail | null, dateText: string) {
+  const year = e.date.slice(0, 4);
+  if (m) {
+    const name = e.title.replace(/ Zirvesi$/, '');
+    return [
+      { question: `${name} ${year} ne zaman?`, answer: `Zirve ${dateText} gecesi bekleniyor. Yağmur zirveden birkaç gün önce başlar ve birkaç gün sonra biter; zirve gecesi ve ertesi sabaha karşı saatler en verimlisidir.` },
+      { question: `${name} saat kaçta izlenir?`, answer: m.window ? `İstanbul’dan en iyi saatler ${dayClock(m.window.from)} ile ${dayClock(m.window.to)} arası: radyant ufkun yeterince üstünde${m.moon.set && m.moon.set <= m.window.from ? ', Ay ise batmış' : ''}. Radyantın en yükseğe çıktığı an ${dayClock(m.radiantPeak.at)}.` : `Bu yıl Ay ışığı ya da radyantın alçakta kalması gözlemi zorlaştırıyor; en yüksek radyant ${dayClock(m.radiantPeak.at)} civarında.` },
+      { question: `${name} Türkiye’den görülecek mi?`, answer: `Evet. Radyant ${m.shower.where} bulunuyor ve Türkiye’den ${m.radiantRise ? `${clock(m.radiantRise)} civarında doğuyor` : 'gece boyunca ufkun üstünde kalıyor'}. Şehir ışıklarından uzak, ufku açık bir yer seçin.` },
+      { question: 'Saatte kaç meteor görülür?', answer: `İdeal koşullarda (ZHR) saatte ${m.shower.zhr} civarı. Bu yıl İstanbul enleminde, radyant yüksekliği ve Ay ışığı hesaba katıldığında karanlık bir yerden saatte yaklaşık ${m.rate} meteor beklenir; şehir içinde bu sayı birkaçta kalır.` },
+      { question: 'Hangi yöne bakmalıyım?', answer: `Meteorlar ${m.shower.where} bulunan radyanttan dağılıyormuş gibi görünür, ama gökyüzünün her yerinde belirebilir. Radyanta doğrudan bakmak yerine ondan 30–40° uzağa, gökyüzünün geniş bir bölümüne bakmak en iyisidir.` },
+    ];
+  }
+  if (l) {
+    const sign = SIGN_NAMES[l.sign];
+    const ist = l.cities[0];
+    const base = [
+      { question: `${e.title} ${year} saat kaçta?`, answer: `${l.full ? 'Dolunay' : 'Yeni Ay'} anı ${dateText}, İstanbul saatiyle ${e.time}. ${l.full ? 'Ay o gece ve bir önceki/sonraki gece neredeyse tam dolu görünür.' : 'Ay bu sırada görünmez; ince hilal 1–2 gün sonra gün batımında batıda belirir.'}` },
+      { question: `${e.title} hangi burçta?`, answer: `${l.full ? 'Dolunay' : 'Yeni Ay'} ${sign} burcunda gerçekleşiyor. ${l.full ? `Güneş karşıt burçta, ${SIGN_NAMES[(l.sign + 6) % 12]} burcunda.` : `Güneş ve Ay birlikte ${sign} burcunda.`}` },
+    ];
+    if (l.full && ist) {
+      base.push({ question: `Ay İstanbul’da saat kaçta doğacak?`, answer: ist.rises.map((r, i) => (r.rise ? `${eveningLabel(l.evenings[i])} ${clock(r.rise)}` : '')).filter(Boolean).join(', ') + ` civarında ${ist.rises[0]?.az ? compassName(ist.rises[0].az) : 'doğu'} ufkundan doğuyor. Ankara’da birkaç dakika önce, İzmir’de birkaç dakika sonra doğar.` });
+    }
+    if (e.type === 'super-ay') base.push({ question: 'Süper Ay ne kadar büyük görünür?', answer: `Ay bu dolunayda Dünya’ya yaklaşık ${(Math.round(l.distanceKm / 1000) * 1000).toLocaleString('tr-TR')} km uzaklıkta. Yılın en uzak dolunayına göre yaklaşık %14 daha büyük ve %30’a varan oranda daha parlak görünür; fark çıplak gözle hafiftir, en etkileyici görüntü Ay ufuktan doğarken yakalanır.` });
+    return base;
+  }
+  return [];
+}
+
 const daysLeft = (iso: string) => Math.round((Date.parse(`${iso}T12:00:00Z`) - Date.now()) / 86_400_000);
 
 export async function generateMetadata(props: PageProps<'/takvim/[slug]'>): Promise<Metadata> {
@@ -87,10 +125,24 @@ export async function generateMetadata(props: PageProps<'/takvim/[slug]'>): Prom
   const e = eventBySlug(slug);
   if (!e) return { title: 'Olay bulunamadı', robots: { index: false } };
   const title = `${e.title} ${new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  const m = meteorDetail(e);
+  const l = lunationDetail(e);
+  const y = e.date.slice(0, 4);
+  // Aranan soruyu başlığa taşı: "saat kaçta", "burçlara etkileri"
+  const rich = m
+    ? `${e.title.replace(/ Zirvesi$/, '')} ${y}: Saat Kaçta, Nereden İzlenir?`
+    : l
+      ? `${e.title} ${y}: Saat Kaçta? Burçlara Etkileri`
+      : null;
+  const description = m
+    ? `${e.title} ${y} zirvesi ${new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} gecesi. İstanbul’dan en iyi saatler${m.window ? ` ${clock(m.window.from)}–${clock(m.window.to)}` : ''}, saatte ~${m.rate} meteor. Radyant, Ay ışığı ve gözlem rehberi.`
+    : l
+      ? `${e.title}: ${new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} saat ${e.time} (TSİ), ${SIGN_NAMES[l.sign]} burcunda. İstanbul, Ankara, İzmir’de Ay doğuşu ve 12 burca etkileri.`
+      : `${e.description} ${e.details}`;
   return buildPageMetadata({
     path: `/takvim/${slug}`,
-    title: `${title} | SpaceTour TR`.length <= 60 ? `${title} | SpaceTour TR` : title,
-    description: `${e.description} ${e.details}`.slice(0, 158),
+    title: rich ? `${rich} | SpaceTour TR` : `${title} | SpaceTour TR`.length <= 60 ? `${title} | SpaceTour TR` : title,
+    description: description.slice(0, 158),
   });
 }
 
@@ -161,7 +213,15 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
   const left = daysLeft(e.date);
   const when = left > 1 ? `${left} gün kaldı` : left === 1 ? 'Yarın' : left === 0 ? 'Bugün' : 'Geçti';
   const year = e.date.slice(0, 4);
-  const sameType = events.filter((x) => x.type === e.type && x.id !== e.id).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6);
+  // Aynı türden olaylar: önce yaklaşanlar (dolunay ve süper ay birlikte)
+  const today = new Date().toLocaleDateString('sv-SE', { timeZone: TZ });
+  const kin = (x: AstronomicalEvent) => (LUNAR.includes(e.type) ? LUNAR.includes(x.type) : x.type === e.type) && x.id !== e.id;
+  const upcomingKin = events.filter((x) => kin(x) && x.date >= today);
+  const sameType = (upcomingKin.length >= 6 ? upcomingKin : [...events.filter((x) => kin(x) && x.date < today).slice(-(6 - upcomingKin.length)), ...upcomingKin]).slice(0, 6);
+  const meteor = meteorDetail(e);
+  const lun = lunationDetail(e);
+  const dateText = new Date(`${e.date}T12:00:00Z`).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+  const faq = eventFaq(e, meteor, lun, dateText);
   const bodies = eventBodies(e);
   const lunarMonth = eventLunarMonth(e);
 
@@ -184,6 +244,7 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
     <div style={{ '--page-accent': 'var(--solar)' } as CSSProperties} className="relative">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {faq.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqPageJsonLd(faq)) }} />}
       <ChapterHero
         variant="band"
         section={`${fmtDate(e.date)}${e.time ? ` · ${e.time}` : ''}`}
@@ -206,6 +267,76 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
               <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">{e.title} nasıl gözlenir?</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{e.details}</p>
             </article>
+            {meteor && (
+              <section aria-labelledby="zirve" className="border border-line bg-ink-2 p-6">
+                <h2 id="zirve" className="doc-title text-xl text-paper sm:text-2xl">Türkiye’den zirve gecesi</h2>
+                <p className="mt-3 text-base leading-relaxed text-paper/85">
+                  {e.title.replace(/ Zirvesi$/, '')} için zirve {dateText} gecesi. İstanbul’da gökyüzü {clock(meteor.dusk)} itibarıyla tam kararıyor;
+                  radyant {meteor.radiantRise ? `${clock(meteor.radiantRise)} civarında doğuyor ve` : 'akşamdan ufkun üstünde,'} {dayClock(meteor.radiantPeak.at)} civarında ufkun {Math.round(meteor.radiantPeak.alt)}° üzerine çıkıyor.
+                  Ay %{Math.round(meteor.moon.illumination * 100)} aydınlık{meteor.moon.set ? `; batış saati ${clock(meteor.moon.set)}` : meteor.moon.rise ? `; doğuş saati ${clock(meteor.moon.rise)}` : meteor.moon.upAtPeak ? '; gece boyunca gökyüzünde' : '; gece boyunca ufkun altında'}.
+                  {meteor.window ? ` En iyi saatler ${clock(meteor.window.from)}–${clock(meteor.window.to)}: karanlık bir yerden saatte yaklaşık ${meteor.rate} meteor beklenir.` : ` Bu yıl Ay ışığı gözlemi zorlaştırıyor; parlak meteorlar yine de görülebilir.`}
+                </p>
+                <dl className="mt-5 grid gap-4 text-[15px] sm:grid-cols-2">
+                  <div><dt className="text-sm text-paper/70">Radyant</dt><dd className="mt-1 text-paper">{meteor.shower.where}</dd></div>
+                  <div><dt className="text-sm text-paper/70">En iyi saatler (İstanbul)</dt><dd className="mt-1 text-paper">{meteor.window ? `${clock(meteor.window.from)} – ${clock(meteor.window.to)}` : 'Ay ışığı engelliyor'}</dd></div>
+                  <div><dt className="text-sm text-paper/70">Saatlik sayı</dt><dd className="mt-1 text-paper">İdeal {meteor.shower.zhr} · bu yıl karanlık yerden ~{meteor.rate}</dd></div>
+                  <div><dt className="text-sm text-paper/70">Ay</dt><dd className="mt-1 text-paper">%{Math.round(meteor.moon.illumination * 100)} aydınlık{meteor.moon.set ? `, batış ${clock(meteor.moon.set)}` : ''}</dd></div>
+                  <div><dt className="text-sm text-paper/70">Kaynak</dt><dd className="mt-1 text-paper">{meteor.shower.parent}</dd></div>
+                  <div><dt className="text-sm text-paper/70">Atmosfere giriş hızı</dt><dd className="mt-1 text-paper">Saniyede {meteor.shower.speed} km</dd></div>
+                </dl>
+              </section>
+            )}
+            {lun && lun.full && lun.cities.length > 0 && (
+              <section aria-labelledby="ay-dogusu" className="border border-line bg-ink-2 p-6">
+                <h2 id="ay-dogusu" className="doc-title text-xl text-paper sm:text-2xl">Ay saat kaçta doğacak?</h2>
+                <p className="mt-3 text-base leading-relaxed text-paper/85">
+                  Dolunay anı {dateText}, İstanbul saatiyle {e.time}; Ay o sırada {SIGN_NAMES[lun.sign]} burcunda ve Dünya’ya yaklaşık {(Math.round(lun.distanceKm / 1000) * 1000).toLocaleString('tr-TR')} km uzaklıkta.
+                  Ay her iki akşam da gün batımına yakın doğar ve sabaha kadar gökyüzünde kalır.
+                </p>
+                <div className="mt-5 overflow-x-auto">
+                  <table className="w-full min-w-[22rem] border-collapse text-left text-[15px]">
+                    <thead>
+                      <tr className="border-b border-line text-sm text-paper/70">
+                        <th className="py-2 pr-4 font-normal">Şehir</th>
+                        {lun.evenings.map((ev) => <th key={ev} className="py-2 pr-4 font-normal">{eveningLabel(ev)}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lun.cities.map((c) => (
+                        <tr key={c.name} className="border-b border-line/60">
+                          <td className="py-2 pr-4 text-paper">{c.name}</td>
+                          {c.rises.map((r, i) => <td key={i} className="py-2 pr-4 text-paper/85">{r.rise ? `${clock(r.rise)} · ${r.az !== null ? compassName(r.az) : ''}` : '—'}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-3 text-sm text-paper/70">Ay doğuş saatleri ufkun açık olduğu varsayımıyla hesaplandı; tepeler ve binalar birkaç dakika geciktirebilir.</p>
+              </section>
+            )}
+            {lun && (
+              <section aria-labelledby="burclar">
+                <h2 id="burclar" className="doc-title text-xl text-paper sm:text-2xl">{SIGN_NAMES[lun.sign]} burcunda {lun.full ? 'dolunay' : 'yeni Ay'}: burçlara etkileri</h2>
+                <p className="mt-3 text-[15px] leading-relaxed text-paper/75">
+                  {lun.full ? 'Dolunay bir döngünün tamamlandığı, duyguların ve sonuçların görünür olduğu an' : 'Yeni Ay yeni bir döngünün başladığı, niyet tutma ve tohum ekme anı'} olarak yorumlanır. Güneş burcuna göre {lun.full ? 'dolunayın' : 'yeni Ay’ın'} düştüğü ev, hayatının hangi alanında hissedileceğini gösterir; yükselen burcunu biliyorsan onu da oku.
+                </p>
+                <div className="mt-5 grid gap-px border border-line bg-line sm:grid-cols-2">
+                  {SIGN_NAMES.map((name, s) => {
+                    const house = ((lun.sign - s + 12) % 12) + 1;
+                    return (
+                      <article key={name} className="bg-ink p-5">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <h3 className="text-lg font-semibold text-paper"><Link href={`/astroloji/burclar/${SIGN_IDS[s]}`} className="hover:text-gold">{name}</Link></h3>
+                          <span className="text-sm text-paper/70">{house}. ev</span>
+                        </div>
+                        <p className="mt-2 text-[15px] leading-relaxed text-paper/80">{(lun.full ? FULL_MOON_HOUSE : NEW_MOON_HOUSE)[house - 1]}</p>
+                        <Link href={`/astroloji/gunluk-burc/${SIGN_IDS[s]}`} className="mt-3 inline-flex items-center gap-1 text-sm text-gold hover:text-paper">{name} günlük yorum <ArrowUpRight size={13} /></Link>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
             <article className="border-b border-line pb-8">
               <span className="block text-sm font-medium text-gold">{eventTypeLabels[e.type]} nedir?</span>
               <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">Gökyüzünde ne oluyor?</h2>
@@ -216,6 +347,19 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
               <h2 className="doc-title mt-2 text-xl text-paper sm:text-2xl">İpuçları</h2>
               <p className="mt-3 text-base leading-relaxed text-paper/85">{g.how}</p>
             </article>
+            {faq.length > 0 && (
+              <section aria-labelledby="sss">
+                <h2 id="sss" className="doc-title text-xl text-paper sm:text-2xl">Sık sorulanlar</h2>
+                <dl className="mt-4 space-y-4">
+                  {faq.map((f) => (
+                    <div key={f.question} className="border border-line bg-ink p-4">
+                      <dt className="text-base font-semibold text-paper">{f.question}</dt>
+                      <dd className="mt-1.5 text-[15px] leading-relaxed text-paper/80">{f.answer}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
           </div>
           <aside className="space-y-6 lg:col-span-4">
             <div className="border border-line bg-ink-2 p-5 text-sm">
@@ -236,7 +380,7 @@ export default async function TakvimSlugPage(props: PageProps<'/takvim/[slug]'>)
             )}
             {sameType.length > 0 && (
               <div className="border border-line bg-ink-2 p-5 text-sm">
-                <div className="font-medium text-gold">Diğer {eventTypeLabels[e.type].toLocaleLowerCase('tr-TR')} tarihleri</div>
+                <div className="font-medium text-gold">{LUNAR.includes(e.type) ? 'Diğer dolunaylar' : `Diğer ${eventTypeLabels[e.type].toLocaleLowerCase('tr-TR')} tarihleri`}</div>
                 <ul className="mt-3 space-y-2">
                   {sameType.map((x) => (
                     <li key={x.id}><Link href={`/takvim/${eventSlug(x)}`} className="flex justify-between gap-3 text-paper/85 hover:text-gold"><span>{x.title}</span><span className="shrink-0 font-mono text-[13px] text-paper/70">{x.date.split('-').reverse().join('.')}</span></Link></li>

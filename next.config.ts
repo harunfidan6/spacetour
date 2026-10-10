@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import eventRedirects from "./src/data/eventRedirects.json";
 
 // Burç uyumu ikilileri tek adreste (burç sırasıyla); ters sıra kalıcı olarak yönlenir: aslan-koc → koc-aslan
 const SIGNS = ['koc', 'boga', 'ikizler', 'yengec', 'aslan', 'basak', 'terazi', 'akrep', 'yay', 'oglak', 'kova', 'balik'];
@@ -19,6 +20,8 @@ const nextConfig: NextConfig = {
       // Kaldırılan dikey yükseliş simülatörü
       { source: '/yolculuk/atmosfer', destination: '/yolculuk', permanent: true },
       ...reversedPairs,
+      // Tarihi düzeltilen gök olayları: eski (yanlış tarihli) adresler doğrusuna
+      ...eventRedirects.map((r) => ({ ...r, permanent: true })),
     ];
   },
   images: {

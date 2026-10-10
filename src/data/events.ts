@@ -1,5 +1,7 @@
 export type EventType = 'ay-tutulmasi' | 'gunes-tutulmasi' | 'meteor-yagmuru' | 'gezegen-kavusumu' | 'super-ay' | 'yeni-ay' | 'dolunay' | 'equinoks' | 'solstis';
 
+import { LUNAR_EVENTS } from './lunarEvents';
+
 export interface AstronomicalEvent {
   id: string;
   title: string;
@@ -37,8 +39,8 @@ export const eventTypeTones: Record<EventType, string> = {
   'solstis': '#ff9f43'
 };
 
-export const events: AstronomicalEvent[] = [
-  // 2026 Eclipses
+/** Elle girilen olaylar: tutulmalar, meteor yağmurları, ekinoks/gündönümü ve kavuşumlar (tarihler efemerisle denetlendi). */
+const BASE_EVENTS: AstronomicalEvent[] = [
   {
     id: '2026-se-1',
     title: 'Halkalı Güneş Tutulması',
@@ -79,8 +81,6 @@ export const events: AstronomicalEvent[] = [
     visibility: 'tüm-dünya',
     emoji: '🌗'
   },
-
-  // 2027 Eclipses
   {
     id: '2027-se-1',
     title: 'Halkalı Güneş Tutulması',
@@ -121,8 +121,6 @@ export const events: AstronomicalEvent[] = [
     visibility: 'tüm-dünya',
     emoji: '🌖'
   },
-
-  // 2026 Meteor Showers
   {
     id: '2026-met-1',
     title: 'Quadrantid Meteor Yağmuru',
@@ -193,8 +191,6 @@ export const events: AstronomicalEvent[] = [
     visibility: 'tüm-dünya',
     emoji: '☄️'
   },
-
-  // 2027 Meteor Showers
   {
     id: '2027-met-1',
     title: 'Quadrantid Meteor Yağmuru',
@@ -265,8 +261,6 @@ export const events: AstronomicalEvent[] = [
     visibility: 'tüm-dünya',
     emoji: '☄️'
   },
-
-  // Equinoxes and Solstices 2026-2027
   {
     id: '2026-eq-1',
     title: 'İlkbahar Ekinoksu',
@@ -347,212 +341,50 @@ export const events: AstronomicalEvent[] = [
     visibility: 'tüm-dünya',
     emoji: '❄️'
   },
-
-  // Super Moons & Planet Conjunctions (approximate dates for realism)
-  {
-    id: '2026-sm-1',
-    title: 'Süper Ay',
-    type: 'super-ay',
-    date: '2026-05-31',
-    description: 'Ay\'ın Dünya\'ya en yakın olduğu noktada gerçekleşen dolunay.',
-    details: 'Normal dolunaylardan yaklaşık %14 daha büyük ve %30 daha parlak görünür. Ay doğarken veya batarken izlemesi çok keyiflidir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌕'
-  },
-  {
-    id: '2026-sm-2',
-    title: 'Süper Ay',
-    type: 'super-ay',
-    date: '2026-06-29',
-    description: 'Yılın ikinci süper ayı.',
-    details: 'Fotoğrafçılar için harika bir fırsat sunar. Telefoto lens ile ufuk çizgisindeki objelerle birlikte çok etkileyici kareler yakalanabilir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌕'
-  },
   {
     id: '2026-conj-1',
-    title: 'Jüpiter ve Venüs Kavuşumu',
+    title: 'Venüs ve Jüpiter Kavuşumu',
     type: 'gezegen-kavusumu',
-    date: '2026-08-25',
-    description: 'Gökyüzünün en parlak iki gezegeninin yakınlaşması.',
-    details: 'Güneş battıktan hemen sonra batı ufkunda birbirine çok yakın iki parlak nokta olarak görülecekler. Çıplak gözle çok rahat izlenebilir.',
+    date: '2026-06-09',
+    time: '21:00',
+    description: 'Gökyüzünün en parlak iki gezegeni Yengeç takımyıldızında 1,6° arayla yan yana.',
+    details: 'Gün batımından sonra batı-kuzeybatı ufkunda, Güneş’in 37° doğusunda görülürler. Venüs çok daha parlaktır; ikisini aynı dürbün görüş alanında yakalamak kolaydır. Ufku açık bir yerden, gün batımından 30–60 dakika sonra bakın.',
     visibility: 'tüm-dünya',
     emoji: '🪐'
   },
   {
     id: '2026-conj-2',
-    title: 'Mars ve Satürn Kavuşumu',
+    title: 'Mars ve Jüpiter Kavuşumu',
     type: 'gezegen-kavusumu',
-    date: '2026-11-15',
-    description: 'Kızıl gezegen Mars ile halkalı gezegen Satürn gökyüzünde buluşuyor.',
-    details: 'Gece yarısına doğru güney ufkunda bir araya gelecekler. Bir teleskopla bakıldığında aynı görüş alanında harika görünebilirler.',
+    date: '2026-11-16',
+    time: '03:00',
+    description: 'Kızıl Mars ile dev Jüpiter, Aslan takımyıldızında 1,2° arayla buluşuyor.',
+    details: 'İkisi de Güneş’in yaklaşık 88° batısında: gece yarısından sonra doğudan yükselir, şafak öncesinde güneydoğu göğünde yüksekte parlarlar. Jüpiter’in beyaz, Mars’ın turuncu rengi yan yana çıplak gözle bile fark edilir; dürbünle Jüpiter’in dört büyük uydusu da görülebilir.',
     visibility: 'tüm-dünya',
     emoji: '🪐'
   },
   {
-    id: '2027-sm-1',
-    title: 'Süper Ay',
-    type: 'super-ay',
-    date: '2027-07-18',
-    description: 'Dünya\'ya oldukça yaklaşmış dev dolunay.',
-    details: 'Ay Dünya etrafındaki eliptik yörüngesinde perije (en yakın) noktasına geldiğinde dolunay evresiyle çakışır. Çok parlak bir gece bekliyor.',
-    visibility: 'tüm-dünya',
-    emoji: '🌕'
-  },
-  {
-    id: '2027-sm-2',
-    title: 'Süper Ay',
-    type: 'super-ay',
-    date: '2027-08-16',
-    description: 'Yılın en dikkat çeken süper ayı.',
-    details: 'Özellikle ay doğuşu sırasında (ufka yakınken) Ay yanılsaması (Moon illusion) sebebiyle devasa boyutlarda algılanır.',
-    visibility: 'tüm-dünya',
-    emoji: '🌕'
-  },
-  {
     id: '2027-conj-1',
-    title: 'Mars ve Jüpiter Kavuşumu',
+    title: 'Mars ve Jüpiter Yakınlaşması',
     type: 'gezegen-kavusumu',
-    date: '2027-04-12',
-    description: 'Gece gökyüzünde çok yakın iki parlak cisim.',
-    details: 'Sabaha karşı doğu ufkunda birbirine sadece 0.5 derece mesafede parlayacaklar. Bir dürbün bile muazzam bir görüntü sağlar.',
+    date: '2027-03-28',
+    time: '03:00',
+    description: 'Retrodaki Mars, Aslan takımyıldızında Jüpiter’e 3,6° kadar yaklaşıyor.',
+    details: 'Mars şubattaki karşı konumundan sonra hâlâ çok parlak. İkili gün batımında doğu-güneydoğudan yükselir ve gecenin büyük bölümünde görünür; gece yarısına doğru güney göğünde en yüksektedir. Tam bir kavuşum değil, yakın bir geçiştir: iki gezegen birkaç gece boyunca birbirine yakın kalır.',
     visibility: 'tüm-dünya',
     emoji: '🪐'
   },
   {
     id: '2027-conj-2',
-    title: 'Venüs ve Pleiades Kavuşumu',
+    title: 'Venüs ve Satürn Kavuşumu',
     type: 'gezegen-kavusumu',
-    date: '2027-06-05',
-    description: 'Venüs gezegeninin Ülker (Pleiades) yıldız kümesiyle yakınlaşması.',
-    details: 'Akşam saatlerinde batı ufkunda görülebilir. Dürbün veya küçük bir teleskopla bu muhteşem kozmik buluşma çok net izlenebilir.',
+    date: '2027-05-07',
+    time: '21:00',
+    description: 'Sabah yıldızı Venüs, Satürn’ün 0,6° yakınından geçiyor.',
+    details: 'İkisi de Güneş’in yaklaşık 26° batısında: 7 ve 8 Mayıs sabahları gün doğumundan önce doğu ufkunda alçakta görülürler. Venüs çok parlak olduğu için önce onu bulun; Satürn hemen yanındaki sönük, sarımsı noktadır. Dürbün işinizi kolaylaştırır.',
     visibility: 'tüm-dünya',
-    emoji: '✨'
+    emoji: '🪐'
   },
-  
-  // Extra Full Moons and New Moons to fill up the calendar (2026-2027)
-  {
-    id: '2026-fm-1',
-    title: 'Kurt Dolunayı',
-    type: 'dolunay',
-    date: '2026-01-23',
-    description: 'Ocak ayının dolunayı.',
-    details: 'Kışın ortasında, kurtların ulumasının duyulduğu dönemlerde gerçekleştiği için eski kültürlerde bu isim verilmiştir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌝'
-  },
-  {
-    id: '2026-nm-1',
-    title: 'Yeni Ay',
-    type: 'yeni-ay',
-    date: '2026-02-07',
-    description: 'Derin uzay gözlemleri için en uygun zaman.',
-    details: 'Ay gökyüzünde görünmediği için ışık kirliliği azalır. Galaksileri, nebulaları ve yıldız kümelerini izlemek için en iyi gecedir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌑'
-  },
-  {
-    id: '2026-fm-2',
-    title: 'Kar Dolunayı',
-    type: 'dolunay',
-    date: '2026-02-22',
-    description: 'Şubat ayının dolunayı.',
-    details: 'Kuzey yarımkürede yılın en yoğun kar yağışlı aylarından birine denk geldiği için bu isimle anılır.',
-    visibility: 'tüm-dünya',
-    emoji: '🌝'
-  },
-  {
-    id: '2026-nm-2',
-    title: 'Yeni Ay',
-    type: 'yeni-ay',
-    date: '2026-04-06',
-    description: 'Asteroit ve sönük gök cisimlerini gözlemlemek için iyi bir gece.',
-    details: 'Gökyüzünün karanlık olmasından faydalanarak iyi bir teleskopla Messier objeleri avına çıkabilirsiniz.',
-    visibility: 'tüm-dünya',
-    emoji: '🌑'
-  },
-  {
-    id: '2026-fm-3',
-    title: 'Solucan Dolunayı',
-    type: 'dolunay',
-    date: '2026-03-24',
-    description: 'Mart ayının dolunayı.',
-    details: 'Toprağın yumuşamaya başlaması ve solucanların yüzeye çıkması dolayısıyla isimlendirilmiştir. İlkbaharın müjdecisidir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌝'
-  },
-  {
-    id: '2026-nm-3',
-    title: 'Yeni Ay',
-    type: 'yeni-ay',
-    date: '2026-09-01',
-    description: 'Samanyolu galaksisini fotoğraflamak için muazzam bir fırsat.',
-    details: 'Işık kirliliğinden uzak bir noktada, Ay ışığının yokluğunda Samanyolu kuşağı tüm ihtişamıyla izlenebilir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌑'
-  },
-  {
-    id: '2026-fm-4',
-    title: 'Hasat Dolunayı',
-    type: 'dolunay',
-    date: '2026-09-17',
-    description: 'Sonbahar ekinoksuna en yakın dolunay.',
-    details: 'Eskiden çiftçiler Ay\'ın güçlü ışığından faydalanarak gece geç saatlere kadar hasat yapabildikleri için bu ismi almıştır.',
-    visibility: 'tüm-dünya',
-    emoji: '🌾'
-  },
-  {
-    id: '2027-fm-1',
-    title: 'Pembe Dolunay',
-    type: 'dolunay',
-    date: '2027-04-11',
-    description: 'Nisan ayının dolunayı.',
-    details: 'Adını ayın renginden değil, erken açan pembe yabani phlox çiçeklerinden alır. Baharın gelişini simgeler.',
-    visibility: 'tüm-dünya',
-    emoji: '🌸'
-  },
-  {
-    id: '2027-nm-1',
-    title: 'Yeni Ay',
-    type: 'yeni-ay',
-    date: '2027-05-02',
-    description: 'Teleskoplu gözlemciler için ideal gece.',
-    details: 'Derin gökyüzü objelerini (DSO) tespit etmek için mükemmel şartlar sağlar.',
-    visibility: 'tüm-dünya',
-    emoji: '🌑'
-  },
-  {
-    id: '2027-fm-2',
-    title: 'Çiçek Dolunayı',
-    type: 'dolunay',
-    date: '2027-05-11',
-    description: 'Mayıs ayının dolunayı.',
-    details: 'Bahar çiçeklerinin bolca açtığı döneme denk geldiği için bu isimle bilinir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌺'
-  },
-  {
-    id: '2027-nm-2',
-    title: 'Yeni Ay',
-    type: 'yeni-ay',
-    date: '2027-11-28',
-    description: 'Karanlık kış gecesinin başlangıcı.',
-    details: 'Gökyüzü yeterince karanlık olduğu için Andromeda galaksisi çıplak gözle (veya küçük bir dürbünle) gözlemlenebilir.',
-    visibility: 'tüm-dünya',
-    emoji: '🌑'
-  },
-  {
-    id: '2027-fm-3',
-    title: 'Avcı Dolunayı',
-    type: 'dolunay',
-    date: '2027-10-15',
-    description: 'Ekim ayının dolunayı.',
-    details: 'Kış yaklaşırken hayvanların semirdiği ve avcıların kışlık erzak hazırladığı dönemde gerçekleşir. Gece boyu gökyüzünü aydınlatır.',
-    visibility: 'tüm-dünya',
-    emoji: '🏹'
-  },
-
-  // 2028 Gök Olayları (NASA Eclipse & IMO Meteor Takvimi)
   {
     id: '2028-ms-1',
     title: 'Dörtlük (Quadrantid) Meteor Yağmuru',
@@ -574,16 +406,6 @@ export const events: AstronomicalEvent[] = [
     details: 'Ay’ın güney kenarı Dünya’nın tam gölgesine girerek kararma ve bakır rengi ışıma sergileyecektir. Türkiye’den sabaha karşı net izlenebilir.',
     visibility: 'türkiye',
     emoji: '🌑'
-  },
-  {
-    id: '2028-sm-1',
-    title: 'Süper Dolunay',
-    type: 'super-ay',
-    date: '2028-01-12',
-    description: '2028 yılının Dünya’ya en yakın ve en parlak dolunayı.',
-    details: 'Ay yerberi (perigee) noktasındayken tutulmayla birleşerek nadir bir göksel şölen oluşturur; standart dolunaydan yaklaşık %14 daha büyük görünür.',
-    visibility: 'tüm-dünya',
-    emoji: '🌕'
   },
   {
     id: '2028-se-1',
@@ -610,10 +432,10 @@ export const events: AstronomicalEvent[] = [
     id: '2028-cj-1',
     title: 'Venüs – Jüpiter Büyük Kavuşumu',
     type: 'gezegen-kavusumu',
-    date: '2028-04-11',
-    time: '20:30',
-    description: 'Gökyüzünün en parlak iki gezegeninin günbatımı ufkunda birbirine kavuşması.',
-    details: 'Batı ufkunda çıplak gözle birbirine neredeyse değecek kadar yakın (0.5 derece) parıldayan büyüleyici bir ikili çift oluştururlar.',
+    date: '2028-11-10',
+    time: '03:00',
+    description: 'Gökyüzünün en parlak iki gezegeni Terazi takımyıldızında 0,6° arayla buluşuyor.',
+    details: 'İkisi de Güneş’in yaklaşık 32° batısında: şafaktan önce doğu-güneydoğu ufkunda, birbirine çok yakın iki parlak nokta olarak görülürler. Çıplak gözle bile etkileyicidir; dürbünle Jüpiter’in uyduları da seçilebilir.',
     visibility: 'tüm-dünya',
     emoji: '🪐'
   },
@@ -641,14 +463,14 @@ export const events: AstronomicalEvent[] = [
   },
   {
     id: '2028-cj-2',
-    title: 'Mars – Satürn Kavuşumu',
+    title: 'Venüs ve Ülker Buluşması',
     type: 'gezegen-kavusumu',
-    date: '2028-06-08',
-    time: '04:00',
-    description: 'Kızıl Mars ile altın sarısı Satürn’ün sabah göğünde yan yana gelişi.',
-    details: 'Doğu ufkunda çıplak gözle veya küçük bir dürbünle renk kontrastını çok net görebileceğiniz estetik bir kavuşumdur.',
+    date: '2028-04-03',
+    time: '21:00',
+    description: 'Venüs, sekiz yılda bir yinelenen bir geçişle Ülker (Pleiades) yıldız kümesinin içinden geçiyor.',
+    details: '3 ve 4 Nisan akşamları gün batımından sonra batı göğünde Venüs, Ülker’in parlak yıldızlarının arasında görülür. Çıplak gözle güzel, dürbünle büyüleyicidir: kümenin mavi yıldızları Venüs’ün parıltısının çevresine dizilir. Bir sonraki benzer geçiş 2036’da.',
     visibility: 'tüm-dünya',
-    emoji: '🪐'
+    emoji: '✨'
   },
   {
     id: '2028-ss-1',
@@ -759,3 +581,7 @@ export const events: AstronomicalEvent[] = [
     emoji: '🩸'
   }
 ];
+
+/** Bütün olaylar: elle girilenler + efemeristen üretilen dolunay ve yeni Aylar (src/data/lunarEvents.ts), tarih sırasıyla */
+export const events: AstronomicalEvent[] = [...BASE_EVENTS, ...LUNAR_EVENTS].sort((a, b) => a.date.localeCompare(b.date) || (a.time ?? '').localeCompare(b.time ?? ''));
+
