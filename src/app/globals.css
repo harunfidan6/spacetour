@@ -177,8 +177,9 @@ body {
   -webkit-text-stroke: 1.5px var(--solar);
 }
 
-/* Split text: hidden until GSAP has split it (failsafe after 3s) */
-.js [data-split]:not([data-split-ready]) {
+/* Split text: hidden until GSAP has split it (failsafe after 3s). On a slow first load
+   (.split-late, set by the inline script after 1s) the text shows unsplit instead of waiting. */
+.js:not(.split-late) [data-split]:not([data-split-ready]) {
   visibility: hidden;
   animation: split-failsafe 0s linear 3s forwards;
 }

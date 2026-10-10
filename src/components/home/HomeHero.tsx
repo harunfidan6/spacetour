@@ -55,12 +55,14 @@ export function HomeHero({ moon, next }: HomeHeroProps) {
         return;
       }
 
-      // Güneş parlar, gezegenler ve yörüngeler belirir, yazılar yukarı süzülür
-      gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 24 });
+      // Güneş parlar, gezegenler ve yörüngeler belirir, yazılar yukarı süzülür. İlk açılış yavaş
+      // geçtiyse (layout'taki .split-late) yazılar zaten ekranda: gizleyip yeniden getirme.
+      const late = document.documentElement.classList.contains('split-late');
+      if (!late) gsap.set('[data-hero-fade]', { autoAlpha: 0, y: 24 });
       const intro = gsap
         .timeline({ paused: true })
-        .to(heroScene, { intro: 1, duration: 2.6, ease: 'power3.out' })
-        .to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5);
+        .to(heroScene, { intro: 1, duration: 2.6, ease: 'power3.out' });
+      if (!late) intro.to('[data-hero-fade]', { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5);
       const cancelIntro = whenIntroDone(() => intro.play());
 
       // Kaydırırken hafif paralaks: sabitleme ya da kaydırma gaspı yok

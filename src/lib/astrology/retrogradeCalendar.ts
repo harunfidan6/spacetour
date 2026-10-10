@@ -1,7 +1,7 @@
 /**
  * Retrograde calendar computed from the ephemeris, so it never runs out of dates:
  * stations (geocentric longitude turning points) of Mercury–Saturn, with pre/post shadow
- * periods. Hand-written 2026 cycles keep their texts; other cycles reuse the planet's texts.
+ * periods. Hand-written 2026 cycles keep their names and texts (never their dates); other cycles reuse the planet's texts.
  */
 
 import { planetGeocentric, type GeocentricPlanet } from '@/lib/astrophysics/skyDomeEphemeris';
@@ -108,11 +108,13 @@ export function retrogradeCalendar(now: Date): RetrogradeCycle[] {
   const out: RetrogradeCycle[] = [];
   for (const planet of PLANETS) {
     for (const { sr, sd } of stations(planet.key, from, to)) {
-      // Prefer the hand-written cycle when it describes the same retrograde
+      // A hand-written cycle for the same retrograde keeps its name and texts; dates, degrees and
+      // shadows always come from the ephemeris (the hand-typed ones had wrong signs and days)
       const curated = PLANETARY_RETROGRADES.find(
         (r) => r.planetGlyphKey === planet.glyph && Math.abs(Date.parse(r.startDate) - sr) < 12 * DAY,
       );
-      out.push(curated ? { ...curated } : computedCycle(planet, sr, sd));
+      const computed = computedCycle(planet, sr, sd);
+      out.push(curated ? { ...computed, id: curated.id, planet: curated.planet, coreThemes: curated.coreThemes, guidance: curated.guidance } : computed);
     }
   }
   // Planets outside the ephemeris (Plüton) come only from the hand-written list
@@ -124,4 +126,28 @@ export function retrogradeCalendar(now: Date): RetrogradeCycle[] {
   return out
     .map((r) => ({ ...r, isCurrentlyRetrograde: today >= r.startDate && today <= r.endDate }))
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
+}
+
+/**
+ * Exact station moments (ms) of the retrograde that starts near `startDate` (YYYY-MM-DD),
+ * plus the station longitudes and the shadow-period edges. Used by the retro detail pages.
+ */
+export function exactRetro(glyph: string, startDate: string) {
+  const planet = PLANETS.find((p) => p.glyph === glyph);
+  if (!planet) return null;
+  const t = Date.parse(`${startDate}T12:00:00Z`);
+  const found = stations(planet.key, t - 20 * DAY, t + 20 * DAY).find(({ sr }) => Math.abs(sr - t) < 15 * DAY);
+  if (!found) return null;
+  const { sr, sd } = found;
+  const lonSR = lon(planet.key, sr), lonSD = lon(planet.key, sd);
+  return {
+    key: planet.key,
+    sr,
+    sd,
+    lonSR,
+    lonSD,
+    preShadow: crossing(planet.key, lonSD, sr, -1),
+    postShadow: crossing(planet.key, lonSR, sd, 1),
+    lon: (ms: number) => lon(planet.key, ms),
+  };
 }
