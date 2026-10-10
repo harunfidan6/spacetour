@@ -97,7 +97,7 @@ export default async function RetroDonemPage(props: PageProps<'/astroloji/retrol
   if (!p) notFound();
   const { planet, year } = p;
   const cycles = cyclesFor(planet.glyph, year);
-  const now = Date.now();
+  const now = new Date().getTime(); // ISR: sayfa günde bir yeniden üretilir, zamana bağlı metin bilinçli
   const today = new Date(now).toLocaleDateString('sv-SE', { timeZone: TZ });
   const featured = featuredCycle(cycles, today);
   const d = featured ? retroDetail(planet.glyph, featured.startDate) : null;
